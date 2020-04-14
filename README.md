@@ -1,2 +1,3 @@
 # compas_am
-COMPAS package for additive manufacturing
+
+additive manufacturing package for the COMPAS framework
