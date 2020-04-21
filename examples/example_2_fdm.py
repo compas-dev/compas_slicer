@@ -12,9 +12,14 @@ STRUCTURE 2
 compas_am.input
     mesh / brep - open / closed
     sanitize input (ex. in case of holes: close)    
+
+compas_am.position 
     position and orient input shape within reach
     orient shape to reduce need for support 
+    segmentation? - design seams
 
+compas_am.supports
+    supports : identify and visualize big overhangs 
 
 compas_am.slicing
     Slicing
@@ -22,26 +27,31 @@ compas_am.slicing
         slice planar layers with adaptive height
         slice curved layers 
 
+    infill generation
+
     align seams
     randomize seams
     orient curves 
     cull small curves 
+    solve self intersections 
+    find issues - Satinize the curves
 
 
 compas_am.sorting
     sort per layer - shortest path at the same z height
     sort per segment - less interruptions 
+    sort by longest path
 
 
 compas_am.sampling
-    Continuous curves:
-        adaptive sampling (sample the curve with as few points as possible, without compromising its shape) 
     Descrete polylines: 
         cull points within a threshold (to reduce too many input curves)
         cull points based on curvature - adaptive polygon simplification
 
+-gcode
 
 compas_am.commands
+
     generate commands
     save commands 
     import commands
