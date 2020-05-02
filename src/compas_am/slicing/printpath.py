@@ -1,9 +1,16 @@
 import compas
+from rdp import rdp
+import numpy as np
+from compas.geometry import  Point
 
 class PrintPath(object):
-    def __init__(self, polygon):
+    def __init__(self, points, is_closed):
         self.points = points
         self.is_closed = is_closed
+
+    def simplify(self, threshold):
+        reduced_pts = rdp(np.array(self.points), epsilon=threshold)
+        self.points = [Point(v[0], v[1], v[2]) for v in reduced_pts] 
 
     def get_lines_for_plotter(self, color = (255,0,0)):
         lines = []
@@ -30,17 +37,15 @@ class PrintPath(object):
 
 class Contour(PrintPath):
     def __init__(self, points, is_closed):
-        self.points = points
-        self.is_closed = is_closed
+        PrintPath.__init__(self, points, is_closed) 
 
-class Support(PrintPath):
-    def __init__(self):
-        pass
+class SupportPath(PrintPath):
+    def __init__(self, points, is_closed):
+        PrintPath.__init__(self, points, is_closed) 
 
-class Infill(PrintPath):
-    def __init__(self):
-        pass
-
+class InfillPath(PrintPath):
+    def __init__(self, points, is_closed):
+        PrintPath.__init__(self, points, is_closed) 
 
 
 if __name__ == '__main__':
