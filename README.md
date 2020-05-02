@@ -10,3 +10,8 @@ To install compas_am from this folder use:
 pip install -e .
 
 Then run the file examples/1_versions_check.py
+
+
+Additional installations:
+
+pip install rdp
