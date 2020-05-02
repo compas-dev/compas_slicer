@@ -12,6 +12,6 @@ pip install -e .
 Then run the file examples/1_versions_check.py
 
 
-Additional installations:
+### Additional installations:
 
 pip install rdp
