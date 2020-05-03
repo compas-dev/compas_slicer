@@ -20,9 +20,11 @@ class Slicer:
     layer_height : <float> 
     """
 
-    def __init__(self, mesh, slicer_type = "planar", layer_height = 0.01):
+    def __init__(self, mesh, min_z, max_z, slicer_type = "planar", layer_height = 0.01):
         ### input
         self.mesh = mesh
+        self.min_z = min_z
+        self.max_z = max_z
         self.layer_height = layer_height
         self.slicer_type = slicer_type
 
@@ -83,16 +85,32 @@ class Slicer:
         return contours
 
     def contours_planar_meshcut(self):
-        # WIP
-        plane_origin = (0, 25, 0)
-        plane_normal = (0, 0, 1)
-        plane = meshcut.Plane(plane_origin, plane_normal)
+        # calculate number of layers needed
+        d = abs(self.min_z - self.max_z)
+        no_of_layers = int(d / self.layer_height)+1
+      
+        contours = []
 
-        P = meshcut.cross_section_mesh(self.mesh, plane)
-
-        for item in P:
-            contours = item.tolist()
-        
+        for i in range(no_of_layers):
+            # define plane
+            # TODO check if addding 0.01 tolerance makes sense
+            plane_origin = (0, 0, self.min_z + i*self.layer_height + 0.01)
+            plane_normal = (0, 0, 1)
+            plane = meshcut.Plane(plane_origin, plane_normal)
+            # cut using meshcut cross_section_mesh
+            meshcut_array = meshcut.cross_section_mesh(self.mesh, plane)
+            for item in meshcut_array:
+                # convert np array to list
+                # TODO needs to be optimised, tolist() is slow
+                meshcut_list = item.tolist()
+                points = [Point(p[0], p[1], p[2]) for p in meshcut_list]
+                # append first point to form a closed polyline
+                # TODO has to be improved
+                points.append(points[0])
+                # TODO is_closed is always set to True, has to be checked
+                is_closed = True
+                c = Contour(points = points, is_closed = is_closed)
+                contours.append(c)
         return contours
 
     def contours_curved(self):
@@ -149,6 +167,7 @@ class Slicer:
 
         print ("\n---- Slicer Info ----")
         print ("Slicer type : ", self.slicer_type)
+        print ("Layer height: ", self.layer_height, " mm")
         print ("Number of contours: %d, open contours: %d, closed contours: %d"%(len(self.contours),open_contours, closed_contours))
         print ("Number of sampling points on contours: %d "% total_number_of_pts)
         print ("\n")
@@ -159,11 +178,11 @@ class Slicer:
             lines.extend(contour.get_lines_for_plotter(color))
         return lines
 
-    def save_contours_in_Json(self, path, name):
+    def save_contours_to_json(self, path, name):
         data = {}
         for i,contour in enumerate(self.contours):
             data[i] = [list(point) for point in contour.points]
-        utils.save_Json(data, path, name)
+        utils.save_to_json(data, path, name)
 
         
         
