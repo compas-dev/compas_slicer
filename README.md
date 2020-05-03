@@ -15,3 +15,4 @@ Then run the file examples/1_versions_check.py
 ### Additional installations:
 
 pip install rdp
+pip install meshcut
