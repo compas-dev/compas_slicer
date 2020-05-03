@@ -16,7 +16,7 @@ if __name__ == "__main__":
     mesh = Mesh.from_obj(os.path.join(DATA, FILE))
 
     ### --- Slicer
-    slicer = Slicer(mesh, slicer_type = "regular", layer_height = 1.0)
+    slicer = Slicer(mesh, slicer_type = "planar", layer_height = 1.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
