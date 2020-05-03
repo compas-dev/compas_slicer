@@ -6,6 +6,8 @@ from compas_am.utilities import utils
 from compas_am.sorting.shortest_path_sorting import shortest_path_sorting
 from compas_am.sorting.per_segment_sorting import per_segment_sorting
 
+import meshcut
+
 class Slicer:
     """
     Slicer class is an organizational class that holds all the information for the slice process
@@ -14,11 +16,11 @@ class Slicer:
     Attributes
     ----------
     mesh         : <compas.datastructures.Mesh>
-    slicer_type  : <str> "regular" , "curved", "adaptive height"
+    slicer_type  : <str> "planar", "planar_meshcut", "curved", "adaptive"
     layer_height : <float> 
     """
 
-    def __init__(self, mesh, slicer_type = "regular", layer_height = 0.01):
+    def __init__(self, mesh, slicer_type = "planar", layer_height = 0.01):
         ### input
         self.mesh = mesh
         self.layer_height = layer_height
@@ -46,16 +48,18 @@ class Slicer:
 
     ### --- Contours
     def generate_contours(self):
-        if self.slicer_type == "regular":
-            self.contours = self.contours_regular_geometry_slicing()
+        if self.slicer_type == "planar":
+            self.contours = self.contours_planar()
+        elif self.slicer_type == "planar_meshcut":
+            self.contours = self.contours_planar_meshcut()   
         elif self.slicer_type == "curved":
-            self.contours = self.contours_curved_geometry_slicing()
-        elif self.slicer_type == "adaptive height":
-            self.contours = self.contours_adaptive_height_geometry_slicing()
+            self.contours = self.contours_curved()
+        elif self.slicer_type == "adaptive":
+            self.contours = self.contours_adaptive()
         else: 
             raise "Invalid slicing type : " + slicer_type
 
-    def contours_regular_geometry_slicing(self):
+    def contours_planar(self):
         z = [self.mesh.vertex_attribute(key, 'z') for key in self.mesh.vertices()]
         z_bounds = max(z) - min(z)
         levels = []
@@ -78,10 +82,23 @@ class Slicer:
                         contours.append(c)
         return contours
 
-    def contours_curved_geometry_slicing(self):
+    def contours_planar_meshcut(self):
+        # WIP
+        plane_origin = (0, 25, 0)
+        plane_normal = (0, 0, 1)
+        plane = meshcut.Plane(plane_origin, plane_normal)
+
+        P = meshcut.cross_section_mesh(self.mesh, plane)
+
+        for item in P:
+            contours = item.tolist()
+        
+        return contours
+
+    def contours_curved(self):
         raise NotImplementedError
 
-    def contours_adaptive_height_geometry_slicing(self):
+    def contours_adaptive(self):
         raise NotImplementedError
 
 
