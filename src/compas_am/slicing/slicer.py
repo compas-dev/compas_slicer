@@ -5,8 +5,11 @@ from compas_am.slicing.printpath import Contour
 from compas_am.utilities import utils
 from compas_am.sorting.shortest_path_sorting import shortest_path_sorting
 from compas_am.sorting.per_segment_sorting import per_segment_sorting
-
+import numpy as np
 import meshcut
+
+import logging
+logger = logging.getLogger('logger')
 
 class Slicer:
     """
@@ -15,16 +18,16 @@ class Slicer:
     
     Attributes
     ----------
-    mesh         : <compas.datastructures.Mesh>
+    mesh         : <compas.datastructures.Mesh> Input mesh
     slicer_type  : <str> "planar", "planar_meshcut", "curved", "adaptive"
     layer_height : <float> 
     """
 
-    def __init__(self, mesh, min_z, max_z, slicer_type = "planar", layer_height = 0.01):
+    def __init__(self, mesh, slicer_type = "planar", layer_height = 0.01):
+        assert isinstance(mesh, compas.datastructures.Mesh), "Input mesh has to be of type <compas.datastructures.Mesh>, yours is of type: "+str(type(mesh))
+
         ### input
         self.mesh = mesh
-        self.min_z = min_z
-        self.max_z = max_z
         self.layer_height = layer_height
         self.slicer_type = slicer_type
 
@@ -36,7 +39,6 @@ class Slicer:
 
     ##############################
     ### --- Slicing 
-
     def slice_model(self, create_contours, create_infill, create_supports):
         if create_contours:
             self.generate_contours()
@@ -47,13 +49,12 @@ class Slicer:
         if create_supports:
             self.generate_supports()
 
-
     ### --- Contours
     def generate_contours(self):
         if self.slicer_type == "planar":
-            self.contours = self.contours_planar()
+            self.contours = self.create_planar_contours()
         elif self.slicer_type == "planar_meshcut":
-            self.contours = self.contours_planar_meshcut()   
+            self.contours = self.create_planar_contours_meshcut()   
         elif self.slicer_type == "curved":
             self.contours = self.contours_curved()
         elif self.slicer_type == "adaptive":
@@ -61,7 +62,8 @@ class Slicer:
         else: 
             raise "Invalid slicing type : " + slicer_type
 
-    def contours_planar(self):
+    def create_planar_contours(self):
+        logger.info("Compas contours numpy slicing")
         z = [self.mesh.vertex_attribute(key, 'z') for key in self.mesh.vertices()]
         z_bounds = max(z) - min(z)
         levels = []
@@ -69,7 +71,6 @@ class Slicer:
         while p < max(z):
             levels.append(p)
             p += self.layer_height 
-
         levels, compound_contours = compas.datastructures.mesh_contours_numpy(self.mesh, levels=levels, density=10)
         
         contours = []
@@ -84,21 +85,30 @@ class Slicer:
                         contours.append(c)
         return contours
 
-    def contours_planar_meshcut(self):
-        # calculate number of layers needed
-        d = abs(self.min_z - self.max_z)
-        no_of_layers = int(d / self.layer_height)+1
-      
-        contours = []
+    def create_planar_contours_meshcut(self):
+        logger.info("Meshcut slicing")
+        # Convert compas mesh to meshcut mesh
+        v = np.array(self.mesh.vertices_attributes('xyz'))
+        vertices = v.reshape(-1, 3) #vertices numpy array : #Vx3
+        key_index = self.mesh.key_index()
+        f = [[key_index[key] for key in self.mesh.face_vertices(fkey)] for fkey in self.mesh.faces()]
+        faces = np.array(f).reshape(-1, 3) #faces numpy array : #Fx3
+        vertices, faces = meshcut.merge_close_vertices(vertices, faces)
+        meshcut_mesh = meshcut.TriangleMesh(vertices, faces)
 
+        # get min and max z coordinates
+        min_z, max_z = np.amin(vertices, axis=0)[2], np.amax(vertices, axis=0)[2]
+        d = abs(min_z - max_z)
+        no_of_layers = int(d / self.layer_height)+1
+        contours = []
         for i in range(no_of_layers):
             # define plane
             # TODO check if addding 0.01 tolerance makes sense
-            plane_origin = (0, 0, self.min_z + i*self.layer_height + 0.01)
+            plane_origin = (0, 0,min_z + i*self.layer_height + 0.01)
             plane_normal = (0, 0, 1)
             plane = meshcut.Plane(plane_origin, plane_normal)
             # cut using meshcut cross_section_mesh
-            meshcut_array = meshcut.cross_section_mesh(self.mesh, plane)
+            meshcut_array = meshcut.cross_section_mesh(meshcut_mesh, plane)
             for item in meshcut_array:
                 # convert np array to list
                 # TODO needs to be optimised, tolist() is slow
@@ -120,7 +130,6 @@ class Slicer:
         raise NotImplementedError
 
 
-
     ### --- Infill
     def generate_infill(self):
         raise NotImplementedError
@@ -135,6 +144,7 @@ class Slicer:
     ### --- Polylines Simplification
 
     def simplify_paths(self, threshold):
+        logger.info("Paths simplification")
         [path.simplify(threshold) for path in self.contours]
         [path.simplify(threshold) for path in self.infill_paths]
         [path.simplify(threshold) for path in self.support_paths]
@@ -144,6 +154,7 @@ class Slicer:
     ### --- Sorting paths
 
     def sort_paths(self, sorting_type):
+        logger.info("Paths sorting")
         if sorting_type == "shortest path":
             sorted_paths = shortest_path_sorting(self.contours, self.infill_paths, self.support_paths)
         elif sorting_type == "per segment":
@@ -169,8 +180,8 @@ class Slicer:
         print ("Slicer type : ", self.slicer_type)
         print ("Layer height: ", self.layer_height, " mm")
         print ("Number of contours: %d, open contours: %d, closed contours: %d"%(len(self.contours),open_contours, closed_contours))
-        print ("Number of sampling points on contours: %d "% total_number_of_pts)
-        print ("\n")
+        print ("Number of sampling points on contours: %d \n"% total_number_of_pts)
+
 
     def get_contour_lines_for_plotter(self, color = (255,0,0)):
         lines = []

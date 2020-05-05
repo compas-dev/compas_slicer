@@ -5,10 +5,17 @@ from compas.datastructures import Mesh
 from compas_plotters import MeshPlotter
 
 from compas_am.slicing.slicer import Slicer
+from compas_am.input.input_geometry import InputGeometry
 
 import meshcut
 import stl
 import numpy as np
+
+######################## Logging
+import logging
+logger = logging.getLogger('logger')
+logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
+######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 FILE = os.path.abspath(os.path.join(DATA, 'bunny_LOW_RES.stl'))
@@ -16,20 +23,11 @@ FILE = os.path.abspath(os.path.join(DATA, 'bunny_LOW_RES.stl'))
 
 if __name__ == "__main__":
 
-    ### --- Load stl for meshcut and re-generate mesh
-    m = stl.mesh.Mesh.from_file(FILE)
-    # Flatten our vert array to Nx3 and generate corresponding faces array
-    vertices = m.vectors.reshape(-1, 3)
-    faces = np.arange(len(vertices)).reshape(-1, 3)
-    # create meshcut mesh
-    vertices, faces = meshcut.merge_close_vertices(vertices, faces)
-    mesh = meshcut.TriangleMesh(vertices, faces)
-
-    # get min and max z coordinates
-    min_z, max_z = np.amin(vertices, axis=0)[2], np.amax(vertices, axis=0)[2]
+    ### --- Load stl
+    compas_mesh = Mesh.from_stl(FILE)
 
     ### --- Slicer
-    slicer = Slicer(mesh, min_z, max_z, slicer_type = "planar_meshcut", layer_height = 3.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 3.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
