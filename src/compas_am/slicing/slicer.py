@@ -6,6 +6,8 @@ from compas_am.utilities import utils
 from compas_am.sorting.shortest_path_sorting import shortest_path_sorting
 from compas_am.sorting.per_segment_sorting import per_segment_sorting
 
+import meshcut
+
 class Slicer:
     """
     Slicer class is an organizational class that holds all the information for the slice process
@@ -14,13 +16,15 @@ class Slicer:
     Attributes
     ----------
     mesh         : <compas.datastructures.Mesh>
-    slicer_type  : <str> "regular" , "curved", "adaptive height"
+    slicer_type  : <str> "planar", "planar_meshcut", "curved", "adaptive"
     layer_height : <float> 
     """
 
-    def __init__(self, mesh, slicer_type = "regular", layer_height = 0.01):
+    def __init__(self, mesh, min_z, max_z, slicer_type = "planar", layer_height = 0.01):
         ### input
         self.mesh = mesh
+        self.min_z = min_z
+        self.max_z = max_z
         self.layer_height = layer_height
         self.slicer_type = slicer_type
 
@@ -46,16 +50,18 @@ class Slicer:
 
     ### --- Contours
     def generate_contours(self):
-        if self.slicer_type == "regular":
-            self.contours = self.contours_regular_geometry_slicing()
+        if self.slicer_type == "planar":
+            self.contours = self.contours_planar()
+        elif self.slicer_type == "planar_meshcut":
+            self.contours = self.contours_planar_meshcut()   
         elif self.slicer_type == "curved":
-            self.contours = self.contours_curved_geometry_slicing()
-        elif self.slicer_type == "adaptive height":
-            self.contours = self.contours_adaptive_height_geometry_slicing()
+            self.contours = self.contours_curved()
+        elif self.slicer_type == "adaptive":
+            self.contours = self.contours_adaptive()
         else: 
             raise "Invalid slicing type : " + slicer_type
 
-    def contours_regular_geometry_slicing(self):
+    def contours_planar(self):
         z = [self.mesh.vertex_attribute(key, 'z') for key in self.mesh.vertices()]
         z_bounds = max(z) - min(z)
         levels = []
@@ -78,10 +84,39 @@ class Slicer:
                         contours.append(c)
         return contours
 
-    def contours_curved_geometry_slicing(self):
+    def contours_planar_meshcut(self):
+        # calculate number of layers needed
+        d = abs(self.min_z - self.max_z)
+        no_of_layers = int(d / self.layer_height)+1
+      
+        contours = []
+
+        for i in range(no_of_layers):
+            # define plane
+            # TODO check if addding 0.01 tolerance makes sense
+            plane_origin = (0, 0, self.min_z + i*self.layer_height + 0.01)
+            plane_normal = (0, 0, 1)
+            plane = meshcut.Plane(plane_origin, plane_normal)
+            # cut using meshcut cross_section_mesh
+            meshcut_array = meshcut.cross_section_mesh(self.mesh, plane)
+            for item in meshcut_array:
+                # convert np array to list
+                # TODO needs to be optimised, tolist() is slow
+                meshcut_list = item.tolist()
+                points = [Point(p[0], p[1], p[2]) for p in meshcut_list]
+                # append first point to form a closed polyline
+                # TODO has to be improved
+                points.append(points[0])
+                # TODO is_closed is always set to True, has to be checked
+                is_closed = True
+                c = Contour(points = points, is_closed = is_closed)
+                contours.append(c)
+        return contours
+
+    def contours_curved(self):
         raise NotImplementedError
 
-    def contours_adaptive_height_geometry_slicing(self):
+    def contours_adaptive(self):
         raise NotImplementedError
 
 
@@ -132,6 +167,7 @@ class Slicer:
 
         print ("\n---- Slicer Info ----")
         print ("Slicer type : ", self.slicer_type)
+        print ("Layer height: ", self.layer_height, " mm")
         print ("Number of contours: %d, open contours: %d, closed contours: %d"%(len(self.contours),open_contours, closed_contours))
         print ("Number of sampling points on contours: %d "% total_number_of_pts)
         print ("\n")
@@ -142,11 +178,11 @@ class Slicer:
             lines.extend(contour.get_lines_for_plotter(color))
         return lines
 
-    def save_contours_in_Json(self, path, name):
+    def save_contours_to_json(self, path, name):
         data = {}
         for i,contour in enumerate(self.contours):
             data[i] = [list(point) for point in contour.points]
-        utils.save_Json(data, path, name)
+        utils.save_to_json(data, path, name)
 
         
         

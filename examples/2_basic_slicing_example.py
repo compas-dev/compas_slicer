@@ -16,7 +16,7 @@ if __name__ == "__main__":
     mesh = Mesh.from_obj(os.path.join(DATA, FILE))
 
     ### --- Slicer
-    slicer = Slicer(mesh, slicer_type = "regular", layer_height = 1.0)
+    slicer = Slicer(mesh, min_z = None, max_z = None, slicer_type = "planar", layer_height = 1.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     slicer.printout_info()
 
-    slicer.save_contours_in_Json(path = DATA, name = "vase_contours.json")
+    slicer.save_contours_to_json(path = DATA, name = "vase_contours.json")
 
     
 
