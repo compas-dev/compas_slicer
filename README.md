@@ -1,18 +1,6 @@
-============================================================
-compas_am
-============================================================
+# compas_am
 
-.. start-badges
-
-.. image:: https://img.shields.io/badge/License-MIT-blue.svg
-    :target: https://github.com/gramaziokohler/eggshell/blob/master/LICENSE
-    :alt: License MIT
-
-.. image:: https://travis-ci.org/gramaziokohler/eggshell.svg?branch=master
-    :target: https://travis-ci.org/gramaziokohler/eggshell
-    :alt: Travis CI
-
-.. end-badges
+[![Licence MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/dbt-ethz/compas_am/blob/master/LICENSE) [![Travis](https://travis-ci.org/dbt-ethz/compas_am.svg?branch=master)](https://travis-ci.org/dbt-ethz/compas_am)
 
 Additive manufacturing package for the COMPAS framework.
 
@@ -26,7 +14,6 @@ Main features
 Requirements
 ------------
 
-* Rhino 6
 * compas
 
 
@@ -37,7 +24,9 @@ Create a new conda environment.
 
 To install compas_am from this folder use: 
 
+```bash
 pip install -e <path>.
+```
 
 Then run the file examples/1_versions_check.py
 
@@ -56,12 +45,6 @@ Install meshcut
 ```bash
 pip install meshcut
 ```
-
-
-Documentation
--------------
-
-* to be added 
 
 
 Authors
