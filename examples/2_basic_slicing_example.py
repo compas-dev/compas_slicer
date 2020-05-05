@@ -21,7 +21,7 @@ if __name__ == "__main__":
     compas_mesh = Mesh.from_obj(os.path.join(DATA, FILE))
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type = "planar", layer_height = 1.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_numpy", layer_height = 1.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 

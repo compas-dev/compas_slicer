@@ -1,12 +1,15 @@
 import compas
 from compas.datastructures import Mesh, mesh_contours_numpy
 from compas.geometry import  Point, distance_point_point
+
+import numpy as np
+import meshcut
+
+import compas_am.slicing.planar_slicing as planar_slicing
 from compas_am.slicing.printpath import Contour
 from compas_am.utilities import utils
 from compas_am.sorting.shortest_path_sorting import shortest_path_sorting
 from compas_am.sorting.per_segment_sorting import per_segment_sorting
-import numpy as np
-import meshcut
 
 import logging
 logger = logging.getLogger('logger')
@@ -14,12 +17,13 @@ logger = logging.getLogger('logger')
 class Slicer:
     """
     Slicer class is an organizational class that holds all the information for the slice process
-    It does not impliment functions, but rather links to the implementation in other parts of the compas_am library  
+    It does not implement functions, but rather links to the implementation in other parts of the compas_am library 
+    Should be kept as clean and short as possible 
     
     Attributes
     ----------
     mesh         : <compas.datastructures.Mesh> Input mesh
-    slicer_type  : <str> "planar", "planar_meshcut", "curved", "adaptive"
+    slicer_type  : <str> "planar_numpy", "planar_meshcut", "curved", "adaptive"
     layer_height : <float> 
     """
 
@@ -51,77 +55,23 @@ class Slicer:
 
     ### --- Contours
     def generate_contours(self):
-        if self.slicer_type == "planar":
-            self.contours = self.create_planar_contours()
+        if self.slicer_type == "planar_numpy":
+            logger.info("Planar contours compas numpy slicing")
+            self.contours = planar_slicing.create_planar_contours_numpy(self.mesh, self.layer_height)
+
         elif self.slicer_type == "planar_meshcut":
-            self.contours = self.create_planar_contours_meshcut()   
+            logger.info("Planar contours meshcut slicing")
+            self.contours = planar_slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
+
         elif self.slicer_type == "curved":
             self.contours = self.contours_curved()
+
         elif self.slicer_type == "adaptive":
             self.contours = self.contours_adaptive()
+
         else: 
             raise "Invalid slicing type : " + slicer_type
 
-    def create_planar_contours(self):
-        logger.info("Compas contours numpy slicing")
-        z = [self.mesh.vertex_attribute(key, 'z') for key in self.mesh.vertices()]
-        z_bounds = max(z) - min(z)
-        levels = []
-        p = min(z) 
-        while p < max(z):
-            levels.append(p)
-            p += self.layer_height 
-        levels, compound_contours = compas.datastructures.mesh_contours_numpy(self.mesh, levels=levels, density=10)
-        
-        contours = []
-        for i, compound_contour in enumerate(compound_contours):
-            for path in compound_contour:
-                for polygon2d in path:
-                    points = [Point(p[0], p[1], levels[i]) for p in polygon2d[:-1]]
-                    if len(points)>0:
-                        threshold_closed = 15.0 #TODO: VERY BAD!! Threshold should not be hardcoded
-                        is_closed = distance_point_point(points[0], points[-1]) < threshold_closed
-                        c = Contour(points = points, is_closed = is_closed)
-                        contours.append(c)
-        return contours
-
-    def create_planar_contours_meshcut(self):
-        logger.info("Meshcut slicing")
-        # Convert compas mesh to meshcut mesh
-        v = np.array(self.mesh.vertices_attributes('xyz'))
-        vertices = v.reshape(-1, 3) #vertices numpy array : #Vx3
-        key_index = self.mesh.key_index()
-        f = [[key_index[key] for key in self.mesh.face_vertices(fkey)] for fkey in self.mesh.faces()]
-        faces = np.array(f).reshape(-1, 3) #faces numpy array : #Fx3
-        vertices, faces = meshcut.merge_close_vertices(vertices, faces)
-        meshcut_mesh = meshcut.TriangleMesh(vertices, faces)
-
-        # get min and max z coordinates
-        min_z, max_z = np.amin(vertices, axis=0)[2], np.amax(vertices, axis=0)[2]
-        d = abs(min_z - max_z)
-        no_of_layers = int(d / self.layer_height)+1
-        contours = []
-        for i in range(no_of_layers):
-            # define plane
-            # TODO check if addding 0.01 tolerance makes sense
-            plane_origin = (0, 0,min_z + i*self.layer_height + 0.01)
-            plane_normal = (0, 0, 1)
-            plane = meshcut.Plane(plane_origin, plane_normal)
-            # cut using meshcut cross_section_mesh
-            meshcut_array = meshcut.cross_section_mesh(meshcut_mesh, plane)
-            for item in meshcut_array:
-                # convert np array to list
-                # TODO needs to be optimised, tolist() is slow
-                meshcut_list = item.tolist()
-                points = [Point(p[0], p[1], p[2]) for p in meshcut_list]
-                # append first point to form a closed polyline
-                # TODO has to be improved
-                points.append(points[0])
-                # TODO is_closed is always set to True, has to be checked
-                is_closed = True
-                c = Contour(points = points, is_closed = is_closed)
-                contours.append(c)
-        return contours
 
     def contours_curved(self):
         raise NotImplementedError
