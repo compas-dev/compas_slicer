@@ -28,6 +28,8 @@ if __name__ == "__main__":
 
     slicer.save_contours_in_Json(path = DATA, name = "vase_contours.json")
 
+    
+
 
     # ### ----- Visualize 
     plotter = MeshPlotter(mesh, figsize=(16, 10))

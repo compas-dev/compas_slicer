@@ -30,7 +30,7 @@ class Slicer:
         self.support_paths = []
 
 
-    ###############
+    ##############################
     ### --- Slicing 
 
     def slice_model(self, create_contours, create_infill, create_supports):
