@@ -1,6 +1,6 @@
 # compas_am
 
-[![Licence MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/dbt-ethz/compas_am/master/LICENSE) [![Travis](https://travis-ci.org/dbt-ethz/compas_am.svg?branch=master)](https://travis-ci.org/dbt-ethz/compas_am)
+[![Licence MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/dbt-ethz/compas_am/blob/master/LICENSE) [![Travis](https://travis-ci.org/dbt-ethz/compas_am.svg?branch=master)](https://travis-ci.org/dbt-ethz/compas_am)
 
 Additive manufacturing package for the COMPAS framework.
 
