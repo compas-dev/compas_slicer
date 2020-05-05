@@ -14,7 +14,7 @@ Main features
 Requirements
 ------------
 
-* compas
+* [compas](https://compas-dev.github.io/)
 
 
 Installation
