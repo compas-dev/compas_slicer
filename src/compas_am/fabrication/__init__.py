@@ -3,6 +3,8 @@
 compas_am.commands
 ********************************************************************************
 
+Thought 06.05.2020: Could it make sense to change 'fabrication' to 'output' to resonate better with 'input'?
+
 -gcode
 
 compas_am.commands
