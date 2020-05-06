@@ -20,3 +20,5 @@ class InputGeometry:
         else: 
             logger.error("Cannot import files : " + str(filepath)[-3:])
         
+if __name__ == "__main__":
+    pass

@@ -18,3 +18,6 @@ def load_from_json(path, name):
         data = json.load(f)
     logger.info("Loaded Json: " + filename)
     return data
+
+if __name__ == "__main__":
+    pass

@@ -1,6 +1,6 @@
 import numpy as np
 import compas
-from compas.datastructures import Mesh, mesh_contours_numpy
+from compas.datastructures import Mesh
 from compas.geometry import  Point, distance_point_point
 from compas_am.slicing.printpath import Contour
 
@@ -10,7 +10,6 @@ from compas_am.slicing.printpath import Contour
 import meshcut
 
 def create_planar_contours_meshcut(mesh, layer_height):
-
     # Convert compas mesh to meshcut mesh
     v = np.array(mesh.vertices_attributes('xyz'))
     vertices = v.reshape(-1, 3) #vertices numpy array : #Vx3
@@ -74,3 +73,6 @@ def create_planar_contours_numpy(mesh, layer_height):
                     c = Contour(points = points, is_closed = is_closed)
                     contours.append(c)
     return contours
+
+if __name__ == "__main__":
+    pass

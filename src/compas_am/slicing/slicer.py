@@ -3,10 +3,10 @@ from compas.datastructures import Mesh, mesh_contours_numpy
 from compas.geometry import  Point, distance_point_point
 
 import numpy as np
-import meshcut
 
-import compas_am.slicing.planar_slicing as planar_slicing
 from compas_am.slicing.printpath import Contour
+import compas_am.slicing.curved_slicing as curved_slicing
+import compas_am.slicing.adaptive_slicing as adaptive_slicing
 from compas_am.utilities import utils
 from compas_am.sorting.shortest_path_sorting import shortest_path_sorting
 from compas_am.sorting.per_segment_sorting import per_segment_sorting
@@ -40,6 +40,8 @@ class Slicer:
         self.infill_paths = []
         self.support_paths = []
 
+        self.sorted_paths = []
+
 
     ##############################
     ### --- Slicing 
@@ -64,30 +66,13 @@ class Slicer:
             self.contours = planar_slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
 
         elif self.slicer_type == "curved":
-            self.contours = self.contours_curved()
+            self.contours = curved_slicing.create_curved_contours(mesh, boundaries = None, min_layer_height = None, max_layer_height = None)
 
         elif self.slicer_type == "adaptive":
-            self.contours = self.contours_adaptive()
+            self.contours = adaptive_slicing.create_adaptive_height_contours(mesh, min_layer_height = None, max_layer_height = None)
 
         else: 
             raise "Invalid slicing type : " + slicer_type
-
-
-    def contours_curved(self):
-        raise NotImplementedError
-
-    def contours_adaptive(self):
-        raise NotImplementedError
-
-
-    ### --- Infill
-    def generate_infill(self):
-        raise NotImplementedError
-
-
-    ### --- Supports
-    def generate_supports(self):
-        raise NotImplementedError
 
 
     ##############################
@@ -106,10 +91,9 @@ class Slicer:
     def sort_paths(self, sorting_type):
         logger.info("Paths sorting")
         if sorting_type == "shortest path":
-            sorted_paths = shortest_path_sorting(self.contours, self.infill_paths, self.support_paths)
+            self.sorted_paths =  = shortest_path_sorting(self.contours, self.infill_paths, self.support_paths)
         elif sorting_type == "per segment":
-            sorted_paths = per_segment_sorting(self.contours, self.infill_paths, self.support_paths)
-        return sorted_paths
+            self.sorted_paths =  = per_segment_sorting(self.contours, self.infill_paths, self.support_paths)
 
 
     ##############################
@@ -145,5 +129,7 @@ class Slicer:
             data[i] = [list(point) for point in contour.points]
         utils.save_to_json(data, path, name)
 
-        
+
+if __name__ == "__main__":
+    pass       
         
