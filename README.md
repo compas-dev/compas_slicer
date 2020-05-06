@@ -35,16 +35,20 @@ Contributions
 
 Before contributing code:
 
-Install development dependencies:
+- Install development dependencies:
 ```bash
 pip install -r requirements-dev.txt
 ```
 
-Make sure all tests pass:
+- Make sure all tests pass:
 
 ```bash
 invoke test
 ```
+
+- Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly.
+
+- Run the python file: tests/test_examples.py  Visually inspect the results that appear to see that no example produces unexpected results. Make sure that none of the examples throws an error. At the end you should have the message  "---- Successfully executed all examples" printed in your terminal
 
 
 Authors
