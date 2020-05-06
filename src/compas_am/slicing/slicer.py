@@ -7,6 +7,7 @@ import numpy as np
 from compas_am.slicing.printpath import Contour
 import compas_am.slicing.curved_slicing as curved_slicing
 import compas_am.slicing.adaptive_slicing as adaptive_slicing
+import compas_am.slicing.planar_slicing as planar_slicing
 from compas_am.utilities import utils
 from compas_am.sorting.shortest_path_sorting import shortest_path_sorting
 from compas_am.sorting.per_segment_sorting import per_segment_sorting
@@ -91,9 +92,9 @@ class Slicer:
     def sort_paths(self, sorting_type):
         logger.info("Paths sorting")
         if sorting_type == "shortest path":
-            self.sorted_paths =  = shortest_path_sorting(self.contours, self.infill_paths, self.support_paths)
+            self.sorted_paths = shortest_path_sorting(self.contours, self.infill_paths, self.support_paths)
         elif sorting_type == "per segment":
-            self.sorted_paths =  = per_segment_sorting(self.contours, self.infill_paths, self.support_paths)
+            self.sorted_paths = per_segment_sorting(self.contours, self.infill_paths, self.support_paths)
 
 
     ##############################

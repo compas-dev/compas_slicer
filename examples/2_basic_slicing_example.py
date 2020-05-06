@@ -12,16 +12,16 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-FILE = os.path.abspath(os.path.join(DATA, 'vase.obj'))
+FILE = os.path.abspath(os.path.join(DATA, 'vase.stl'))
 
 
-if __name__ == "__main__":
+def main():
 
     ### --- Load compas_mesh
-    compas_mesh = Mesh.from_obj(os.path.join(DATA, FILE))
+    compas_mesh = Mesh.from_stl(os.path.join(DATA, FILE))
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type = "planar_numpy", layer_height = 1.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_numpy", layer_height = 10.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
@@ -40,3 +40,7 @@ if __name__ == "__main__":
     plotter.draw_faces()
     plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))
     plotter.show()
+
+
+if __name__ == "__main__":
+    main()

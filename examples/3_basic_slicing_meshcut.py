@@ -21,7 +21,7 @@ DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 FILE = os.path.abspath(os.path.join(DATA, 'bunny_LOW_RES.stl'))
 
 
-if __name__ == "__main__":
+def main():
 
     ### --- Load stl
     compas_mesh = Mesh.from_stl(FILE)
@@ -49,3 +49,7 @@ if __name__ == "__main__":
     plotter.draw_faces()
     plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))
     plotter.show()
+
+
+if __name__ == "__main__":
+    main()
