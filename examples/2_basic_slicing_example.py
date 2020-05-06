@@ -12,7 +12,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-FILE = os.path.abspath(os.path.join(DATA, 'vase_correct_orientation.obj'))
+FILE = os.path.abspath(os.path.join(DATA, 'vase.obj'))
 # FILE = os.path.abspath(os.path.join(DATA, 'vase.obj'))
 
 def main():
@@ -27,7 +27,9 @@ def main():
 
     slicer.simplify_paths(threshold = 0.3)
 
-    slicer.sort_paths(sorting_type = "shortest path")
+    slicer.sort_paths(sorting_type = "shortest_path")
+
+    slicer.align_seams(seam_alignment = "align_seams")
 
     slicer.printout_info()
 
