@@ -46,7 +46,7 @@ pip install -r requirements-dev.txt
 invoke test
 ```
 
-- Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly.
+- Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly. Ideally also add a visualization of the result using compas.MeshPlotter (see the other examples in the same folder)
 
 - Run the python file: `` tests/test_examples.py ``.  Visually inspect the results that appear to see that no example produces unexpected results. To make sure that none of the examples throws an error, check your terminal. When all examples have been executed you should see the message  `` ---- Successfully executed all examples``
 
