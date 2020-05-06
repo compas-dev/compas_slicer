@@ -18,7 +18,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-FILE = os.path.abspath(os.path.join(DATA, 'bunny_LOW_RES.stl'))
+FILE = os.path.abspath(os.path.join(DATA, 'eight_eight.stl'))
 
 # DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 # FILE = os.path.abspath(os.path.join(DATA, 'vase_correct_orientation.obj'))
@@ -30,17 +30,19 @@ def main():
     compas_mesh = Mesh.from_stl(FILE)
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 3.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 1.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
     slicer.simplify_paths(threshold = 0.3)
 
-    slicer.sort_paths(sorting_type = "shortest path")
+    slicer.sort_paths(sorting_type = "shortest_path")
+
+    slicer.align_seams(seam_alignment = "align_seams")
 
     slicer.printout_info()
 
-    slicer.save_contours_to_json(path = DATA, name = "bunny_low_res_stl_contours.json")
+    slicer.save_contours_to_json(path = DATA, name = "eight_eight_contours.json")
 
 
     ### ----- Visualize 

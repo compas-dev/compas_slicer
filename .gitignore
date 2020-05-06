@@ -129,3 +129,7 @@ dmypy.json
 .pyre/
 
 *.code-workspace
+
+# 3d model backup files
+.objbak
+.stlbak

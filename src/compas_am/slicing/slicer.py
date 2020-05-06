@@ -11,6 +11,8 @@ import compas_am.slicing.planar_slicing as planar_slicing
 from compas_am.utilities import utils
 from compas_am.sorting.shortest_path_sorting import shortest_path_sorting
 from compas_am.sorting.per_segment_sorting import per_segment_sorting
+from compas_am.sorting.align_seams import align_seams
+from compas_am.sorting.align_seams_random import align_seams_random
 
 import logging
 logger = logging.getLogger('logger')
@@ -78,7 +80,7 @@ class Slicer:
 
 
     ##############################
-    ### --- Polylines Simplification
+    ### --- Polyline Simplification
 
     def simplify_paths(self, threshold):
         logger.info("Paths simplification")
@@ -92,10 +94,21 @@ class Slicer:
 
     def sort_paths(self, sorting_type):
         logger.info("Paths sorting")
-        if sorting_type == "shortest path":
+        if sorting_type == "shortest_path":
             self.sorted_paths = shortest_path_sorting(self.contours, self.infill_paths, self.support_paths)
-        elif sorting_type == "per segment":
+        elif sorting_type == "per_segment":
             self.sorted_paths = per_segment_sorting(self.contours, self.infill_paths, self.support_paths)
+
+
+    ##############################
+    ### --- Seam alignment
+
+    def align_seams(self, seam_alignment):
+        logger.info("Aligning seams")
+        if seam_alignment == "align_seams":
+            self.seam_alignment = align_seams(self.contours, self.infill_paths, self.support_paths)
+        elif seam_alignment == "random":
+            self.seam_alignment = align_seams_random(self.contours, self.infill_paths, self.support_paths)
 
 
     ##############################
