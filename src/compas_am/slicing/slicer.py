@@ -30,6 +30,7 @@ class Slicer:
 
     def __init__(self, mesh, slicer_type = "planar", layer_height = 0.01):
         assert isinstance(mesh, compas.datastructures.Mesh), "Input mesh has to be of type <compas.datastructures.Mesh>, yours is of type: "+str(type(mesh))
+        self.check_triangular_mesh(mesh)
 
         ### input
         self.mesh = mesh
@@ -130,6 +131,10 @@ class Slicer:
             data[i] = [list(point) for point in contour.points]
         utils.save_to_json(data, path, name)
 
+    def check_triangular_mesh(self, mesh):
+        for fkey in mesh.faces():
+            vs = mesh.face_vertices(fkey)
+            assert len(vs)==3, "face key: "+str(fkey)+" , has number of vertices:"+str(len(vs))+" . Only triangular meshes supported"
 
 if __name__ == "__main__":
     pass       

@@ -20,6 +20,9 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 FILE = os.path.abspath(os.path.join(DATA, 'bunny_LOW_RES.stl'))
 
+# DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
+# FILE = os.path.abspath(os.path.join(DATA, 'vase_correct_orientation.obj'))
+
 
 def main():
 
@@ -41,10 +44,7 @@ def main():
 
 
     ### ----- Visualize 
-
-    mesh = Mesh.from_stl(FILE)
-
-    plotter = MeshPlotter(mesh, figsize=(16, 10))
+    plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
     plotter.draw_edges(width=0.15)
     plotter.draw_faces()
     plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))

@@ -15,7 +15,8 @@ def create_planar_contours_meshcut(mesh, layer_height):
     vertices = v.reshape(-1, 3) #vertices numpy array : #Vx3
     key_index = mesh.key_index()
     f = [[key_index[key] for key in mesh.face_vertices(fkey)] for fkey in mesh.faces()]
-    faces = np.array(f).reshape(-1, 3) #faces numpy array : #Fx3
+    faces = np.array(f)
+    faces.reshape(-1, 3) #faces numpy array : #Fx3
     vertices, faces = meshcut.merge_close_vertices(vertices, faces)
     meshcut_mesh = meshcut.TriangleMesh(vertices, faces)
 
