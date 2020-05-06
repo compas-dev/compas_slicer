@@ -130,5 +130,6 @@ dmypy.json
 
 *.code-workspace
 
-# obj. backup
+# 3d model backup files
 .objbak
+.stlbak
