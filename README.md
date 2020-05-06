@@ -30,20 +30,20 @@ pip install -e <path>.
 
 Then run the file examples/1_versions_check.py
 
-
-Additional installation:
+Contributions
 ------------
 
-Install rdp
+Before contributing code:
 
+Install development dependencies:
 ```bash
-pip install rdp
+pip install -r requirements-dev.txt
 ```
 
-Install meshcut
+Make sure all tests pass:
 
 ```bash
-pip install meshcut
+invoke test
 ```
 
 
