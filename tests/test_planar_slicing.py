@@ -8,7 +8,7 @@ from compas_am.slicing.planar_slicing import create_planar_contours_numpy
 from compas_am.slicing.printpath import Contour
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-FILE = os.path.abspath(os.path.join(DATA, 'vase_correct_orientation.obj'))
+FILE = os.path.abspath(os.path.join(DATA, 'vase.obj'))
 
 mesh = Mesh.from_obj(os.path.join(DATA, FILE))
 
