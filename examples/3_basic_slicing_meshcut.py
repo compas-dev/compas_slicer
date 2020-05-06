@@ -18,7 +18,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-FILE = os.path.abspath(os.path.join(DATA, 'bunny_LOW_RES.stl'))
+FILE = os.path.abspath(os.path.join(DATA, 'connection_three_legs.stl'))
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
     compas_mesh = Mesh.from_stl(FILE)
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 3.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 30.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
@@ -37,7 +37,7 @@ def main():
 
     slicer.printout_info()
 
-    slicer.save_contours_to_json(path = DATA, name = "bunny_low_res_stl_contours.json")
+    slicer.save_contours_to_json(path = DATA, name = "connection_three_legs_contours.json")
 
 
     ### ----- Visualize 
