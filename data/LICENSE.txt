@@ -11,6 +11,8 @@ Bunny: Stanford Computer Graphics Laboratory, http://graphics.stanford.edu/data/
 
 Connection three legs: Ioanna Mitropoulou, mitropoulou@arch.ethz.ch
 
+Eight eight: Joris Burger, burger@arch.ethz.ch
+
 Sphere: @superzanti, https://github.com/superzanti
 
 Vase: Ioanna Mitropoulou, mitropoulou@arch.ethz.ch
