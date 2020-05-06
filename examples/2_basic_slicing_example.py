@@ -12,13 +12,13 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-FILE = os.path.abspath(os.path.join(DATA, 'vase.stl'))
-
+FILE = os.path.abspath(os.path.join(DATA, 'vase_correct_orientation.obj'))
+# FILE = os.path.abspath(os.path.join(DATA, 'vase.obj'))
 
 def main():
 
     ### --- Load compas_mesh
-    compas_mesh = Mesh.from_stl(os.path.join(DATA, FILE))
+    compas_mesh = Mesh.from_obj(os.path.join(DATA, FILE))
 
     ### --- Slicer
     slicer = Slicer(compas_mesh, slicer_type = "planar_numpy", layer_height = 10.0)
