@@ -18,7 +18,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-FILE = os.path.abspath(os.path.join(DATA, 'eight_eight.stl'))
+FILE = os.path.abspath(os.path.join(DATA, 'branches_70.stl'))
 
 # DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 # FILE = os.path.abspath(os.path.join(DATA, 'vase_correct_orientation.obj'))
@@ -30,27 +30,31 @@ def main():
     compas_mesh = Mesh.from_stl(FILE)
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 1.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 100.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
-    slicer.simplify_paths(threshold = 0.3)
+    # simplify paths still to be changed to new organisation with Layer() class
+    # can do that tomorrow :)
+    # slicer.simplify_paths(threshold = 0.3)
 
     slicer.sort_paths(sorting_type = "shortest_path")
 
-    slicer.align_seams(seam_alignment = "align_seams")
+    # align seams still to be changed to new organisation with Layer() class
+    # can do that tomorrow :)
+    # slicer.align_seams(seam_alignment = "align_seams")
 
     slicer.printout_info()
 
-    slicer.save_contours_to_json(path = DATA, name = "eight_eight_contours.json")
+    slicer.save_contours_to_json(path = DATA, name = "branches_70_contours.json")
 
 
-    ### ----- Visualize 
-    plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
-    plotter.draw_edges(width=0.15)
-    plotter.draw_faces()
-    plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))
-    plotter.show()
+    # ### ----- Visualize 
+    # plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
+    # plotter.draw_edges(width=0.15)
+    # plotter.draw_faces()
+    # plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))
+    # plotter.show()
 
 
 if __name__ == "__main__":

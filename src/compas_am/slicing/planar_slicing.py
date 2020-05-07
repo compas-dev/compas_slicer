@@ -3,6 +3,7 @@ import compas
 from compas.datastructures import Mesh
 from compas.geometry import  Point, distance_point_point
 from compas_am.slicing.printpath import Contour
+from compas_am.slicing.printpath import Layer
 
 #####################################################
 #### Meshcut planar slicing
@@ -24,8 +25,9 @@ def create_planar_contours_meshcut(mesh, layer_height):
     min_z, max_z = np.amin(vertices, axis=0)[2], np.amax(vertices, axis=0)[2]
     d = abs(min_z - max_z)
     no_of_layers = int(d / layer_height)+1
-    contours = []
+    layers = []
     for i in range(no_of_layers):
+        contours_per_layer = []
         # define plane
         # TODO check if addding 0.01 tolerance makes sense
         plane_origin = (0, 0,min_z + i*layer_height + 0.01)
@@ -33,10 +35,12 @@ def create_planar_contours_meshcut(mesh, layer_height):
         plane = meshcut.Plane(plane_origin, plane_normal)
         # cut using meshcut cross_section_mesh
         meshcut_array = meshcut.cross_section_mesh(meshcut_mesh, plane)
-        for item in meshcut_array:
+        for j, item in enumerate(meshcut_array):
             # convert np array to list
             # TODO needs to be optimised, tolist() is slow
+            #print(i,j, item)
             meshcut_list = item.tolist()
+            #print(meshcut_list)
             points = [Point(p[0], p[1], p[2]) for p in meshcut_list]
             # append first point to form a closed polyline
             # TODO has to be improved
@@ -44,8 +48,11 @@ def create_planar_contours_meshcut(mesh, layer_height):
             # TODO is_closed is always set to True, has to be checked
             is_closed = True
             c = Contour(points = points, is_closed = is_closed)
-            contours.append(c)
-    return contours
+            contours_per_layer.append(c)
+        l = Layer(contours_per_layer, None, None)
+        layers.append(l)
+            
+    return layers
 
 
 #####################################################

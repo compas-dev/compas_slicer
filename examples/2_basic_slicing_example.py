@@ -12,7 +12,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-FILE = os.path.abspath(os.path.join(DATA, 'vase.obj'))
+FILE = os.path.abspath(os.path.join(DATA, 'branches_70.stl'))
 # FILE = os.path.abspath(os.path.join(DATA, 'vase.obj'))
 
 def main():
@@ -33,7 +33,7 @@ def main():
 
     slicer.printout_info()
 
-    slicer.save_contours_to_json(path = DATA, name = "vase_contours.json")
+    slicer.save_contours_to_json(path = DATA, name = "branches_70_contours.json")
 
 
     # ### ----- Visualize 

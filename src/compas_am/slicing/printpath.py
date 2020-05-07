@@ -1,7 +1,7 @@
 import compas
 from rdp import rdp
 import numpy as np
-from compas.geometry import  Point
+from compas.geometry import Point
 
 class PrintPath(object):
     def __init__(self, points, is_closed):
@@ -35,15 +35,23 @@ class PrintPath(object):
 
 ##########################
 
+class Layer(object):
+    def __init__(self, contours, infill_path, support_path):
+        self.contours = contours
+        self.infill_path = infill_path
+        self.support_path = support_path
+
+########
+
 class Contour(PrintPath):
     def __init__(self, points, is_closed):
         PrintPath.__init__(self, points, is_closed) 
 
-class SupportPath(PrintPath):
-    def __init__(self, points, is_closed):
-        PrintPath.__init__(self, points, is_closed) 
-
 class InfillPath(PrintPath):
+    def __init__(self, points, is_closed):
+        PrintPath.__init__(self, points, is_closed)        
+
+class SupportPath(PrintPath):
     def __init__(self, points, is_closed):
         PrintPath.__init__(self, points, is_closed) 
 

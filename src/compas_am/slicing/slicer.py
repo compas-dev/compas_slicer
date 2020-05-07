@@ -5,6 +5,7 @@ from compas.geometry import  Point, distance_point_point
 import numpy as np
 
 from compas_am.slicing.printpath import Contour
+from compas_am.slicing.printpath import Layer
 import compas_am.slicing.curved_slicing as curved_slicing
 import compas_am.slicing.adaptive_slicing as adaptive_slicing
 import compas_am.slicing.planar_slicing as planar_slicing
@@ -46,6 +47,8 @@ class Slicer:
 
         self.sorted_paths = []
 
+        self.layers = []
+
 
     ##############################
     ### --- Slicing 
@@ -63,17 +66,17 @@ class Slicer:
     def generate_contours(self):
         if self.slicer_type == "planar_numpy":
             logger.info("Planar contours compas numpy slicing")
-            self.contours = planar_slicing.create_planar_contours_numpy(self.mesh, self.layer_height)
+            self.layers = planar_slicing.create_planar_contours_numpy(self.mesh, self.layer_height)
 
         elif self.slicer_type == "planar_meshcut":
             logger.info("Planar contours meshcut slicing")
-            self.contours = planar_slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
+            self.layers = planar_slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
 
         elif self.slicer_type == "curved":
-            self.contours = curved_slicing.create_curved_contours(mesh, boundaries = None, min_layer_height = None, max_layer_height = None)
+            self.layers = curved_slicing.create_curved_contours(mesh, boundaries = None, min_layer_height = None, max_layer_height = None)
 
         elif self.slicer_type == "adaptive":
-            self.contours = adaptive_slicing.create_adaptive_height_contours(mesh, min_layer_height = None, max_layer_height = None)
+            self.layers = adaptive_slicing.create_adaptive_height_contours(mesh, min_layer_height = None, max_layer_height = None)
 
         else: 
             raise "Invalid slicing type : " + slicer_type
@@ -84,9 +87,10 @@ class Slicer:
 
     def simplify_paths(self, threshold):
         logger.info("Paths simplification")
-        [path.simplify(threshold) for path in self.contours]
-        [path.simplify(threshold) for path in self.infill_paths]
-        [path.simplify(threshold) for path in self.support_paths]
+        for contour in self.contours:
+            [path.simplify(threshold) for path in contour]
+            [path.simplify(threshold) for path in self.infill_paths]
+            [path.simplify(threshold) for path in self.support_paths]
 
 
     ##############################
@@ -95,9 +99,9 @@ class Slicer:
     def sort_paths(self, sorting_type):
         logger.info("Paths sorting")
         if sorting_type == "shortest_path":
-            self.sorted_paths = shortest_path_sorting(self.contours, self.infill_paths, self.support_paths)
+            self.layers = shortest_path_sorting(self.layers)
         elif sorting_type == "per_segment":
-            self.sorted_paths = per_segment_sorting(self.contours, self.infill_paths, self.support_paths)
+            self.layers = per_segment_sorting(self.layers)
 
 
     ##############################
@@ -118,17 +122,23 @@ class Slicer:
         open_contours = 0
         closed_contours = 0
         total_number_of_pts = 0
-        for c in self.contours:
-            total_number_of_pts += len(c.points)
-            if c.is_closed:
-                closed_contours +=1
-            else: 
-                open_contours +=1
+        number_of_layers = 0
+
+
+        for layer in self.layers:
+            number_of_layers +=1
+            for contour in layer.contours:
+                total_number_of_pts += len(contour.points)
+                if contour.is_closed:
+                    closed_contours +=1
+                else: 
+                    open_contours +=1
 
         print ("\n---- Slicer Info ----")
         print ("Slicer type : ", self.slicer_type)
         print ("Layer height: ", self.layer_height, " mm")
-        print ("Number of contours: %d, open contours: %d, closed contours: %d"%(len(self.contours),open_contours, closed_contours))
+        print ("Number of layers: %d"% number_of_layers)
+        print ("Number of contours: %d, open contours: %d, closed contours: %d"%(open_contours+closed_contours,open_contours, closed_contours))
         print ("Number of sampling points on contours: %d \n"% total_number_of_pts)
 
 
@@ -140,8 +150,12 @@ class Slicer:
 
     def save_contours_to_json(self, path, name):
         data = {}
-        for i,contour in enumerate(self.contours):
-            data[i] = [list(point) for point in contour.points]
+        count = 0
+        for i,contour in enumerate(self.sorted_paths):
+            print(i)
+            for j, c in enumerate(contour): 
+                data[count] = [list(point) for point in c.points]
+                count += 1
         utils.save_to_json(data, path, name)
 
     def check_triangular_mesh(self, mesh):

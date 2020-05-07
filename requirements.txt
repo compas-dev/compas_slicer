@@ -3,3 +3,4 @@ COMPAS>=0.15.5
 
 rdp==0.8
 meshcut==0.2.1
+mlrose==1.3.0
