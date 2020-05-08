@@ -51,7 +51,6 @@ def create_planar_contours_meshcut(mesh, layer_height):
             contours_per_layer.append(c)
         l = Layer(contours_per_layer, None, None)
         layers.append(l)
-            
     return layers
 
 
@@ -70,17 +69,21 @@ def create_planar_contours_numpy(mesh, layer_height):
         p += layer_height 
     levels, compound_contours = compas.datastructures.mesh_contours_numpy(mesh, levels=levels, density=10)
     
-    contours = []
+    layers = []
+
     for i, compound_contour in enumerate(compound_contours):
         for path in compound_contour:
+            contours_per_layer = []
             for polygon2d in path:
                 points = [Point(p[0], p[1], levels[i]) for p in polygon2d[:-1]]
                 if len(points)>0:
                     threshold_closed = 15.0 #TODO: VERY BAD!! Threshold should not be hardcoded
                     is_closed = distance_point_point(points[0], points[-1]) < threshold_closed
                     c = Contour(points = points, is_closed = is_closed)
-                    contours.append(c)
-    return contours
+                    contours_per_layer.append(c)
+            l = Layer(contours_per_layer, None, None)
+            layers.append(l)
+    return layers
 
 if __name__ == "__main__":
     pass
