@@ -36,7 +36,7 @@ def main():
 
     slicer.simplify_paths(threshold = 0.3)
 
-    slicer.sort_paths(sorting_type = "shortest_path")
+    slicer.sort_paths(sorting_type = "shortest_path", max_attempts=1)
 
     slicer.align_seams(seam_alignment = "seams_align")
 

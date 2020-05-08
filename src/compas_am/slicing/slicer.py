@@ -98,10 +98,10 @@ class Slicer:
     ##############################
     ### --- Sorting paths
 
-    def sort_paths(self, sorting_type):
+    def sort_paths(self, sorting_type, population_size=200, mutation_probability=0.1, max_attempts=10, random_state=None):
         logger.info("Sorting paths")
         if sorting_type == "shortest_path":
-            self.layers = sort_shortest_path(self.layers)
+            self.layers = sort_shortest_path(self.layers, population_size, mutation_probability, max_attempts, random_state)
         elif sorting_type == "per_segment":
             self.layers = sort_per_segment(self.layers)
 
