@@ -7,7 +7,7 @@ import mlrose
 import logging
 logger = logging.getLogger('logger')
 
-def shortest_path_sorting(layers):
+def sort_shortest_path(layers):
 
     sorted_layers = []
 

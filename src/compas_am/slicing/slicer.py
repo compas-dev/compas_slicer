@@ -10,10 +10,10 @@ import compas_am.slicing.curved_slicing as curved_slicing
 import compas_am.slicing.adaptive_slicing as adaptive_slicing
 import compas_am.slicing.planar_slicing as planar_slicing
 from compas_am.utilities import utils
-from compas_am.sorting.shortest_path_sorting import shortest_path_sorting
-from compas_am.sorting.per_segment_sorting import per_segment_sorting
-from compas_am.sorting.align_seams import align_seams
-from compas_am.sorting.align_seams_random import align_seams_random
+from compas_am.sorting.sort_shortest_path import sort_shortest_path
+from compas_am.sorting.sort_per_segment import sort_per_segment
+from compas_am.sorting.seams_align import seams_align
+from compas_am.sorting.seams_random import seams_random
 
 import logging
 logger = logging.getLogger('logger')
@@ -87,21 +87,23 @@ class Slicer:
 
     def simplify_paths(self, threshold):
         logger.info("Paths simplification")
-        for contour in self.contours:
-            [path.simplify(threshold) for path in contour]
-            [path.simplify(threshold) for path in self.infill_paths]
-            [path.simplify(threshold) for path in self.support_paths]
+        for layer in self.layers:
+            [path.simplify(threshold) for path in layer.contours]
+            if layer.infill_path != None:
+                [path.simplify(threshold) for path in layer.infill_path]
+            if layer.support_path != None:
+                [path.simplify(threshold) for path in layer.support_path]
 
 
     ##############################
     ### --- Sorting paths
 
     def sort_paths(self, sorting_type):
-        logger.info("Paths sorting")
+        logger.info("Sorting paths")
         if sorting_type == "shortest_path":
-            self.layers = shortest_path_sorting(self.layers)
+            self.layers = sort_shortest_path(self.layers)
         elif sorting_type == "per_segment":
-            self.layers = per_segment_sorting(self.layers)
+            self.layers = sort_per_segment(self.layers)
 
 
     ##############################
@@ -109,10 +111,10 @@ class Slicer:
 
     def align_seams(self, seam_alignment):
         logger.info("Aligning seams")
-        if seam_alignment == "align_seams":
-            self.seam_alignment = align_seams(self.contours, self.infill_paths, self.support_paths)
-        elif seam_alignment == "random":
-            self.seam_alignment = align_seams_random(self.contours, self.infill_paths, self.support_paths)
+        if seam_alignment == "seams_align":
+            self.layers = seams_align(self.layers)
+        elif seam_alignment == "seams_random":
+            self.layers = seams_random(self.layers)
 
 
     ##############################
@@ -144,17 +146,17 @@ class Slicer:
 
     def get_contour_lines_for_plotter(self, color = (255,0,0)):
         lines = []
-        for contour in self.contours:
-            lines.extend(contour.get_lines_for_plotter(color))
+        for layer in self.layers:
+            for contour in layer.contours:
+                lines.extend(contour.get_lines_for_plotter(color))
         return lines
 
     def save_contours_to_json(self, path, name):
         data = {}
         count = 0
-        for i,contour in enumerate(self.sorted_paths):
-            print(i)
-            for j, c in enumerate(contour): 
-                data[count] = [list(point) for point in c.points]
+        for layer in self.layers:
+            for contour in layer.contours: 
+                data[count] = [list(point) for point in contour.points]
                 count += 1
         utils.save_to_json(data, path, name)
 

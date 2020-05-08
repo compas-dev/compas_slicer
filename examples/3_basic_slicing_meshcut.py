@@ -34,27 +34,23 @@ def main():
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
-    # simplify paths still to be changed to new organisation with Layer() class
-    # can do that tomorrow :)
-    # slicer.simplify_paths(threshold = 0.3)
+    slicer.simplify_paths(threshold = 0.3)
 
     slicer.sort_paths(sorting_type = "shortest_path")
 
-    # align seams still to be changed to new organisation with Layer() class
-    # can do that tomorrow :)
-    # slicer.align_seams(seam_alignment = "align_seams")
+    slicer.align_seams(seam_alignment = "seams_align")
 
     slicer.printout_info()
 
     slicer.save_contours_to_json(path = DATA, name = "branches_70_contours.json")
 
 
-    # ### ----- Visualize 
-    # plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
-    # plotter.draw_edges(width=0.15)
-    # plotter.draw_faces()
-    # plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))
-    # plotter.show()
+    ### ----- Visualize 
+    plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
+    plotter.draw_edges(width=0.15)
+    plotter.draw_faces()
+    plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))
+    plotter.show()
 
 
 if __name__ == "__main__":

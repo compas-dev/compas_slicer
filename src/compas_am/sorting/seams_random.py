@@ -3,10 +3,10 @@ import compas
 import logging
 logger = logging.getLogger('logger')
 
-def align_seams_random(contours, infill_paths = None, support_paths = None):
-    sorted_paths = contours
+def seams_random(layers):
+    sorted_layers = layers
     logger.warning("Align seams random method needs to be implemented")
-    return sorted_paths 
+    return sorted_layers 
 
 if __name__ == "__main__":
     pass
