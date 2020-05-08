@@ -23,8 +23,8 @@ def sort_shortest_path(layers,
 
     Parameters
     ----------
-    layers : class
-        An instance of the compas_am.printpath.Layer class. 
+    layers : list
+        An instance of the compas_am.slicing.printpath.Layer class. 
     population_size : int
         Population size.
     mutation_probability : float
@@ -52,8 +52,6 @@ def sort_shortest_path(layers,
         print('The fitness at the best state is: ', best_fitness)
     """
 
-    sorted_layers = []
-
     for layer in layers:
         coords_list = []
         for contour in layer.contours:
@@ -70,10 +68,15 @@ def sort_shortest_path(layers,
                                                       random_state = random_state)
        
         ordered_contours = [layer.contours[x] for x in best_state]
+        layer.contours = ordered_contours
 
-        l = Layer(ordered_contours, layer.infill_path, layer.support_path)
-        sorted_layers.append(l)
-    return sorted_layers 
+        ##TODO: 
+        # if layer.infill_paths: ...
+        # if layer.support_paths: ...
+
+    return layers 
+
+
 
 if __name__ == "__main__":
     pass

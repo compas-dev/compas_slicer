@@ -32,7 +32,7 @@ def main():
 
     slicer.printout_info()
 
-    slicer.save_contours_to_json(path = DATA, name = "vase_contours.json")
+    slicer.save_contours_to_json(paths_collection = slicer.layers, path = DATA, name = "vase_contours.json")
 
 
     # ### ----- Visualize 

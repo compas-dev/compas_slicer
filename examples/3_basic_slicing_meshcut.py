@@ -19,9 +19,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 FILE = os.path.abspath(os.path.join(DATA, 'branches_70.stl'))
-
-# DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-# FILE = os.path.abspath(os.path.join(DATA, 'vase_correct_orientation.obj'))
+# FILE = os.path.abspath(os.path.join(DATA, 'branches_70_short.obj'))
 
 
 def main():
@@ -30,20 +28,21 @@ def main():
     compas_mesh = Mesh.from_stl(FILE)
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 100.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 10.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
     slicer.simplify_paths(threshold = 0.3)
 
-    slicer.sort_paths(sorting_type = "shortest_path", max_attempts=1)
+    # slicer.sort_paths(sorting_type = "shortest_path", max_attempts=1)
 
-    slicer.align_seams(seam_alignment = "seams_align")
+    slicer.sort_paths(sorting_type = "per_segment")
+
+    # slicer.align_seams(seam_alignment = "per_segment")
 
     slicer.printout_info()
 
-    slicer.save_contours_to_json(path = DATA, name = "branches_70_contours.json")
-
+    slicer.save_contours_to_json(paths_collection = slicer.sorted_paths, path = DATA, name = "branches_70_contours.json")
 
     ### ----- Visualize 
     plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
