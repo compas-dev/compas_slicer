@@ -1,6 +1,6 @@
 import compas
 import compas_am
-import os
+import os, sys
 from compas.datastructures import Mesh
 from compas_plotters import MeshPlotter
 
@@ -20,6 +20,8 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 FILE = os.path.abspath(os.path.join(DATA, 'branches_70.stl'))
 # FILE = os.path.abspath(os.path.join(DATA, 'branches_70_short.obj'))
+
+
 
 
 def main():

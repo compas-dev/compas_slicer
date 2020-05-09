@@ -2,9 +2,15 @@ import compas
 from compas_am.slicing.printpath import Layer
 
 import numpy as np
+
+import warnings
+warnings.filterwarnings("ignore")
 import mlrose
+warnings.filterwarnings("default")
 
 import logging
+logger = logging.getLogger('logger')
+
 
 def sort_shortest_path(layers, 
                        population_size=200,

@@ -1,4 +1,5 @@
 import pytest
+import warnings
 import os
 from compas.datastructures import Mesh
 
@@ -11,11 +12,8 @@ FILE = os.path.abspath(os.path.join(DATA, 'vase.obj'))
 
 mesh = Mesh.from_obj(os.path.join(DATA, FILE))
 
-
-
 z = [mesh.vertex_attribute(key, 'z') for key in mesh.vertices()]
 z_bounds = max(z) - min(z)
-
 
 def test_planar_contours_meshcut():
     layer_height = 20
@@ -27,7 +25,6 @@ def test_planar_contours_meshcut():
     for i in range(len(layers)):
         assert len(layers[i].contours) >=0 , "There is a layer with empty Contours list at index %d"%i
         assert isinstance(layers[i].contours[0], Contour ), "Wrong class type in Layer.Contour list"
-
 
 def test_planar_contours_numpy():
     layer_height = 20
