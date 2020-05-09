@@ -36,7 +36,7 @@ class Slicer:
 
     """
 
-    def __init__(self, mesh, slicer_type = "planar", layer_height = 0.01):
+    def __init__(self, mesh, slicer_type = "planar", layer_height = 2.0):
         ## check input
         assert isinstance(mesh, compas.datastructures.Mesh), "Input mesh has to be of type <compas.datastructures.Mesh>, yours is of type: "+str(type(mesh))
         self.check_triangular_mesh(mesh)
@@ -47,10 +47,10 @@ class Slicer:
         self.slicer_type = slicer_type
 
         ### Print paths grouped per height level in Layer classes
-        self.layers = [] # Not sorted in any way. Direct result of the slicing algorithm
+        self.layers = [] # class Layer. Horizontally arranged and not sorted in any way. Direct result of the slicing algorithm
 
         ### Print paths sorted by selected sorting algorithm
-        self.sorted_paths = [] # Can be any class inheriting from SortedPathCollection, i.e. Segment or Layer
+        self.sorted_paths = [] # any class inheriting from SortedPathCollection, i.e. Segment (vertical sorting) or Layer(horizontal sorting)
 
 
     ##############################
@@ -82,43 +82,50 @@ class Slicer:
             self.layers = adaptive_slicing.create_adaptive_height_contours(mesh, min_layer_height = None, max_layer_height = None)
 
         else: 
-            raise "Invalid slicing type : " + slicer_type
+            raise NameError("Invalid slicing type : " + slicer_type)
 
 
     ##############################
     ### --- Polyline Simplification
 
-    def simplify_paths(self, threshold):
-        logger.info("Paths simplification")
-        for layer in self.layers:
-            [path.simplify(threshold) for path in layer.contours]
-            if layer.infill_paths:
-                [path.simplify(threshold) for path in layer.infill_paths]
-            if layer.support_paths:
-                [path.simplify(threshold) for path in layer.support_paths]
+    def simplify_paths(self, method, threshold, iterations = 1):
+        logger.info("Paths simplification, method : " + method)
+
+        if method == "uniform" or method == "all":
+            for layer in self.layers:
+                [path.simplify_uniform(threshold) for path in layer.get_all_paths()]
+        if method == "curvature_adapted" or method == "all":
+            for layer in self.layers:
+                [path.simplify_adapted_to_curvature(threshold, iterations) for path in layer.get_all_paths()]
+        if method !="uniform" and method !="curvature_adapted" and method !="all" :
+            raise NameError("Invalid polyline simplification method : " + method)
+
 
 
     ##############################
     ### --- Sorting paths
 
-    def sort_paths(self, sorting_type, population_size=200, mutation_probability=0.1, max_attempts=10, random_state=None):
-        logger.info("Sorting paths. Type : " + sorting_type )
-        if sorting_type == "shortest_path":
+    def sort_paths(self, method, population_size=200, mutation_probability=0.1, max_attempts=10, random_state=None):
+        logger.info("Sorting paths, method : " + method )
+        if method == "shortest_path":
             logger.info("max_attempts : " + str(max_attempts))
             self.sorted_paths = sort_shortest_path(self.layers, population_size, mutation_probability, max_attempts, random_state)
-        elif sorting_type == "per_segment":
+        elif method == "per_segment":
             self.sorted_paths = sort_per_segment(self.layers, d_threshold = self.layer_height * 1.4)
-
+        else: 
+            raise NameError("Invalid sorting method : " + method)
 
     ##############################
     ### --- Seam alignment
 
-    def align_seams(self, seam_alignment):
-        logger.info("Aligning seams")
-        if seam_alignment == "seams_align":
+    def align_seams(self, method):
+        logger.info("Aligning seams, method : " + method)
+        if method == "seams_align":
             self.layers = seams_align(self.layers)
-        elif seam_alignment == "seams_random":
+        elif method == "seams_random":
             self.layers = seams_random(self.layers)
+        else: 
+            raise NameError("Invalid seam alignment method : " + method)
 
 
     ##############################
@@ -156,9 +163,14 @@ class Slicer:
                 lines.extend(contour.get_lines_for_plotter(color))
         return lines
 
-    def save_contours_to_json(self, paths_collection, path, name):
+    def save_contours_to_json(self, path, name):
+        if len(self.sorted_paths) >0:
+            paths_collection = self.sorted_paths
+        else: 
+            paths_collection = self.layers
+
         if len(paths_collection) == 0:
-             raise NameError("The paths_collection provided is empty")
+             raise TypeError("The paths_collection of the slicer is empty")
 
         data = {}
         count = 0
@@ -175,7 +187,7 @@ class Slicer:
         for fkey in mesh.faces():
             vs = mesh.face_vertices(fkey)
             if len(vs)!=3:
-                raise NameError("Found a quad at face key: "+str(fkey)+" ,number of face vertices:"+str(len(vs))+". \nOnly triangular meshes supported. \
+                raise TypeError("Found a quad at face key: "+str(fkey)+" ,number of face vertices:"+str(len(vs))+". \nOnly triangular meshes supported. \
                                 \nConsider using the Weaverbird's component 'Split Triangles Subdivision' to triangulate, and then remeber to weld the resulting mesh")
 
 if __name__ == "__main__":

@@ -24,23 +24,23 @@ def main():
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
-    slicer.simplify_paths(threshold = 0.3)
+    slicer.simplify_paths(method = "all", threshold = 0.4)
 
-    slicer.sort_paths(sorting_type = "shortest_path", max_attempts=1)
+    slicer.sort_paths(method = "shortest_path", max_attempts=1)
 
-    slicer.align_seams(seam_alignment = "align_seams")
+    slicer.align_seams(method = "seams_align")
 
     slicer.printout_info()
 
-    slicer.save_contours_to_json(paths_collection = slicer.layers, path = DATA, name = "vase_contours.json")
+    slicer.save_contours_to_json(path = DATA, name = "vase_contours.json")
 
 
-    # ### ----- Visualize 
-    plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
-    plotter.draw_edges(width=0.15)
-    plotter.draw_faces()
-    plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))
-    plotter.show()
+    # # ### ----- Visualize 
+    # plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
+    # plotter.draw_edges(width=0.15)
+    # plotter.draw_faces()
+    # plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))
+    # plotter.show()
 
 
 if __name__ == "__main__":

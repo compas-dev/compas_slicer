@@ -22,8 +22,6 @@ FILE = os.path.abspath(os.path.join(DATA, 'branches_70.stl'))
 # FILE = os.path.abspath(os.path.join(DATA, 'branches_70_short.obj'))
 
 
-
-
 def main():
 
     ### --- Load stl
@@ -34,17 +32,17 @@ def main():
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
-    slicer.simplify_paths(threshold = 0.3)
+    slicer.simplify_paths(method = "uniform", threshold = 0.2)
 
-    # slicer.sort_paths(sorting_type = "shortest_path", max_attempts=1)
+    # slicer.sort_paths(method = "shortest_path", max_attempts=1)
 
-    slicer.sort_paths(sorting_type = "per_segment")
+    slicer.sort_paths(method = "per_segment")
 
-    # slicer.align_seams(seam_alignment = "per_segment")
+    # slicer.align_seams(method = "seams_align")
 
     slicer.printout_info()
 
-    slicer.save_contours_to_json(paths_collection = slicer.sorted_paths, path = DATA, name = "branches_70_contours.json")
+    slicer.save_contours_to_json(path = DATA, name = "branches_70_contours.json")
 
     ### ----- Visualize 
     plotter = MeshPlotter(compas_mesh, figsize=(16, 10))

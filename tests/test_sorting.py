@@ -16,7 +16,7 @@ def test_sort_shortest_path():
     pass #TODO
 
 def test_sort_per_segment():
-    slicer.sort_paths(sorting_type = "per_segment")
+    slicer.sort_paths(method = "per_segment")
     assert len(slicer.sorted_paths) == 70, "Sorting per segment returned wrong number of segments"
     for i,segment in enumerate(slicer.sorted_paths):
         assert len(segment.contours) > 0 , "The Segment at index %d has no contours"%i

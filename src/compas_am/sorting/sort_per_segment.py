@@ -6,6 +6,18 @@ import logging
 logger = logging.getLogger('logger')
 
 def sort_per_segment(layers, d_threshold):
+    """Sorts in vertical segments the contours that are stored in the horizontal layers.
+    This is done by grouping the centroids of the paths based on proximity. 
+
+    Parameters
+    ----------
+    layers : list
+        An instance of the compas_am.slicing.printpath.Layer class. 
+    d_threshold : float
+        The maximum distance that the centroids of two successive paths can have to belong in the same group
+        Recommended value, slightly bigger than the layer height
+
+    """
 
     segments = [Segment(id = 0)] #segments that contain isocurves
     for layer in layers: 
