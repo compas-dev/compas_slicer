@@ -11,6 +11,16 @@ from compas_am.slicing.printpath import Layer
 import meshcut
 
 def create_planar_contours_meshcut(mesh, layer_height):
+     """Creates planar contours using the Meshcut library
+     https://pypi.org/project/meshcut/ from Julien Rebetez
+
+    Parameters
+    ----------
+    mesh : compas.datastructures.Mesh
+        A compas mesh.
+    layer_height : float
+        A number representing the height between cutting planes.
+    """
     # Convert compas mesh to meshcut mesh
     v = np.array(mesh.vertices_attributes('xyz'))
     vertices = v.reshape(-1, 3) #vertices numpy array : #Vx3
@@ -37,13 +47,10 @@ def create_planar_contours_meshcut(mesh, layer_height):
         meshcut_array = meshcut.cross_section_mesh(meshcut_mesh, plane)
         for j, item in enumerate(meshcut_array):
             # convert np array to list
-            # TODO needs to be optimised, tolist() is slow
-            #print(i,j, item)
             meshcut_list = item.tolist()
             #print(meshcut_list)
             points = [Point(p[0], p[1], p[2]) for p in meshcut_list]
             # append first point to form a closed polyline
-            # TODO has to be improved
             points.append(points[0])
             # TODO is_closed is always set to True, has to be checked
             is_closed = True

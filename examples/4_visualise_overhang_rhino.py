@@ -7,7 +7,7 @@ from math import degrees
 from compas.geometry import Vector, angle_vectors
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-FILE = os.path.abspath(os.path.join(DATA, 'branches_70.stl'))
+FILE = os.path.abspath(os.path.join(DATA, 'bunny_low_res.stl'))
 
 def rhino_color_mesh_faces_by_overhang_angle(max_angle=45, mode="adaptive", infill=True):
     """Imports a compas mesh and assigns a mesh face color based on the 
@@ -35,7 +35,7 @@ def rhino_color_mesh_faces_by_overhang_angle(max_angle=45, mode="adaptive", infi
             Yellow: 45 degree overhang
             Red:    90 degree overhang
     infill : boolean
-        True if printing a solid object (with infill), False if printing only contours (no infill)
+        True if printing a solid object (with infill), False if printing only contours (no infill).
     """
 
     ### --- Load stl

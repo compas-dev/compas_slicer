@@ -13,7 +13,7 @@ def curvature_subsampling(points, threshold, iterations):
     threshold : float
         The lower the threshold, the more points are removed
     iterations : int
-        How many iterations do perform. 2 is a good number. 
+        How many iterations to perform. 2 is a good number. 
     """
 
     threshold = threshold * 10 
