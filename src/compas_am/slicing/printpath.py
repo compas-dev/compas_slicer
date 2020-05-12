@@ -12,7 +12,7 @@ logger = logging.getLogger('logger')
 ### Groups of print paths
 ###################################
 
-class SortedPathCollection(object):
+class PathCollection(object):
     """
     A Layer stores the print paths on a specific height level.
     
@@ -39,15 +39,16 @@ class SortedPathCollection(object):
             [all_paths.append(path) for path in self.support_paths]
         return all_paths
 
-class Layer(SortedPathCollection):
+
+class Layer(PathCollection):
     """
     Horizontal ordering. A Layer stores the print paths on a specific height level.
     """
     def __init__(self, contours, infill_paths, support_paths):
-        SortedPathCollection.__init__(self, contours, infill_paths, support_paths) 
+        PathCollection.__init__(self, contours, infill_paths, support_paths) 
 
 
-class Segment(SortedPathCollection):
+class Segment(PathCollection):
     """
     Vertical ordering. A Segment stores the print paths sorted in vertical groups.
     """
@@ -71,7 +72,7 @@ class Segment(SortedPathCollection):
     def total_number_of_points(self):
         num = 0
         for contour in self.contours:
-            num+= len(isocurve.points)
+            num+= len(contour.points)
         return num
 
     def printout_details(self):

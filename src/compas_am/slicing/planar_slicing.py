@@ -11,8 +11,8 @@ from compas_am.slicing.printpath import Layer
 import meshcut
 
 def create_planar_contours_meshcut(mesh, layer_height):
-     """Creates planar contours using the Meshcut library
-     https://pypi.org/project/meshcut/ from Julien Rebetez
+    """Creates planar contours using the Meshcut library
+    https://pypi.org/project/meshcut/ from Julien Rebetez
 
     Parameters
     ----------
