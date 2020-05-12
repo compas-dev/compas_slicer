@@ -46,11 +46,14 @@ class Slicer:
         self.layer_height = layer_height
         self.slicer_type = slicer_type
 
-        ### Print paths grouped per height level in Layer classes
-        self.layers = [] # class Layer. Horizontally arranged and not sorted in any way. Direct result of the slicing algorithm
+    
+        self.print_paths = [] # any class inheriting from SortedPathCollection, i.e.  Layer(horizontal sorting) or Segment (vertical sorting)
 
-        ### Print paths sorted by selected sorting algorithm
-        self.sorted_paths = [] # any class inheriting from SortedPathCollection, i.e. Segment (vertical sorting) or Layer(horizontal sorting)
+        # ### Print paths grouped per height level in Layer classes
+        # self.layers = [] # class Layer. Horizontally arranged and not sorted in any way. Direct result of the slicing algorithm
+
+        # ### Print paths sorted by selected sorting algorithm
+        # self.sorted_paths = [] 
 
 
     ##############################
@@ -69,17 +72,17 @@ class Slicer:
     def generate_contours(self):
         if self.slicer_type == "planar_numpy":
             logger.info("Planar contours compas numpy slicing")
-            self.layers = planar_slicing.create_planar_contours_numpy(self.mesh, self.layer_height)
+            self.print_paths = planar_slicing.create_planar_contours_numpy(self.mesh, self.layer_height)
 
         elif self.slicer_type == "planar_meshcut":
             logger.info("Planar contours meshcut slicing")
-            self.layers = planar_slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
+            self.print_paths = planar_slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
 
         elif self.slicer_type == "curved":
-            self.layers = curved_slicing.create_curved_contours(mesh, boundaries = None, min_layer_height = None, max_layer_height = None)
+            self.print_paths = curved_slicing.create_curved_contours(mesh, boundaries = None, min_layer_height = None, max_layer_height = None)
 
         elif self.slicer_type == "adaptive":
-            self.layers = adaptive_slicing.create_adaptive_height_contours(mesh, min_layer_height = None, max_layer_height = None)
+            self.print_paths = adaptive_slicing.create_adaptive_height_contours(mesh, min_layer_height = None, max_layer_height = None)
 
         else: 
             raise NameError("Invalid slicing type : " + slicer_type)
@@ -92,11 +95,13 @@ class Slicer:
         logger.info("Paths simplification, method : " + method)
 
         if method == "uniform" or method == "all":
-            for layer in self.layers:
+            for layer in self.print_paths:
                 [path.simplify_uniform(threshold) for path in layer.get_all_paths()]
         if method == "curvature_adapted" or method == "all":
-            for layer in self.layers:
+            for layer in self.print_paths:
                 [path.simplify_adapted_to_curvature(threshold, iterations) for path in layer.get_all_paths()]
+        ## Add some check to not remove too many points
+        ## Don not simplify very small paths
         if method !="uniform" and method !="curvature_adapted" and method !="all" :
             raise NameError("Invalid polyline simplification method : " + method)
 
@@ -105,13 +110,13 @@ class Slicer:
     ##############################
     ### --- Sorting paths
 
-    def sort_paths(self, method, population_size=200, mutation_probability=0.1, max_attempts=10, random_state=None):
+    def sort_paths(self, method, population_size=200, mutation_probability=0.1, max_attempts=10, random_state=None,  max_layers_per_segment= None):
         logger.info("Sorting paths, method : " + method )
         if method == "shortest_path":
             logger.info("max_attempts : " + str(max_attempts))
-            self.sorted_paths = sort_shortest_path(self.layers, population_size, mutation_probability, max_attempts, random_state)
+            self.print_paths = sort_shortest_path(self.print_paths, population_size, mutation_probability, max_attempts, random_state)
         elif method == "per_segment":
-            self.sorted_paths = sort_per_segment(self.layers, d_threshold = self.layer_height * 1.4)
+            self.print_paths = sort_per_segment(self.print_paths, max_layers_per_segment, d_threshold = self.layer_height * 1.6)
         else: 
             raise NameError("Invalid sorting method : " + method)
 
@@ -121,9 +126,9 @@ class Slicer:
     def align_seams(self, method):
         logger.info("Aligning seams, method : " + method)
         if method == "seams_align":
-            self.layers = seams_align(self.layers)
+            self.print_paths = seams_align(self.print_paths)
         elif method == "seams_random":
-            self.layers = seams_random(self.layers)
+            self.print_paths = seams_random(self.print_paths)
         else: 
             raise NameError("Invalid seam alignment method : " + method)
 
@@ -135,11 +140,11 @@ class Slicer:
         open_contours = 0
         closed_contours = 0
         total_number_of_pts = 0
-        number_of_layers = 0
+        number_of_print_paths = 0
 
 
-        for layer in self.layers:
-            number_of_layers +=1
+        for layer in self.print_paths:
+            number_of_print_paths +=1
             for contour in layer.contours:
                 total_number_of_pts += len(contour.points)
                 if contour.is_closed:
@@ -150,31 +155,22 @@ class Slicer:
         print ("\n---- Slicer Info ----")
         print ("Slicer type : ", self.slicer_type)
         print ("Layer height: ", self.layer_height, " mm")
-        print ("Number of layers: %d"% number_of_layers)
+        print ("Number of print_paths: %d"% number_of_print_paths)
         print ("Number of contours: %d, open contours: %d, closed contours: %d"%(open_contours+closed_contours,open_contours, closed_contours))
         print ("Number of sampling points on contours: %d"% total_number_of_pts)
-        print ("Paths have been sorted: "+ str(len(self.sorted_paths)>0) + "\n")
 
 
     def get_contour_lines_for_plotter(self, color = (255,0,0)):
         lines = []
-        for layer in self.layers:
+        for layer in self.print_paths:
             for contour in layer.contours:
                 lines.extend(contour.get_lines_for_plotter(color))
         return lines
 
     def save_contours_to_json(self, path, name):
-        if len(self.sorted_paths) >0:
-            paths_collection = self.sorted_paths
-        else: 
-            paths_collection = self.layers
-
-        if len(paths_collection) == 0:
-             raise TypeError("The paths_collection of the slicer is empty")
-
         data = {}
         count = 0
-        for collection in paths_collection:
+        for collection in self.print_paths:
             for contour in collection.contours: 
                 data[count] = [list(point) for point in contour.points]
                 count += 1

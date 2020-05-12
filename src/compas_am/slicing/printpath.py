@@ -20,22 +20,22 @@ class PathCollection(object):
     ----------
     contours : list
         compas_am.slicing.printpath.Contour
-    infill_paths : list
+    infills : list
         compas_am.slicing.printpath.InfillPath
-    support_paths : list 
+    supports : list 
         compas_am.slicing.printpath.SupportPath>
     """
     def __init__(self, contours, infill_paths, support_paths):
         self.contours = contours
-        self.infill_paths = infill_paths
-        self.support_paths = support_paths
+        self.infills = infill_paths
+        self.supports = support_paths
 
     def get_all_paths(self):
         all_paths = []
         [all_paths.append(path) for path in self.contours]
-        if self.infill_paths:
+        if self.infills:
             [all_paths.append(path) for path in self.infill_paths]
-        if self.support_paths:
+        if self.supports:
             [all_paths.append(path) for path in self.support_paths]
         return all_paths
 
@@ -58,8 +58,8 @@ class Segment(PathCollection):
         self.head_centroid = None
 
         self.contours = []
-        self.infill_paths = []
-        self.support_paths = []
+        self.infills = []
+        self.supports = []
 
     def append_(self, contour):
         self.contours.append(contour)
@@ -97,7 +97,7 @@ class PrintPath(object):
     is_closed : bool
     """
     def __init__(self, points, is_closed):
-        self.points = points
+        self.points = points #PrintPoint class
         self.is_closed = is_closed
 
     ############################
@@ -143,11 +143,11 @@ class Contour(PrintPath):
     def __init__(self, points, is_closed):
         PrintPath.__init__(self, points, is_closed) 
 
-class InfillPath(PrintPath):
+class Infill(PrintPath):
     def __init__(self, points, is_closed):
         PrintPath.__init__(self, points, is_closed)        
 
-class SupportPath(PrintPath):
+class Support(PrintPath):
     def __init__(self, points, is_closed):
         PrintPath.__init__(self, points, is_closed) 
 

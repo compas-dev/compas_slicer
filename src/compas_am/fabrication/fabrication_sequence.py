@@ -12,32 +12,42 @@ class Fabrication_sequence:
         compas_am.slicing.printpath.PathCollection or any class inheriting from it
     machine_model : The hardware 
         compas_am.machine_model.MachineModel or any class inheriting form it
+    type : str
+        "robotic_printing", "3d_printer"
     """
 
-    def __init__(self, paths_collection, machine_model):
+    def __init__(self, paths_collection, machine_model, fabrication_type):
         self.paths_collection = paths_collection
         self.machine_model = machine_model
-        self.ordered_fragments = self.get_fragments_ordered_in_fabrication_sequence()
+        self.type = fabrication_type
 
+        self.visualization_geometry = None
+
+        self.ordered_print_points = self.get_print_points_ordered_in_fabrication_sequence()
         self.commands = []
-        self.number_of_print_interruptions = 0
+
+        if self.type == "robotic_printing":
+            self.commands = self.create_robotic_commands()
+        elif self.type == "3d_printer":
+            self.commands = self.create_printer_commands()
+        else: 
+            raise NameError("Invalid fabrication type : "+ str(fabrication_type))
 
 
-    def get_fragments_ordered_in_fabrication_sequence(self):
+    def get_print_points_ordered_in_fabrication_sequence(self):
         pass
 
-    def smooth_up_vectors_of_ordered_fragments(self):
+    def create_robotic_commands(self):
         pass
 
-    def create_commands(self):
-        pass
-
-    def add_safety_commands(self):
+    def create_printer_commands(self):
         pass
 
     def generate_visualization_geometry(self):
         pass
 
+    def save_commands_to_Gcode(self):
+        pass
 
     def save_commands_to_Json(self, path, name):
         logger.info("Saving to Json: ", len(self.commands), "commands, on file: ", path + name)
@@ -50,9 +60,6 @@ class Fabrication_sequence:
         with open(filename, 'w') as f:
             f.write(json.dumps(data, indent=3, sort_keys=True))
 
-
-    def save_commands_to_Gcode(self):
-        pass
 
 if __name__ == "__main__":
     pass

@@ -35,9 +35,9 @@ def main():
     slicer.simplify_paths(method = "uniform", threshold = 0.2)
 
     # slicer.sort_paths(method = "shortest_path", max_attempts=1)
-
-    slicer.sort_paths(method = "per_segment")
-
+ 
+    slicer.sort_paths(method = "per_segment", max_layers_per_segment=False)
+    
     # slicer.align_seams(method = "seams_align")
 
     slicer.printout_info()

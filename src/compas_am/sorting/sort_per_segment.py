@@ -5,7 +5,7 @@ import numpy as np
 import logging
 logger = logging.getLogger('logger')
 
-def sort_per_segment(layers, d_threshold):
+def sort_per_segment(layers, max_layers_per_segment, d_threshold):
     """Sorts in vertical segments the contours that are stored in the horizontal layers.
     This is done by grouping the centroids of the paths based on proximity. 
 
@@ -16,6 +16,10 @@ def sort_per_segment(layers, d_threshold):
     d_threshold : float
         The maximum distance that the centroids of two successive paths can have to belong in the same group
         Recommended value, slightly bigger than the layer height
+    max_layers_per_segment : int
+        Maximum number of layers that a segment can consist of
+        If None, then the segment has unlimited number of layers
+    
 
     """
 
@@ -23,6 +27,7 @@ def sort_per_segment(layers, d_threshold):
     for layer in layers: 
         for contour in layer.contours:
             pts = contour.points
+            current_segment = None
 
             ## Find an eligible segment for contour (called current_segment)
             if len(segments[0].contours) == 0: #first contour
@@ -32,8 +37,14 @@ def sort_per_segment(layers, d_threshold):
                 other_centroids = get_segments_centroids_list(segments)
                 candidate_segment = segments[get_closest_pt_index(contour_centroid, other_centroids)]    
                 if np.linalg.norm(candidate_segment.head_centroid - contour_centroid) < d_threshold:
-                    current_segment = candidate_segment
-                else: #then create new segment
+                    if max_layers_per_segment:
+                        if len(candidate_segment.contours) < max_layers_per_segment:
+                            current_segment = candidate_segment
+                    else: #then no restriction in the number of layers
+                        current_segment = candidate_segment
+                
+                
+                if not current_segment: #then create new segment
                     current_segment = Segment(id = segments[-1].id + 1)
                     segments.append(current_segment)
 

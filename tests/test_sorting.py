@@ -14,10 +14,11 @@ slicer.slice_model(create_contours = True, create_infill = False, create_support
 
 def test_sort_shortest_path():
     pass #TODO
+    ## check if fitness is improving
 
 def test_sort_per_segment():
-    slicer.sort_paths(method = "per_segment")
-    assert len(slicer.sorted_paths) == 70, "Sorting per segment returned wrong number of segments"
-    for i,segment in enumerate(slicer.sorted_paths):
+    slicer.sort_paths(method = "per_segment",  max_layers_per_segment= None)
+    assert len(slicer.print_paths) == 69, "Sorting per segment returned wrong number of segments"
+    for i,segment in enumerate(slicer.print_paths):
         assert len(segment.contours) > 0 , "The Segment at index %d has no contours"%i
         assert isinstance(segment.contours[0], Contour ),  "Wrong class type in Segment.Contour list"
