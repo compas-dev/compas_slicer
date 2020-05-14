@@ -13,7 +13,7 @@ class RobotCommand(Command):
         pass
 
 
-class PrinterCommand(Command):
+class FDMPrinterCommand(Command):
 
 
 class Command(object):

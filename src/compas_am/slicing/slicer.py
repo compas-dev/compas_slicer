@@ -119,6 +119,7 @@ class Slicer:
             self.print_paths = sort_per_segment(self.print_paths, max_layers_per_segment, d_threshold = self.layer_height * 1.6)
         else: 
             raise NameError("Invalid sorting method : " + method)
+        return self.print_paths
 
     ##############################
     ### --- Seam alignment
