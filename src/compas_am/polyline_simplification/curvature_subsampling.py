@@ -22,14 +22,14 @@ def curvature_subsampling(points, threshold, iterations):
         indices_to_remove = []
         points_to_remove = []
 
-        for i, pt in enumerate(points):
+        for i, point in enumerate(points):
             prev_index = find_prev_index(i, indices_to_remove)
             next_index = find_next_index(i, indices_to_remove, len(points))
             
             if prev_index and next_index:
-                prev_pt = points[prev_index]
-                next_pt = points[next_index]
-                d_inner_sqrd = distance_point_line_sqrd(point = pt, line = [prev_pt, next_pt])
+                prev_pt = points[prev_index].pt
+                next_pt = points[next_index].pt
+                d_inner_sqrd = distance_point_line_sqrd(point = point.pt, line = [prev_pt, next_pt])
                 d_outer_sqrd = distance_point_point_sqrd(prev_pt, next_pt)
                 if d_inner_sqrd>0:
                     if math.sqrt(d_outer_sqrd / d_inner_sqrd) > threshold:
@@ -39,8 +39,8 @@ def curvature_subsampling(points, threshold, iterations):
                     indices_to_remove.append(i)
                     points_to_remove.append(points[i])
                     
-        for pt in points_to_remove:
-            points.remove(pt)
+        for point in points_to_remove:
+            points.remove(point)
 
     return points
 

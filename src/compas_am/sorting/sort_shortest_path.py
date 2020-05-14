@@ -61,9 +61,9 @@ def sort_shortest_path(layers,
     for layer in layers:
         coords_list = []
         for contour in layer.contours:
-            for i, pt in enumerate(contour.points):
+            for i, point in enumerate(contour.points):
                 if i == 0:
-                    coords = (pt[0], pt[1])
+                    coords = (point.pt[0], point.pt[1])
                     coords_list.append(coords)
         
         problem_no_fit = mlrose.TSPOpt(length = len(coords_list), coords = coords_list, maximize = False)

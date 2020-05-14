@@ -4,6 +4,7 @@ import numpy as np
 from compas.geometry import Point
 
 from compas_am.polyline_simplification.curvature_subsampling import curvature_subsampling
+from compas_am.slicing.print_point import PrintPoint
 
 import logging
 logger = logging.getLogger('logger')
@@ -66,8 +67,8 @@ class Segment(PathCollection):
         self.compute_head_centroid()
 
     def compute_head_centroid(self):
-        pts = np.array(self.contours[-1].points)
-        self.head_centroid = np.mean(pts, axis=0)
+        last_layer_pts = np.array([point.pt for point in self.contours[-1].points])
+        self.head_centroid = np.mean(last_layer_pts, axis=0)
 
     def total_number_of_points(self):
         num = 0
@@ -97,17 +98,19 @@ class PrintPath(object):
     is_closed : bool
     """
     def __init__(self, points, is_closed):
-        self.points = points #PrintPoint class
+
+        self.points = [PrintPoint(pt = p, parent_path = self) for p in points] #PrintPoint class
         self.is_closed = is_closed
 
     ############################
     ### Polyline simplification
 
     def simplify_uniform(self, threshold):
-        initial_points_number = len(self.points)
-        reduced_pts = rdp(np.array(self.points), epsilon=threshold)
-        self.points = [Point(v[0], v[1], v[2]) for v in reduced_pts] 
-        logger.debug("Uniform subsampling: %d points removed"%(initial_points_number - len(self.points)))
+        pass
+        # initial_points_number = len(self.points)
+        # reduced_pts = rdp(np.array(self.points), epsilon=threshold)
+        # self.points = [Point(point.pt[0], v[1], v[2]) for point in reduced_pts] 
+        # logger.debug("Uniform subsampling: %d points removed"%(initial_points_number - len(self.points)))
 
     def simplify_adapted_to_curvature(self, threshold, iterations):
         initial_points_number = len(self.points)
@@ -121,19 +124,19 @@ class PrintPath(object):
 
     def get_lines_for_plotter(self, color = (255,0,0)):
         lines = []
-        for i, pt in enumerate(self.points):
+        for i, point in enumerate(self.points):
             if self.is_closed:
                 line = {}
-                line['start'] = pt
-                line['end'] = self.points[(i+1)%(len(self.points) -1)]
+                line['start'] = point.pt
+                line['end'] = self.points[(i+1)%(len(self.points) -1)].pt
                 line['width'] = 1.0
                 line['color'] = color
                 lines.append(line)
             else: 
                 if i<len(self.points) -1:
                     line = {}
-                    line['start'] = pt
-                    line['end'] = self.points[i+1]
+                    line['start'] = point.pt
+                    line['end'] = self.points[i+1].pt
                     line['width'] = 1.0
                     line['color'] = color
                     lines.append(line)

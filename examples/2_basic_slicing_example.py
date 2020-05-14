@@ -35,12 +35,12 @@ def main():
     slicer.save_contours_to_json(path = DATA, name = "vase_contours.json")
 
 
-    # # ### ----- Visualize 
-    # plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
-    # plotter.draw_edges(width=0.15)
-    # plotter.draw_faces()
-    # plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))
-    # plotter.show()
+    # ### ----- Visualize 
+    plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
+    plotter.draw_edges(width=0.15)
+    plotter.draw_faces()
+    plotter.draw_lines(slicer.get_contour_lines_for_plotter(color = (255,0,0)))
+    plotter.show()
 
 
 if __name__ == "__main__":

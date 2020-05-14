@@ -172,7 +172,7 @@ class Slicer:
         count = 0
         for collection in self.print_paths:
             for contour in collection.contours: 
-                data[count] = [list(point) for point in contour.points]
+                data[count] = [list(point.pt) for point in contour.points]
                 count += 1
         utils.save_to_json(data, path, name)
 

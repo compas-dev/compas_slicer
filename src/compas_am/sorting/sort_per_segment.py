@@ -26,14 +26,13 @@ def sort_per_segment(layers, max_layers_per_segment, d_threshold):
     segments = [Segment(id = 0)] #segments that contain isocurves
     for layer in layers: 
         for contour in layer.contours:
-            pts = contour.points
             current_segment = None
 
             ## Find an eligible segment for contour (called current_segment)
             if len(segments[0].contours) == 0: #first contour
                 current_segment = segments[0]  
             else: # find the candidate segment for new isocurve
-                contour_centroid = np.mean(np.array(pts), axis=0)
+                contour_centroid = np.mean(np.array([point.pt for point in contour.points]), axis=0)
                 other_centroids = get_segments_centroids_list(segments)
                 candidate_segment = segments[get_closest_pt_index(contour_centroid, other_centroids)]    
                 if np.linalg.norm(candidate_segment.head_centroid - contour_centroid) < d_threshold:
