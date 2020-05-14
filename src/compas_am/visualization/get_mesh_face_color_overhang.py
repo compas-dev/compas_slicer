@@ -1,22 +1,17 @@
 import compas
-import os, sys
 from compas.datastructures import Mesh
-from compas_rhino.artists import MeshArtist
-
-from math import degrees
 from compas.geometry import Vector, angle_vectors
 
-DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-FILE = os.path.abspath(os.path.join(DATA, 'bunny_low_res.stl'))
+from math import degrees
 
-def rhino_color_mesh_faces_by_overhang_angle(max_angle=45, mode="adaptive", infill=True):
-    """Imports a compas mesh and assigns a mesh face color based on the 
-    overhang angle
-    
-    NOTE: Run this file in Rhino.
+def get_mesh_face_color_overhang(mesh, max_angle=45, mode="adaptive", infill=True):
+    """Assigns a mesh face color based on the overhang angle. 
+    Use the resulting list as an input for the compas Artist (Rhino, Blender)
 
     Parameters
     ----------
+    mesh : compas.datastructures.Mesh
+        Input mesh.
     max_angle : int
         Maximum overhang possible with fabrication machine.
     mode : str
@@ -36,23 +31,31 @@ def rhino_color_mesh_faces_by_overhang_angle(max_angle=45, mode="adaptive", infi
             Red:    90 degree overhang
     infill : boolean
         True if printing a solid object (with infill), False if printing only contours (no infill).
+
+    Returns
+    -------
+    list
+        List of RGB colour values for the Mesh faces. 
+        Use as an input for a compas Artist.
     """
 
-    ### --- Load stl
-    compas_mesh = Mesh.from_stl(FILE)
+    if not (0 <= max_angle <= 90):
+        raise NameError("Max angle needs to be between 0-90 degrees.")
+    if max_angle == 0:
+        # makes sure that no division by 0 occurs
+        max_angle = 1E-10
 
     color_list = []
 
-    for fkey in compas_mesh.faces():
+    for fkey in mesh.faces():
         # get normal and calculate angle compared to Z direction
-        normal = compas_mesh.face_normal(fkey)
+        normal = mesh.face_normal(fkey)
         angle = degrees(angle_vectors(normal, Vector(0.0, 0.0, 1.0)))
 
-        # if structure has infills all angles < 90 are printable
+        # if structure has infills all angles < 90 are not overhangs
         if infill == False:
             angle = abs(90-angle)
         elif infill == True:
-            angle = degrees(angle_vectors(normal, Vector(0.0, 0.0, 1.0)))
             if angle < 90:
                 angle = 0
             else:
@@ -63,30 +66,25 @@ def rhino_color_mesh_faces_by_overhang_angle(max_angle=45, mode="adaptive", infi
                 # append black color
                 color_list.append((1,1,1))
             else:
-                if angle < max_angle/2:
+                if angle < max_angle/float(2):
                     # color gradient: green - yellow
-                    R = int(angle * (256/(max_angle/2)))
+                    R = int(angle * (256/(max_angle/float(2))))
                     color_list.append((R,255,0))
-                elif max_angle/2 < angle < max_angle:
+                elif max_angle/float(2) < angle <= max_angle:
                     # color gradient: yellow - red
-                    G = int((angle-(max_angle/2)) * (256/(max_angle/2)))
+                    G = int((angle-(max_angle/float(2))) * (256/(max_angle/float(2))))
                     color_list.append((255,255-G,0))
         elif mode == "fixed":
-            if angle < 45:
+            if angle <= 45:
                 # color gradient: green - yellow
                 R = int(angle * (256/45))
                 color_list.append((R,255,0))
-            elif angle > 45 < 90:
+            elif angle > 45:
                 # color gradient: yellow - red
                 G = int((angle-45) * (256/45))
                 color_list.append((255,255-G,0))
         else:
             raise NameError("Invalid visualisation mode : " + mode)
-                
-    artist = MeshArtist(compas_mesh, layer='COMPAS::MeshArtist')
-    artist.clear_layer() 
-    artist.draw_faces(color={key: color_list[i] for i, key in enumerate(compas_mesh.faces())})
-    artist.redraw()
     
-if __name__ == "__main__":
-    rhino_color_mesh_faces_by_overhang_angle()
+    return color_list
+                
