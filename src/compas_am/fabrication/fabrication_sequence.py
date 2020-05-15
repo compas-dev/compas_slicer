@@ -123,7 +123,6 @@ class Fabrication_sequence:
                                                                   y=printpoint.pt[1],
                                                                   z=printpoint.pt[2],
                                                                   e=filament_feed_length))
-                        print(printpoint.pt)
 
     def save_commands_to_json(self, path, name):
         logger.info("Saving to Json: ", len(self.commands), "commands, on file: ", path + name)

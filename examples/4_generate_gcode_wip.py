@@ -7,6 +7,8 @@ from compas_plotters import MeshPlotter
 from compas_am.slicing.slicer import Slicer
 from compas_am.input.input_geometry import InputGeometry
 from compas_am.fabrication.fabrication_sequence import Fabrication_sequence
+from compas_am.fabrication.machine_model import MachineModel
+from compas_am.positioning.center_mesh_on_build_platform import center_mesh_on_build_platform
 
 ######################## Logging
 import logging
@@ -23,8 +25,15 @@ def main():
     ### --- Load stl
     compas_mesh = Mesh.from_stl(INPUT_FILE)
 
+    ### --- Get machine model
+    machine_model = MachineModel(printer_model = "FDM_Prusa_i3_mk2")
+    machine_data = machine_model.get_machine_data()
+
+    ### --- Center mesh on build platform
+    compas_mesh = center_mesh_on_build_platform(compas_mesh, machine_data)
+
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 20.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 2.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
@@ -40,7 +49,9 @@ def main():
                                    extruder_temp = 210, 
                                    bed_temp = 60, 
                                    print_speed = 50)
-    
+
+    slicer.save_contours_to_json(path = DATA, name = "eight_eight_contours.json")
+
     # slicer.align_seams(method = "seams_align")
 
     slicer.printout_info()
