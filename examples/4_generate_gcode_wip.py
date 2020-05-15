@@ -17,7 +17,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-INPUT_FILE = os.path.abspath(os.path.join(DATA, 'eight_eight.stl'))
+INPUT_FILE = os.path.abspath(os.path.join(DATA, 'box.stl'))
 OUTPUT_FILE = os.path.abspath(os.path.join(DATA, 'gcode_test.gcode'))
 
 def main():
@@ -33,7 +33,7 @@ def main():
     compas_mesh = center_mesh_on_build_platform(compas_mesh, machine_data)
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 2.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 12.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
@@ -49,8 +49,6 @@ def main():
                                    extruder_temp = 210, 
                                    bed_temp = 60, 
                                    print_speed = 50)
-
-    slicer.save_contours_to_json(path = DATA, name = "eight_eight_contours.json")
 
     # slicer.align_seams(method = "seams_align")
 
