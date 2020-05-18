@@ -1,9 +1,11 @@
 import numpy as np
 import compas
+from compas.geometry import Vector
 from compas.datastructures import Mesh
 from compas.geometry import  Point, distance_point_point
 from compas_am.slicing.printpath import Contour
 from compas_am.slicing.printpath import Layer
+from compas_am.slicing.print_point import PrintPoint
 
 #####################################################
 #### Meshcut planar slicing
@@ -54,7 +56,10 @@ def create_planar_contours_meshcut(mesh, layer_height):
             points.append(points[0])
             # TODO is_closed is always set to True, has to be checked
             is_closed = True
-            c = Contour(points = points, is_closed = is_closed)
+
+            print_points = [PrintPoint(pt = p, layer_height = layer_height, up_vector = Vector(0,0,1)) for p in points]
+
+            c = Contour(points = print_points, is_closed = is_closed)
             contours_per_layer.append(c)
         l = Layer(contours_per_layer, None, None)
         layers.append(l)
@@ -67,6 +72,16 @@ def create_planar_contours_meshcut(mesh, layer_height):
 from compas.datastructures import mesh_contours_numpy
 
 def create_planar_contours_numpy(mesh, layer_height):
+    """
+    Creates planar contours using the compas mesh_contours_numpy function. To be replaced with a better alternative
+
+    Parameters
+    ----------
+    mesh : compas.datastructures.Mesh
+        The mesh to be sliced 
+    layer_height : float
+        A number representing the height between cutting planes.
+    """
     z = [mesh.vertex_attribute(key, 'z') for key in mesh.vertices()]
     z_bounds = max(z) - min(z)
     levels = []
@@ -86,7 +101,10 @@ def create_planar_contours_numpy(mesh, layer_height):
                 if len(points)>0:
                     threshold_closed = 15.0 #TODO: VERY BAD!! Threshold should not be hardcoded
                     is_closed = distance_point_point(points[0], points[-1]) < threshold_closed
-                    c = Contour(points = points, is_closed = is_closed)
+
+                    print_points = [PrintPoint(pt = p, layer_height = layer_height, up_vector = Vector(0,0,1)) for p in points]
+                    c = Contour(points = print_points, is_closed = is_closed)
+
                     contours_per_layer.append(c)
             l = Layer(contours_per_layer, None, None)
             layers.append(l)

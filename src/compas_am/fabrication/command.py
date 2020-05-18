@@ -14,7 +14,7 @@ class RobotCommand(Command):
 
 
 class FDMPrinterCommand(Command):
-
+pass
 
 class Command(object):
     def __init__(self, add, parameters, here):

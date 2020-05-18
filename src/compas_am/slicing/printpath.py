@@ -3,6 +3,7 @@ from rdp import rdp
 import numpy as np
 from compas.geometry import Point
 
+import compas_am
 from compas_am.polyline_simplification.curvature_subsampling import curvature_subsampling
 from compas_am.slicing.print_point import PrintPoint
 
@@ -26,10 +27,17 @@ class PathCollection(object):
     supports : list 
         compas_am.slicing.printpath.SupportPath>
     """
-    def __init__(self, contours, infill_paths, support_paths):
+    def __init__(self, contours, infills, supports):
+        # check input
+        assert isinstance(contours[0], compas_am.slicing.printpath.PrintPath)
+        if infills:
+            assert isinstance(infills[0], compas_am.slicing.printpath.PrintPath)
+        if infills:
+            assert isinstance(supports[0], compas_am.slicing.printpath.PrintPath)
+
         self.contours = contours
-        self.infills = infill_paths
-        self.supports = support_paths
+        self.infills = infills
+        self.supports = supports
 
     def get_all_paths(self):
         all_paths = []
@@ -82,7 +90,6 @@ class Segment(PathCollection):
 
 
 
-
 ###################################
 ### Print paths
 ###################################
@@ -98,8 +105,13 @@ class PrintPath(object):
     is_closed : bool
     """
     def __init__(self, points, is_closed):
+        # check input
+        assert isinstance(points[0], compas_am.slicing.print_point.PrintPoint)
 
-        self.points = [PrintPoint(pt = p, parent_path = self) for p in points] #PrintPoint class
+        self.points = points # Print point class
+        for print_point in self.points:
+            print_point.parent_path = self 
+
         self.is_closed = is_closed
 
     ############################

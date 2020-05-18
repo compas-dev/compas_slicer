@@ -1,18 +1,26 @@
 class PrintPoint: 
-    def __init__(self, pt, parent_path): 
+    def __init__(self, pt, layer_height, up_vector): 
         self.pt = pt # position of center of mass (compas.geometry.Point)
-        self.parent_path = parent_path #class iheriting from PrintPath
+        self.layer_height = layer_height
+        self.up_vector = up_vector # compas.geometry.Vector
 
-        # printpoint details
-        self.up_vector = None # compas.geometry.Vector
-        self.closest_mesh_normal = None # compas.geometry.Vector
+        self.parent_path = None #class iheriting from PrintPath. The path in which this point belongs
+        
+
+        ### ----- parameters currently not yet filled in
         self.plane = None
-
-        self.layer_height = None
-        self.layer_width = None 
-
+        self.visualization_shape = None
+        # parameters useful for curved slicing
+        self.closest_shape_normal = None # compas.geometry.Vector
         self.support_printpoint = None #class PrintPoint
         self.support_path = None  #class iheriting from PrintPath
 
-        self.visualization_shape = None
+    def generate_plane(self):
+        pass
+        #TODO
+
+    def generate_visualization_shape(self):
+        pass
+        #TODO
+        
         
