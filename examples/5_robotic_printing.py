@@ -2,12 +2,12 @@ import compas
 import compas_am
 import os, sys
 from compas.datastructures import Mesh
+from compas.geometry import Frame
 from compas_plotters import MeshPlotter
 
 from compas_am.slicing.slicer import Slicer
-from compas_am.fabrication.print_organizer import PrintOrganizer
-from compas_am.fabrication.machine_model import Printer
-from compas_am.positioning.center_mesh_on_build_platform import center_mesh_on_build_platform
+from compas_am.fabrication.print_organizer import RoboticPrintOrganizer
+from compas_am.fabrication.machine_model import RobotPrinter
 
 ######################## Logging
 import logging
@@ -17,23 +17,15 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 INPUT_FILE = os.path.abspath(os.path.join(DATA, 'box.stl'))
-OUTPUT_FILE = os.path.abspath(os.path.join(DATA, 'gcode_test.gcode'))
+OUTPUT_FILE = os.path.abspath(os.path.join(DATA, 'commands.json'))
 
 def main():
 
     ### --- Load stl
     compas_mesh = Mesh.from_stl(INPUT_FILE)
 
-    ### --- Get machine model
-    machine_model = Printer("FDM_Prusa_i3_mk2", "PLA")
-    machine_dimensions = machine_model.get_machine_dimensions()
-    
-
-    ### --- Center mesh on build platform
-    compas_mesh = center_mesh_on_build_platform(compas_mesh, machine_dimensions)
-
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 12.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 10.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 
@@ -42,16 +34,21 @@ def main():
     slicer.printout_info()
 
     paths = slicer.sort_paths(method = "shortest_path", max_layers_per_segment=False, max_attempts=0)
-    
-    ### --- Fabrication 
 
-    fab = PrintOrganizer(paths, machine_model = machine_model)
+    ### --- Fabrication
+    robot_printer = RobotPrinter("UR5", "PLA")
 
-    machine_model.printout_info()
-    machine_model.set_print_parameter("print_speed", 70)
-    machine_model.printout_info()
+    robot_printer.attach_endeffector(FILENAME = os.path.join(DATA, "robot_printer/plastic_extruder.obj"),
+                                     frame = Frame(point = [0.153792, -0.01174, -0.03926],
+                                                   xaxis = [1, 0, 0], 
+                                                   yaxis = [0, 1, 0]))
+
+    print_organizer = RoboticPrintOrganizer(paths, machine_model = robot_printer)
     
-    fab.save_commands_to_gcode(OUTPUT_FILE)
+    print_organizer.save_commands_to_json(OUTPUT_FILE)
+
+    
+
 
     
 

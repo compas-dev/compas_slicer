@@ -4,9 +4,9 @@ logger = logging.getLogger('logger')
 import compas_am
 from compas_am.fabrication.gcode import create_gcode_script
 
-class Fabrication_sequence:
+class PrintOrganizer(object):
     """
-    Creates all the commands in order for fabrication
+    Creates fabrication data for 3d printer
     
     Attributes
     ----------
@@ -14,8 +14,7 @@ class Fabrication_sequence:
         compas_am.slicing.printpath.PathCollection or any class inheriting from it
     machine_model : The hardware 
         compas_am.machine_model.MachineModel or any class inheriting form it
-    type : str
-        "fdm", "robotic_fdm"
+
     """
 
     def __init__(self, paths_collection, machine_model):
@@ -28,20 +27,11 @@ class Fabrication_sequence:
 
         self.visualization_geometry = None
 
-        ## if robotic printing
-        if isinstance(machine_model, compas_am.fabrication.machine_model.RobotPrinter):
-            ordered_print_points = self.get_print_points_ordered_in_fabrication_sequence()
-            self.commands = self.generate_robotic_fdm_commands()
 
-
-    def get_print_points_ordered_in_fabrication_sequence(self):
-        pass
-
-    def generate_robotic_fdm_commands(self):
-        pass
- 
     def generate_visualization_geometry(self):
+        ## TODO
         pass
+
 
     def save_commands_to_gcode(self, FILE):
         """ 
@@ -53,15 +43,35 @@ class Fabrication_sequence:
         create_gcode_script(self.paths_collection, FILE, self.machine_model)
 
 
-    def save_commands_to_json(self, path, name):
-        logger.info("Saving to json: ", len(self.commands), "commands, on file: ", path + name)
+
+
+
+
+class RoboticPrintOrganizer(PrintOrganizer):
+    """
+    Creates fabrication data for robotic printing
+    """
+    def __init__(self, paths_collection, machine_model):
+        assert isinstance(machine_model, compas_am.fabrication.machine_model.RobotPrinter), "Machine Model does not represent a robot"
+        PrintOrganizer.__init__(self, paths_collection, machine_model) 
+
+        ordered_print_points = self.get_print_points_ordered_in_fabrication_sequence()
+        self.commands = self.generate_robotic_fdm_commands()
+
+    def get_print_points_ordered_in_fabrication_sequence(self):
+        [printpoint for path in self.paths_collection for contour in path.contours for printpoint in contour.points]
+
+    def generate_robotic_fdm_commands(self):
+        return [] #TODO!!!
+
+    def save_commands_to_json(self, FILENAME):
+        logger.info("Saving to json: "+ str(len(self.commands))+ "commands, on file: "+ FILENAME)
         # data dictionary
         data = {}
         for i, c in enumerate(self.commands):
             data[i] = c.get_fabrication_command_dict()
         # create Json file
-        filename = os.path.join(path, name)
-        with open(filename, 'w') as f:
+        with open(FILENAME, 'w') as f:
             f.write(json.dumps(data, indent=3, sort_keys=True))
 
 

@@ -113,7 +113,6 @@ class Slicer:
     def sort_paths(self, method, population_size=200, mutation_probability=0.1, max_attempts=10, random_state=None,  max_layers_per_segment= None):
         logger.info("Sorting paths, method : " + method )
         if method == "shortest_path":
-            logger.info("max_attempts : " + str(max_attempts))
             self.print_paths = sort_shortest_path(self.print_paths, population_size, mutation_probability, max_attempts, random_state)
         elif method == "per_segment":
             self.print_paths = sort_per_segment(self.print_paths, max_layers_per_segment, d_threshold = self.layer_height * 1.6)
@@ -159,7 +158,7 @@ class Slicer:
         print ("Number of print_paths: %d"% number_of_print_paths)
         print ("Number of contours: %d, open contours: %d, closed contours: %d"%(open_contours+closed_contours,open_contours, closed_contours))
         print ("Number of sampling points on contours: %d"% total_number_of_pts)
-
+        print ("")
 
     def get_contour_lines_for_plotter(self, color = (255,0,0)):
         lines = []

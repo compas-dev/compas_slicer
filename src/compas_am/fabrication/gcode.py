@@ -14,7 +14,6 @@ def create_gcode_script(paths, FILE, machine_model):
     machine_model : The class that stores the information for the 3d printer
         compas_am.fabrication.machine_model.MachineModel
     
-
     GCODE COMMANDS (for reference)
 
     G28                     - Home all axes
@@ -36,16 +35,12 @@ def create_gcode_script(paths, FILE, machine_model):
     
     """
 
-    # TODO: Add calculation for filament_feed_length  
-    # TODO: Add z-hop ## 
-    ## Shouldn't these be coming from machine_model print_parameters?
-
     ## print parameters coming from machine model
     extruder_temp = machine_model.print_parameters["extruder_temperature"]
     bed_temp = machine_model.print_parameters["bed_temperature"]
     print_speed = machine_model.print_parameters["print_speed"]
-    layer_height = paths[0].contours[0].points[0].layer_height # get layer height from provided paths (only constant layer height supported)
-
+    z_hop = machine_model.print_parameters["z_hop"]
+    
     filament_feed_length = 0 ## Shouldn't this also be coming from machine_model print_parameters?
 
     # convert print_speed mm/s to mm/min
@@ -85,15 +80,30 @@ def create_gcode_script(paths, FILE, machine_model):
         for path in paths:
             logger.debug("Gcode layer number : %d"%layer_number)
 
+            # get layer height from first printpoint in path
+            layer_height = path.contours[0].points[0].layer_height # only constant height per layer supported
+
             f.write(";LAYER:{0}\n".format(layer_number))
             f.write("G0 Z{0}\n".format(layer_height))
             for contour in path.contours:    
                 f.write(";CONTOUR\n")        
                 for printpoint in contour.points:
+                    filament_feed_length = get_filament_feed_length(printpoint) ## TODO!
                     f.write("G1 X{x} Y{y} Z{z} E{e}\n".format(x=printpoint.pt[0],
-                                                                y=printpoint.pt[1],
-                                                                z=printpoint.pt[2],
-                                                                e=filament_feed_length))
+                                                              y=printpoint.pt[1],
+                                                              z=printpoint.pt[2],
+                                                              e=filament_feed_length))
             layer_number += 1
-
         logger.info("Saved to gcode: " + FILE)
+
+
+def get_filament_feed_length(printpoint):
+    prev_printpoint = printpoint.get_prev_print_point()
+    next_printpoint = printpoint.get_next_print_point()
+    if prev_printpoint:
+        prev_pt = prev_printpoint.pt
+    if next_printpoint:
+        next_pt = next_printpoint.pt
+    #TODO!!! 
+    return 0
+    

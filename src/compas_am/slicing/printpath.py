@@ -109,7 +109,7 @@ class PrintPath(object):
         assert isinstance(points[0], compas_am.slicing.print_point.PrintPoint)
 
         self.points = points # Print point class
-        for print_point in self.points:
+        for print_point in self.points: 
             print_point.parent_path = self 
 
         self.is_closed = is_closed
