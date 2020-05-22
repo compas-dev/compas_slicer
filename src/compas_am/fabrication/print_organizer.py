@@ -2,11 +2,11 @@ import os, json
 import logging
 logger = logging.getLogger('logger')
 import compas_am
-from compas_am.fabrication.gcode import create_gcode_script
+from compas_am.fabrication.gcode import generate_gcode
 
-class PrintOrganizer(object):
+class FDMPrintOrganizer(object):
     """
-    Creates fabrication data for 3d printer
+    Creates fabrication data for FDM 3D printers.
     
     Attributes
     ----------
@@ -40,16 +40,16 @@ class PrintOrganizer(object):
         """
         if len(self.machine_model.print_parameters) == 0:
             raise ValueError("The machine_model provided does not have print parameters")
-        create_gcode_script(self.paths_collection, FILE, self.machine_model)
+        generate_gcode(self.paths_collection, FILE, self.machine_model)
 
 
 
 
 
 
-class RoboticPrintOrganizer(PrintOrganizer):
+class RoboticPrintOrganizer(object):
     """
-    Creates fabrication data for robotic printing
+    Creates fabrication data for robotic 3D printing.
     """
     def __init__(self, paths_collection, machine_model):
         assert isinstance(machine_model, compas_am.fabrication.machine_model.RobotPrinter), "Machine Model does not represent a robot"

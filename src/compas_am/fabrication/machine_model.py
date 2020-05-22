@@ -36,9 +36,9 @@ class MachineModel(object):
 #### 3D printing
 ##############################
 
-class Printer(MachineModel):
+class FDMPrinter(MachineModel):
     """
-    Class for representing 3D printers
+    Class for representing FDM 3D printer.s
     """
     def __init__(self, id, material):
         self.id = id
@@ -92,23 +92,23 @@ class Printer(MachineModel):
     def set_property(self, name, value):
         self.properties[name] = value
 
-    def load_printer_model_from_Json(self):
+    def load_printer_model_from_json(self):
         pass
 
-    def load_print_parameters_from_Json(self):
+    def load_print_parameters_from_json(self):
         pass
 
-    def save_printer_model_to_Json(self):
+    def save_printer_model_to_json(self):
         pass
 
-    def save_print_parameters_to_Json(self):
+    def save_print_parameters_to_json(self):
         pass
 
 
 
 
 ##############################
-#### Robotic printing
+#### Robotic 3D printing
 ##############################
 
 class RobotPrinter(MachineModel):

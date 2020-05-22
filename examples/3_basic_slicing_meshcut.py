@@ -24,7 +24,7 @@ def main():
     compas_mesh = Mesh.from_stl(FILE)
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 10.0)
+    slicer = Slicer(compas_mesh, slicer_type = "planar_meshcut", layer_height = 100.0)
 
     slicer.slice_model(create_contours = True, create_infill = False, create_supports = False)
 

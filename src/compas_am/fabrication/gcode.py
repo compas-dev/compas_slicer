@@ -2,7 +2,7 @@ import os, json
 import logging
 logger = logging.getLogger('logger')
 
-def create_gcode_script(paths, FILE, machine_model): 
+def generate_gcode(paths, FILE, machine_model): 
     """Creates all the commands in order for fabrication
 
     Attributes

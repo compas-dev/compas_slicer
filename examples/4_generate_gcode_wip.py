@@ -5,8 +5,8 @@ from compas.datastructures import Mesh
 from compas_plotters import MeshPlotter
 
 from compas_am.slicing.slicer import Slicer
-from compas_am.fabrication.print_organizer import PrintOrganizer
-from compas_am.fabrication.machine_model import Printer
+from compas_am.fabrication.print_organizer import FDMPrintOrganizer
+from compas_am.fabrication.machine_model import FDMPrinter
 from compas_am.positioning.center_mesh_on_build_platform import center_mesh_on_build_platform
 
 ######################## Logging
@@ -25,10 +25,9 @@ def main():
     compas_mesh = Mesh.from_stl(INPUT_FILE)
 
     ### --- Get machine model
-    machine_model = Printer("FDM_Prusa_i3_mk2", "PLA")
+    machine_model = FDMPrinter("FDM_Prusa_i3_mk2", "PLA")
     machine_dimensions = machine_model.get_machine_dimensions()
     
-
     ### --- Center mesh on build platform
     compas_mesh = center_mesh_on_build_platform(compas_mesh, machine_dimensions)
 
@@ -45,10 +44,10 @@ def main():
     
     ### --- Fabrication 
 
-    fab = PrintOrganizer(paths, machine_model = machine_model)
+    fab = FDMPrintOrganizer(paths, machine_model = machine_model)
 
-    machine_model.printout_info()
     machine_model.set_print_parameter("print_speed", 70)
+    machine_model.set_print_parameter("z_hop", 10)
     machine_model.printout_info()
     
     fab.save_commands_to_gcode(OUTPUT_FILE)
