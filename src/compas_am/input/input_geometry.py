@@ -1,8 +1,7 @@
-import compas
-import compas_am
 from compas.datastructures import Mesh
 
 import logging
+
 logger = logging.getLogger('logger')
 
 
@@ -14,11 +13,12 @@ class InputGeometry:
         if str(filepath)[-4:] == '.stl':
             return Mesh.from_stl(filepath)
         elif str(filepath)[-4:] == '.obj':
-            return Mesh.from_obj(filepath) 
+            return Mesh.from_obj(filepath)
         elif str(filepath)[-4:] == 'json':
-            return Mesh.from_json(filepath) 
-        else: 
+            return Mesh.from_json(filepath)
+        else:
             logger.error("Cannot import files : " + str(filepath)[-3:])
-        
+
+
 if __name__ == "__main__":
     pass

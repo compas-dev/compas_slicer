@@ -1,18 +1,15 @@
-import compas
-from compas_am.slicing.printpath import Layer
-
-import numpy as np
-
 import warnings
+
 warnings.filterwarnings("ignore")
 import mlrose
-warnings.filterwarnings("default")
 
+warnings.filterwarnings("default")
 import logging
+
 logger = logging.getLogger('logger')
 
 
-def sort_shortest_path(layers, 
+def sort_shortest_path(layers,
                        population_size=200,
                        mutation_probability=0.1,
                        max_attempts=10,
@@ -65,14 +62,14 @@ def sort_shortest_path(layers,
                 if i == 0:
                     coords = (point.pt[0], point.pt[1])
                     coords_list.append(coords)
-        
-        problem_no_fit = mlrose.TSPOpt(length = len(coords_list), coords = coords_list, maximize = False)
-        best_state, best_fitness = mlrose.genetic_alg(problem_no_fit,   
-                                                      pop_size = population_size, 
-                                                      mutation_prob = mutation_probability, 
-                                                      max_attempts = max_attempts, 
-                                                      random_state = random_state)
-       
+
+        problem_no_fit = mlrose.TSPOpt(length=len(coords_list), coords=coords_list, maximize=False)
+        best_state, best_fitness = mlrose.genetic_alg(problem_no_fit,
+                                                      pop_size=population_size,
+                                                      mutation_prob=mutation_probability,
+                                                      max_attempts=max_attempts,
+                                                      random_state=random_state)
+
         ordered_contours = [layer.contours[x] for x in best_state]
         layer.contours = ordered_contours
 
@@ -80,8 +77,7 @@ def sort_shortest_path(layers,
         # if layer.infill_paths: ...
         # if layer.support_paths: ...
 
-    return layers 
-
+    return layers
 
 
 if __name__ == "__main__":

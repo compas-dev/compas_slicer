@@ -36,3 +36,15 @@ compas_am.send_commands
 
 
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+
+from .command import *  # noqa: F401 E402 F403
+from .gcode import *  # noqa: F401 E402 F403
+from .machine_model import *  # noqa: F401 E402 F403
+from .print_organizer import *  # noqa: F401 E402 F403
+
+__all__ = [name for name in dir() if not name.startswith('_')]

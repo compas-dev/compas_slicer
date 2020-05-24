@@ -1,8 +1,10 @@
-import os, json
-import logging
-logger = logging.getLogger('logger')
+import json
 import compas_am
-from compas_am.fabrication.gcode import generate_gcode
+import logging
+from compas_am.fabrication import generate_gcode
+
+logger = logging.getLogger('logger')
+
 
 class FDMPrintOrganizer(object):
     """
@@ -10,7 +12,7 @@ class FDMPrintOrganizer(object):
     
     Attributes
     ----------
-    sorted_paths_collection : list
+    paths_collection : list
         compas_am.slicing.printpath.PathCollection or any class inheriting from it
     machine_model : The hardware 
         compas_am.machine_model.MachineModel or any class inheriting form it
@@ -18,20 +20,18 @@ class FDMPrintOrganizer(object):
     """
 
     def __init__(self, paths_collection, machine_model):
-        #check input
-        assert isinstance(paths_collection[0], compas_am.slicing.printpath.PathCollection)
-        assert isinstance(machine_model, compas_am.fabrication.machine_model.MachineModel)
+        # check input
+        assert isinstance(paths_collection[0], compas_am.print_path.PathCollection)
+        assert isinstance(machine_model, compas_am.fabrication.MachineModel)
 
         self.paths_collection = paths_collection
         self.machine_model = machine_model
 
         self.visualization_geometry = None
 
-
     def generate_visualization_geometry(self):
         ## TODO
         pass
-
 
     def save_commands_to_gcode(self, FILE):
         """ 
@@ -43,29 +43,28 @@ class FDMPrintOrganizer(object):
         generate_gcode(self.paths_collection, FILE, self.machine_model)
 
 
-
-
-
-
-class RoboticPrintOrganizer(object):
+class RoboticPrintOrganizer(FDMPrintOrganizer):
     """
     Creates fabrication data for robotic 3D printing.
     """
-    def __init__(self, paths_collection, machine_model):
-        assert isinstance(machine_model, compas_am.fabrication.machine_model.RobotPrinter), "Machine Model does not represent a robot"
-        PrintOrganizer.__init__(self, paths_collection, machine_model) 
 
-        ordered_print_points = self.get_print_points_ordered_in_fabrication_sequence()
+    def __init__(self, paths_collection, machine_model):
+        assert isinstance(machine_model,
+                          compas_am.fabrication.machine_model.RobotPrinter), "Machine Model does not represent a robot"
+        FDMPrintOrganizer.__init__(self, paths_collection, machine_model)
+
+        self.ordered_print_points = self.get_print_points_ordered_in_fabrication_sequence()
         self.commands = self.generate_robotic_fdm_commands()
 
     def get_print_points_ordered_in_fabrication_sequence(self):
-        [printpoint for path in self.paths_collection for contour in path.contours for printpoint in contour.points]
+        return [printpoint for path in self.paths_collection for contour in path.contours for printpoint in contour.points]
 
     def generate_robotic_fdm_commands(self):
-        return [] #TODO!!!
+        a = self.ordered_print_points
+        return []  # TODO
 
     def save_commands_to_json(self, FILENAME):
-        logger.info("Saving to json: "+ str(len(self.commands))+ "commands, on file: "+ FILENAME)
+        logger.info("Saving to json: " + str(len(self.commands)) + " commands, on file: " + FILENAME)
         # data dictionary
         data = {}
         for i, c in enumerate(self.commands):

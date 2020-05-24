@@ -1,14 +1,12 @@
-import compas
-from rdp import rdp
 import numpy as np
-from compas.geometry import Point
 
 import compas_am
-from compas_am.polyline_simplification.curvature_subsampling import curvature_subsampling
-from compas_am.slicing.print_point import PrintPoint
+from compas_am.polyline_simplification import curvature_subsampling
 
 import logging
+
 logger = logging.getLogger('logger')
+
 
 ###################################
 ### Groups of print paths
@@ -27,13 +25,14 @@ class PathCollection(object):
     supports : list 
         compas_am.slicing.printpath.SupportPath>
     """
+
     def __init__(self, contours, infills, supports):
         # check input
-        assert isinstance(contours[0], compas_am.slicing.printpath.PrintPath)
+        assert isinstance(contours[0], compas_am.print_path.PrintPath)
         if infills:
-            assert isinstance(infills[0], compas_am.slicing.printpath.PrintPath)
+            assert isinstance(infills[0], compas_am.print_path.PrintPath)
         if infills:
-            assert isinstance(supports[0], compas_am.slicing.printpath.PrintPath)
+            assert isinstance(supports[0], compas_am.print_path.PrintPath)
 
         self.contours = contours
         self.infills = infills
@@ -43,9 +42,9 @@ class PathCollection(object):
         all_paths = []
         [all_paths.append(path) for path in self.contours]
         if self.infills:
-            [all_paths.append(path) for path in self.infill_paths]
+            [all_paths.append(path) for path in self.infills]
         if self.supports:
-            [all_paths.append(path) for path in self.support_paths]
+            [all_paths.append(path) for path in self.supports]
         return all_paths
 
 
@@ -53,8 +52,9 @@ class Layer(PathCollection):
     """
     Horizontal ordering. A Layer stores the print paths on a specific height level.
     """
+
     def __init__(self, contours, infill_paths, support_paths):
-        PathCollection.__init__(self, contours, infill_paths, support_paths) 
+        PathCollection.__init__(self, contours, infill_paths, support_paths)
 
 
 class Segment(PathCollection):
@@ -81,13 +81,12 @@ class Segment(PathCollection):
     def total_number_of_points(self):
         num = 0
         for contour in self.contours:
-            num+= len(contour.points)
+            num += len(contour.points)
         return num
 
     def printout_details(self):
-        logger.info("Segment id : %d"%self.id)
-        logger.info("Total number of contours : %d"%len(self.contours))
-
+        logger.info("Segment id : %d" % self.id)
+        logger.info("Total number of contours : %d" % len(self.contours))
 
 
 ###################################
@@ -104,13 +103,14 @@ class PrintPath(object):
         compas.geometry.Point
     is_closed : bool
     """
+
     def __init__(self, points, is_closed):
         # check input
-        assert isinstance(points[0], compas_am.slicing.print_point.PrintPoint)
+        assert isinstance(points[0], compas_am.print_path.PrintPoint)
 
-        self.points = points # Print point class
-        for print_point in self.points: 
-            print_point.parent_path = self 
+        self.points = points  # Print point class
+        for print_point in self.points:
+            print_point.parent_path = self
 
         self.is_closed = is_closed
 
@@ -126,45 +126,50 @@ class PrintPath(object):
 
     def simplify_adapted_to_curvature(self, threshold, iterations):
         initial_points_number = len(self.points)
-        threshold = 3.3 / threshold #Trying to make the same threshold have the same meaning for both simplification methods. Here as threshold goes down more points are removed, thus k/threshold to avoid confusion 
-        reduced_pts = curvature_subsampling(points = self.points, threshold = threshold, iterations = 2)
+        threshold = 3.3 / threshold  # Trying to make the same threshold have the same meaning for both simplification methods. Here as threshold goes down more points are removed, thus k/threshold to avoid confusion
+        reduced_pts = curvature_subsampling(points=self.points, threshold=threshold, iterations=2)
         self.points = reduced_pts
-        logger.debug("Curvature subsampling: %d points removed"%(initial_points_number - len(self.points)))
+        logger.debug("Curvature subsampling: %d points removed" % (initial_points_number - len(self.points)))
 
     ############################
     ### Output
 
-    def get_lines_for_plotter(self, color = (255,0,0)):
+    def get_lines_for_plotter(self, color=(255, 0, 0)):
         lines = []
         for i, point in enumerate(self.points):
             if self.is_closed:
-                line = {}
-                line['start'] = point.pt
-                line['end'] = self.points[(i+1)%(len(self.points) -1)].pt
-                line['width'] = 1.0
-                line['color'] = color
+                line = {
+                    'start': point.pt,
+                    'end': self.points[(i + 1) % (len(self.points) - 1)].pt,
+                    'width': 1.0,
+                    'color': color
+                    }
                 lines.append(line)
-            else: 
-                if i<len(self.points) -1:
-                    line = {}
-                    line['start'] = point.pt
-                    line['end'] = self.points[i+1].pt
-                    line['width'] = 1.0
-                    line['color'] = color
+            else:
+                if i < len(self.points) - 1:
+                    line = {
+                        'start': point.pt,
+                        'end': self.points[i + 1].pt,
+                        'width': 1.0,
+                        'color': color
+                        }
                     lines.append(line)
         return lines
 
+
 class Contour(PrintPath):
     def __init__(self, points, is_closed):
-        PrintPath.__init__(self, points, is_closed) 
+        PrintPath.__init__(self, points, is_closed)
+
 
 class Infill(PrintPath):
     def __init__(self, points, is_closed):
-        PrintPath.__init__(self, points, is_closed)        
+        PrintPath.__init__(self, points, is_closed)
+
 
 class Support(PrintPath):
     def __init__(self, points, is_closed):
-        PrintPath.__init__(self, points, is_closed) 
+        PrintPath.__init__(self, points, is_closed)
 
 
 if __name__ == '__main__':
