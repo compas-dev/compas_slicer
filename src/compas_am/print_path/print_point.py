@@ -21,6 +21,7 @@ class PrintPoint(object):
         if i < len(self.parent_path.points) - 1:
             return self.parent_path.points[i + 1]
 
+
 class AdvancedPrintPoint(PrintPoint):
     def __init__(self, pt, layer_height, up_vector, mesh):
         PrintPoint.__init__(self, pt, layer_height)

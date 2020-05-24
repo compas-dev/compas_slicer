@@ -28,7 +28,8 @@ class PathCollection(object):
 
     def __init__(self, contours, infills, supports):
         # check input
-        assert isinstance(contours[0], compas_am.print_path.PrintPath)
+        if contours:
+            assert isinstance(contours[0], compas_am.print_path.PrintPath)
         if infills:
             assert isinstance(infills[0], compas_am.print_path.PrintPath)
         if infills:
@@ -63,12 +64,9 @@ class Segment(PathCollection):
     """
 
     def __init__(self, id):
+        PathCollection.__init__(self, contours=None, infills=None, supports=None)
         self.id = id
         self.head_centroid = None
-
-        self.contours = []
-        self.infills = []
-        self.supports = []
 
     def append_(self, contour):
         self.contours.append(contour)
@@ -143,7 +141,7 @@ class PrintPath(object):
                     'end': self.points[(i + 1) % (len(self.points) - 1)].pt,
                     'width': 1.0,
                     'color': color
-                    }
+                }
                 lines.append(line)
             else:
                 if i < len(self.points) - 1:
@@ -152,7 +150,7 @@ class PrintPath(object):
                         'end': self.points[i + 1].pt,
                         'width': 1.0,
                         'color': color
-                        }
+                    }
                     lines.append(line)
         return lines
 
