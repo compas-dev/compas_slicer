@@ -29,11 +29,14 @@ class PathCollection(object):
     def __init__(self, contours, infills, supports):
         # check input
         if contours:
-            assert isinstance(contours[0], compas_am.print_path.PrintPath)
+            if len(contours)>0:
+                assert isinstance(contours[0], compas_am.print_path.PrintPath)
         if infills:
-            assert isinstance(infills[0], compas_am.print_path.PrintPath)
-        if infills:
-            assert isinstance(supports[0], compas_am.print_path.PrintPath)
+            if len(infills) > 0:
+                assert isinstance(infills[0], compas_am.print_path.PrintPath)
+        if supports:
+            if len(supports) > 0:
+                assert isinstance(supports[0], compas_am.print_path.PrintPath)
 
         self.contours = contours
         self.infills = infills
@@ -64,7 +67,7 @@ class Segment(PathCollection):
     """
 
     def __init__(self, id):
-        PathCollection.__init__(self, contours=None, infills=None, supports=None)
+        PathCollection.__init__(self, contours=[], infills=None, supports=None)
         self.id = id
         self.head_centroid = None
 
