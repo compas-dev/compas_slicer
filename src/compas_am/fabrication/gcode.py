@@ -9,11 +9,11 @@ def generate_gcode(paths, FILE, machine_model):
     Attributes
     ----------
     paths: list
-        compas_am.slicing.printpath.PathCollection or any class inheriting from it
+        compas_am.geometry.PathCollection or any class inheriting from it
     FILE : str
         Path of gcode file to be saved.
     machine_model : The class that stores the information for the 3d printer
-        compas_am.fabrication.machine_model.MachineModel
+        compas_am.fabrication.MachineModel
     
     GCODE COMMANDS (for reference)
 

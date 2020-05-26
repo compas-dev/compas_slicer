@@ -2,11 +2,12 @@ import compas
 import os, sys
 from compas.datastructures import Mesh
 from compas_rhino.artists import MeshArtist
+import compas_am
+from compas_am.visualization import get_mesh_face_color_overhang
 
 # reload required for Rhino 
 import compas_am.visualization.get_mesh_face_color_overhang
 reload(compas_am.visualization.get_mesh_face_color_overhang)
-from compas_am.visualization.get_mesh_face_color_overhang import get_mesh_face_color_overhang
 
 DATA = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
 FILE = os.path.abspath(os.path.join(DATA, 'bunny_low_res.stl'))

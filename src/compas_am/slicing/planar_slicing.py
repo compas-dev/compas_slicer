@@ -3,9 +3,9 @@ import compas
 from compas.geometry import Vector
 from compas.datastructures import Mesh
 from compas.geometry import Point, distance_point_point
-from compas_am.print_path import Contour
-from compas_am.print_path import Layer
-from compas_am.print_path import PrintPoint
+from compas_am.geometry import Contour
+from compas_am.geometry import Layer
+from compas_am.geometry import PrintPoint
 
 #####################################################
 #### Meshcut planar slicing

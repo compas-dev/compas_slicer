@@ -1,6 +1,6 @@
 import os
 from compas.datastructures import Mesh
-from compas_am.print_path import Contour, Layer
+from compas_am.geometry import Contour, Layer
 from compas_am.slicing import create_planar_contours_meshcut
 from compas_am.slicing import create_planar_contours_numpy
 

@@ -1,5 +1,5 @@
 from compas.geometry import distance_point_point
-from compas_am.print_path import Segment
+from compas_am.geometry import Segment
 import numpy as np
 
 import logging

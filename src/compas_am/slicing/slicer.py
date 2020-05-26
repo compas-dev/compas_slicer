@@ -76,15 +76,15 @@ class Slicer:
             self.print_paths = planar_slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
 
         elif self.slicer_type == "curved":
-            self.print_paths = curved_slicing.create_curved_contours(mesh, boundaries=None, min_layer_height=None,
+            self.print_paths = curved_slicing.create_curved_contours(self.mesh, boundaries=None, min_layer_height=None,
                                                                      max_layer_height=None)
 
         elif self.slicer_type == "adaptive":
-            self.print_paths = adaptive_slicing.create_adaptive_height_contours(mesh, min_layer_height=None,
+            self.print_paths = adaptive_slicing.create_adaptive_height_contours(self.mesh, min_layer_height=None,
                                                                                 max_layer_height=None)
 
         else:
-            raise NameError("Invalid slicing type : " + slicer_type)
+            raise NameError("Invalid slicing type : " + self.slicer_type)
 
     ##############################
     ### --- Polyline Simplification
@@ -154,7 +154,7 @@ class Slicer:
         print("Layer height: ", self.layer_height, " mm")
         print("Number of print_paths: %d" % number_of_print_paths)
         print("Number of contours: %d, open contours: %d, closed contours: %d" % (
-        open_contours + closed_contours, open_contours, closed_contours))
+            open_contours + closed_contours, open_contours, closed_contours))
         print("Number of sampling points on contours: %d" % total_number_of_pts)
         print("")
 
@@ -182,7 +182,7 @@ class Slicer:
             vs = mesh.face_vertices(fkey)
             if len(vs) != 3:
                 raise TypeError("Found a quad at face key: " + str(fkey) + " ,number of face vertices:" + str(len(vs)) + ". \nOnly triangular meshes supported. \
-                                \nConsider using the Weaverbird's component 'Split Triangles Subdivision' to triangulate, and then remeber to weld the resulting mesh")
+                                \nConsider using the 'Subdivide triangle' to triangulate")
 
 
 if __name__ == "__main__":

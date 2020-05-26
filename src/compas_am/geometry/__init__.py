@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
+from .path_collection import *  # noqa: F401 E402 F403
 from .path import *  # noqa: F401 E402 F403
 from .print_point import *  # noqa: F401 E402 F403
 
