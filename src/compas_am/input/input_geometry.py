@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger('logger')
 
+__all__ = ['InputGeometry']
 
 class InputGeometry:
     def __init__(self, filepath):

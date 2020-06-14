@@ -6,8 +6,8 @@ import compas_am
 from compas_am.visualization import get_mesh_face_color_overhang
 
 # reload required for Rhino 
-import compas_am.visualization.get_mesh_face_color_overhang
-reload(compas_am.visualization.get_mesh_face_color_overhang)
+import compas_am.visualization
+reload(compas_am.visualization)
 
 DATA = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
 FILE = os.path.abspath(os.path.join(DATA, 'bunny_low_res.stl'))

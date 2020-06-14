@@ -8,12 +8,15 @@ import logging
 
 logger = logging.getLogger('logger')
 
+__all__ = ['sort_shortest_path_mlrose']
 
-def sort_shortest_path(layers,
-                       population_size=200,
-                       mutation_probability=0.1,
-                       max_attempts=10,
-                       random_state=None):
+
+def sort_shortest_path_mlrose(layers,
+                              population_size=200,
+                              mutation_probability=0.1,
+                              max_attempts=10,
+                              random_state=None):
+
     """Attempts to find the shortest path between the contours in a layer,
     most useful when dealing with many contours within one layer. 
     Heavily increases computation time but reduces printing time. 

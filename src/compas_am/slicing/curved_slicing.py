@@ -1,5 +1,4 @@
-import numpy as np
-import compas
+__all__ = ['create_curved_contours']
 
 def create_curved_contours(mesh, boundaries, min_layer_height, max_layer_height):
     raise NotImplementedError

@@ -7,6 +7,9 @@ from compas_fab.robots import PlanningScene, Tool
 
 logger = logging.getLogger('logger')
 
+__all__ = ['MachineModel',
+           'FDMPrinter',
+           'RobotPrinter']
 
 class MachineModel(object):
     """

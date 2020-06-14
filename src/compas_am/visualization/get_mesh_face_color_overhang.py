@@ -1,7 +1,4 @@
-import compas
-from compas.datastructures import Mesh
 from compas.geometry import Vector, angle_vectors
-
 from math import degrees
 
 def get_mesh_face_color_overhang(mesh, max_angle=45, mode="adaptive", infill=True):

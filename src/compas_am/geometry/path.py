@@ -4,6 +4,11 @@ import logging
 
 logger = logging.getLogger('logger')
 
+__all__ = ['PrintPath',
+           'Contour',
+           'Infill',
+           'Support']
+
 
 class PrintPath(object):
     """
@@ -30,7 +35,9 @@ class PrintPath(object):
     ### Polyline simplification
 
     def simplify_uniform(self, threshold):
+        #TODO: THis function depends on the rdp library, should be moved elsewhere
         pass
+        # import rdp
         # initial_points_number = len(self.points)
         # reduced_pts = rdp(np.array(self.points), epsilon=threshold)
         # self.points = [Point(point.pt[0], v[1], v[2]) for point in reduced_pts] 

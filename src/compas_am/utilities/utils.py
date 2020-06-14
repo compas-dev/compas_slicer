@@ -1,10 +1,13 @@
 import os
 import json
-
 import logging
+import statistics
 
 logger = logging.getLogger('logger')
 
+__all__ = ['save_to_json',
+           'load_from_json',
+           'get_average_point']
 
 def save_to_json(data, path, name):
     filename = os.path.join(path, name)
@@ -20,6 +23,13 @@ def load_from_json(path, name):
     logger.info("Loaded Json: " + filename)
     return data
 
+
+def get_average_point(points):
+    all_pts = [point.pt for point in points]
+    x_mean = statistics.mean([p[0] for p in all_pts])
+    y_mean = statistics.mean([p[1] for p in all_pts])
+    z_mean = statistics.mean([p[2] for p in all_pts])
+    return [x_mean, y_mean, z_mean]
 
 if __name__ == "__main__":
     pass

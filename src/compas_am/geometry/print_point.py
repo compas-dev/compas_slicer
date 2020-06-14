@@ -1,5 +1,7 @@
 from compas.geometry import Point, Frame, distance_point_point_sqrd
 
+__all__ = ['PrintPoint',
+           'AdvancedPrintPoint']
 
 class PrintPoint(object):
     def __init__(self, pt, layer_height):

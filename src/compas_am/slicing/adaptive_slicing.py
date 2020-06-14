@@ -1,5 +1,4 @@
-import numpy as np
-
+__all__ = ['create_adaptive_height_contours']
 
 def create_adaptive_height_contours(mesh, min_layer_height, max_layer_height):
     raise NotImplementedError

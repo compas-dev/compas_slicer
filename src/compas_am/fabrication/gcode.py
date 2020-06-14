@@ -2,6 +2,7 @@ import logging
 
 logger = logging.getLogger('logger')
 
+__all__ = ['generate_gcode']
 
 def generate_gcode(paths, FILE, machine_model):
     """Creates all the commands in order for fabrication

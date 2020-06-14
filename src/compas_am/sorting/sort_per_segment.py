@@ -1,10 +1,12 @@
 from compas.geometry import distance_point_point
 from compas_am.geometry import Segment
-import numpy as np
+import compas_am.utilities as utils
 
 import logging
 
 logger = logging.getLogger('logger')
+
+__all__ = ['sort_per_segment']
 
 
 def sort_per_segment(layers, max_layers_per_segment, d_threshold):
@@ -21,8 +23,6 @@ def sort_per_segment(layers, max_layers_per_segment, d_threshold):
     max_layers_per_segment : int
         Maximum number of layers that a segment can consist of
         If None, then the segment has unlimited number of layers
-    
-
     """
 
     segments = [Segment(id=0)]  # segments that contain isocurves
@@ -34,10 +34,10 @@ def sort_per_segment(layers, max_layers_per_segment, d_threshold):
             if len(segments[0].contours) == 0:  # first contour
                 current_segment = segments[0]
             else:  # find the candidate segment for new isocurve
-                contour_centroid = np.mean(np.array([point.pt for point in contour.points]), axis=0)
+                contour_centroid = utils.get_average_point(contour.points)
                 other_centroids = get_segments_centroids_list(segments)
                 candidate_segment = segments[get_closest_pt_index(contour_centroid, other_centroids)]
-                if np.linalg.norm(candidate_segment.head_centroid - contour_centroid) < d_threshold:
+                if distance_point_point(candidate_segment.head_centroid, contour_centroid) < d_threshold:
                     if max_layers_per_segment:
                         if len(candidate_segment.contours) < max_layers_per_segment:
                             current_segment = candidate_segment

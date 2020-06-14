@@ -1,6 +1,7 @@
 import math
 from compas.geometry import distance_point_line_sqrd, distance_point_point_sqrd
 
+__all__ = ['curvature_subsampling']
 
 def curvature_subsampling(points, threshold, iterations):
     """

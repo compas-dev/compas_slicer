@@ -1,8 +1,12 @@
-import numpy as np
 import logging
 import compas_am
+import compas_am.utilities as utils
 
 logger = logging.getLogger('logger')
+
+__all__ = ['PathCollection',
+           'Layer',
+           'Segment']
 
 class PathCollection(object):
     """
@@ -68,8 +72,8 @@ class Segment(PathCollection):
         self.compute_head_centroid()
 
     def compute_head_centroid(self):
-        last_layer_pts = np.array([point.pt for point in self.contours[-1].points])
-        self.head_centroid = np.mean(last_layer_pts, axis=0)
+        ## Avoid using numpy for this
+        self.head_centroid = utils.get_average_point(self.contours[-1].points)
 
     def total_number_of_points(self):
         num = 0

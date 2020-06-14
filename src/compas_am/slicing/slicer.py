@@ -1,11 +1,9 @@
 import compas
 from compas.datastructures import Mesh
 
-import compas_am.slicing as curved_slicing
-import compas_am.slicing as adaptive_slicing
-import compas_am.slicing as planar_slicing
+# import compas_am.slicing as slicing
 from compas_am.utilities import utils
-from compas_am.sorting import sort_shortest_path
+from compas_am.sorting import sort_shortest_path_mlrose
 from compas_am.sorting import sort_per_segment
 from compas_am.sorting import seams_align
 from compas_am.sorting import seams_random
@@ -69,18 +67,18 @@ class Slicer:
     def generate_contours(self):
         if self.slicer_type == "planar_numpy":
             logger.info("Planar contours compas numpy slicing")
-            self.print_paths = planar_slicing.create_planar_contours_numpy(self.mesh, self.layer_height)
+            self.print_paths = slicing.create_planar_contours_numpy(self.mesh, self.layer_height)
 
         elif self.slicer_type == "planar_meshcut":
             logger.info("Planar contours meshcut slicing")
-            self.print_paths = planar_slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
+            self.print_paths = slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
 
         elif self.slicer_type == "curved":
-            self.print_paths = curved_slicing.create_curved_contours(self.mesh, boundaries=None, min_layer_height=None,
+            self.print_paths = slicing.create_curved_contours(self.mesh, boundaries=None, min_layer_height=None,
                                                                      max_layer_height=None)
 
         elif self.slicer_type == "adaptive":
-            self.print_paths = adaptive_slicing.create_adaptive_height_contours(self.mesh, min_layer_height=None,
+            self.print_paths = slicing.create_adaptive_height_contours(self.mesh, min_layer_height=None,
                                                                                 max_layer_height=None)
 
         else:
@@ -110,8 +108,8 @@ class Slicer:
                    max_layers_per_segment=None):
         logger.info("Sorting paths, method : " + method)
         if method == "shortest_path":
-            self.print_paths = sort_shortest_path(self.print_paths, population_size, mutation_probability, max_attempts,
-                                                  random_state)
+            self.print_paths = sort_shortest_path_mlrose(self.print_paths, population_size, mutation_probability, max_attempts,
+                                                         random_state)
         elif method == "per_segment":
             self.print_paths = sort_per_segment(self.print_paths, max_layers_per_segment,
                                                 d_threshold=self.layer_height * 1.6)

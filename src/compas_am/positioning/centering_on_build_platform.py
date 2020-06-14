@@ -1,4 +1,3 @@
-from compas_am.fabrication.machine_model import MachineModel
 from compas.geometry import Point, Frame, Transformation
 from compas.datastructures import mesh_bounding_box
 
@@ -6,6 +5,7 @@ import logging
 
 logger = logging.getLogger('logger')
 
+__all__ = ['center_mesh_on_build_platform']
 
 def center_mesh_on_build_platform(mesh, machine_data):
     # get center point of build platform

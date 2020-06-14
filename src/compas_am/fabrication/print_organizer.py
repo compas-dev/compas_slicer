@@ -5,6 +5,9 @@ from compas_am.fabrication import generate_gcode
 
 logger = logging.getLogger('logger')
 
+__all__ = ['PrintOrganizer',
+           'FDMPrintOrganizer',
+           'RoboticPrintOrganizer']
 
 class PrintOrganizer(object):
     """

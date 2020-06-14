@@ -15,6 +15,8 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 FILE = os.path.abspath(os.path.join(DATA, 'branches_70.stl'))
+
+
 # FILE = os.path.abspath(os.path.join(DATA, 'branches_70_short.obj'))
 
 
@@ -31,7 +33,7 @@ def main():
 
     slicer.sort_paths(method="per_segment", max_layers_per_segment=False)
 
-    slicer.align_seams(method = "seams_align")
+    slicer.align_seams(method="seams_align")
 
     slicer.printout_info()
 
