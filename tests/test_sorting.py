@@ -2,7 +2,7 @@ import os
 from compas.datastructures import Mesh
 
 from compas_am.geometry import Contour
-from compas_am.slicing.slicer import Slicer
+from compas_am.slicing.base_slicer import Slicer
 
 import copy
 

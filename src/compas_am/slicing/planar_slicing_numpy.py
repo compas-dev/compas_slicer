@@ -21,7 +21,6 @@ def create_planar_contours_numpy(mesh, layer_height):
         A number representing the height between cutting planes.
     """
     z = [mesh.vertex_attribute(key, 'z') for key in mesh.vertices()]
-    z_bounds = max(z) - min(z)
     levels = []
     p = min(z)
     while p < max(z):

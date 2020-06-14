@@ -28,9 +28,8 @@ from __future__ import division
 from __future__ import print_function
 import compas
 
-from .adaptive_slicing import *  # noqa: F401 E402 F403
-from .curved_slicing import *  # noqa: F401 E402 F403
-from .slicer import *  # noqa: F401 E402 F403
+from .base_slicer import *  # noqa: F401 E402 F403
+from .planar_slicer import *
 
 if not compas.IPY:
     from .planar_slicing_meshcut import *  # noqa: F401 E402 F403

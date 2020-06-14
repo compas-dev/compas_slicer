@@ -17,6 +17,6 @@ from .seams import *  # noqa: F401 E402 F403
 from .sort_per_segment import *  # noqa: F401 E402 F403
 
 if not compas.IPY:
-    from .sort_shortest_path_mlrose import *  # noqa: F401 E402 F403
+    from .sort_per_shortest_path_mlrose import *  # noqa: F401 E402 F403
 
 __all__ = [name for name in dir() if not name.startswith('_')]

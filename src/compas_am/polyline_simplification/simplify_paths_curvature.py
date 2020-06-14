@@ -1,9 +1,28 @@
 import math
 from compas.geometry import distance_point_line_sqrd, distance_point_point_sqrd
+import logging
 
-__all__ = ['curvature_subsampling']
+logger = logging.getLogger('logger')
 
-def curvature_subsampling(points, threshold, iterations):
+__all__ = ['simplify_paths_curvature']
+
+
+def simplify_paths_curvature(slicer, threshold, iterations=2):
+    logger.info("Paths simplification curvature")
+    threshold = 3.3 / threshold  # Trying to make the same threshold have the same meaning for all simplification methods. Here as threshold goes down more points are removed, thus k/threshold to avoid confusion
+    for printpath_group in slicer.print_paths:
+        [simplify_path_curvature(path, threshold, iterations) for path in printpath_group.get_all_paths()]
+
+
+def simplify_path_curvature(path, threshold,  iterations):
+    initial_points_number = len(path.points)
+    path_points = [p.pt for p in path.points]
+    reduced_pts = simplify_points(path_points, threshold,  iterations)
+    path.points = [point for point in path.points if point.pt in reduced_pts]
+    logger.debug("Path simplification curvature: %d points removed" % (initial_points_number - len(path.points)))
+
+
+def simplify_points(points, threshold, iterations):
     """
     Simplifies the polyline by only removing points that lie on the linear segments, whose removal does not affect significantly the shape of the polyline
     
@@ -28,9 +47,9 @@ def curvature_subsampling(points, threshold, iterations):
             next_index = find_next_index(i, indices_to_remove, len(points))
 
             if prev_index and next_index:
-                prev_pt = points[prev_index].pt
-                next_pt = points[next_index].pt
-                d_inner_sqrd = distance_point_line_sqrd(point=point.pt, line=[prev_pt, next_pt])
+                prev_pt = points[prev_index]
+                next_pt = points[next_index]
+                d_inner_sqrd = distance_point_line_sqrd(point=point, line=[prev_pt, next_pt])
                 d_outer_sqrd = distance_point_point_sqrd(prev_pt, next_pt)
                 if d_inner_sqrd > 0:
                     if math.sqrt(d_outer_sqrd / d_inner_sqrd) > threshold:

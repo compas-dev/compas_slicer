@@ -8,10 +8,10 @@ import logging
 
 logger = logging.getLogger('logger')
 
-__all__ = ['sort_shortest_path_mlrose']
+__all__ = ['sort_per_shortest_path_mlrose']
 
 
-def sort_shortest_path_mlrose(layers,
+def sort_per_shortest_path_mlrose(slicer,
                               population_size=200,
                               mutation_probability=0.1,
                               max_attempts=10,
@@ -58,6 +58,10 @@ def sort_shortest_path_mlrose(layers,
         print('The fitness at the best state is: ', best_fitness)
     """
 
+    logger.info("Sorting per shortest path using mlrose")
+
+    layers = slicer.print_paths
+
     for layer in layers:
         coords_list = []
         for contour in layer.contours:
@@ -80,7 +84,7 @@ def sort_shortest_path_mlrose(layers,
         # if layer.infill_paths: ...
         # if layer.support_paths: ...
 
-    return layers
+    slicer.print_paths = layers
 
 
 if __name__ == "__main__":

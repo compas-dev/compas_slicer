@@ -8,8 +8,10 @@ logger = logging.getLogger('logger')
 
 __all__ = ['sort_per_segment']
 
+# self.print_paths = sort_per_segment(self.print_paths, max_layers_per_segment,
+#                                     d_threshold=self.layer_height * 1.6)
 
-def sort_per_segment(layers, max_layers_per_segment, d_threshold):
+def sort_per_segment(slicer, max_layers_per_segment, threshold):
     """Sorts in vertical segments the contours that are stored in the horizontal layers.
     This is done by grouping the centroids of the paths based on proximity. 
 
@@ -24,6 +26,9 @@ def sort_per_segment(layers, max_layers_per_segment, d_threshold):
         Maximum number of layers that a segment can consist of
         If None, then the segment has unlimited number of layers
     """
+    logger.info("Sorting per segment")
+
+    layers = slicer.print_paths
 
     segments = [Segment(id=0)]  # segments that contain isocurves
     for layer in layers:
@@ -37,7 +42,7 @@ def sort_per_segment(layers, max_layers_per_segment, d_threshold):
                 contour_centroid = utils.get_average_point(contour.points)
                 other_centroids = get_segments_centroids_list(segments)
                 candidate_segment = segments[get_closest_pt_index(contour_centroid, other_centroids)]
-                if distance_point_point(candidate_segment.head_centroid, contour_centroid) < d_threshold:
+                if distance_point_point(candidate_segment.head_centroid, contour_centroid) < threshold:
                     if max_layers_per_segment:
                         if len(candidate_segment.contours) < max_layers_per_segment:
                             current_segment = candidate_segment
@@ -56,7 +61,7 @@ def sort_per_segment(layers, max_layers_per_segment, d_threshold):
         # if layer.support_paths: ...
 
     logger.info("Number of segments : %d" % len(segments))
-    return segments
+    slicer.print_paths = segments
 
 
 def get_closest_pt_index(pt, pts):

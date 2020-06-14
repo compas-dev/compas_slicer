@@ -3,9 +3,12 @@ import compas_am
 import os, sys
 from compas.datastructures import Mesh
 from compas.geometry import Frame
-from compas_plotters import MeshPlotter
 
-from compas_am.slicing import Slicer
+from compas_am.sorting import sort_per_segment, sort_per_shortest_path_mlrose
+from compas_am.sorting import align_seams
+from compas_am.polyline_simplification import simplify_paths_rdp
+
+from compas_am.slicing import PlanarSlicer
 from compas_am.fabrication import RoboticPrintOrganizer
 from compas_am.fabrication import RobotPrinter
 from compas_am.fabrication import Material
@@ -27,15 +30,13 @@ def main():
     compas_mesh = Mesh.from_stl(INPUT_FILE)
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type='planar_meshcut', layer_height=10.0)
-
+    slicer = PlanarSlicer(compas_mesh, slicer_type='planar_meshcut', layer_height=10.0)
     slicer.slice_model(create_contours=True, create_infill=False, create_supports=False)
-
-    slicer.simplify_paths(method='uniform', threshold=0.2)
-
     slicer.printout_info()
 
-    paths = slicer.sort_paths(method='shortest_path', max_layers_per_segment=False, max_attempts=0)
+    simplify_paths_rdp(slicer, threshold=0.2)
+    sort_per_shortest_path_mlrose(slicer, max_attempts=4)
+    align_seams(slicer)
 
     ### --- Fabrication
     robot_printer = RobotPrinter('UR5')
@@ -43,11 +44,13 @@ def main():
                                      frame=Frame(point=[0.153792, -0.01174, -0.03926],
                                                  xaxis=[1, 0, 0],
                                                  yaxis=[0, 1, 0]))
+    robot_printer.printout_info()
+
 
     material_PLA = Material('PLA')
+    material_PLA.printout_info()
 
-    print_organizer = RoboticPrintOrganizer(paths, machine_model=robot_printer, material=material_PLA)
-
+    print_organizer = RoboticPrintOrganizer(slicer.print_paths, machine_model=robot_printer, material=material_PLA)
     print_organizer.save_commands_to_json(OUTPUT_FILE)
 
 

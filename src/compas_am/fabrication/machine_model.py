@@ -129,7 +129,6 @@ class RobotPrinter(MachineModel):
             from compas_fab.robots.ur5 import Robot
             robot = Robot(load_geometry=False)
             scene = PlanningScene(robot)
-            print(robot.info())
 
         return robot, scene
 
@@ -138,6 +137,9 @@ class RobotPrinter(MachineModel):
         tool = Tool(mesh, frame)
         self.robot.attach_tool(tool)
 
+    def printout_info(self):
+        MachineModel.printout_info(self)
+        print(self.robot.info())
 
 if __name__ == "__main__":
     pass

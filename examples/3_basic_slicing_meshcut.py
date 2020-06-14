@@ -1,10 +1,13 @@
 import compas
 import compas_am
-import os, sys
+import os
 from compas.datastructures import Mesh
 from compas_plotters import MeshPlotter
-
-from compas_am.slicing import Slicer
+from compas_am.polyline_simplification import simplify_paths_rdp
+import compas_am.polyline_simplification.simplify_paths_curvature as simplify_paths_curvature
+from compas_am.slicing import PlanarSlicer
+from compas_am.sorting import sort_per_segment, sort_per_shortest_path_mlrose
+from compas_am.sorting import align_seams
 
 ######################## Logging
 import logging
@@ -25,17 +28,13 @@ def main():
     compas_mesh = Mesh.from_stl(FILE)
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type="planar_meshcut", layer_height=100.0)
-
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_meshcut", layer_height=100.0)
     slicer.slice_model(create_contours=True, create_infill=False, create_supports=False)
-
-    slicer.simplify_paths(method="uniform", threshold=0.2)
-
-    slicer.sort_paths(method="per_segment", max_layers_per_segment=False)
-
-    slicer.align_seams(method="seams_align")
-
     slicer.printout_info()
+
+    simplify_paths_rdp(slicer, threshold=0.2)
+    sort_per_segment(slicer, max_layers_per_segment=False, threshold=slicer.layer_height * 1.6)
+    align_seams(slicer)
 
     slicer.save_contours_to_json(path=DATA, name="branches_70_contours.json")
 

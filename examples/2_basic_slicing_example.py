@@ -1,9 +1,10 @@
-import compas
-import compas_am
 import os
 from compas.datastructures import Mesh
 from compas_plotters import MeshPlotter
-from compas_am.slicing import Slicer
+from compas_am.slicing import PlanarSlicer
+from compas_am.polyline_simplification import simplify_paths_rdp
+from compas_am.sorting import sort_per_shortest_path_mlrose
+from compas_am.sorting import align_seams
 
 ######################## Logging
 import logging
@@ -21,17 +22,13 @@ def main():
     compas_mesh = Mesh.from_obj(os.path.join(DATA, FILE))
 
     ### --- Slicer
-    slicer = Slicer(compas_mesh, slicer_type="planar_numpy", layer_height=10.0)
-
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_numpy", layer_height=10.0)
     slicer.slice_model(create_contours=True, create_infill=False, create_supports=False)
-
-    slicer.simplify_paths(method="all", threshold=0.4)
-
-    slicer.sort_paths(method="shortest_path", max_attempts=1)
-
-    slicer.align_seams(method="seams_align")
-
     slicer.printout_info()
+
+    simplify_paths_rdp(slicer, threshold=0.2)
+    sort_per_shortest_path_mlrose(slicer, max_attempts=4 )
+    align_seams(slicer)
 
     slicer.save_contours_to_json(path=DATA, name="vase_contours.json")
 
