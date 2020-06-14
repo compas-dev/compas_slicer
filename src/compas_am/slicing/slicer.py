@@ -1,7 +1,7 @@
 import compas
 from compas.datastructures import Mesh
 
-# import compas_am.slicing as slicing
+import compas_am.slicing as slicing
 from compas_am.utilities import utils
 from compas_am.sorting import sort_shortest_path_mlrose
 from compas_am.sorting import sort_per_segment
@@ -27,14 +27,13 @@ class Slicer:
         "planar_numpy", "planar_meshcut", "curved", "adaptive"
     layer_height : float
         Layer height only valid for planar slicing 
-        TODO: find a solution for input for adaptive and curved slicing 
-
+        TODO: find a solution for input for adaptive and curved slicing
     """
 
-    def __init__(self, mesh, slicer_type="planar", layer_height=2.0):
+    def __init__(self, mesh, slicer_type="planar_numpy", layer_height=2.0):
         ## check input
         assert isinstance(mesh,
-                          compas.datastructures.Mesh), "Input mesh has to be of type <compas.datastructures.Mesh>, yours is of type: " + str(
+                          compas.datastructures.Mesh), "Input mesh has to be of type <compas.datastructures.Mesh>, not " + str(
             type(mesh))
         self.check_triangular_mesh(mesh)
 
@@ -179,8 +178,7 @@ class Slicer:
         for fkey in mesh.faces():
             vs = mesh.face_vertices(fkey)
             if len(vs) != 3:
-                raise TypeError("Found a quad at face key: " + str(fkey) + " ,number of face vertices:" + str(len(vs)) + ". \nOnly triangular meshes supported. \
-                                \nConsider using the 'Subdivide triangle' to triangulate")
+                raise TypeError("Found a quad at face key: " + str(fkey) + " ,number of face vertices:" + str(len(vs)) + ". \nOnly triangular meshes supported.")
 
 
 if __name__ == "__main__":

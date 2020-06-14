@@ -4,7 +4,7 @@ logger = logging.getLogger('logger')
 
 __all__ = ['generate_gcode']
 
-def generate_gcode(paths, FILE, machine_model):
+def generate_gcode(paths, FILE, machine_model, material):
     """Creates all the commands in order for fabrication
 
     Attributes
@@ -38,10 +38,10 @@ def generate_gcode(paths, FILE, machine_model):
     """
 
     ## print parameters coming from machine model
-    extruder_temp = machine_model.print_parameters["extruder_temperature"]
-    bed_temp = machine_model.print_parameters["bed_temperature"]
-    print_speed = machine_model.print_parameters["print_speed"]
-    z_hop = machine_model.print_parameters["z_hop"]
+    extruder_temp = material.parameters["extruder_temperature"]
+    bed_temp = material.parameters["bed_temperature"]
+    print_speed = material.parameters["print_speed"]
+    z_hop = material.parameters["z_hop"]
 
     filament_feed_length = 0  ## Shouldn't this also be coming from machine_model print_parameters?
 

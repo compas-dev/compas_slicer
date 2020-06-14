@@ -1,5 +1,6 @@
 import logging
 import compas
+import compas_am
 from compas.geometry import Box
 from compas.datastructures import Mesh
 from compas_fab.backends import RosClient
@@ -11,21 +12,17 @@ __all__ = ['MachineModel',
            'FDMPrinter',
            'RobotPrinter']
 
+
 class MachineModel(object):
     """
     Class for representing various fabrication machines (3D printers, robots etc.)
     """
 
-    def __init__(self, id, material):
+    def __init__(self, id):
         self.id = id
-        self.material = material
         self.properties = self.get_machine_properties()
-        self.print_parameters = self.get_print_parameters()
 
     def get_machine_properties(self):
-        raise NotImplementedError
-
-    def get_print_parameters(self):
         raise NotImplementedError
 
     def get_machine_dimensions(self):
@@ -36,22 +33,13 @@ class MachineModel(object):
                                              self.properties["z_bounds"])
         return bbox
 
-    def set_print_parameter(self, name, value):
-        self.print_parameters[name] = value
-
     def set_machine_property(self, name, value):
         self.properties[name] = value
 
     def load_machine_properties_from_json(self):
         pass  # TODO!
 
-    def load_print_parameters_from_json(self):
-        pass  # TODO!
-
     def save_machine_properties_to_json(self):
-        pass  # TODO!
-
-    def save_print_parameters_to_json(self):
         pass  # TODO!
 
     def printout_info(self):
@@ -59,14 +47,11 @@ class MachineModel(object):
         print("ID : ", self.id)
         print("Properties : ")
         print(self.properties)
-        print("Print parameters: ")
-        print(self.print_parameters)
         print("")
 
-    ##############################
 
-
-#### 3D printing
+##############################
+#### FDM 3D printer
 ##############################
 
 class FDMPrinter(MachineModel):
@@ -74,8 +59,8 @@ class FDMPrinter(MachineModel):
     Class for representing FDM 3D printers.
     """
 
-    def __init__(self, id, material):
-        MachineModel.__init__(self, id, material)
+    def __init__(self, id):
+        MachineModel.__init__(self, id)
 
     def get_machine_properties(self):
         properties = {}
@@ -91,31 +76,9 @@ class FDMPrinter(MachineModel):
             logger.warning("Unknown printer : " + self.id)
         return properties
 
-    def get_print_parameters(self):
-        print_parameters = {}
-
-        if self.material == "PLA":
-            print_parameters = {
-                "extruder_temperature": 210,  # Extrusion temperature (degr C)
-                "bed_temperature": 60,  # Heated bed temperature (degr C)
-                "print_speed": 50,  # Movement speed (mm/s)
-                "z_hop": 0  # (mm)
-            }
-        elif self.material == "ABS":
-            print_parameters = {
-                "extruder_temperature": 230,  # Extrusion temperature (degr C)
-                "bed_temperature": 100,  # Heated bed temperature (degr C)
-                "print_speed": 50,  # Movement speed (mm/s)
-                "z_hop": 0  # (mm)
-            }
-        else:
-            logger.warning("Unknown material : " + self.material)
-
-        return print_parameters
-
 
 ##############################
-#### Robotic 3D printing
+#### Robot 3D printer
 ##############################
 
 class RobotPrinter(MachineModel):
@@ -123,38 +86,27 @@ class RobotPrinter(MachineModel):
     Class for representing Robotic printers
     """
 
-    def __init__(self, id, material, IP=None):
-        MachineModel.__init__(self, id, material)
+    def __init__(self, id, IP=None):
+        MachineModel.__init__(self, id)
 
         self.robot, self.scene = self.get_robot_model(IP)  # compas robot
 
         ## print parameters
         self.properties = self.get_machine_properties()
-        self.print_parameters = {}
 
     def get_machine_properties(self):
         properties = {}
 
         if self.id == "UR5":
             properties = {
-                "x_bounds": 0,
-                "y_bounds": 0,
-                "z_bounds": 0
+                "x_bounds": 0,  # TODO
+                "y_bounds": 0,  # TODO
+                "z_bounds": 0  # TODO
             }
 
         else:
             logger.warning("Unknown printer : " + self.id)
         return properties
-
-    def get_print_parameters(self):
-        print_parameters = {}
-
-        if self.material == "PLA":
-            print_parameters = {
-                "travel_speed": 120,
-                "safe_plane_height": 10  # (mm)
-            }
-        return print_parameters
 
     def get_robot_model(self, IP):
         logger.info("Loading from ROS robot model : " + self.id)

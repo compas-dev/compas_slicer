@@ -21,13 +21,15 @@ class PrintOrganizer(object):
         compas_am.fabrication.MachineModel or any class inheriting form it
     """
 
-    def __init__(self, paths_collection, machine_model):
+    def __init__(self, paths_collection, machine_model, material):
         # check input
         assert isinstance(paths_collection[0], compas_am.geometry.PathCollection)
         assert isinstance(machine_model, compas_am.fabrication.MachineModel)
+        assert isinstance(material, compas_am.fabrication.Material)
 
         self.paths_collection = paths_collection
         self.machine_model = machine_model
+        self.material = material
 
         self.visualization_geometry = None
 
@@ -41,17 +43,17 @@ class FDMPrintOrganizer(PrintOrganizer):
     Creates fabrication data for FDM 3D printers.
     """
 
-    def __init__(self, paths_collection, machine_model):
-        PrintOrganizer.__init__(self, paths_collection, machine_model)
+    def __init__(self, paths_collection, machine_model, material):
+        PrintOrganizer.__init__(self, paths_collection, machine_model, material)
 
     def save_commands_to_gcode(self, FILE):
         """
         Saves gcode file with the print parameters provided in the machine_model
         Only supports constant layer height
         """
-        if len(self.machine_model.print_parameters) == 0:
-            raise ValueError("The machine_model provided does not have print parameters")
-        generate_gcode(self.paths_collection, FILE, self.machine_model)
+        if len(self.material.parameters) == 0:
+            raise ValueError("The material provided does not have properties")
+        generate_gcode(self.paths_collection, FILE, self.machine_model, self.material)
 
 
 class RoboticPrintOrganizer(PrintOrganizer):
@@ -59,15 +61,16 @@ class RoboticPrintOrganizer(PrintOrganizer):
     Creates fabrication data for robotic 3D printing.
     """
 
-    def __init__(self, paths_collection, machine_model):
+    def __init__(self, paths_collection, machine_model, material):
         assert isinstance(machine_model,
                           compas_am.fabrication.machine_model.RobotPrinter), "Machine Model does not represent a robot"
-        PrintOrganizer.__init__(self, paths_collection, machine_model)
+        PrintOrganizer.__init__(self, paths_collection, machine_model, material)
 
         self.ordered_print_points = self.get_print_points_ordered_in_fabrication_sequence()
         self.commands = self.generate_robotic_fdm_commands()
 
     def get_print_points_ordered_in_fabrication_sequence(self):
+        #TODO
         return [printpoint for path in self.paths_collection for contour in path.contours for printpoint in
                 contour.points]
 

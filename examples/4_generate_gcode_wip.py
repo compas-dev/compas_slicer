@@ -8,6 +8,7 @@ from compas_am.slicing import Slicer
 from compas_am.fabrication import FDMPrintOrganizer
 from compas_am.fabrication import FDMPrinter
 from compas_am.positioning import center_mesh_on_build_platform
+from compas_am.fabrication import Material
 
 ######################## Logging
 import logging
@@ -26,7 +27,7 @@ def main():
     compas_mesh = Mesh.from_stl(INPUT_FILE)
 
     ### --- Get machine model
-    machine_model = FDMPrinter('FDM_Prusa_i3_mk2', "PLA")
+    machine_model = FDMPrinter('FDM_Prusa_i3_mk2')
     machine_dimensions = machine_model.get_machine_dimensions()
 
     ### --- Center mesh on build platform
@@ -43,13 +44,16 @@ def main():
 
     paths = slicer.sort_paths(method="shortest_path", max_layers_per_segment=False, max_attempts=0)
 
-    ### --- Fabrication 
+    ### --- Fabrication
 
-    fab = FDMPrintOrganizer(paths, machine_model=machine_model)
+    material_PLA = Material('PLA')
+    material_PLA.set_parameter("print_speed", 70)
+    material_PLA.set_parameter("z_hop", 10)
 
-    machine_model.set_print_parameter("print_speed", 70)
-    machine_model.set_print_parameter("z_hop", 10)
     machine_model.printout_info()
+    material_PLA.printout_info()
+
+    fab = FDMPrintOrganizer(paths, machine_model=machine_model, material=material_PLA)
 
     fab.save_commands_to_gcode(OUTPUT_FILE)
 
