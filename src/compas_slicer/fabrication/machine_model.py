@@ -1,6 +1,6 @@
 import logging
 import compas
-import compas_am
+import compas_slicer
 from compas.geometry import Box
 from compas.datastructures import Mesh
 from compas_fab.backends import RosClient

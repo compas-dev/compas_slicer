@@ -1,8 +1,8 @@
 import os
 from compas.datastructures import Mesh
-from compas_am.geometry import Contour, Layer
-from compas_am.slicing import create_planar_contours_meshcut
-from compas_am.slicing import create_planar_contours_numpy
+from compas_slicer.geometry import Contour, Layer
+from compas_slicer.slicing import create_planar_contours_meshcut
+from compas_slicer.slicing import create_planar_contours_numpy
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 FILE = os.path.abspath(os.path.join(DATA, 'vase.obj'))
@@ -19,7 +19,7 @@ def test_planar_contours_meshcut():
 
     assert isinstance(layers, list), "The method does not return a list"
     assert len(layers) >= z_bounds / layer_height, "Insufficient number of contours"
-    assert isinstance(layers[0], Layer), "The method does not return items of type 'compas_am.Layer'"
+    assert isinstance(layers[0], Layer), "The method does not return items of type 'compas_slicer.Layer'"
     for i in range(len(layers)):
         assert len(layers[i].contours) >= 0, "There is a layer with empty Contours list at index %d" % i
         assert isinstance(layers[i].contours[0], Contour), "Wrong class type in Layer.Contour list"
@@ -31,7 +31,7 @@ def test_planar_contours_numpy():
 
     assert isinstance(layers, list), "The method does not return a list"
     assert len(layers) >= z_bounds / layer_height, "Insufficient number of contours"
-    assert isinstance(layers[0], Layer), "The method does not return items of type 'compas_am.Layer'"
+    assert isinstance(layers[0], Layer), "The method does not return items of type 'compas_slicer.Layer'"
     for i in range(len(layers)):
         assert len(layers[i].contours) >= 0, "There is a layer with empty Contours list at index %d" % i
         assert isinstance(layers[i].contours[0], Contour), "Wrong class type in Layer.Contour list"

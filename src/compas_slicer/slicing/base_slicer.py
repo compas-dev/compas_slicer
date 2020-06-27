@@ -1,6 +1,6 @@
 import compas
 from compas.datastructures import Mesh
-from compas_am.utilities import utils
+from compas_slicer.utilities import utils
 import logging
 
 logger = logging.getLogger('logger')

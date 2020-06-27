@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-compas_am.position
+compas_slicer.position
 ********************************************************************************
     define working area/bounds 
     Maybe have some presets for mainstream machines like UR5
@@ -15,6 +15,6 @@ from __future__ import division
 from __future__ import print_function
 
 
-from .centering_on_build_platform import *  # noqa: F401 E402 F403
+from .center_on_build_platform import *  # noqa: F401 E402 F403
 
 __all__ = [name for name in dir() if not name.startswith('_')]

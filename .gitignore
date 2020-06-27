@@ -138,3 +138,5 @@ dmypy.json
 # 3d model backup files
 .objbak
 .stlbak
+
+.idea/

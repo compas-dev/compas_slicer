@@ -1,5 +1,5 @@
 '''
-Example code structures for compas_am
+Example code structures for compas_slicer
 
 author :  Ioanna Mitropoulou
 email: mitropoulou@arch.ethz.ch
@@ -9,19 +9,19 @@ date: 20.04.2020
 STRUCTURE 2
 ===================
 
-compas_am.input
+compas_slicer.input
     mesh / brep - open / closed
     sanitize input (ex. in case of holes: close)    
 
-compas_am.position 
+compas_slicer.position
     position and orient input shape within reach
     orient shape to reduce need for support 
     segmentation? - design seams
 
-compas_am.supports
+compas_slicer.supports
     supports : identify and visualize big overhangs 
 
-compas_am.slicing
+compas_slicer.slicing
     Slicing
         slice planar layers with regular height
         slice planar layers with adaptive height
@@ -37,20 +37,20 @@ compas_am.slicing
     find issues - Satinize the curves
 
 
-compas_am.sorting
+compas_slicer.sorting
     sort per layer - shortest path at the same z height
     sort per segment - less interruptions 
     sort by longest path
 
 
-compas_am.sampling
+compas_slicer.sampling
     Descrete polylines: 
         cull points within a threshold (to reduce too many input curves)
         cull points based on curvature - adaptive polygon simplification
 
 -gcode
 
-compas_am.commands
+compas_slicer.commands
 
     generate commands
     save commands 
@@ -65,19 +65,19 @@ compas_am.commands
     Then each project can only fill in the parameters they need 
 
 
-compas_am.fabrication_data
+compas_slicer.fabrication_data
     generate_ur_script(commands) 
     save_ur_script(script, filename)
 
     generate_rapid(commands) 
     save_rapid
 
-compas_am.send_commands
+compas_slicer.send_commands
     UR direct communication
     Rapid ?... 
 
 
-compas_am.non_planar_printing
+compas_slicer.non_planar_printing
     generate_print_orientation 
     collision check
     orientation smoothing 

@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-compas_am.polyline_simplification
+compas_slicer.polyline_simplification
 ********************************************************************************
     Descrete polylines: 
         cull points within a threshold (to reduce too many input curves)

@@ -1,13 +1,13 @@
 """
 ********************************************************************************
-compas_am.commands
+compas_slicer.commands
 ********************************************************************************
 
 Thought 06.05.2020: Could it make sense to change 'fabrication' to 'output' to resonate better with 'input'?
 
 -gcode
 
-compas_am.commands
+compas_slicer.commands
 
     generate commands
     save commands : save to Json, save to Gcode
@@ -23,14 +23,14 @@ compas_am.commands
 
 
 --------------------------------
-compas_am.fabrication_data
+compas_slicer.fabrication_data
     generate_ur_script(commands) 
     save_ur_script(script, filename)
 
     generate_rapid(commands) 
     save_rapid
 
-compas_am.send_commands
+compas_slicer.send_commands
     UR direct communication
     Rapid ?... 
 

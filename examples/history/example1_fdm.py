@@ -1,5 +1,5 @@
 '''
-Example code structures for compas_am
+Example code structures for compas_slicer
 
 author : Joris Burger
 email: burger@arch.ethz.ch
@@ -9,27 +9,27 @@ date: 20.04.2020
 EXAMPLE STRUCTURE 1
 ===================
 
-compas_am.geometry
-    compas_am.geometry.mesh
+compas_slicer.geometry
+    compas_slicer.geometry.mesh
     --- contour_geometry(mesh, layer_height)
     --- get_bounding_box(mesh)
     --- get_mesh_normals(mesh)
     --- generate_supports(mesh)
 
-    compas_am.geometry.polyline
+    compas_slicer.geometry.polyline
     --- divide_into_points(polyline, point_distance) 
     --- sort_by_z(polyline_list)
     --- shortest_path(polyline_list)
     --- generate_infill(polyline, infill_type, infill_percentage)
 
-    compas_am.geometry.point
+    compas_slicer.geometry.point
     --- sort_per_layer(point_list)
 
-compas_am.fabrication
-    compas_am.fabrication.fdm
+compas_slicer.fabrication
+    compas_slicer.fabrication.fdm
     --- generate_gcode(point_list, many parameters)
 
-    compas_am.fabrication.rob_fdm
+    compas_slicer.fabrication.rob_fdm
     --- generate_ur_script(point_list, many parameters)
     --- generate_rapid(point_list, many parameters)
     --- etc.

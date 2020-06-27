@@ -1,7 +1,7 @@
 import json
-import compas_am
+import compas_slicer
 import logging
-from compas_am.fabrication import generate_gcode
+from compas_slicer.fabrication import generate_gcode
 
 logger = logging.getLogger('logger')
 
@@ -16,16 +16,16 @@ class PrintOrganizer(object):
     Attributes
     ----------
     paths_collection : list
-        compas_am.geometry.PathCollection or any class inheriting from it
+        compas_slicer.geometry.PathCollection or any class inheriting from it
     machine_model : The hardware
-        compas_am.fabrication.MachineModel or any class inheriting form it
+        compas_slicer.fabrication.MachineModel or any class inheriting form it
     """
 
     def __init__(self, paths_collection, machine_model, material):
         # check input
-        assert isinstance(paths_collection[0], compas_am.geometry.PathCollection)
-        assert isinstance(machine_model, compas_am.fabrication.MachineModel)
-        assert isinstance(material, compas_am.fabrication.Material)
+        assert isinstance(paths_collection[0], compas_slicer.geometry.PathCollection)
+        assert isinstance(machine_model, compas_slicer.fabrication.MachineModel)
+        assert isinstance(material, compas_slicer.fabrication.Material)
 
         self.paths_collection = paths_collection
         self.machine_model = machine_model
@@ -63,7 +63,7 @@ class RoboticPrintOrganizer(PrintOrganizer):
 
     def __init__(self, paths_collection, machine_model, material):
         assert isinstance(machine_model,
-                          compas_am.fabrication.machine_model.RobotPrinter), "Machine Model does not represent a robot"
+                          compas_slicer.fabrication.machine_model.RobotPrinter), "Machine Model does not represent a robot"
         PrintOrganizer.__init__(self, paths_collection, machine_model, material)
 
         self.ordered_print_points = self.get_print_points_ordered_in_fabrication_sequence()

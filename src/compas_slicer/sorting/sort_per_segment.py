@@ -1,6 +1,6 @@
 from compas.geometry import distance_point_point
-from compas_am.geometry import Segment
-import compas_am.utilities as utils
+from compas_slicer.geometry import Segment
+import compas_slicer.utilities as utils
 
 import logging
 
@@ -18,7 +18,7 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
     Parameters
     ----------
     layers : list
-        An instance of the compas_am.slicing.printpath.Layer class. 
+        An instance of the compas_slicer.slicing.printpath.Layer class.
     d_threshold : float
         The maximum distance that the centroids of two successive paths can have to belong in the same group
         Recommended value, slightly bigger than the layer height

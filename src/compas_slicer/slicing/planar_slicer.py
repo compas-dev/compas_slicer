@@ -1,5 +1,5 @@
-import compas_am
-from compas_am.slicing import BaseSlicer
+import compas_slicer
+from compas_slicer.slicing import BaseSlicer
 import logging
 
 logger = logging.getLogger('logger')
@@ -27,11 +27,11 @@ class PlanarSlicer(BaseSlicer):
     def generate_contours(self):
         if self.slicer_type == "planar_numpy":
             logger.info("Planar contours compas numpy slicing")
-            self.print_paths = compas_am.slicing.create_planar_contours_numpy(self.mesh, self.layer_height)
+            self.print_paths = compas_slicer.slicing.create_planar_contours_numpy(self.mesh, self.layer_height)
 
         elif self.slicer_type == "planar_meshcut":
             logger.info("Planar contours meshcut slicing")
-            self.print_paths = compas_am.slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
+            self.print_paths = compas_slicer.slicing.create_planar_contours_meshcut(self.mesh, self.layer_height)
 
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)

@@ -1,10 +1,10 @@
 import os
 from compas.datastructures import Mesh
 from compas_plotters import MeshPlotter
-from compas_am.slicing import PlanarSlicer
-from compas_am.polyline_simplification import simplify_paths_rdp
-from compas_am.sorting import sort_per_shortest_path_mlrose
-from compas_am.sorting import align_seams
+from compas_slicer.slicing import PlanarSlicer
+from compas_slicer.polyline_simplification import simplify_paths_rdp
+from compas_slicer.sorting import sort_per_shortest_path_mlrose
+from compas_slicer.sorting import align_seams
 
 ######################## Logging
 import logging

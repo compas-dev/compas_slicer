@@ -30,7 +30,7 @@ def sort_per_shortest_path_mlrose(slicer,
     Parameters
     ----------
     layers : list
-        An instance of the compas_am.slicing.printpath.Layer class. 
+        An instance of the compas_slicer.slicing.printpath.Layer class.
     population_size : int
         Population size.
     mutation_probability : float

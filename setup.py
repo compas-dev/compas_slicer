@@ -27,7 +27,7 @@ requirements = read("requirements.txt").split("\n")
 optional_requirements = {}
 
 setup(
-    name="compas_am",
+    name="compas_slicer",
     version="0.1.0",
     description="additive manufacturing package for the compas framework",
     long_description=long_description,
@@ -55,7 +55,7 @@ setup(
     ],
     keywords=[],
     project_urls={},
-    packages=["compas_am"],
+    packages=["compas_slicer"],
     package_dir={"": "src"},
     package_data={},
     data_files=[],

@@ -1,8 +1,8 @@
 import numpy as np
 from compas.geometry import Point, distance_point_point
-from compas_am.geometry import Contour
-from compas_am.geometry import Layer
-from compas_am.geometry import PrintPoint
+from compas_slicer.geometry import Contour
+from compas_slicer.geometry import Layer
+from compas_slicer.geometry import PrintPoint
 import meshcut
 
 __all__ = ['create_planar_contours_meshcut']

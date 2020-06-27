@@ -1,5 +1,4 @@
-import compas_am
-from compas_am.polyline_simplification import simplify_paths_curvature
+import compas_slicer
 import logging
 
 logger = logging.getLogger('logger')
@@ -22,7 +21,7 @@ class PrintPath(object):
     """
     def __init__(self, points, is_closed):
         # check input
-        assert isinstance(points[0], compas_am.geometry.PrintPoint)
+        assert isinstance(points[0], compas_slicer.geometry.PrintPoint)
         self.points = points  # PrintPoint class
         for print_point in self.points:
             print_point.parent_path = self

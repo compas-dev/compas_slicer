@@ -1,17 +1,15 @@
-import compas
-import compas_am
-import os, sys
+import os
 from compas.datastructures import Mesh
 from compas.geometry import Frame
 
-from compas_am.sorting import sort_per_segment, sort_per_shortest_path_mlrose
-from compas_am.sorting import align_seams
-from compas_am.polyline_simplification import simplify_paths_rdp
+from compas_slicer.sorting import sort_per_segment, sort_per_shortest_path_mlrose
+from compas_slicer.sorting import align_seams
+from compas_slicer.polyline_simplification import simplify_paths_rdp
 
-from compas_am.slicing import PlanarSlicer
-from compas_am.fabrication import RoboticPrintOrganizer
-from compas_am.fabrication import RobotPrinter
-from compas_am.fabrication import Material
+from compas_slicer.slicing import PlanarSlicer
+from compas_slicer.fabrication import RoboticPrintOrganizer
+from compas_slicer.fabrication import RobotPrinter
+from compas_slicer.fabrication import Material
 
 ######################## Logging
 import logging

@@ -1,6 +1,6 @@
 import logging
-import compas_am
-import compas_am.utilities as utils
+import compas_slicer
+import compas_slicer.utilities as utils
 
 logger = logging.getLogger('logger')
 
@@ -15,24 +15,24 @@ class PathCollection(object):
     Attributes
     ----------
     contours : list
-        compas_am.geometry.Contour
+        compas_slicer.geometry.Contour
     infills : list
-        compas_am.geometry.InfillPath
+        compas_slicer.geometry.InfillPath
     supports : list
-        compas_am.geometry.SupportPath
+        compas_slicer.geometry.SupportPath
     """
 
     def __init__(self, contours, infills, supports):
         # check input
         if contours:
             if len(contours) > 0:
-                assert isinstance(contours[0], compas_am.geometry.PrintPath)
+                assert isinstance(contours[0], compas_slicer.geometry.PrintPath)
         if infills:
             if len(infills) > 0:
-                assert isinstance(infills[0], compas_am.geometry.PrintPath)
+                assert isinstance(infills[0], compas_slicer.geometry.PrintPath)
         if supports:
             if len(supports) > 0:
-                assert isinstance(supports[0], compas_am.geometry.PrintPath)
+                assert isinstance(supports[0], compas_slicer.geometry.PrintPath)
 
         self.contours = contours
         self.infills = infills

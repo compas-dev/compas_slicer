@@ -1,6 +1,6 @@
 import os
 from compas.datastructures import Mesh
-from compas_am.slicing import Slicer
+from compas_slicer.slicing import Slicer
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
 FILE = os.path.abspath(os.path.join(DATA, 'branches_70_short.obj'))
