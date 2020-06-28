@@ -8,7 +8,8 @@ Additive manufacturing package for the COMPAS framework.
 Main features
 -------------
 
-* Slicing functionality for COMPAS
+* Planar slicing
+* Curved slicing (using the stratum library)
 
 
 Getting started
@@ -29,6 +30,16 @@ pip install -e <path>.
 ```
 
 Then run the file examples/1_versions_check.py
+
+Note: 
+
+To use the curved slicer you also need to go to the folder dependencies/stratum and run
+```bash
+pip install -e .
+conda install -c conda-forge igl
+```
+
+
 
 Contributions
 ------------
