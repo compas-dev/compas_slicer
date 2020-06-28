@@ -3,15 +3,15 @@ import logging
 
 logger = logging.getLogger('logger')
 
-__all__ = ['PrintPath',
+__all__ = ['Path',
            'Contour',
            'Infill',
            'Support']
 
 
-class PrintPath(object):
+class Path(object):
     """
-    The PrintPath class is the base class for all print paths.
+    The Path class is the base class for all print paths.
     
     Attributes
     ----------
@@ -53,19 +53,19 @@ class PrintPath(object):
         return lines
 
 
-class Contour(PrintPath):
+class Contour(Path):
     def __init__(self, points, is_closed):
-        PrintPath.__init__(self, points, is_closed)
+        Path.__init__(self, points, is_closed)
 
 
-class Infill(PrintPath):
+class Infill(Path):
     def __init__(self, points, is_closed):
-        PrintPath.__init__(self, points, is_closed)
+        Path.__init__(self, points, is_closed)
 
 
-class Support(PrintPath):
+class Support(Path):
     def __init__(self, points, is_closed):
-        PrintPath.__init__(self, points, is_closed)
+        Path.__init__(self, points, is_closed)
 
 
 if __name__ == '__main__':

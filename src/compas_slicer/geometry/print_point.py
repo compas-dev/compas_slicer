@@ -9,7 +9,7 @@ class PrintPoint(object):
         self.pt = pt  # position of center of mass (compas.geometry.Point)
         self.layer_height = layer_height
 
-        self.parent_path = None  # class inheriting from PrintPath. The path in which this point belongs
+        self.parent_path = None  # class inheriting from Path. The path in which this point belongs
 
     #### --- Find neighboring points
     def get_prev_print_point(self):
@@ -39,7 +39,7 @@ class AdvancedPrintPoint(PrintPoint):
         self.visualization_shape = None
         # parameters useful for curved slicing
         self.support_printpoint = None  # class PrintPoint
-        self.support_path = None  # class inheriting from PrintPath
+        self.support_path = None  # class inheriting from Path
 
     #### --- Initialization functions
     def get_frame(self):

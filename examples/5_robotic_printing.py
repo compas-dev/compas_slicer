@@ -6,7 +6,7 @@ from compas_slicer.sorting import sort_per_segment, sort_per_shortest_path_mlros
 from compas_slicer.sorting import align_seams
 from compas_slicer.polyline_simplification import simplify_paths_rdp
 
-from compas_slicer.slicing import PlanarSlicer
+from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
 from compas_slicer.fabrication import Material
@@ -19,7 +19,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-INPUT_FILE = os.path.abspath(os.path.join(DATA, 'box.stl'))
+INPUT_FILE = os.path.abspath(os.path.join(DATA, 'test_geometries/box.stl'))
 OUTPUT_FILE = os.path.abspath(os.path.join(DATA, 'commands.json'))
 
 
@@ -43,7 +43,6 @@ def main():
                                                  xaxis=[1, 0, 0],
                                                  yaxis=[0, 1, 0]))
     robot_printer.printout_info()
-
 
     material_PLA = Material('PLA')
     material_PLA.printout_info()

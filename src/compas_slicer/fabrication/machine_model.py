@@ -3,7 +3,7 @@ import compas
 import compas_slicer
 from compas.geometry import Box
 from compas.datastructures import Mesh
-from compas_fab.backends import RosClient
+
 from compas_fab.robots import PlanningScene, Tool
 
 logger = logging.getLogger('logger')
@@ -89,7 +89,7 @@ class RobotPrinter(MachineModel):
     def __init__(self, id, IP=None):
         MachineModel.__init__(self, id)
 
-        self.robot, self.scene = self.get_robot_model(IP)  # compas robot
+        self.robot, self.scene = self.get_robot_model()  # compas robot
 
         ## print parameters
         self.properties = self.get_machine_properties()
@@ -108,23 +108,12 @@ class RobotPrinter(MachineModel):
             logger.warning("Unknown printer : " + self.id)
         return properties
 
-    def get_robot_model(self, IP):
+    def get_robot_model(self):
         logger.info("Loading from ROS robot model : " + self.id)
         compas.PRECISION = '12f'
         robot, scene = None, None
 
         if self.id == "UR5":  # How to load different robots from here?
-            if IP:
-                # Load from ROS
-                try:
-                    with RosClient(IP) as ros:
-                        # load robot class
-                        robot = ros.load_robot(load_geometry=False)
-                        scene = PlanningScene(robot)
-                        logger.info("Loaded robot")
-                except:
-                    logger.warning("No connection to ROS. Have you put the correct IP and composed up docker?")
-
             ### Load robot from github
             from compas_fab.robots.ur5 import Robot
             robot = Robot(load_geometry=False)

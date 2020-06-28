@@ -26,13 +26,13 @@ class PathCollection(object):
         # check input
         if contours:
             if len(contours) > 0:
-                assert isinstance(contours[0], compas_slicer.geometry.PrintPath)
+                assert isinstance(contours[0], compas_slicer.geometry.Path)
         if infills:
             if len(infills) > 0:
-                assert isinstance(infills[0], compas_slicer.geometry.PrintPath)
+                assert isinstance(infills[0], compas_slicer.geometry.Path)
         if supports:
             if len(supports) > 0:
-                assert isinstance(supports[0], compas_slicer.geometry.PrintPath)
+                assert isinstance(supports[0], compas_slicer.geometry.Path)
 
         self.contours = contours
         self.infills = infills

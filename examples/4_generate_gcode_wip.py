@@ -1,7 +1,7 @@
 import os
 from compas.datastructures import Mesh
 
-from compas_slicer.slicing import PlanarSlicer
+from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.sorting import sort_per_segment, sort_per_shortest_path_mlrose
 from compas_slicer.sorting import align_seams
 from compas_slicer.polyline_simplification import simplify_paths_rdp

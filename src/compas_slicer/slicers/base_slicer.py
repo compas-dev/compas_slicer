@@ -22,9 +22,8 @@ class BaseSlicer(object):
 
     def __init__(self, mesh):
         ## check input
-        assert isinstance(mesh,
-                          compas.datastructures.Mesh), "Input mesh must be of type <compas.datastructures.Mesh>, not " + str(
-            type(mesh))
+        assert isinstance(mesh, compas.datastructures.Mesh), \
+            "Input mesh must be of type <compas.datastructures.Mesh>, not " + str(type(mesh))
         self.check_triangular_mesh(mesh)
 
         ### input
