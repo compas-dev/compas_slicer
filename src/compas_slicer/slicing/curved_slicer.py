@@ -1,9 +1,9 @@
 import sys, os
 import compas_slicer
 
-path_to_stratum = os.path.join(os.path.dirname(compas_slicer.__file__), '../../', 'submodules/stratum/src')
+path_to_stratum = os.path.join(os.path.dirname(compas_slicer.__file__), '../../', 'dependencies/stratum/src')
 sys.path.append(path_to_stratum)
-# import stratum
+import stratum
 
 from compas_slicer.slicing import BaseSlicer
 import compas_slicer.utilities.utils as utils
@@ -35,5 +35,7 @@ class CurvedSlicer(BaseSlicer):
         pass
 
 
+
+
 if __name__ == "__main__":
-    print (os.path.join(os.path.dirname(compas_slicer.__file__)))
+    print(os.path.abspath(os.path.join(os.path.dirname(compas_slicer.__file__), '../../', 'dependencies/stratum/src')))
