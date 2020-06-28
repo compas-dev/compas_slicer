@@ -4,7 +4,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import io
+import io, os
 from os import path
 
 from setuptools import setup
@@ -61,7 +61,7 @@ setup(
     data_files=[],
     include_package_data=True,
     zip_safe=False,
-    install_requires=requirements,
+    install_requires=[requirements],
     python_requires=">=2.7",
     extras_require=optional_requirements,
     entry_points={

@@ -30,6 +30,7 @@ import compas
 
 from .base_slicer import *  # noqa: F401 E402 F403
 from .planar_slicer import *
+from .curved_slicer import *
 
 if not compas.IPY:
     from .planar_slicing_meshcut import *  # noqa: F401 E402 F403
