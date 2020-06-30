@@ -70,7 +70,7 @@ class RoboticPrintOrganizer(PrintOrganizer):
 
         self.ordered_print_points = self.get_print_points_ordered_in_fabrication_sequence()
         # print (self.ordered_print_points)
-        self.commands = self.generate_robotic_fdm_commands()
+        self.commands = [] #self.generate_commands()
 
     def get_print_points_ordered_in_fabrication_sequence(self):
         # TODO
@@ -78,7 +78,7 @@ class RoboticPrintOrganizer(PrintOrganizer):
         #         contour.printpoints]
         pass
 
-    def generate_robotic_fdm_commands(self):
+    def generate_commands(self):
         a = self.ordered_print_points
         return []  # TODO
 
