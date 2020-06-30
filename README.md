@@ -40,6 +40,16 @@ conda install -c conda-forge igl
 ```
 
 
+Submodules
+------------
+
+Stratum, https://github.com/ioanna21/stratum
+
+To update the submodules use 
+
+```bash
+git pull --recurse-submodules
+```
 
 Contributions
 ------------
