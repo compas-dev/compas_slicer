@@ -18,7 +18,7 @@ logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
-DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
+DATA = os.path.join(os.path.dirname(__file__), '..', 'data/test_geometries')
 INPUT_FILE = os.path.abspath(os.path.join(DATA, 'box.stl'))
 OUTPUT_FILE = os.path.abspath(os.path.join(DATA, 'gcode_test.gcode'))
 
@@ -51,7 +51,7 @@ def main():
     material_PLA.set_parameter("z_hop", 10)
     material_PLA.printout_info()
 
-    fab = FDMPrintOrganizer(slicer.print_paths, machine_model=machine_model, material=material_PLA)
+    fab = FDMPrintOrganizer(slicer, machine_model=machine_model, material=material_PLA)
     fab.save_commands_to_gcode(OUTPUT_FILE)
 
 

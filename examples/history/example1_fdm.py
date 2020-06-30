@@ -48,7 +48,7 @@ def main_robfdm(input_geometry):
 
 def contour_geometry(self, input_geometry):
 
-    """ Creates curves and points from an input geometry by generating contours.
+    """ Creates curves and printpoints from an input geometry by generating contours.
     """
     
     # 1. Gets minimun and maximum z value
@@ -77,7 +77,7 @@ def contour_geometry(self, input_geometry):
     # 7. Align seams
     contour_curves, seaming_points = align_seams(contour_curves)
 
-    # 8. Divide curves into points
+    # 8. Divide curves into printpoints
     division_points = divide_curves_in_points(contour_curves)
 
     return( contour_curves, 
@@ -132,6 +132,6 @@ def fix_self_intersections(curves, intersection_threshold, layer_height):
 
 def divide_curves_in_points(contour_curves, distance_between_points):
 
-    """ Divides a curve into points at a certain distance. 
+    """ Divides a curve into printpoints at a certain distance.
     """
     return pt_list

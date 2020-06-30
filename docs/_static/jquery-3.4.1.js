@@ -674,7 +674,7 @@ var i,
 				return "\uFFFD";
 			}
 
-			// Control characters and (dependent upon position) numbers get escaped as code points
+			// Control characters and (dependent upon position) numbers get escaped as code printpoints
 			return ch.slice( 0, -1 ) + "\\" + ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
 		}
 
@@ -4118,7 +4118,7 @@ Data.prototype = {
 		//
 		this.set( owner, key, value );
 
-		// Since the "set" path can have two possible entry points
+		// Since the "set" path can have two possible entry printpoints
 		// return the expected data based on which path was taken[*]
 		return value !== undefined ? value : key;
 	},

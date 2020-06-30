@@ -47,7 +47,7 @@ def main():
     material_PLA = Material('PLA')
     material_PLA.printout_info()
 
-    print_organizer = RoboticPrintOrganizer(slicer.print_paths, machine_model=robot_printer, material=material_PLA)
+    print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA)
     print_organizer.save_commands_to_json(OUTPUT_FILE)
 
 

@@ -4,7 +4,7 @@ logger = logging.getLogger('logger')
 
 __all__ = ['generate_gcode']
 
-def generate_gcode(paths, FILE, machine_model, material):
+def generate_gcode(paths, layer_height, FILE, machine_model, material):
     """Creates all the commands in order for fabrication
 
     Attributes
@@ -84,29 +84,20 @@ def generate_gcode(paths, FILE, machine_model, material):
         for path in paths:
             logger.debug("Gcode layer number : %d" % layer_number)
 
-            # get layer height from first printpoint in path
-            layer_height = path.contours[0].points[0].layer_height  # only constant height per layer supported
-
             f.write(";LAYER:{0}\n".format(layer_number))
             f.write("G0 Z{0}\n".format(layer_height))
             for contour in path.contours:
                 f.write(";CONTOUR\n")
-                for printpoint in contour.points:
-                    filament_feed_length = get_filament_feed_length(printpoint)  ## TODO!
-                    f.write("G1 X{x} Y{y} Z{z} E{e}\n".format(x=printpoint.pt[0],
-                                                              y=printpoint.pt[1],
-                                                              z=printpoint.pt[2],
+                for point in contour.points:
+                    filament_feed_length = get_filament_feed_length(point)  ## TODO!
+                    f.write("G1 X{x} Y{y} Z{z} E{e}\n".format(x=point[0],
+                                                              y=point[1],
+                                                              z=point[2],
                                                               e=filament_feed_length))
             layer_number += 1
         logger.info("Saved to gcode: " + FILE)
 
 
 def get_filament_feed_length(printpoint):
-    prev_printpoint = printpoint.get_prev_print_point()
-    next_printpoint = printpoint.get_next_print_point()
-    if prev_printpoint:
-        prev_pt = prev_printpoint.pt
-    if next_printpoint:
-        next_pt = next_printpoint.pt
     # TODO!!!
     return 0

@@ -78,7 +78,7 @@ class Segment(PathCollection):
     def total_number_of_points(self):
         num = 0
         for contour in self.contours:
-            num += len(contour.points)
+            num += len(contour.printpoints)
         return num
 
     def printout_details(self):

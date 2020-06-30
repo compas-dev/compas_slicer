@@ -39,8 +39,8 @@ def create_planar_contours_numpy(mesh, layer_height):
                     threshold_closed = 15.0  # TODO: VERY BAD!! Threshold should not be hardcoded
                     is_closed = distance_point_point(points[0], points[-1]) < threshold_closed
 
-                    print_points = [PrintPoint(pt=p, layer_height=layer_height) for p in points]
-                    c = Contour(points=print_points, is_closed=is_closed)
+                    # print_points = [PrintPoint(pt=p, layer_height=layer_height) for p in points]
+                    c = Contour(points=points, is_closed=is_closed)
 
                     contours_per_layer.append(c)
             l = Layer(contours_per_layer, None, None)

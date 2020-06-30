@@ -16,7 +16,5 @@ def simplify_paths_rdp(slicer, threshold):
 
 def simplify_path_rdp(path, threshold):
     initial_points_number = len(path.points)
-    path_points = [p.pt for p in path.points]
-    reduced_pts = rdp(np.array(path_points), epsilon=threshold)
-    path.points = [point for point in path.points if point.pt in reduced_pts]
-    logger.debug("Path simplification rdp: %d points removed" % (initial_points_number - len(path.points)))
+    path.points = rdp(np.array(path.points), epsilon=threshold)
+    logger.debug("Path simplification rdp: %d printpoints removed" % (initial_points_number - len(path.points)))

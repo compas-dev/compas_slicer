@@ -9,29 +9,29 @@ __all__ = ['simplify_paths_curvature']
 
 def simplify_paths_curvature(slicer, threshold, iterations=2):
     logger.info("Paths simplification curvature")
-    threshold = 3.3 / threshold  # Trying to make the same threshold have the same meaning for all simplification methods. Here as threshold goes down more points are removed, thus k/threshold to avoid confusion
+    threshold = 3.3 / threshold  # Trying to make the same threshold have the same meaning for all simplification methods. Here as threshold goes down more printpoints are removed, thus k/threshold to avoid confusion
     for printpath_group in slicer.print_paths:
         [simplify_path_curvature(path, threshold, iterations) for path in printpath_group.get_all_paths()]
 
 
 def simplify_path_curvature(path, threshold,  iterations):
-    initial_points_number = len(path.points)
-    path_points = [p.pt for p in path.points]
+    initial_points_number = len(path.printpoints)
+    path_points = [p.pt for p in path.printpoints]
     reduced_pts = simplify_points(path_points, threshold,  iterations)
-    path.points = [point for point in path.points if point.pt in reduced_pts]
-    logger.debug("Path simplification curvature: %d points removed" % (initial_points_number - len(path.points)))
+    path.printpoints = [point for point in path.printpoints if point.pt in reduced_pts]
+    logger.debug("Path simplification curvature: %d printpoints removed" % (initial_points_number - len(path.printpoints)))
 
 
 def simplify_points(points, threshold, iterations):
     """
-    Simplifies the polyline by only removing points that lie on the linear segments, whose removal does not affect significantly the shape of the polyline
+    Simplifies the polyline by only removing printpoints that lie on the linear segments, whose removal does not affect significantly the shape of the polyline
     
     Attributes
     ----------
     points : list
         compas.geometry.Point
     threshold : float
-        The lower the threshold, the more points are removed
+        The lower the threshold, the more printpoints are removed
     iterations : int
         How many iterations to perform. 2 is a good number. 
     """

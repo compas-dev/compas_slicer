@@ -11,18 +11,18 @@ class PrintPoint(object):
 
         self.parent_path = None  # class inheriting from Path. The path in which this point belongs
 
-    #### --- Find neighboring points
+    #### --- Find neighboring printpoints
     def get_prev_print_point(self):
-        assert self.parent_path, "Cannot get neighboring points because parent_path has not been specified"
-        i = self.parent_path.points.index(self)
+        assert self.parent_path, "Cannot get neighboring printpoints because parent_path has not been specified"
+        i = self.parent_path.printpoints.index(self)
         if i > 0:
-            return self.parent_path.points[i - 1]
+            return self.parent_path.printpoints[i - 1]
 
     def get_next_print_point(self):
-        assert self.parent_path, "Cannot get neighboring points because parent_path has not been specified"
-        i = self.parent_path.points.index(self)
-        if i < len(self.parent_path.points) - 1:
-            return self.parent_path.points[i + 1]
+        assert self.parent_path, "Cannot get neighboring printpoints because parent_path has not been specified"
+        i = self.parent_path.printpoints.index(self)
+        if i < len(self.parent_path.printpoints) - 1:
+            return self.parent_path.printpoints[i + 1]
 
 
 class AdvancedPrintPoint(PrintPoint):

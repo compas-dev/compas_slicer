@@ -25,10 +25,9 @@ def load_from_json(path, name):
 
 
 def get_average_point(points):
-    all_pts = [point.pt for point in points]
-    x_mean = statistics.mean([p[0] for p in all_pts])
-    y_mean = statistics.mean([p[1] for p in all_pts])
-    z_mean = statistics.mean([p[2] for p in all_pts])
+    x_mean = statistics.mean([p[0] for p in points])
+    y_mean = statistics.mean([p[1] for p in points])
+    z_mean = statistics.mean([p[2] for p in points])
     return [x_mean, y_mean, z_mean]
 
 if __name__ == "__main__":

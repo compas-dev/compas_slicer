@@ -9,6 +9,7 @@ from stratum.isocurves.compound_target import CompoundTarget
 from stratum.isocurves.marching_triangles import MarchingTriangles, find_desired_number_of_isocurves
 import stratum.utils.utils as stratum_utils
 from compas_slicer.slicers import BaseSlicer
+from compas_slicer.geometry import Segment, Path
 # import compas_slicer.utilities.utils as utils
 import logging
 
@@ -48,8 +49,15 @@ class CurvedSlicer(BaseSlicer):
             marching_triangles = MarchingTriangles(self.mesh, target_0, target_1, number_of_curves)
             stratum_utils.isocurves_segments_to_json(marching_triangles.segments, self.DATA_PATH, "isocurves_segments.json")
 
+            ## convert stratum entities to compas_slicer entities
+            segments = []
+            for i, stratum_segment in enumerate(marching_triangles.segments):
+                s = Segment(i)
+                segments.append(s)
+                for isocurve in stratum_segment.isocurves:
+                    s.append_(Path(isocurve.points, is_closed=True))
 
-
+            self.print_paths = segments
 
 if __name__ == "__main__":
     pass

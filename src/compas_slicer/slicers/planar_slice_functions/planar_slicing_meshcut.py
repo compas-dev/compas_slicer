@@ -53,9 +53,9 @@ def create_planar_contours_meshcut(mesh, layer_height):
             # TODO is_closed is always set to True, has to be checked
             is_closed = True
 
-            print_points = [PrintPoint(pt=p, layer_height=layer_height) for p in points]
+            # print_points = [PrintPoint(pt=p, layer_height=layer_height) for p in points]
 
-            c = Contour(points=print_points, is_closed=is_closed)
+            c = Contour(points=points, is_closed=is_closed)
             contours_per_layer.append(c)
         layer = Layer(contours_per_layer, None, None)
         layers.append(layer)

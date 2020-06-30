@@ -67,7 +67,7 @@ def sort_per_shortest_path_mlrose(slicer,
         for contour in layer.contours:
             for i, point in enumerate(contour.points):
                 if i == 0:
-                    coords = (point.pt[0], point.pt[1])
+                    coords = (point[0], point[1])
                     coords_list.append(coords)
 
         problem_no_fit = mlrose.TSPOpt(length=len(coords_list), coords=coords_list, maximize=False)

@@ -20,11 +20,15 @@ class Path(object):
     is_closed : bool
     """
     def __init__(self, points, is_closed):
+        self.points = points
+
         # check input
-        assert isinstance(points[0], compas_slicer.geometry.PrintPoint)
-        self.points = points  # PrintPoint class
-        for print_point in self.points:
-            print_point.parent_path = self
+        # assert isinstance(points[0], compas_slicer.geometry.PrintPoint)
+
+        self.printpoints = None  # PrintPoint class
+        # for print_point in self.printpoints:
+        #     print_point.parent_path = self
+
         self.is_closed = is_closed
 
     ############################
@@ -35,8 +39,8 @@ class Path(object):
         for i, point in enumerate(self.points):
             if self.is_closed:
                 line = {
-                    'start': point.pt,
-                    'end': self.points[(i + 1) % (len(self.points) - 1)].pt,
+                    'start': point,
+                    'end': self.points[(i + 1) % (len(self.points) - 1)],
                     'width': 1.0,
                     'color': color
                 }
@@ -44,8 +48,8 @@ class Path(object):
             else:
                 if i < len(self.points) - 1:
                     line = {
-                        'start': point.pt,
-                        'end': self.points[i + 1].pt,
+                        'start': point,
+                        'end': self.points[i + 1],
                         'width': 1.0,
                         'color': color
                     }

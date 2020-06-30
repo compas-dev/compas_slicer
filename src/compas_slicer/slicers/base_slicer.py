@@ -57,7 +57,7 @@ class BaseSlicer(object):
         print("Number of print_paths: %d" % number_of_print_paths)
         print("Number of contours: %d, open contours: %d, closed contours: %d" % (
             open_contours + closed_contours, open_contours, closed_contours))
-        print("Number of sampling points on contours: %d" % total_number_of_pts)
+        print("Number of sampling printpoints on contours: %d" % total_number_of_pts)
         print("")
 
     def get_contour_lines_for_plotter(self, color=(255, 0, 0)):
@@ -72,7 +72,7 @@ class BaseSlicer(object):
         count = 0
         for collection in self.print_paths:
             for contour in collection.contours:
-                data[count] = [list(point.pt) for point in contour.points]
+                data[count] = [list(point) for point in contour.points]
                 count += 1
         utils.save_to_json(data, path, name)
 
