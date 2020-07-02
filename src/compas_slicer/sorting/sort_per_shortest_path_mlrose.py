@@ -1,5 +1,10 @@
 import warnings
 
+# workaround to import six since from sklarn.externals import six is deprecated
+import six
+import sys
+sys.modules['sklearn.externals.six'] = six
+
 warnings.filterwarnings("ignore")
 import mlrose
 

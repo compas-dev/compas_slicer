@@ -1,6 +1,7 @@
 import compas_slicer
 from compas_slicer.slicers import BaseSlicer
 import logging
+import time
 
 logger = logging.getLogger('logger')
 
@@ -15,6 +16,9 @@ class PlanarSlicer(BaseSlicer):
         self.slicer_type = slicer_type
 
     def slice_model(self, create_contours, create_infill, create_supports):
+        # time measurement
+        start_time = time.time()
+
         if create_contours:
             self.generate_contours()
 
@@ -23,6 +27,9 @@ class PlanarSlicer(BaseSlicer):
 
         if create_supports:
             self.generate_supports()
+        
+        end_time = time.time()
+        logger.info("Slicing operation took: %.2f seconds" % (end_time - start_time))
 
     def generate_contours(self):
         if self.slicer_type == "planar_numpy":
@@ -33,6 +40,14 @@ class PlanarSlicer(BaseSlicer):
             logger.info("Planar contours meshcut slicing")
             self.print_paths = compas_slicer.slicers.create_planar_contours_meshcut(self.mesh, self.layer_height)
 
+        elif self.slicer_type == "planar_cgal":
+            logger.info("Planar contours CGAL slicing")
+            self.print_paths = compas_slicer.slicers.create_planar_contours_cgal(self.mesh, self.layer_height)
+
+        elif self.slicer_type == "planar_cgal_copy":
+            logger.info("Planar contours CGAL TESTING slicing")
+            self.print_paths = compas_slicer.slicers.create_planar_contours_cgal_copy(self.mesh, self.layer_height)
+            
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)
 
