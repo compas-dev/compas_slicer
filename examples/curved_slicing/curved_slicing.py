@@ -14,7 +14,7 @@ logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
 ########################
 OBJ_INPUT_NAME = '_mesh.obj'
-DATA_PATH = '../data/curved_slicing/surface/data'
+DATA_PATH = '1_surface/data'
 ########################
 
 if __name__ == "__main__":
@@ -27,24 +27,29 @@ if __name__ == "__main__":
 
     ### --- slicing
     slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH)
-    slicer.slice_model()  # generate isocurves
-    slicer.generate_printpoints()  # generate printpoints with all necessary information for print
+    slicer.slice_model()  # generate contours
+
+    slicer.to_json(DATA_PATH, 'curved_slicer.json')
+
+    # slicer.generate_printpoints()  # generate printpoints with all necessary information for print
+
+
 
     ### --- Fabrication data
-    robot_printer = RobotPrinter('UR5')
-    robot_printer.attach_endeffector(FILENAME=os.path.join(os.path.dirname(__file__), '..',
-                                                           'data', 'robot_printer/plastic_extruder.obj'),
-                                     frame=Frame(point=[0.153792, -0.01174, -0.03926],
-                                                 xaxis=[1, 0, 0],
-                                                 yaxis=[0, 1, 0]))
-    robot_printer.printout_info()
-
-    material_PLA = Material('PLA')
-    material_PLA.printout_info()
+    # robot_printer = RobotPrinter('UR5')
+    # robot_printer.attach_endeffector(FILENAME=os.path.join(os.path.dirname(__file__), '..',
+    #                                                        'data', 'robot_printer/plastic_extruder.obj'),
+    #                                  frame=Frame(point=[0.153792, -0.01174, -0.03926],
+    #                                              xaxis=[1, 0, 0],
+    #                                              yaxis=[0, 1, 0]))
+    # robot_printer.printout_info()
+    #
+    # material_PLA = Material('PLA')
+    # material_PLA.printout_info()
 
     ## remember to load json paths here
 
-    print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA)
+    # print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA)
     # print_organizer.generate_commands()
     # print_organizer.save_commands_to_json(OUTPUT_FILE)
 

@@ -1,22 +1,23 @@
-import numpy as np
+import sys
 
 from compas.geometry import Point
 from compas.geometry import Vector
 from compas.geometry import Plane
-from compas.geometry import Polyline
-
-from compas.datastructures import Mesh
 
 from compas_slicer.geometry import Contour
 from compas_slicer.geometry import Layer
-from compas_slicer.geometry import PrintPoint
 
-from compas_cgal.slicer import slice_mesh
+
+try:
+    from compas_cgal.slicer import slice_mesh
+except:
+    pass
 
 __all__ = ['create_planar_contours_cgal']
 
 
 def create_planar_contours_cgal(mesh, layer_height):
+
     """Creates planar contours using CGAL
 
     Parameters
@@ -27,37 +28,41 @@ def create_planar_contours_cgal(mesh, layer_height):
         A number representing the height between cutting planes.
     """
 
-    # get min and max z coordinates and determine number of layers
-    bbox = mesh.bounding_box()
-    x, y, z = zip(*bbox)
-    min_z, max_z = min(z), max(z)
-    d = abs(min_z - max_z)
-    no_of_layers = int(d / layer_height) + 1
+    if 'compas_cgal' in sys.modules:
+        # get min and max z coordinates and determine number of layers
+        bbox = mesh.bounding_box()
+        x, y, z = zip(*bbox)
+        min_z, max_z = min(z), max(z)
+        d = abs(min_z - max_z)
+        no_of_layers = int(d / layer_height) + 1
 
-    normal = Vector(0, 0, 1)
-    layers = []
+        normal = Vector(0, 0, 1)
+        layers = []
 
-    # prepare mesh for slicing
-    M = mesh.to_vertices_and_faces()
+        # prepare mesh for slicing
+        M = mesh.to_vertices_and_faces()
 
-    for i in range(no_of_layers):
-        contours_per_layer = []
-        # define plane
-        # OLD plane_origin = (0, 0, min_z + i * layer_height + 0.01)
-        plane = Plane(Point(0, 0, min_z + i * layer_height), normal)
+        for i in range(no_of_layers):
+            contours_per_layer = []
+            # define plane
+            # OLD plane_origin = (0, 0, min_z + i * layer_height + 0.01)
+            plane = Plane(Point(0, 0, min_z + i * layer_height), normal)
 
-        # slicing operation per layer
-        contour = slice_mesh(M, [plane])
+            # slicing operation per layer
+            contour = slice_mesh(M, [plane])
 
-        for points in contour:
-            # TODO: implement the is_closed functionality
-            is_closed = True
-            c = Contour(points=points, is_closed=is_closed)
-            contours_per_layer.append(c)
+            for points in contour:
+                # TODO: implement the is_closed functionality
+                is_closed = True
+                c = Contour(points=points, is_closed=is_closed)
+                contours_per_layer.append(c)
 
-        layer = Layer(contours_per_layer, None, None)
-        layers.append(layer)
-    return layers
+            layer = Layer(contours_per_layer, None, None)
+            layers.append(layer)
+        return layers
+
+    else:
+        raise NameError('Attention! You need to install compas_cgal to use this function')
 
 
 if __name__ == "__main__":

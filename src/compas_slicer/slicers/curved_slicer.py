@@ -1,24 +1,26 @@
-import sys, os
-import compas_slicer
-
-# path_to_stratum = os.path.join(os.path.dirname(compas_slicer.__file__), '../../', 'dependencies/stratum/src')
-# sys.path.append(path_to_stratum)
+import sys
 
 from compas.geometry import Polyline
-from stratum.printpaths.path_collection import PathCollection
-from stratum.isocurves.compound_target import CompoundTarget
-from stratum.isocurves.marching_triangles import MarchingTriangles, find_desired_number_of_isocurves
-import stratum.utils.utils as stratum_utils
+
 from compas_slicer.slicers import BaseSlicer
 from compas_slicer.geometry import Segment
-import stratum.region_split.topological_sort as topo_sort
-from stratum.printpaths.path import Path
 import compas_slicer.utilities.utils as utils
-from stratum.printpaths.boundary import Boundary
+from compas_slicer.geometry import Path
 
 import logging
-
 logger = logging.getLogger('logger')
+
+try:
+    import stratum.region_split.topological_sort as topo_sort
+    # from stratum.printpaths.path import Path
+    from stratum.printpaths.boundary import Boundary
+    from stratum.printpaths.path_collection import PathCollection
+    from stratum.isocurves.compound_target import CompoundTarget
+    from stratum.isocurves.marching_triangles import MarchingTriangles, find_desired_number_of_isocurves
+    import stratum.utils.utils as stratum_utils
+except:
+    pass
+
 
 __all__ = ['CurvedSlicer']
 
@@ -26,6 +28,11 @@ __all__ = ['CurvedSlicer']
 class CurvedSlicer(BaseSlicer):
     def __init__(self, mesh, low_boundary_vs, high_boundary_vs, DATA_PATH):
         BaseSlicer.__init__(self, mesh)
+
+        if not 'stratum' in sys.modules:
+            for key in sys.modules:
+                print (key)
+            raise ValueError('Attention! You need to install stratum to use the curved slicer')
 
         self.min_layer_height = 0.2
         self.max_layer_height = 2.0
@@ -51,7 +58,8 @@ class CurvedSlicer(BaseSlicer):
 
             ## Marching Triangles
             print('')
-            number_of_curves = find_desired_number_of_isocurves(target_0, target_1)
+            # number_of_curves = find_desired_number_of_isocurves(target_0, target_1)
+            number_of_curves = 5
             marching_triangles = MarchingTriangles(self.mesh, target_0, target_1, number_of_curves)
 
             ## Save to Json
@@ -113,6 +121,8 @@ class CurvedSlicer(BaseSlicer):
             utils.save_to_json(path_collection.to_dict(), self.DATA_PATH, "paths_collection" + str(paths_index) + ".json")
             paths_index += 1
 
+    def generate_robotic_commands(self):
+        pass
 
 if __name__ == "__main__":
     pass

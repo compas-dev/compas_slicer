@@ -67,14 +67,25 @@ class BaseSlicer(object):
                 lines.extend(contour.get_lines_for_plotter(color))
         return lines
 
-    def save_contours_to_json(self, path, name):
+    ##############################
+    ### --- For visualization
+    def to_json(self, path, name):
+        data = {}
+
+        contours = self.contours_to_json(path, name)
+        data['contours'] = contours
+
+        utils.save_to_json(data, path, name)
+
+
+    def contours_to_json(self, path, name):
         data = {}
         count = 0
         for collection in self.print_paths:
             for contour in collection.contours:
                 data[count] = [list(point) for point in contour.points]
                 count += 1
-        utils.save_to_json(data, path, name)
+        return data
 
     ##############################
     ### --- Other 
