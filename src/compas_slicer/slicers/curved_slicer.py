@@ -66,7 +66,9 @@ class CurvedSlicer(BaseSlicer):
             stratum_utils.isocurves_segments_to_json(marching_triangles.segments, self.DATA_PATH,
                                                      "isocurves_segments.json")
 
+
             ## convert stratum entities to compas_slicer entities
+            ## Not particularly useful
             segments = []
             for i, stratum_segment in enumerate(marching_triangles.segments):
                 s = Segment(i)
@@ -113,7 +115,6 @@ class CurvedSlicer(BaseSlicer):
                     parent = segments[parent_index]
                     last_crv_pts = parent['Isocurve_' + str(len(parent) - 1)]
                     boundary_pts.extend(last_crv_pts)
-
                 boundary = Boundary(self.mesh, boundary_pts)
 
             path_collection = PathCollection(paths, lower_boundary=boundary, mesh=self.mesh)
@@ -121,8 +122,7 @@ class CurvedSlicer(BaseSlicer):
             utils.save_to_json(path_collection.to_dict(), self.DATA_PATH, "paths_collection" + str(paths_index) + ".json")
             paths_index += 1
 
-    def generate_robotic_commands(self):
-        pass
+
 
 if __name__ == "__main__":
     pass

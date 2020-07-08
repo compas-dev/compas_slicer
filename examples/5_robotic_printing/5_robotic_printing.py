@@ -18,8 +18,8 @@ logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
-DATA = os.path.join(os.path.dirname(__file__), '..', 'data')
-INPUT_FILE = os.path.abspath(os.path.join(DATA, 'test_geometries/box.stl'))
+DATA = 'data'
+INPUT_FILE = os.path.abspath(os.path.join(DATA, 'box.stl'))
 OUTPUT_FILE = os.path.abspath(os.path.join(DATA, 'commands.json'))
 
 
@@ -38,7 +38,7 @@ def main():
 
     ### --- Fabrication
     robot_printer = RobotPrinter('UR5')
-    robot_printer.attach_endeffector(FILENAME=os.path.join(DATA, 'robot_printer/plastic_extruder.obj'),
+    robot_printer.attach_endeffector(FILENAME=os.path.join(DATA, 'plastic_extruder.obj'),
                                      frame=Frame(point=[0.153792, -0.01174, -0.03926],
                                                  xaxis=[1, 0, 0],
                                                  yaxis=[0, 1, 0]))

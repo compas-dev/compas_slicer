@@ -14,7 +14,7 @@ logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
 ########################
 OBJ_INPUT_NAME = '_mesh.obj'
-DATA_PATH = '1_surface/data'
+DATA_PATH = 'data'
 ########################
 
 if __name__ == "__main__":
