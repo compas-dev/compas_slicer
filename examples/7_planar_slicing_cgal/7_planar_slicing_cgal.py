@@ -17,14 +17,14 @@ logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
-DATA = 'data'
-FILE = 'eight_eight.stl'
+DATA = os.path.join(os.path.dirname(__file__), 'data')
+FILE = os.path.join(DATA, 'eight_eight.stl')
 
 start_time = time.time()
 
 def main():
     ### --- Load stl
-    compas_mesh = Mesh.from_stl(os.path.join(DATA, FILE))
+    compas_mesh = Mesh.from_stl(FILE)
 
     ### --- Slicer
     slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=15.0)

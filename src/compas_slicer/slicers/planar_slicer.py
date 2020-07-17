@@ -44,10 +44,6 @@ class PlanarSlicer(BaseSlicer):
             logger.info("Planar contours CGAL slicing")
             self.print_paths = compas_slicer.slicers.create_planar_contours_cgal(self.mesh, self.layer_height)
 
-        elif self.slicer_type == "planar_cgal_copy":
-            logger.info("Planar contours CGAL TESTING slicing")
-            self.print_paths = compas_slicer.slicers.create_planar_contours_cgal_copy(self.mesh, self.layer_height)
-            
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)
 
