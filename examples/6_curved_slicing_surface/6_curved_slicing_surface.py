@@ -13,9 +13,12 @@ logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
 ########################
-OBJ_INPUT_NAME = '_mesh.obj'
-DATA_PATH = 'data'
+# OBJ_INPUT_NAME = '_mesh.obj'
+# DATA_PATH = 'data'
 ########################
+
+DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
+OBJ_INPUT_NAME = os.path.join(DATA_PATH, '_mesh.obj')
 
 if __name__ == "__main__":
     ### --- Load initial_mesh

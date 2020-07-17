@@ -18,10 +18,9 @@ logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
-DATA = 'data'
+DATA = os.path.join(os.path.dirname(__file__), 'data')
 INPUT_FILE = os.path.abspath(os.path.join(DATA, 'box.stl'))
 OUTPUT_FILE = os.path.abspath(os.path.join(DATA, 'gcode_test.gcode'))
-
 
 def main():
     ### --- Load stl
