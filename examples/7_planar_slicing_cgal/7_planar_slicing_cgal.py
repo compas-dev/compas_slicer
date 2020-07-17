@@ -18,7 +18,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
 
 DATA = os.path.join(os.path.dirname(__file__), 'data')
-FILE = os.path.join(DATA, 'eight_eight.stl')
+FILE = os.path.join(DATA, 'branches_70.stl')
 
 start_time = time.time()
 
@@ -27,7 +27,7 @@ def main():
     compas_mesh = Mesh.from_stl(FILE)
 
     ### --- Slicer
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=15.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=150.0)
     slicer.slice_model(create_contours=True, create_infill=False, create_supports=False)
     slicer.printout_info()
 
@@ -39,6 +39,8 @@ def main():
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
 
     slicer.to_json(DATA, 'slicer_data.json')
+
+    slicer.layers_to_json(DATA, 'slicer_data_layers.json')
 
     ### ----- Visualize 
     # plotter = MeshPlotter(compas_mesh, figsize=(16, 10))

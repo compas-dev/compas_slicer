@@ -87,6 +87,23 @@ class BaseSlicer(object):
                 count += 1
         return data
 
+    def layers_to_json(self, path, name):
+        data = {}
+        count = 0
+        d = []
+        for layers in self.print_paths:
+            l = []
+            for contour in layers.contours:
+                pts_per_contour = []
+                for point in contour.points:
+                    pts_per_contour.append(list(point))
+                l.append(pts_per_contour)
+            d.append(l)    
+        
+        data = d
+        
+        utils.save_to_json(data, path, name)
+
     ##############################
     ### --- Other 
 
