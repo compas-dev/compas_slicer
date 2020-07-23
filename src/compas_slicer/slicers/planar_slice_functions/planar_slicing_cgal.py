@@ -9,8 +9,8 @@ from compas.geometry import Polyline
 
 from compas.datastructures import Mesh
 
-from compas_slicer.geometry import Contour
 from compas_slicer.geometry import Layer
+from compas_slicer.geometry import Contour
 from compas_slicer.geometry import PrintPoint
 
 from compas_cgal.slicer import slice_mesh
@@ -66,9 +66,13 @@ def create_planar_contours_cgal(mesh, layer_height):
     for layer in grouped_contours:
         contours_per_layer = []
         for contour in layer:
+            points_per_contour = []
+            for point in contour:
+                p = Point(point[0], point[1], point[2])
+                points_per_contour.append(p)
             # generate contours
             # TODO: add a check for is_closed
-            c = Contour(points=contour, is_closed=True)
+            c = Contour(points=points_per_contour, is_closed=True)
             contours_per_layer.append(c)
         
         # generate layers

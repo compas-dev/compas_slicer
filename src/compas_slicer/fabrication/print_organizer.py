@@ -3,6 +3,8 @@ import compas_slicer
 import logging
 from compas_slicer.fabrication import generate_gcode
 
+from compas.geometry import Point
+
 logger = logging.getLogger('logger')
 
 __all__ = ['PrintOrganizer',
@@ -79,15 +81,25 @@ class RoboticPrintOrganizer(PrintOrganizer):
         pass
 
     def generate_commands(self):
-        a = self.ordered_print_points
-        return []  # TODO
+        self.commands = [point for layer in self.slicer.print_paths for contour in layer.contours for point in contour.points]
+
+    def generate_z_hop(self, z_hop=10):
+        logger.info("Generating z_hop of " + str(z_hop) + " mm")
+        for layer in self.slicer.print_paths:
+            for i, contour in enumerate(layer.contours):
+                pt0 = contour.points[0]
+                # creates a point with a vertical distance of 'z_hop' 
+                # above the first point of every contour
+                z_hop_point = Point(pt0[0], pt0[1], pt0[2] + z_hop)
+                contour.points.insert(0, z_hop_point) # insert z_hop point as first point
+                contour.points.append(z_hop_point) # and append as last point
 
     def save_commands_to_json(self, FILENAME):
-        logger.info("Saving to json: " + str(len(self.commands)) + " commands, on file: " + FILENAME)
+        logger.info("Saving to json: " + str(len(self.commands)) + " commands, to file: " + FILENAME)
         # data dictionary
         data = {}
-        for i, c in enumerate(self.commands):
-            data[i] = c.get_fabrication_command_dict()
+        for i, cmd in enumerate(self.commands):
+            data[i] = [cmd[0], cmd[1], cmd[2]]
         # create Json file
         with open(FILENAME, 'w') as f:
             f.write(json.dumps(data, indent=3, sort_keys=True))
