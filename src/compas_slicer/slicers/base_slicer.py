@@ -47,7 +47,7 @@ class BaseSlicer(object):
         for layer in self.print_paths:
             number_of_print_paths += 1
             for contour in layer.contours:
-                total_number_of_pts += len(contour.points)
+                total_number_of_pts += len(contour.printpoints)
                 if contour.is_closed:
                     closed_contours += 1
                 else:
@@ -83,8 +83,10 @@ class BaseSlicer(object):
         count = 0
         for collection in self.print_paths:
             for contour in collection.contours:
-                data[count] = [list(point) for point in contour.points]
-                count += 1
+                for printpoint in contour.printpoints:
+                    xyz = [printpoint.pt[0], printpoint.pt[1], printpoint.pt[2]]
+                    data[count] = xyz
+                    count += 1
         return data
 
     def layers_to_json(self, path, name):
@@ -95,8 +97,9 @@ class BaseSlicer(object):
             l = []
             for contour in layers.contours:
                 pts_per_contour = []
-                for point in contour.points:
-                    pts_per_contour.append(list(point))
+                for printpoint in contour.printpoints:
+                    xyz = [printpoint.pt[0], printpoint.pt[1], printpoint.pt[2]]
+                    pts_per_contour.append(xyz)
                 l.append(pts_per_contour)
             d.append(l)    
         

@@ -1,7 +1,10 @@
 import json
 import compas_slicer
 import logging
+import copy
+
 from compas_slicer.fabrication import generate_gcode
+from compas_slicer.geometry import AdvancedPrintPoint
 
 from compas.geometry import Point
 
@@ -81,18 +84,27 @@ class RoboticPrintOrganizer(PrintOrganizer):
         pass
 
     def generate_commands(self):
-        self.commands = [point for layer in self.slicer.print_paths for contour in layer.contours for point in contour.points]
+        # self.commands = [printpoint for layer in self.slicer.print_paths for contour in layer.contours for printpoint in contour.printpoints.pt]
+        self.commands = []
+        for layer in self.slicer.print_paths:
+            for contour in layer.contours:
+                for printpoint in contour.printpoints:
+                    self.commands.append(printpoint.pt)
 
     def generate_z_hop(self, z_hop=10):
         logger.info("Generating z_hop of " + str(z_hop) + " mm")
         for layer in self.slicer.print_paths:
             for i, contour in enumerate(layer.contours):
-                pt0 = contour.points[0]
-                # creates a point with a vertical distance of 'z_hop' 
-                # above the first point of every contour
-                z_hop_point = Point(pt0[0], pt0[1], pt0[2] + z_hop)
-                contour.points.insert(0, z_hop_point) # insert z_hop point as first point
-                contour.points.append(z_hop_point) # and append as last point
+                # selects the first point in a contour (pt0)
+                pt0 = contour.printpoints[0]
+                # creates a (deep) copy
+                pt0_copy = copy.deepcopy(pt0)
+                # adds the vertical z_hop distance to the copied point
+                pt0_copy.pt = Point(pt0.pt[0], pt0.pt[1], pt0.pt[2] + z_hop)
+                # insert z_hop point as first point
+                contour.printpoints.insert(0, pt0_copy) 
+                # and append as last point
+                contour.printpoints.append(pt0_copy) 
 
     def save_commands_to_json(self, FILENAME):
         logger.info("Saving to json: " + str(len(self.commands)) + " commands, to file: " + FILENAME)

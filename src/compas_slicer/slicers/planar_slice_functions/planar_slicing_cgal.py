@@ -12,6 +12,7 @@ from compas.datastructures import Mesh
 from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Contour
 from compas_slicer.geometry import PrintPoint
+from compas_slicer.geometry import AdvancedPrintPoint
 
 from compas_cgal.slicer import slice_mesh
 
@@ -68,7 +69,12 @@ def create_planar_contours_cgal(mesh, layer_height):
         for contour in layer:
             points_per_contour = []
             for point in contour:
-                p = Point(point[0], point[1], point[2])
+                pt = Point(point[0], point[1], point[2])
+                p = AdvancedPrintPoint( pt=pt,
+                                        layer_height=layer_height,
+                                        up_vector=None,
+                                        mesh=None,
+                                        extruder_toggle=None)
                 points_per_contour.append(p)
             # generate contours
             # TODO: add a check for is_closed

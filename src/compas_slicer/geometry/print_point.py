@@ -26,14 +26,15 @@ class PrintPoint(object):
 
 
 class AdvancedPrintPoint(PrintPoint):
-    def __init__(self, pt, layer_height, up_vector, mesh):
+    def __init__(self, pt, layer_height, up_vector, mesh, extruder_toggle):
         PrintPoint.__init__(self, pt, layer_height)
         self.pt = pt  # position of center of mass (compas.geometry.Point)
         self.layer_height = layer_height
         self.up_vector = up_vector  # compas.geometry.Vector
+        self.extruder_toggle = extruder_toggle
 
-        self.normal = self.get_closest_mesh_normal(mesh)  # compas.geometry.Vector
-        self.frame = self.get_frame()  # compas.geometry.Frame
+        # self.normal = self.get_closest_mesh_normal(mesh)  # compas.geometry.Vector
+        # self.frame = self.get_frame()  # compas.geometry.Frame
 
         ### ----- parameters currently not yet filled in
         self.visualization_shape = None

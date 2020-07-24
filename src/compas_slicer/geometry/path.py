@@ -19,13 +19,13 @@ class Path(object):
         compas.geometry.Point
     is_closed : bool
     """
-    def __init__(self, points, is_closed):
-        self.points = points
+    def __init__(self, printpoints, is_closed):
+        self.points = None
 
         # check input
         # assert isinstance(points[0], compas_slicer.geometry.PrintPoint)
 
-        self.printpoints = None  # PrintPoint class
+        self.printpoints = printpoints  # PrintPoint class
         # for print_point in self.printpoints:
         #     print_point.parent_path = self
 
