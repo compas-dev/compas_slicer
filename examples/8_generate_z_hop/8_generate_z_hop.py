@@ -50,6 +50,7 @@ def main():
 
     print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA)
     print_organizer.generate_z_hop(z_hop=20)
+    print_organizer.set_extruder_toggle(extruder_toggle="off_when_travel_zhop")
     print_organizer.generate_commands()
     
     print_organizer.save_commands_to_json(OUTPUT_FILE)

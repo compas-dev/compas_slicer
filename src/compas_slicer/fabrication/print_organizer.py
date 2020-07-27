@@ -94,7 +94,7 @@ class RoboticPrintOrganizer(PrintOrganizer):
     def generate_z_hop(self, z_hop=10):
         logger.info("Generating z_hop of " + str(z_hop) + " mm")
         for layer in self.slicer.print_paths:
-            for i, contour in enumerate(layer.contours):
+            for contour in layer.contours:
                 # selects the first point in a contour (pt0)
                 pt0 = contour.printpoints[0]
                 # creates a (deep) copy
@@ -105,17 +105,61 @@ class RoboticPrintOrganizer(PrintOrganizer):
                 contour.printpoints.insert(0, pt0_copy) 
                 # and append as last point
                 contour.printpoints.append(pt0_copy) 
+    
+    def set_extruder_toggle(self, extruder_toggle):
+        if extruder_toggle == "always_on" or extruder_toggle == "always_off":
+            for layer in self.slicer.print_paths:
+                for contour in layer.contours:
+                    for printpoint in contour.printpoints:
+                        if extruder_toggle == "always_on":
+                            # set printpoint.extruder_toggle to TRUE for all points
+                            printpoint.extruder_toggle = True
+                        if extruder_toggle == "always_off":
+                            # set printpoint.extruder_toggle to FALSE for all points
+                            printpoint.extruder_toggle = False
+
+        if extruder_toggle ==  "off_when_travel":
+            for layer in self.slicer.print_paths:
+                for contour in layer.contours:
+                    for i, printpoint in enumerate(contour.printpoints):
+                        if i == len(contour.printpoints)-1:
+                            # last point
+                            printpoint.extruder_toggle = False
+                        else:
+                            # rest of points
+                            printpoint.extruder_toggle = True
+
+        if extruder_toggle ==  "off_when_travel_zhop":
+            for layer in self.slicer.print_paths:
+                for contour in layer.contours:
+                    for i, printpoint in enumerate(contour.printpoints):
+                        if i == 0:
+                            # first point
+                            printpoint.extruder_toggle = False
+                        if i >= len(contour.printpoints)-2:
+                            # last 2 points
+                            printpoint.extruder_toggle = False
+                        else:
+                            # rest of points
+                            printpoint.extruder_toggle = True                    
 
     def save_commands_to_json(self, FILENAME):
         logger.info("Saving to json: " + str(len(self.commands)) + " commands, to file: " + FILENAME)
         # data dictionary
         data = {}
-        for i, cmd in enumerate(self.commands):
-            data[i] = [cmd[0], cmd[1], cmd[2]]
-        # create Json file
+
+        count = 0
+        for layer in self.slicer.print_paths:
+            for contour in layer.contours:
+                for printpoint in contour.printpoints:
+                    data[count] = {}
+                    data[count]["pt"] = printpoint.pt[0], printpoint.pt[1], printpoint.pt[2]
+                    data[count]["extruder_toggle"] = printpoint.extruder_toggle
+                    data[count]["layer_height"] = printpoint.layer_height
+                    count += 1
+
         with open(FILENAME, 'w') as f:
             f.write(json.dumps(data, indent=3, sort_keys=True))
-
 
 if __name__ == "__main__":
     pass
