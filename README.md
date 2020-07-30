@@ -15,29 +15,45 @@ Main features
 Getting started
 ------------
 
-Clone the repository 
+### Step 1: Install compas_cal
+- Clone compas_cgal repository
+- Create a new environment (you can replace 'compas_slicer' with your own environment name) and install COMPAS.
+```bash
+conda create -n compas_slicer python=3.7 eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0"
+conda activate compas_slicer
+```
+- Navigate to the folder where you cloned the compas_cgal repository and install compas_cgal using:
+```bash
+pip install -e
+```
+- You should get the message 'succesfully installed compas-cgal'
 
+### Step 2: Install compas_slicer
+- Clone the repository and activate your environment. Do not forget to clone the repository using --recursive or the submodules will not work. 
 ```bash
 git clone --recursive https://github.com/dbt-ethz/compas_slicer.git
+conda activate compas_slicer
 ```
-
-Create a new conda environment.
-
-To install compas_am from this folder use: 
-
+- Navigate to the folder where you cloned the compas_slicer repository and install compas_slicer using:
 ```bash
-pip install -e <path>.
+pip install -e
 ```
+- You should get the message 'succesfully installed compas-slicer' (amongst other packages)
 
-Then run the file examples/1_versions_check.py
-
-Note: 
-
-To use the curved slicer you also need to go to the folder dependencies/stratum and run
+### Step 3: Install stratum
+- Navigate to the compas_slicer repository folder/dependencies/stratum and install stratum using:
 ```bash
-pip install -e .
-conda install -c conda-forge igl
+pip install -e
 ```
+- You should get the message 'succesfully installed stratum'
+- Then install igl
+```bash
+pip install -e
+```
+
+### Step 4. Test if the library works
+- Run the file examples/1_versions_check.py
+
 
 
 Submodules
