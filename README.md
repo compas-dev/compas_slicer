@@ -24,7 +24,7 @@ conda activate compas_slicer
 ```
 - Navigate to the folder where you cloned the compas_cgal repository and install compas_cgal using:
 ```bash
-pip install -e
+pip install -e .
 ```
 - You should get the message 'succesfully installed compas-cgal'
 
@@ -36,7 +36,7 @@ conda activate compas_slicer
 ```
 - Navigate to the folder where you cloned the compas_slicer repository and install compas_slicer using:
 ```bash
-pip install -e
+pip install -e .
 ```
 - You should get the message 'succesfully installed compas-slicer' (amongst other packages)
 
@@ -48,10 +48,17 @@ pip install -e
 - You should get the message 'succesfully installed stratum'
 - Then install igl
 ```bash
-pip install -e
+pip install -e .
 ```
 
-### Step 4. Test if the library works
+### Step 4. Install compas_fab
+- Install compas_fab (https://gramaziokohler.github.io/compas_fab/latest/) in your current environment using:
+```bash
+pip install compas_fab
+```
+
+
+### Step 5. Test if the library works
 - Run the file examples/1_versions_check.py
 
 
