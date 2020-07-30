@@ -16,7 +16,7 @@ Getting started
 ------------
 
 ### Step 1: Install compas_cal
-- Clone compas_cgal repository
+- Clone compas_cgal repository (https://github.com/BlockResearchGroup/compas_cgal)
 - Create a new environment (you can replace 'compas_slicer' with your own environment name) and install COMPAS.
 ```bash
 conda create -n compas_slicer python=3.7 eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0"
