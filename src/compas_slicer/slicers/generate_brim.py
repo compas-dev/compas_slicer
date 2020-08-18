@@ -16,20 +16,24 @@ def generate_brim(print_paths, layer_width, number_of_brim_layers):
 
     Parameters
     ----------
-    print_paths : XXXXXXXXXXX.
-        XXXXXXXXXXX.
+    print_paths : list
+        A list of compas_slicer.geometry.Layer instances
     layer_width : float
-        XXXXXXXXXXX.
+        A number representing the distance between brim contours 
+        (typically the width of a layer)
     number_of_brim_layers : int
-        XXXXXXXXXXX.
+        Number of brim layers to add.
     """
     # uses the default scaling factor of 2**32
     # see: https://github.com/fonttools/pyclipper/wiki/Deprecating-SCALING_FACTOR
     SCALING_FACTOR = 2**32
 
+    # gets the same layer height as used by the first point of the first layer
+    layer_height = print_paths[0].contours[0].printpoints[0].layer_height
+
     contours_per_layer = []
 
-    for contour in print_paths[0].contours:        
+    for contour in print_paths[0].contours:  
         xy_coords_for_clipper = []
         for printpoint in contour.printpoints:
             # gets the X and Y coordinate since Clipper only does 2D offset operations
@@ -59,7 +63,7 @@ def generate_brim(print_paths, layer_width, number_of_brim_layers):
                 
                 # creates new points
                 p = AdvancedPrintPoint(pt=clipper_pt,
-                                            layer_height=None,
+                                            layer_height=layer_height,
                                             up_vector=None,
                                             mesh=None,
                                             extruder_toggle=None)

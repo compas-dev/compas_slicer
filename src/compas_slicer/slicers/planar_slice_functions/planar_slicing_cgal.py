@@ -5,13 +5,9 @@ import itertools
 from compas.geometry import Point
 from compas.geometry import Vector
 from compas.geometry import Plane
-from compas.geometry import Polyline
-
-from compas.datastructures import Mesh
 
 from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Contour
-from compas_slicer.geometry import PrintPoint
 from compas_slicer.geometry import AdvancedPrintPoint
 
 from compas_cgal.slicer import slice_mesh
