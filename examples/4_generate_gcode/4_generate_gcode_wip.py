@@ -35,12 +35,12 @@ def main():
     compas_mesh = center_mesh_on_build_platform(compas_mesh, machine_dimensions)
 
     ### --- Slicer
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_meshcut", layer_height=12.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=12.0)
     slicer.slice_model(create_contours=True, create_infill=False, create_supports=False)
     slicer.printout_info()
 
     simplify_paths_rdp(slicer, threshold=0.2)
-    sort_per_shortest_path_mlrose(slicer, max_attempts=4)
+    # sort_per_shortest_path_mlrose(slicer, max_attempts=4)
     align_seams(slicer)
 
     ### --- Fabrication
@@ -51,7 +51,7 @@ def main():
     material_PLA.printout_info()
 
     fab = FDMPrintOrganizer(slicer, machine_model=machine_model, material=material_PLA)
-    fab.save_commands_to_gcode(OUTPUT_FILE)
+    # fab.save_commands_to_gcode(OUTPUT_FILE)
 
 
 if __name__ == "__main__":

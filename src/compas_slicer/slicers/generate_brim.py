@@ -12,7 +12,7 @@ __all__ = ['generate_brim']
 
 
 def generate_brim(print_paths, layer_width, number_of_brim_layers):
-    """Creates a brim.
+    """Creates a brim around the bottom contours of the print.
 
     Parameters
     ----------
@@ -24,6 +24,8 @@ def generate_brim(print_paths, layer_width, number_of_brim_layers):
     number_of_brim_layers : int
         Number of brim layers to add.
     """
+    # TODO: Add functionality for merging several contours when the brims overlap.  
+
     # uses the default scaling factor of 2**32
     # see: https://github.com/fonttools/pyclipper/wiki/Deprecating-SCALING_FACTOR
     SCALING_FACTOR = 2**32
