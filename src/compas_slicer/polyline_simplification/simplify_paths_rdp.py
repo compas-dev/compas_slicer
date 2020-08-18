@@ -12,6 +12,9 @@ __all__ = ['simplify_paths_rdp']
 
 
 def simplify_paths_rdp(slicer, threshold):
+
+    # TODO: simplify_path_rdp() is slow and should be optimized.
+
     logger.info("Paths simplification rdp")
     for layer in slicer.print_paths:
         contours_new = []
@@ -19,7 +22,6 @@ def simplify_paths_rdp(slicer, threshold):
             contour_new = simplify_path_rdp(contour, threshold)
             contours_new.append(contour_new)
         layer.contours = contours_new
-
 
 
 def simplify_path_rdp(path, threshold):
