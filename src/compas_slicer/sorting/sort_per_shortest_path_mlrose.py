@@ -63,6 +63,9 @@ def sort_per_shortest_path_mlrose(slicer,
         print('The fitness at the best state is: ', best_fitness)
     """
 
+    # TODO: MLrose optimisation does not always give better results
+    # than standard slicing with compas_cgal, should be optimised. 
+
     logger.info("Sorting per shortest path using mlrose")
 
     layers = slicer.print_paths
@@ -71,9 +74,10 @@ def sort_per_shortest_path_mlrose(slicer,
         coords_list = []
         for contour in layer.contours:
             for i, point in enumerate(contour.printpoints):
+                pt = point.pt
                 if i == 0:
-                    coords = (point[0], point[1])
-                    print("printpoints", contour.printpoints.pt)
+                    coords = (pt[0], pt[1])
+                    # print("printpoints", contour.printpoints)
                     coords_list.append(coords)
 
         problem_no_fit = mlrose.TSPOpt(length=len(coords_list), coords=coords_list, maximize=False)

@@ -39,7 +39,8 @@ def main():
     slicer.generate_brim(layer_width=2, number_of_brim_layers=4)
     slicer.printout_info()
 
-    simplify_paths_rdp(slicer, threshold=0.2)
+    # simplify_paths_rdp(slicer, threshold=0.2)
+    # sort_per_shortest_path_mlrose(slicer, max_attempts=4)
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
