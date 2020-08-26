@@ -30,8 +30,6 @@ def generate_brim(print_paths, layer_width, number_of_brim_layers):
     # see: https://github.com/fonttools/pyclipper/wiki/Deprecating-SCALING_FACTOR
     SCALING_FACTOR = 2**32
 
-    # gets the same layer height as used by the first point of the first layer
-    layer_height = print_paths[0].contours[0].printpoints[0].layer_height
 
     contours_per_layer = []
 
@@ -39,7 +37,7 @@ def generate_brim(print_paths, layer_width, number_of_brim_layers):
         xy_coords_for_clipper = []
         for printpoint in contour.printpoints:
             # gets the X and Y coordinate since Clipper only does 2D offset operations
-            xy_coords = [printpoint.pt[0], printpoint.pt[1]]
+            xy_coords = [printpoint[0], printpoint[1]]
             xy_coords_for_clipper.append(xy_coords)
 
         # initialise Clipper
@@ -59,18 +57,9 @@ def generate_brim(print_paths, layer_width, number_of_brim_layers):
                 x = xy[0]
                 y = xy[1]
                 # get the Z coordinate from the previous slicing result
-                z = contour.printpoints[0].pt[2]
+                z = contour.printpoints[0][2]
 
-                clipper_pt = Point(x,y,z)
-                
-                # creates new points
-                p = AdvancedPrintPoint(pt=clipper_pt,
-                                            layer_height=layer_height,
-                                            up_vector=None,
-                                            mesh=None,
-                                            extruder_toggle=None)
-
-                clipper_points_per_contour.append(p)
+                clipper_points_per_contour.append(Point(x,y,z))
         
             # adds first point again to form a closed polygon since clipper removes this point
             clipper_points_per_contour = clipper_points_per_contour + [clipper_points_per_contour[0]]

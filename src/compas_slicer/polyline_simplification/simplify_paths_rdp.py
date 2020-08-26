@@ -26,19 +26,14 @@ def simplify_paths_rdp(slicer, threshold):
 
 def simplify_path_rdp(path, threshold):
     initial_points_number = len(path.printpoints)
-    pts = path.get_all_points()
+    pts = path.printpoints
     pts_rdp = rdp(np.array(pts), epsilon=threshold)
 
     # recreate points as compas.geometry.Point
     points_per_contour = []
     for pt in pts_rdp:
         new_pt = Point(pt[0], pt[1], pt[2])
-        p = AdvancedPrintPoint( pt=new_pt,
-                                layer_height=None,
-                                up_vector=None,
-                                mesh=None,
-                                extruder_toggle=None)
-        points_per_contour.append(p)
+        points_per_contour.append(new_pt)
     
     # recrate path as compas_slicer.geometry.path.Contour
     path = Contour(points=points_per_contour, is_closed=True)

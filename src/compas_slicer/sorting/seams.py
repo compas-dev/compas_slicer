@@ -29,7 +29,7 @@ def align_seams(slicer, seam_orientation="next_contour"):
         for i, contour in enumerate(layer.contours):
             if i < len(layer.contours)-1:
                 if seam_orientation == "next_contour":
-                    current_pt0 = contour.printpoints[0].pt
+                    current_pt0 = contour.printpoints[0]
                 elif seam_orientation == "origin":
                     current_pt0 = Point(0, 0, 0)
                 elif seam_orientation == "x_axis":
@@ -38,7 +38,8 @@ def align_seams(slicer, seam_orientation="next_contour"):
                     current_pt0 = Point(0, 2**32, 0)
                 
                 # gets the points of the next contour
-                next_contour_pts = layer.contours[i+1].get_all_points()
+                next_contour_pts = layer.contours[i+1].printpoints
+                
                 # removes the last element of the list before shifting
                 next_contour_pts = next_contour_pts[:-1]
 

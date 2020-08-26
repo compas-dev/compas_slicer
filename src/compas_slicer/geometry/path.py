@@ -55,11 +55,6 @@ class Path(object):
                     }
                     lines.append(line)
         return lines
-    
-    def get_all_points(self):
-        all_points = []
-        [all_points.append(point.pt) for point in self.printpoints]
-        return all_points
 
 
 class Contour(Path):

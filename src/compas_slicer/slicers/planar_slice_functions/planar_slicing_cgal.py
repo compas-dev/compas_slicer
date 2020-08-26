@@ -66,12 +66,7 @@ def create_planar_contours_cgal(mesh, layer_height):
             points_per_contour = []
             for point in contour:
                 pt = Point(point[0], point[1], point[2])
-                p = AdvancedPrintPoint( pt=pt,
-                                        layer_height=layer_height,
-                                        up_vector=None,
-                                        mesh=None,
-                                        extruder_toggle=None)
-                points_per_contour.append(p)
+                points_per_contour.append(pt)
             # generate contours
             # TODO: add a check for is_closed
             c = Contour(points=points_per_contour, is_closed=True)

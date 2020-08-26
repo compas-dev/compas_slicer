@@ -43,6 +43,21 @@ class PrintOrganizer(object):
         ## TODO
         pass
 
+    def generate_z_hop(self, z_hop=10):
+        logger.info("Generating z_hop of " + str(z_hop) + " mm")
+        for layer in self.slicer.print_paths:
+            for contour in layer.contours:
+                # selects the first point in a contour (pt0)
+                pt0 = contour.printpoints[0]
+                # creates a (deep) copy
+                pt0_copy = copy.deepcopy(pt0)
+                # adds the vertical z_hop distance to the copied point
+                pt0_copy.pt = Point(pt0.pt[0], pt0.pt[1], pt0.pt[2] + z_hop)
+                # insert z_hop point as first point
+                contour.printpoints.insert(0, pt0_copy) 
+                # and append as last point
+                contour.printpoints.append(pt0_copy) 
+
 
 class FDMPrintOrganizer(PrintOrganizer):
     """
@@ -89,23 +104,13 @@ class RoboticPrintOrganizer(PrintOrganizer):
         for layer in self.slicer.print_paths:
             for contour in layer.contours:
                 for printpoint in contour.printpoints:
-                    self.commands.append(printpoint.pt)
-
-    def generate_z_hop(self, z_hop=10):
-        logger.info("Generating z_hop of " + str(z_hop) + " mm")
-        for layer in self.slicer.print_paths:
-            for contour in layer.contours:
-                # selects the first point in a contour (pt0)
-                pt0 = contour.printpoints[0]
-                # creates a (deep) copy
-                pt0_copy = copy.deepcopy(pt0)
-                # adds the vertical z_hop distance to the copied point
-                pt0_copy.pt = Point(pt0.pt[0], pt0.pt[1], pt0.pt[2] + z_hop)
-                # insert z_hop point as first point
-                contour.printpoints.insert(0, pt0_copy) 
-                # and append as last point
-                contour.printpoints.append(pt0_copy) 
-    
+                    p = AdvancedPrintPoint( pt=printpoint,
+                                            layer_height=None,
+                                            up_vector=None,
+                                            mesh=None,
+                                            extruder_toggle=None)
+                    self.commands.append(p)
+   
     def set_extruder_toggle(self, extruder_toggle):
         if extruder_toggle == "always_on" or extruder_toggle == "always_off":
             for layer in self.slicer.print_paths:

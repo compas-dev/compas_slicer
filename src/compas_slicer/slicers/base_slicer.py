@@ -84,7 +84,7 @@ class BaseSlicer(object):
         for collection in self.print_paths:
             for contour in collection.contours:
                 for printpoint in contour.printpoints:
-                    xyz = [printpoint.pt[0], printpoint.pt[1], printpoint.pt[2]]
+                    xyz = [printpoint[0], printpoint[1], printpoint[2]]
                     data[count] = xyz
                     count += 1
         return data
@@ -98,7 +98,7 @@ class BaseSlicer(object):
             for contour in layers.contours:
                 pts_per_contour = []
                 for printpoint in contour.printpoints:
-                    xyz = [printpoint.pt[0], printpoint.pt[1], printpoint.pt[2]]
+                    xyz = [printpoint[0], printpoint[1], printpoint[2]]
                     pts_per_contour.append(xyz)
                 l.append(pts_per_contour)
             d.append(l)    
