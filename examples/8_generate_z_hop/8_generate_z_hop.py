@@ -37,6 +37,7 @@ def main():
     slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=150.0)
     slicer.slice_model(create_contours=True, create_infill=False, create_supports=False)
     slicer.printout_info()
+    slicer.generate_z_hop(z_hop=20)
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
@@ -49,7 +50,6 @@ def main():
     material_PLA = Material('PLA')
 
     print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA)
-    print_organizer.generate_z_hop(z_hop=20)
     print_organizer.set_extruder_toggle(extruder_toggle="off_when_travel_zhop")
     print_organizer.generate_commands()
     

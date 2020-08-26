@@ -1,4 +1,5 @@
 import compas
+import compas_slicer
 from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
 import logging
@@ -116,6 +117,10 @@ class BaseSlicer(object):
             if len(vs) != 3:
                 raise TypeError("Found a quad at face key: " + str(fkey) + " ,number of face vertices:" + str(
                     len(vs)) + ". \nOnly triangular meshes supported.")
+
+    def generate_z_hop(self, z_hop):
+        logger.info("Generating z_hop of XX mm")
+        compas_slicer.slicers.generate_z_hop(self.print_paths, z_hop)
 
 
 if __name__ == "__main__":
