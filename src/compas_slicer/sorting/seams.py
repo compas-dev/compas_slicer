@@ -29,7 +29,7 @@ def align_seams(slicer, seam_orientation="next_contour"):
         for i, contour in enumerate(layer.contours):
             if i < len(layer.contours)-1:
                 if seam_orientation == "next_contour":
-                    current_pt0 = contour.printpoints[0]
+                    current_pt0 = contour.points[0]
                 elif seam_orientation == "origin":
                     current_pt0 = Point(0, 0, 0)
                 elif seam_orientation == "x_axis":
@@ -38,7 +38,7 @@ def align_seams(slicer, seam_orientation="next_contour"):
                     current_pt0 = Point(0, 2**32, 0)
                 
                 # gets the points of the next contour
-                next_contour_pts = layer.contours[i+1].printpoints
+                next_contour_pts = layer.contours[i+1].points
                 
                 # removes the last element of the list before shifting
                 next_contour_pts = next_contour_pts[:-1]
@@ -50,14 +50,14 @@ def align_seams(slicer, seam_orientation="next_contour"):
                 next_start_index = next_contour_distance.index(min(next_contour_distance))
 
                 # gets the list of points for the next contour, minus the last point
-                next_contour_list = layer.contours[i+1].printpoints[:-1]
+                next_contour_list = layer.contours[i+1].points[:-1]
                 
                 # shifts the list by the distance determined
                 shift_list = next_contour_list[next_start_index:] + next_contour_list[:next_start_index]
 
                 # adds the first point to the end to create a closed contour and 
-                # adds the shifted point to the printpoints
-                layer.contours[i+1].printpoints = shift_list + [shift_list[0]]
+                # adds the shifted point to the points
+                layer.contours[i+1].points = shift_list + [shift_list[0]]
 
 if __name__ == "__main__":
     pass

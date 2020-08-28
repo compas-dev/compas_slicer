@@ -93,7 +93,7 @@ class RoboticPrintOrganizer(PrintOrganizer):
                                             mesh=None,
                                             extruder_toggle=None)
                     self.commands.append(p)
-   
+
     def set_extruder_toggle(self, extruder_toggle):
         if extruder_toggle == "always_on" or extruder_toggle == "always_off":
             for layer in self.slicer.print_paths:

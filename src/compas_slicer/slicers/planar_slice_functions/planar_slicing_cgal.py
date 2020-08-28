@@ -10,7 +10,10 @@ from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Contour
 from compas_slicer.geometry import AdvancedPrintPoint
 
-from compas_cgal.slicer import slice_mesh
+try:
+    from compas_cgal.slicer import slice_mesh
+except:
+    pass
 
 __all__ = ['create_planar_contours_cgal']
 

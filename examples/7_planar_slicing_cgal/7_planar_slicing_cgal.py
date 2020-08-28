@@ -43,11 +43,11 @@ def main():
     slicer.layers_to_json(DATA, 'slicer_data_layers.json')
 
     ### ----- Visualize 
-    # plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
-    # plotter.draw_edges(width=0.15)
-    # plotter.draw_faces()
-    # plotter.draw_lines(slicer.get_contour_lines_for_plotter(color=(255, 0, 0)))
-    # plotter.show()
+    plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
+    plotter.draw_edges(width=0.15)
+    plotter.draw_faces()
+    plotter.draw_lines(slicer.get_contour_lines_for_plotter(color=(255, 0, 0)))
+    plotter.show()
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import compas_slicer
 import logging
+import compas
 
 logger = logging.getLogger('logger')
 
@@ -19,13 +20,11 @@ class Path(object):
         compas.geometry.Point
     is_closed : bool
     """
-    def __init__(self, printpoints, is_closed):
-        self.points = None
+    def __init__(self, points, is_closed):
+        ## check input
+        assert isinstance(points[0], compas.geometry.Point)
 
-        # check input
-        # assert isinstance(points[0], compas_slicer.geometry.PrintPoint)
-
-        self.printpoints = printpoints  # PrintPoint class
+        self.points = points  # PrintPoint class
         # for print_point in self.printpoints:
         #     print_point.parent_path = self
 
