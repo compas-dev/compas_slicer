@@ -4,7 +4,6 @@ from pyclipper import scale_from_clipper, scale_to_clipper
 
 from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Contour
-from compas_slicer.geometry import AdvancedPrintPoint
 
 from compas.geometry import Point
 
@@ -35,9 +34,9 @@ def generate_brim(print_paths, layer_width, number_of_brim_layers):
 
     for contour in print_paths[0].contours:  
         xy_coords_for_clipper = []
-        for printpoint in contour.printpoints:
+        for point in contour.points:
             # gets the X and Y coordinate since Clipper only does 2D offset operations
-            xy_coords = [printpoint[0], printpoint[1]]
+            xy_coords = [point[0], point[1]]
             xy_coords_for_clipper.append(xy_coords)
 
         # initialise Clipper
@@ -57,7 +56,7 @@ def generate_brim(print_paths, layer_width, number_of_brim_layers):
                 x = xy[0]
                 y = xy[1]
                 # get the Z coordinate from the previous slicing result
-                z = contour.printpoints[0][2]
+                z = contour.points[0][2]
 
                 clipper_points_per_contour.append(Point(x,y,z))
         

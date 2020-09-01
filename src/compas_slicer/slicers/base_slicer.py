@@ -119,7 +119,7 @@ class BaseSlicer(object):
                     len(vs)) + ". \nOnly triangular meshes supported.")
 
     def generate_z_hop(self, z_hop):
-        logger.info("Generating z_hop of XX mm")
+        logger.info("Generating z_hop of " + str(z_hop) + " mm")
         compas_slicer.slicers.generate_z_hop(self.print_paths, z_hop)
 
 

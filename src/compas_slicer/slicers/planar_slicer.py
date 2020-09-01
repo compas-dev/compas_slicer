@@ -48,7 +48,7 @@ class PlanarSlicer(BaseSlicer):
             raise NameError("Invalid slicing type : " + self.slicer_type)
 
     def generate_brim(self, layer_width, number_of_brim_layers):
-        logger.info("Generating brim")
+        logger.info("Generating brim with layer width: %.2f mm, consisting of %d layers" % (layer_width, number_of_brim_layers))
         self.print_paths = compas_slicer.slicers.generate_brim(self.print_paths, layer_width, number_of_brim_layers)
 
     def generate_infill(self):
