@@ -1,15 +1,15 @@
 import numpy as np
 from compas.geometry import Point, distance_point_point
-from compas_slicer.geometry import Contour
+from compas_slicer.geometry import Path
 from compas_slicer.geometry import Layer
 from compas_slicer.geometry import PrintPoint
 import meshcut
 
-__all__ = ['create_planar_contours_meshcut']
+__all__ = ['create_planar_paths_meshcut']
 
 
-def create_planar_contours_meshcut(mesh, layer_height):
-    """Creates planar contours using the Meshcut library
+def create_planar_paths_meshcut(mesh, layer_height):
+    """Creates planar slices using the Meshcut library
     https://pypi.org/project/meshcut/ from Julien Rebetez
 
     Parameters
@@ -34,8 +34,9 @@ def create_planar_contours_meshcut(mesh, layer_height):
     d = abs(min_z - max_z)
     no_of_layers = int(d / layer_height) + 1
     layers = []
+
     for i in range(no_of_layers):
-        contours_per_layer = []
+        paths_per_layer = []
         # define plane
         # TODO check if adding 0.01 tolerance makes sense
         plane_origin = (0, 0, min_z + i * layer_height + 0.01)
@@ -55,9 +56,10 @@ def create_planar_contours_meshcut(mesh, layer_height):
 
             # print_points = [PrintPoint(pt=p, layer_height=layer_height) for p in points]
 
-            c = Contour(points=points, is_closed=is_closed)
-            contours_per_layer.append(c)
-        layer = Layer(contours_per_layer, None, None)
+            path = Path(points=points, is_closed=is_closed)
+            paths_per_layer.append(path)
+
+        layer = Layer(paths_per_layer)
         layers.append(layer)
     return layers
 

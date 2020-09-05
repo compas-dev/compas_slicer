@@ -3,14 +3,12 @@ import compas_slicer
 import logging
 
 from compas_slicer.fabrication import generate_gcode
-from compas_slicer.geometry import AdvancedPrintPoint
-
-from compas.geometry import Point
+from compas_slicer.geometry import PrintPoint
+import compas_slicer.utilities as utils
 
 logger = logging.getLogger('logger')
 
 __all__ = ['PrintOrganizer',
-           'FDMPrintOrganizer',
            'RoboticPrintOrganizer']
 
 
@@ -20,13 +18,13 @@ class PrintOrganizer(object):
 
     Attributes
     ----------
-    paths_collection : list
-        compas_slicer.geometry.PathCollection or any class inheriting from it
+    slicer :
     machine_model : The hardware
         compas_slicer.fabrication.MachineModel or any class inheriting form it
+    material :
     """
 
-    def __init__(self, slicer, machine_model, material):
+    def __init__(self, slicer, machine_model, material, extruder_toggle_type="always_on"):
         # check input
         assert isinstance(slicer, compas_slicer.slicers.BaseSlicer)
         assert isinstance(machine_model, compas_slicer.fabrication.MachineModel)
@@ -36,30 +34,74 @@ class PrintOrganizer(object):
         self.machine_model = machine_model
         self.material = material
 
-        self.visualization_geometry = None
+        ### initialize print points
+        self.printpoints_dict = {}
+        self.create_printpoints_dict()
+        self.set_extruder_toggle(extruder_toggle_type)
 
-    def generate_visualization_geometry(self):
-        ## TODO
-        pass
+        ### state booleans
+        self.with_z_hop = False
+        self.with_brim = False
 
-class FDMPrintOrganizer(PrintOrganizer):
-    """
-    Creates fabrication data for FDM 3D printers.
-    """
+    ### --- Initialization
+    def create_printpoints_dict(self):
+        path_count = 0
+        for path_collection in self.slicer.path_collections:
+            for path in path_collection.paths:
 
-    def __init__(self, slicer, machine_model, material):
-        PrintOrganizer.__init__(self, slicer, machine_model, material)
-        assert isinstance(slicer, compas_slicer.slicers.PlanarSlicer)
+                printpoints = []
+                for point in path.points:
+                    printpoint = PrintPoint(point, self.slicer.layer_height)
+                    printpoint.parent_path = path
+                    printpoints.append(printpoint)
+                self.printpoints_dict[path_count] = printpoints
+                path_count += 1
 
-    def save_commands_to_gcode(self, FILE):
+    def set_extruder_toggle(self, extruder_toggle):
+        if not (extruder_toggle == "always_on"
+                or extruder_toggle == "always_off"
+                or extruder_toggle == "off_when_travel"):
+            raise ValueError("Extruder toggle method doesn't exist")
+
+        for key in self.printpoints_dict:
+            for i, printpoint in enumerate(self.printpoints_dict[key]):
+                if extruder_toggle == "always_on":
+                    printpoint.extruder_toggle = True
+                elif extruder_toggle == "always_off":
+                    printpoint.extruder_toggle = False
+                elif extruder_toggle == "off_when_travel":
+                    if i == len(self.printpoints_dict[key]) - 1:
+                        printpoint.extruder_toggle = False  # last points
+                    else:
+                        printpoint.extruder_toggle = True  # rest of points
+
+    ### --- Other functions
+
+    def generate_gcode(self, FILE):
         """
         Saves gcode file with the print parameters provided in the machine_model
         Only supports constant layer height
         """
+        assert isinstance(self.slicer, compas_slicer.slicers.PlanarSlicer)
         if len(self.material.parameters) == 0:
             raise ValueError("The material provided does not have properties")
-        generate_gcode(self.slicer.print_paths, self.slicer.layer_height, FILE, self.machine_model, self.material)
+        generate_gcode(self.printpoints_dict, FILE, self.machine_model, self.material)
 
+    def add_z_hop_printpoints(self, z_hop):
+        self.with_z_hop = True
+        logger.info("Generating z_hop of " + str(z_hop) + " mm")
+        compas_slicer.fabrication.generate_z_hop(self.printpoints_dict, z_hop)
+
+    def add_brim_printpoints(self, layer_width, number_of_brim_layers):
+        self.with_brim = True
+        logger.info("Generating brim with layer width: %.2f mm, consisting of %d layers" %
+                    (layer_width, number_of_brim_layers))
+        compas_slicer.fabrication.generate_brim(self.printpoints_dict, layer_width, number_of_brim_layers)
+
+
+#############################################
+### RoboticPrintOrganizer
+#############################################
 
 class RoboticPrintOrganizer(PrintOrganizer):
     """
@@ -71,83 +113,20 @@ class RoboticPrintOrganizer(PrintOrganizer):
             "Machine Model does not represent a robot"
         PrintOrganizer.__init__(self, slicer, machine_model, material)
 
-        self.ordered_print_points = self.get_print_points_ordered_in_fabrication_sequence()
-        # print (self.ordered_print_points)
-        self.commands = [] #self.generate_commands()
-
-    def get_print_points_ordered_in_fabrication_sequence(self):
-        # TODO
-        # return [printpoint for path in self.slicer.print_paths for contour in path.contours for printpoint in
-        #         contour.printpoints]
-        pass
-
-    def generate_commands(self):
-        # self.commands = [printpoint for layer in self.slicer.print_paths for contour in layer.contours for printpoint in contour.printpoints.pt]
-        self.commands = []
-        for layer in self.slicer.print_paths:
-            for contour in layer.contours:
-                for printpoint in contour.printpoints:
-                    p = AdvancedPrintPoint( pt=printpoint,
-                                            layer_height=None,
-                                            up_vector=None,
-                                            mesh=None,
-                                            extruder_toggle=None)
-                    self.commands.append(p)
-
-    def set_extruder_toggle(self, extruder_toggle):
-        if extruder_toggle == "always_on" or extruder_toggle == "always_off":
-            for layer in self.slicer.print_paths:
-                for contour in layer.contours:
-                    for printpoint in contour.printpoints:
-                        if extruder_toggle == "always_on":
-                            # set printpoint.extruder_toggle to TRUE for all points
-                            printpoint.extruder_toggle = True
-                        if extruder_toggle == "always_off":
-                            # set printpoint.extruder_toggle to FALSE for all points
-                            printpoint.extruder_toggle = False
-
-        if extruder_toggle ==  "off_when_travel":
-            for layer in self.slicer.print_paths:
-                for contour in layer.contours:
-                    for i, printpoint in enumerate(contour.printpoints):
-                        if i == len(contour.printpoints)-1:
-                            # last point
-                            printpoint.extruder_toggle = False
-                        else:
-                            # rest of points
-                            printpoint.extruder_toggle = True
-
-        if extruder_toggle ==  "off_when_travel_zhop":
-            for layer in self.slicer.print_paths:
-                for contour in layer.contours:
-                    for i, printpoint in enumerate(contour.printpoints):
-                        if i == 0:
-                            # first point
-                            printpoint.extruder_toggle = False
-                        if i >= len(contour.printpoints)-2:
-                            # last 2 points
-                            printpoint.extruder_toggle = False
-                        else:
-                            # rest of points
-                            printpoint.extruder_toggle = True                    
-
-    def save_commands_to_json(self, FILENAME):
-        logger.info("Saving to json: " + str(len(self.commands)) + " commands, to file: " + FILENAME)
+    def generate_robotic_commands_dict(self):
+        logger.info("generating %d robotic commands: " % utils.length_of_flattened_dictionary(self.printpoints_dict))
         # data dictionary
         data = {}
 
+        logger.error('COMMANDS GENERATION NOT IMPLEMENTED YET')
         count = 0
-        for layer in self.slicer.print_paths:
-            for contour in layer.contours:
-                for printpoint in contour.printpoints:
-                    data[count] = {}
-                    data[count]["pt"] = printpoint.pt[0], printpoint.pt[1], printpoint.pt[2]
-                    data[count]["extruder_toggle"] = printpoint.extruder_toggle
-                    data[count]["layer_height"] = printpoint.layer_height
-                    count += 1
 
-        with open(FILENAME, 'w') as f:
-            f.write(json.dumps(data, indent=3, sort_keys=True))
+        for key in self.printpoints_dict:
+            for i, printpoint in enumerate(self.printpoints_dict[key]):
+                pass
+
+        return data
+
 
 if __name__ == "__main__":
     pass

@@ -1,18 +1,15 @@
 <component name="ProjectDictionaryState">
   <dictionary name="Ioanna">
     <words>
+      <w>cgal</w>
       <w>compas</w>
       <w>datastructures</w>
-      <w>endeffector</w>
       <w>extruder</w>
       <w>gcode</w>
-      <w>levelname</w>
-      <w>meshcut</w>
-      <w>printpath</w>
+      <w>isocurve</w>
+      <w>isocurves</w>
       <w>printpoint</w>
-      <w>prusa</w>
-      <w>tupple</w>
-      <w>tupples</w>
+      <w>printpoints</w>
     </words>
   </dictionary>
 </component>

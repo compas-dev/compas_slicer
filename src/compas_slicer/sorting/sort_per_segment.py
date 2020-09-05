@@ -28,23 +28,21 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
     """
     logger.info("Sorting per segment")
 
-    layers = slicer.print_paths
-
     segments = [Segment(id=0)]  # segments that contain isocurves
-    for layer in layers:
-        for contour in layer.contours:
+    for path_collection in slicer.path_collections:
+        for path in path_collection.paths:
             current_segment = None
 
             ## Find an eligible segment for contour (called current_segment)
-            if len(segments[0].contours) == 0:  # first contour
+            if len(segments[0].paths) == 0:  # first contour
                 current_segment = segments[0]
             else:  # find the candidate segment for new isocurve
-                contour_centroid = utils.get_average_point(contour.points)
+                contour_centroid = utils.get_average_point(path.points)
                 other_centroids = get_segments_centroids_list(segments)
                 candidate_segment = segments[get_closest_pt_index(contour_centroid, other_centroids)]
                 if distance_point_point(candidate_segment.head_centroid, contour_centroid) < threshold:
                     if max_layers_per_segment:
-                        if len(candidate_segment.contours) < max_layers_per_segment:
+                        if len(candidate_segment.paths) < max_layers_per_segment:
                             current_segment = candidate_segment
                     else:  # then no restriction in the number of layers
                         current_segment = candidate_segment
@@ -54,7 +52,7 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
                     segments.append(current_segment)
 
             ## Assign contour to current segment
-            current_segment.append_(contour)
+            current_segment.append_(path)
 
         ##TODO: 
         # if layer.infill_paths: ...

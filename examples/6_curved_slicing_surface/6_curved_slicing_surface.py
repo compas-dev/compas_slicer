@@ -60,5 +60,5 @@ if __name__ == "__main__":
     # plotter = MeshPlotter(mesh, figsize=(16, 10))
     # plotter.draw_edges(width=0.15)
     # plotter.draw_faces()
-    # plotter.draw_lines(slicer.get_contour_lines_for_plotter(color=(255, 0, 0)))
+    # plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
     # plotter.show()

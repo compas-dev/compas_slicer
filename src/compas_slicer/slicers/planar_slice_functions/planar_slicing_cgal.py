@@ -7,18 +7,17 @@ from compas.geometry import Vector
 from compas.geometry import Plane
 
 from compas_slicer.geometry import Layer
-from compas_slicer.geometry import Contour
-from compas_slicer.geometry import AdvancedPrintPoint
+from compas_slicer.geometry import Path
 
 try:
     from compas_cgal.slicer import slice_mesh
 except:
     pass
 
-__all__ = ['create_planar_contours_cgal']
+__all__ = ['create_planar_paths_cgal']
 
 
-def create_planar_contours_cgal(mesh, layer_height):
+def create_planar_paths_cgal(mesh, layer_height):
     """Creates planar contours using CGAL
 
     Parameters
@@ -72,11 +71,11 @@ def create_planar_contours_cgal(mesh, layer_height):
                 points_per_contour.append(pt)
             # generate contours
             # TODO: add a check for is_closed
-            c = Contour(points=points_per_contour, is_closed=True)
-            contours_per_layer.append(c)
+            path = Path(points=points_per_contour, is_closed=True)
+            contours_per_layer.append(path)
         
         # generate layers
-        l = Layer(contours_per_layer, None, None)
+        l = Layer(contours_per_layer)
         layers.append(l)
 
     return layers

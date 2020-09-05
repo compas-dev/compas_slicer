@@ -6,7 +6,7 @@ from compas_slicer.sorting import sort_per_segment, sort_per_shortest_path_mlros
 from compas_slicer.sorting import align_seams
 from compas_slicer.polyline_simplification import simplify_paths_rdp
 
-from compas_slicer.fabrication import FDMPrintOrganizer
+from compas_slicer.fabrication import PrintOrganizer
 from compas_slicer.fabrication import FDMPrinter
 from compas_slicer.positioning import center_mesh_on_build_platform
 from compas_slicer.fabrication import Material
@@ -36,7 +36,7 @@ def main():
 
     ### --- Slicer
     slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=12.0)
-    slicer.slice_model(create_contours=True, create_infill=False, create_supports=False)
+    slicer.slice_model()
     slicer.printout_info()
 
     simplify_paths_rdp(slicer, threshold=0.2)
@@ -50,8 +50,8 @@ def main():
     material_PLA.set_parameter("z_hop", 10)
     material_PLA.printout_info()
 
-    fab = FDMPrintOrganizer(slicer, machine_model=machine_model, material=material_PLA)
-    # fab.save_commands_to_gcode(OUTPUT_FILE)
+    print_organizer = PrintOrganizer(slicer, machine_model=machine_model, material=material_PLA)
+    print_organizer.generate_gcode(OUTPUT_FILE)
 
 
 if __name__ == "__main__":

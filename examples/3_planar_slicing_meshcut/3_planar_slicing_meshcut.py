@@ -26,20 +26,20 @@ def main():
 
     ### --- Slicer
     slicer = PlanarSlicer(compas_mesh, slicer_type="planar_meshcut", layer_height=100.0)
-    slicer.slice_model(create_contours=True, create_infill=False, create_supports=False)
+    slicer.slice_model()
     slicer.printout_info()
 
     simplify_paths_rdp(slicer, threshold=0.2)
     sort_per_segment(slicer, max_layers_per_segment=False, threshold=slicer.layer_height * 1.6)
     align_seams(slicer)
 
-    slicer.to_json(path=DATA, name="slicer_data.json")
+    slicer.path_collections_to_json(filepath=DATA, name="slicer_data.json")
 
     ### ----- Visualize 
     plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
     plotter.draw_edges(width=0.15)
     plotter.draw_faces()
-    plotter.draw_lines(slicer.get_contour_lines_for_plotter(color=(255, 0, 0)))
+    plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
     plotter.show()
 
 

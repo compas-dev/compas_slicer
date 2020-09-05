@@ -1,15 +1,14 @@
 import compas
 from compas.datastructures import Mesh
 from compas.geometry import Point, distance_point_point
-from compas_slicer.geometry import Contour
+from compas_slicer.geometry import Path
 from compas_slicer.geometry import Layer
-from compas_slicer.geometry import PrintPoint
 
-__all__ = ['create_planar_contours_numpy']
+__all__ = ['create_planar_paths_numpy']
 
 ##TODO: Improve this function
 
-def create_planar_contours_numpy(mesh, layer_height):
+def create_planar_paths_numpy(mesh, layer_height):
     """
     Creates planar contours using the compas mesh_contours_numpy function. To be replaced with a better alternative
 
@@ -40,10 +39,10 @@ def create_planar_contours_numpy(mesh, layer_height):
                     is_closed = distance_point_point(points[0], points[-1]) < threshold_closed
 
                     # print_points = [PrintPoint(pt=p, layer_height=layer_height) for p in points]
-                    c = Contour(points=points, is_closed=is_closed)
+                    path = Path(points=points, is_closed=is_closed)
 
-                    contours_per_layer.append(c)
-            l = Layer(contours_per_layer, None, None)
+                    contours_per_layer.append(path)
+            l = Layer(contours_per_layer)
             layers.append(l)
     return layers
 

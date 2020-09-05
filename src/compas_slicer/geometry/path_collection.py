@@ -14,48 +14,23 @@ class PathCollection(object):
 
     Attributes
     ----------
-    contours : list
-        compas_slicer.geometry.Contour
-    infills : list
-        compas_slicer.geometry.InfillPath
-    supports : list
-        compas_slicer.geometry.SupportPath
+    paths : list
+        compas_slicer.geometry.Path
     """
 
-    def __init__(self, contours, infills, supports):
+    def __init__(self, paths):
         # check input
-        if contours:
-            if len(contours) > 0:
-                assert isinstance(contours[0], compas_slicer.geometry.Path)
-        if infills:
-            if len(infills) > 0:
-                assert isinstance(infills[0], compas_slicer.geometry.Path)
-        if supports:
-            if len(supports) > 0:
-                assert isinstance(supports[0], compas_slicer.geometry.Path)
-
-        self.contours = contours
-        self.infills = infills
-        self.supports = supports
-
-    def get_all_paths(self):
-        all_paths = []
-        [all_paths.append(path) for path in self.contours]
-        if self.infills:
-            [all_paths.append(path) for path in self.infills]
-        if self.supports:
-            [all_paths.append(path) for path in self.supports]
-        return all_paths
+        if len(paths)>0:
+            assert isinstance(paths[0], compas_slicer.geometry.Path)
+        self.paths = paths
 
 
 class Layer(PathCollection):
     """
     Horizontal ordering. A Layer stores the print paths on a specific height level.
     """
-
-    def __init__(self, contours, infill_paths, support_paths):
-        PathCollection.__init__(self, contours, infill_paths, support_paths)
-
+    def __init__(self, paths):
+        PathCollection.__init__(self, paths)
 
 class Segment(PathCollection):
     """
@@ -63,24 +38,24 @@ class Segment(PathCollection):
     """
 
     def __init__(self, id):
-        PathCollection.__init__(self, contours=[], infills=None, supports=None)
+        PathCollection.__init__(self, paths=[])
         self.id = id
         self.head_centroid = None
 
-    def append_(self, contour):
-        self.contours.append(contour)
+    def append_(self, path):
+        self.paths.append(path)
         self.compute_head_centroid()
 
     def compute_head_centroid(self):
         ## Avoid using numpy for this
-        self.head_centroid = utils.get_average_point(self.contours[-1].points)
+        self.head_centroid = utils.get_average_point(self.paths[-1].points)
 
     def total_number_of_points(self):
         num = 0
-        for contour in self.contours:
-            num += len(contour.printpoints)
+        for path in self.paths:
+            num += len(path.printpoints)
         return num
 
     def printout_details(self):
         logger.info("Segment id : %d" % self.id)
-        logger.info("Total number of contours : %d" % len(self.contours))
+        logger.info("Total number of paths : %d" % len(self.paths))

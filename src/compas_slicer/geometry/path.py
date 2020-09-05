@@ -4,10 +4,7 @@ import compas
 
 logger = logging.getLogger('logger')
 
-__all__ = ['Path',
-           'Contour',
-           'Infill',
-           'Support']
+__all__ = ['Path']
 
 
 class Path(object):
@@ -20,18 +17,13 @@ class Path(object):
         compas.geometry.Point
     is_closed : bool
     """
+
     def __init__(self, points, is_closed):
         ## check input
         assert isinstance(points[0], compas.geometry.Point)
-
-        self.points = points  # PrintPoint class
-        # for print_point in self.printpoints:
-        #     print_point.parent_path = self
-
+        self.points = points  # class compas.geometry.Point
         self.is_closed = is_closed
-
-    ############################
-    ### Output
+        self.type = 'contour'  ## / 'infill' / 'support'
 
     def get_lines_for_plotter(self, color=(255, 0, 0)):
         lines = []
@@ -54,21 +46,6 @@ class Path(object):
                     }
                     lines.append(line)
         return lines
-
-
-class Contour(Path):
-    def __init__(self, points, is_closed):
-        Path.__init__(self, points, is_closed)
-
-
-class Infill(Path):
-    def __init__(self, points, is_closed):
-        Path.__init__(self, points, is_closed)
-
-
-class Support(Path):
-    def __init__(self, points, is_closed):
-        Path.__init__(self, points, is_closed)
 
 
 if __name__ == '__main__':

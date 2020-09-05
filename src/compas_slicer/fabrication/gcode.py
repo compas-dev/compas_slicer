@@ -4,7 +4,7 @@ logger = logging.getLogger('logger')
 
 __all__ = ['generate_gcode']
 
-def generate_gcode(paths, layer_height, FILE, machine_model, material):
+def generate_gcode(printpoints_dict, FILE, machine_model, material):
     """Creates all the commands in order for fabrication
 
     Attributes
@@ -81,22 +81,19 @@ def generate_gcode(paths, layer_height, FILE, machine_model, material):
 
         f.write("G1 F{0} ; set print speed\n".format(print_speed))
 
-        for path in paths:
-            logger.debug("Gcode layer number : %d" % layer_number)
-
+        for key in printpoints_dict:
             f.write(";LAYER:{0}\n".format(layer_number))
-            f.write("G0 Z{0}\n".format(layer_height))
-            for contour in path.contours:
-                f.write(";CONTOUR\n")
-                for point in contour.points:
-                    filament_feed_length = get_filament_feed_length(point)  ## TODO!
-                    f.write("G1 X{x} Y{y} Z{z} E{e}\n".format(x=point[0],
-                                                              y=point[1],
-                                                              z=point[2],
-                                                              e=filament_feed_length))
-            layer_number += 1
-        logger.info("Saved to gcode: " + FILE)
 
+            for print_point in printpoints_dict[key]:
+                point = print_point.pt
+                filament_feed_length = get_filament_feed_length(print_point)  ## TODO!
+                f.write("G1 X{x} Y{y} Z{z} E{e}\n".format(x=point[0],
+                                                          y=point[1],
+                                                          z=point[2],
+                                                          e=filament_feed_length))
+            layer_number += 1
+
+        logger.info("Saved to gcode: " + FILE)
 
 def get_filament_feed_length(printpoint):
     # TODO!!!

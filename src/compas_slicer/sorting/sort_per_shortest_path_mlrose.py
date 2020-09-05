@@ -68,12 +68,10 @@ def sort_per_shortest_path_mlrose(slicer,
 
     logger.info("Sorting per shortest path using mlrose")
 
-    layers = slicer.print_paths
-
-    for layer in layers:
+    for path_collection in slicer.path_collections:
         coords_list = []
-        for contour in layer.contours:
-            for i, pt in enumerate(contour.points):
+        for path in path_collection.paths:
+            for i, pt in enumerate(path.points):
                 if i == 0:
                     coords = (pt[0], pt[1])
                     # print("points", contour.points)
@@ -86,14 +84,8 @@ def sort_per_shortest_path_mlrose(slicer,
                                                       max_attempts=max_attempts,
                                                       random_state=random_state)
 
-        ordered_contours = [layer.contours[x] for x in best_state]
-        layer.contours = ordered_contours
-
-        ##TODO: 
-        # if layer.infill_paths: ...
-        # if layer.support_paths: ...
-
-    slicer.print_paths = layers
+        ordered_paths = [path_collection.paths[x] for x in best_state]
+        path_collection.paths = ordered_paths
 
 
 if __name__ == "__main__":

@@ -1,15 +1,28 @@
 from compas.geometry import Point, Frame, distance_point_point_sqrd
 
-__all__ = ['PrintPoint',
-           'AdvancedPrintPoint']
+__all__ = ['PrintPoint']
 
 
 class PrintPoint(object):
     def __init__(self, pt, layer_height):
-        self.pt = pt  # position of center of mass (compas.geometry.Point)
-        self.layer_height = layer_height
 
+        ### --- basic printpoint
+        self.pt = pt  # position of center of mass (compas.geometry.Point)
+
+        self.layer_height = layer_height  # float
         self.parent_path = None  # class inheriting from Path. The path in which this point belongs
+
+        self.extruder_toggle = None  # boolean
+
+        ### --- advanced printpoint
+        self.up_vector = None  # compas.geometry.Vector
+        self.normal = None  # compas.geometry.Vector
+        self.frame = None  # compas.geometry.Frame
+
+        self.support_path = None  # class inheriting from Path. The path that is directly under the printpoint
+        self.support_printpoint = None  # class PrintPoint
+
+        self.visualization_geometry = None
 
     #### --- Find neighboring printpoints
     def get_prev_print_point(self):
@@ -24,25 +37,13 @@ class PrintPoint(object):
         if i < len(self.parent_path.printpoints) - 1:
             return self.parent_path.printpoints[i + 1]
 
+    #### --- Initialization of advanced print point functions
 
-class AdvancedPrintPoint(PrintPoint):
-    def __init__(self, pt, layer_height, up_vector, mesh, extruder_toggle):
-        PrintPoint.__init__(self, pt, layer_height)
-        self.pt = pt  # position of center of mass (compas.geometry.Point)
-        self.layer_height = layer_height
-        self.up_vector = up_vector  # compas.geometry.Vector
-        self.extruder_toggle = extruder_toggle
+    def initialize_advanced_print_point(self, mesh, up_vector):
+        self.up_vector = up_vector
+        self.normal = self.get_closest_mesh_normal(mesh)
+        self.frame = self.get_frame()
 
-        # self.normal = self.get_closest_mesh_normal(mesh)  # compas.geometry.Vector
-        # self.frame = self.get_frame()  # compas.geometry.Frame
-
-        ### ----- parameters currently not yet filled in
-        self.visualization_shape = None
-        # parameters useful for curved slicing
-        self.support_printpoint = None  # class PrintPoint
-        self.support_path = None  # class inheriting from Path
-
-    #### --- Initialization functions
     def get_frame(self):
         return Frame(self.pt, self.up_vector, self.normal)
 

@@ -10,6 +10,8 @@ from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
 from compas_slicer.fabrication import Material
+from compas_slicer.utilities import save_to_json
+from compas_plotters import MeshPlotter
 
 ######################## Logging
 import logging
@@ -28,13 +30,20 @@ def main():
     compas_mesh = Mesh.from_stl(INPUT_FILE)
 
     ### --- Slicer
-    slicer = PlanarSlicer(compas_mesh, slicer_type='planar_meshcut', layer_height=10.0)
-    slicer.slice_model(create_contours=True, create_infill=False, create_supports=False)
+    slicer = PlanarSlicer(compas_mesh, slicer_type='planar_cgal', layer_height=10.0)
+    slicer.slice_model()
     slicer.printout_info()
 
     simplify_paths_rdp(slicer, threshold=0.2)
     sort_per_shortest_path_mlrose(slicer, max_attempts=4)
     align_seams(slicer)
+
+    ### ----- Visualize slicing
+    plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
+    plotter.draw_edges(width=0.15)
+    plotter.draw_faces()
+    plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
+    plotter.show()
 
     ### --- Fabrication
     robot_printer = RobotPrinter('UR5')
@@ -48,8 +57,9 @@ def main():
     material_PLA.printout_info()
 
     print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA)
-    print_organizer.generate_commands()
-    print_organizer.save_commands_to_json(OUTPUT_FILE)
+
+    robotic_commands = print_organizer.generate_robotic_commands_dict()
+    save_to_json(robotic_commands, DATA, OUTPUT_FILE)
 
 
 if __name__ == '__main__':
