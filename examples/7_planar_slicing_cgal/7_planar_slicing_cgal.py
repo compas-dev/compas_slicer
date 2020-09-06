@@ -13,6 +13,9 @@ from compas_slicer.fabrication import RobotPrinter
 from compas_slicer.fabrication import Material
 from compas_slicer.utilities import save_to_json
 
+from compas_viewers.objectviewer import ObjectViewer
+
+
 import time
 
 ######################## Logging
@@ -33,19 +36,23 @@ def main():
     compas_mesh = Mesh.from_stl(os.path.join(DATA, MODEL))
 
     ### --- Slicer
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=100.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=30.0)
     slicer.slice_model()
     slicer.printout_info()
 
-    simplify_paths_rdp(slicer, threshold=0.2)
+    simplify_paths_rdp(slicer, threshold=0.4)
     sort_per_shortest_path_mlrose(slicer, max_attempts=1)
     align_seams(slicer, seam_orientation="next_path")
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
 
-    slicer.path_collections_to_json(DATA, 'slicer_data_layers.json')
-    
+    viewer = ObjectViewer()
+    # viewer.view.use_shaders = False
+    # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
+
+    # slicer.path_collections_to_json(DATA, 'slicer_data_layers.json')
+
     robot_printer = RobotPrinter('UR5')
     material_PLA = Material('PLA')
 
@@ -54,9 +61,13 @@ def main():
     print_organizer.add_z_hop_printpoints(z_hop=20)
     print_organizer.set_extruder_toggle(extruder_toggle="off_when_travel")
 
-    robotic_commands = print_organizer.generate_robotic_commands_dict()
-    save_to_json(robotic_commands, DATA, OUTPUT_FILE)
+    print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=True)
 
+    # robotic_commands = print_organizer.generate_robotic_commands_dict()
+    # save_to_json(robotic_commands, DATA, OUTPUT_FILE)
+
+    viewer.update()
+    viewer.show()
 
 if __name__ == "__main__":
     main()

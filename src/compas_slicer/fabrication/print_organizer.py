@@ -5,6 +5,7 @@ import logging
 from compas_slicer.fabrication import generate_gcode
 from compas_slicer.geometry import PrintPoint
 import compas_slicer.utilities as utils
+from compas.geometry import Polyline
 
 logger = logging.getLogger('logger')
 
@@ -76,7 +77,6 @@ class PrintOrganizer(object):
                         printpoint.extruder_toggle = True  # rest of points
 
     ### --- Other functions
-
     def generate_gcode(self, FILE):
         """
         Saves gcode file with the print parameters provided in the machine_model
@@ -97,6 +97,23 @@ class PrintOrganizer(object):
         logger.info("Generating brim with layer width: %.2f mm, consisting of %d layers" %
                     (layer_width, number_of_brim_layers))
         compas_slicer.fabrication.generate_brim(self.printpoints_dict, layer_width, number_of_brim_layers)
+
+    ### --- Visualize on viewer
+    def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
+        all_pts = []
+        for key in self.printpoints_dict:
+            all_pts.extend([printpoint.pt for printpoint in self.printpoints_dict[key]])
+
+        if visualize_polyline:
+            polyline = Polyline(all_pts)
+            viewer.add(polyline, name="Polyline",
+                       settings={'color': '#ffffff'})
+
+        if visualize_printpoints:
+            for i, pt in enumerate(all_pts):
+                viewer.add(pt, name="Point %d" % i)
+
+
 
 
 #############################################

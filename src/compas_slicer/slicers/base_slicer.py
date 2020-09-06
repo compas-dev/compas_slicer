@@ -1,6 +1,8 @@
 import compas
 from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
+from compas.geometry import Polyline
+
 import logging
 
 logger = logging.getLogger('logger')
@@ -74,6 +76,21 @@ class BaseSlicer(object):
                 lines.extend(path.get_lines_for_plotter(color))
         return lines
 
+    def visualize_on_viewer(self, viewer, visualize_mesh, visualize_paths):
+        if visualize_mesh:
+            viewer.add(self.mesh, settings={'color': '#ff0000',
+                                            'opacity': 0.4,})
+
+        if visualize_paths:
+            for i, path_collection in enumerate(self.path_collections):
+                for j, path in enumerate(path_collection.paths):
+                    polyline = Polyline(path.points)
+                    viewer.add(polyline, name="Path_Collection %d, Path %d" % (i, j),
+                               settings={'color': '#ffffff'})
+
+        # for polyline in polylines:
+        #     viewer.add(polyline, settings={'color': '#ffffff'})
+
     ##############################
     ### --- To json
 
@@ -97,7 +114,6 @@ class BaseSlicer(object):
                 for k, point in enumerate(path.points):
                     data[i][j][k] = [point[0], point[1], point[2]]
         utils.save_to_json(data, filepath, name)
-
 
 
 if __name__ == "__main__":
