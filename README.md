@@ -63,7 +63,7 @@ pip install compas_fab
 
 To install on an existing environment with python=3.7, use:
 ```bash
-conda activate environment_name
+conda activate <environment_name>
 pip install PySide2 
 pip install PyOpenGL 
 pip install path/to/compas_viewers
