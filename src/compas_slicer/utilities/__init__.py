@@ -7,6 +7,7 @@ from .utils import *  # noqa: F401 E402 F403
 
 if not compas.IPY:
     from .utils_numpy import *  # noqa: F401 E402 F403
+    from compas_slicer.utilities.simplify_paths_rdp import *  # noqa: F401 E402 F403
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]

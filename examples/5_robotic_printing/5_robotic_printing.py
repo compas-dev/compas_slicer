@@ -4,14 +4,14 @@ from compas.geometry import Frame
 
 from compas_slicer.sorting import sort_per_segment, sort_per_shortest_path_mlrose
 from compas_slicer.sorting import align_seams
-from compas_slicer.polyline_simplification import simplify_paths_rdp
-
+from compas_slicer.utilities import simplify_paths_rdp
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
 from compas_slicer.fabrication import Material
 from compas_slicer.utilities import save_to_json
 from compas_plotters import MeshPlotter
+from compas_viewers.objectviewer import ObjectViewer
 
 ######################## Logging
 import logging
@@ -38,12 +38,12 @@ def main():
     sort_per_shortest_path_mlrose(slicer, max_attempts=4)
     align_seams(slicer)
 
-    ### ----- Visualize slicing
-    plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
-    plotter.draw_edges(width=0.15)
-    plotter.draw_faces()
-    plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
-    plotter.show()
+    # ### ----- Visualize slicing
+    # plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
+    # plotter.draw_edges(width=0.15)
+    # plotter.draw_faces()
+    # plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
+    # plotter.show()
 
     ### --- Fabrication
     robot_printer = RobotPrinter('UR5')
@@ -56,11 +56,17 @@ def main():
     material_PLA = Material('PLA')
     material_PLA.printout_info()
 
-    print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA)
+    print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA,
+                                            extruder_toggle_type="always_on")
 
     robotic_commands = print_organizer.generate_robotic_commands_dict()
     save_to_json(robotic_commands, DATA, OUTPUT_FILE)
 
+    ### ----- Visualize
+    viewer = ObjectViewer()
+    print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
+    viewer.update()
+    viewer.show()
 
 if __name__ == '__main__':
     main()

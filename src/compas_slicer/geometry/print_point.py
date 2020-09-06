@@ -4,14 +4,18 @@ __all__ = ['PrintPoint']
 
 
 class PrintPoint(object):
-    def __init__(self, pt, layer_height):
+    def __init__(self, pt, path_collection_index, path_index, point_index, layer_height):
 
         ### --- basic printpoint
         self.pt = pt  # position of center of mass (compas.geometry.Point)
 
-        self.layer_height = layer_height  # float
-        self.parent_path = None  # class inheriting from Path. The path in which this point belongs
+        self.path_collection_index = path_collection_index
+        self.path_index = path_index
+        self.point_index = point_index
 
+        self.layer_height = layer_height  # float
+
+        self.parent_path = None  # class inheriting from Path. The path in which this point belongs
         self.extruder_toggle = None  # boolean
 
         ### --- advanced printpoint
@@ -24,18 +28,12 @@ class PrintPoint(object):
 
         self.visualization_geometry = None
 
-    #### --- Find neighboring printpoints
-    def get_prev_print_point(self):
-        assert self.parent_path, "Cannot get neighboring printpoints because parent_path has not been specified"
-        i = self.parent_path.printpoints.index(self)
-        if i > 0:
-            return self.parent_path.printpoints[i - 1]
+    #### --- Printpoint neighbors and position
+    def is_last_path_printpoint(self, path_collections_indices):
+        return self.point_index == len(path_collections_indices[self.path_collection_index][self.path_index]) - 1
 
-    def get_next_print_point(self):
-        assert self.parent_path, "Cannot get neighboring printpoints because parent_path has not been specified"
-        i = self.parent_path.printpoints.index(self)
-        if i < len(self.parent_path.printpoints) - 1:
-            return self.parent_path.printpoints[i + 1]
+    def is_first_path_printpoint(self):
+        return self.point_index == 0
 
     #### --- Initialization of advanced print point functions
 

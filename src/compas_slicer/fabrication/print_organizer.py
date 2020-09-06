@@ -16,15 +16,7 @@ __all__ = ['PrintOrganizer',
 class PrintOrganizer(object):
     """
     Base class for organizing the printing process
-
-    Attributes
-    ----------
-    slicer :
-    machine_model : The hardware
-        compas_slicer.fabrication.MachineModel or any class inheriting form it
-    material :
     """
-
     def __init__(self, slicer, machine_model, material, extruder_toggle_type="always_on"):
         # check input
         assert isinstance(slicer, compas_slicer.slicers.BaseSlicer)
@@ -36,8 +28,9 @@ class PrintOrganizer(object):
         self.material = material
 
         ### initialize print points
-        self.printpoints_dict = {}
-        self.create_printpoints_dict()
+        self.printpoints = []
+        self.path_collections_indices = {}
+        self.create_printpoints()
         self.set_extruder_toggle(extruder_toggle_type)
 
         ### state booleans
@@ -45,18 +38,23 @@ class PrintOrganizer(object):
         self.with_brim = False
 
     ### --- Initialization
-    def create_printpoints_dict(self):
-        path_count = 0
-        for path_collection in self.slicer.path_collections:
-            for path in path_collection.paths:
+    def create_printpoints(self):
+        for i, path_collection in enumerate(self.slicer.path_collections):
+            self.path_collections_indices[i] = {}
 
-                printpoints = []
-                for point in path.points:
-                    printpoint = PrintPoint(point, self.slicer.layer_height)
+            for j, path in enumerate(path_collection.paths):
+                self.path_collections_indices[i][j] = []
+
+                for k, point in enumerate(path.points):
+                    self.path_collections_indices[i][j].append(k)
+
+                    printpoint = PrintPoint(pt=point,
+                                            path_collection_index=i,
+                                            path_index=j,
+                                            point_index=k,
+                                            layer_height=self.slicer.layer_height)
                     printpoint.parent_path = path
-                    printpoints.append(printpoint)
-                self.printpoints_dict[path_count] = printpoints
-                path_count += 1
+                    self.printpoints.append(printpoint)
 
     def set_extruder_toggle(self, extruder_toggle):
         if not (extruder_toggle == "always_on"
@@ -64,19 +62,19 @@ class PrintOrganizer(object):
                 or extruder_toggle == "off_when_travel"):
             raise ValueError("Extruder toggle method doesn't exist")
 
-        for key in self.printpoints_dict:
-            for i, printpoint in enumerate(self.printpoints_dict[key]):
-                if extruder_toggle == "always_on":
-                    printpoint.extruder_toggle = True
-                elif extruder_toggle == "always_off":
+        for printpoint in self.printpoints:
+            if extruder_toggle == "always_on":
+                printpoint.extruder_toggle = True
+            elif extruder_toggle == "always_off":
+                printpoint.extruder_toggle = False
+            elif extruder_toggle == "off_when_travel":
+                if printpoint.is_last_path_printpoint(self.path_collections_indices):
                     printpoint.extruder_toggle = False
-                elif extruder_toggle == "off_when_travel":
-                    if i == len(self.printpoints_dict[key]) - 1:
-                        printpoint.extruder_toggle = False  # last points
-                    else:
-                        printpoint.extruder_toggle = True  # rest of points
+                else:
+                    printpoint.extruder_toggle = True
 
-    ### --- Other functions
+    ### --- 3D printing functions
+
     def generate_gcode(self, FILE):
         """
         Saves gcode file with the print parameters provided in the machine_model
@@ -85,24 +83,23 @@ class PrintOrganizer(object):
         assert isinstance(self.slicer, compas_slicer.slicers.PlanarSlicer)
         if len(self.material.parameters) == 0:
             raise ValueError("The material provided does not have properties")
-        generate_gcode(self.printpoints_dict, FILE, self.machine_model, self.material)
+        generate_gcode(self.printpoints, FILE, self.machine_model, self.material)
 
     def add_z_hop_printpoints(self, z_hop):
         self.with_z_hop = True
         logger.info("Generating z_hop of " + str(z_hop) + " mm")
-        compas_slicer.fabrication.generate_z_hop(self.printpoints_dict, z_hop)
+        self.printpoints = compas_slicer.fabrication.generate_z_hop(self.printpoints, z_hop)
 
     def add_brim_printpoints(self, layer_width, number_of_brim_layers):
         self.with_brim = True
         logger.info("Generating brim with layer width: %.2f mm, consisting of %d layers" %
                     (layer_width, number_of_brim_layers))
-        compas_slicer.fabrication.generate_brim(self.printpoints_dict, layer_width, number_of_brim_layers)
+        self.printpoints = compas_slicer.fabrication.generate_brim(self.printpoints, layer_width, number_of_brim_layers)
 
     ### --- Visualize on viewer
+
     def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
-        all_pts = []
-        for key in self.printpoints_dict:
-            all_pts.extend([printpoint.pt for printpoint in self.printpoints_dict[key]])
+        all_pts = [printpoint.pt for printpoint in self.printpoints]
 
         if visualize_polyline:
             polyline = Polyline(all_pts)
@@ -114,8 +111,6 @@ class PrintOrganizer(object):
                 viewer.add(pt, name="Point %d" % i)
 
 
-
-
 #############################################
 ### RoboticPrintOrganizer
 #############################################
@@ -125,24 +120,23 @@ class RoboticPrintOrganizer(PrintOrganizer):
     Creates fabrication data for robotic 3D printing.
     """
 
-    def __init__(self, slicer, machine_model, material):
+    def __init__(self, slicer, machine_model, material, extruder_toggle_type="always_on"):
         assert isinstance(machine_model, compas_slicer.fabrication.machine_model.RobotPrinter), \
             "Machine Model does not represent a robot"
-        PrintOrganizer.__init__(self, slicer, machine_model, material)
+        PrintOrganizer.__init__(self, slicer, machine_model, material, extruder_toggle_type)
 
     def generate_robotic_commands_dict(self):
-        logger.info("generating %d robotic commands: " % utils.length_of_flattened_dictionary(self.printpoints_dict))
+        logger.info("generating %d robotic commands: " % len(self.printpoints))
         # data dictionary
-        data = {}
+        commands = {}
 
         logger.error('COMMANDS GENERATION NOT IMPLEMENTED YET')
-        count = 0
 
-        for key in self.printpoints_dict:
-            for i, printpoint in enumerate(self.printpoints_dict[key]):
-                pass
+        for i, printpoint in enumerate(self.printpoints):
+            commands[i] = {}
+            pass
 
-        return data
+        return commands
 
 
 if __name__ == "__main__":

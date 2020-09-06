@@ -2,10 +2,8 @@ import os
 from compas.datastructures import Mesh
 
 from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.sorting import sort_per_segment, sort_per_shortest_path_mlrose
 from compas_slicer.sorting import align_seams
-from compas_slicer.polyline_simplification import simplify_paths_rdp
-
+from compas_slicer.utilities import simplify_paths_rdp
 from compas_slicer.fabrication import PrintOrganizer
 from compas_slicer.fabrication import FDMPrinter
 from compas_slicer.positioning import center_mesh_on_build_platform
