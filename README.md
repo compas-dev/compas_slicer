@@ -57,6 +57,17 @@ pip install -e .
 pip install compas_fab
 ```
 
+### Step 4. Install compas_viewers
+
+- Install compas_viewers (https://github.com/compas-dev/compas_viewers)
+To install on an existing environment with python=3.7, use 
+```bash
+conda activate environment_name
+pip install PySide2 
+pip install PyOpenGL 
+pip install path/to/compas_viewers
+```
+
 
 ### Step 5. Test if the library works
 - Run the file examples/1_versions_check.py
