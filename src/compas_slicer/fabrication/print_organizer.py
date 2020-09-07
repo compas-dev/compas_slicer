@@ -130,10 +130,12 @@ class RoboticPrintOrganizer(PrintOrganizer):
         # data dictionary
         commands = {}
 
-        logger.error('COMMANDS GENERATION NOT IMPLEMENTED YET')
+        logger.error('COMMANDS GENERATION NOT FULLY IMPLEMENTED YET')
 
         for i, printpoint in enumerate(self.printpoints):
             commands[i] = {}
+            commands[i]["pt"] = printpoint.pt[0], printpoint.pt[1], printpoint.pt[2]
+            commands[i]["extruder_toggle"] = printpoint.extruder_toggle
             pass
 
         return commands
