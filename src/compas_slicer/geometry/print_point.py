@@ -27,6 +27,10 @@ class PrintPoint(object):
         self.support_printpoint = None  # class PrintPoint
 
         self.visualization_geometry = None
+        
+    def __repr__(self):
+        x, y, z = self.pt[0], self.pt[1], self.pt[2]
+        return "<PrintPoint object at (%.2f, %.2f, %.2f)>" % (x, y, z)
 
     #### --- Printpoint neighbors and position
     def is_last_path_printpoint(self, path_collections_indices):

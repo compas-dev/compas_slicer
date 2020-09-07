@@ -24,6 +24,9 @@ class PathCollection(object):
             assert isinstance(paths[0], compas_slicer.geometry.Path)
         self.paths = paths
 
+    def __repr__(self):
+        no_of_paths = len(self.paths) if self.paths else 0
+        return "<PathCollection object with %i paths" % (no_of_paths)
 
 class Layer(PathCollection):
     """

@@ -25,6 +25,10 @@ class Path(object):
         self.is_closed = is_closed
         self.type = 'contour'  ## / 'infill' / 'support'
 
+    def __repr__(self):
+        no_of_points = len(self.points) if self.points else 0
+        return "<Path object with %i points>" % (no_of_points)
+
     def get_lines_for_plotter(self, color=(255, 0, 0)):
         lines = []
         for i, point in enumerate(self.points):
