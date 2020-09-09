@@ -4,6 +4,8 @@ import logging
 import compas_slicer.utilities.utils as utils
 from compas_slicer.slicers import CurvedSlicer, BaseSlicer
 from compas_plotters import MeshPlotter
+from compas_slicer.utilities import simplify_paths_rdp
+
 from compas_slicer.fabrication import Material
 from compas.geometry import Frame
 from compas_slicer.fabrication import RobotPrinter
@@ -21,39 +23,48 @@ logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, '_mesh.obj')
 
+slice_model = False
+create_print_organizer = True
+
 if __name__ == "__main__":
-    ### --- Load initial_mesh
-    mesh = Mesh.from_obj(os.path.join(DATA_PATH, OBJ_INPUT_NAME))
+    viewer = ObjectViewer()
 
-    ### --- Load boundaries
-    low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
-    high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
+    if slice_model:
+        ### --- Load initial_mesh
+        mesh = Mesh.from_obj(os.path.join(DATA_PATH, OBJ_INPUT_NAME))
 
-    ### --- slicing
-    slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH)
-    slicer.slice_model()  # generate contours
+        ### --- Load boundaries
+        low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
+        high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
 
-    # viewer = ObjectViewer()
-    # viewer.view.use_shaders = False
-    # slicer.visualize_on_viewer(viewer, visualize_mesh=True, visualize_paths=False)
+        ### --- slicing
+        slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH)
+        slicer.slice_model()  # generate contours
+        simplify_paths_rdp(slicer, threshold=0.6)
 
-    slicer.to_json(DATA_PATH, 'curved_slicer.json')
+        # viewer.view.use_shaders = False
+        # slicer.visualize_on_viewer(viewer, visualize_mesh=True, visualize_paths=False)
 
-    # slicer.generate_printpoints()  # generate printpoints with all necessary information for print
+        slicer.to_json(DATA_PATH, 'curved_slicer.json')
 
-    ### --- Fabrication data
-    robot_printer = RobotPrinter('UR5')
-    robot_printer.attach_endeffector(FILENAME=os.path.join(DATA_PATH, 'plastic_extruder.obj'),
-                                     frame=Frame(point=[0.153792, -0.01174, -0.03926],
-                                                 xaxis=[1, 0, 0],
-                                                 yaxis=[0, 1, 0]))
-    material_PLA = Material('PLA')
+    if create_print_organizer:
+        # ### --- Fabrication data
+        robot_printer = RobotPrinter('UR5')
+        robot_printer.attach_endeffector(FILENAME=os.path.join(DATA_PATH, 'plastic_extruder.obj'),
+                                         frame=Frame(point=[0.153792, -0.01174, -0.03926],
+                                                     xaxis=[1, 0, 0],
+                                                     yaxis=[0, 1, 0]))
+        material_PLA = Material('PLA')
+        #
+        # ### --- Print organizer
+        slicer_data = utils.load_from_json(DATA_PATH, 'curved_slicer.json')
+        slicer = BaseSlicer.from_data(slicer_data)
 
-    ### --- Print organizer
-    slicer_data = utils.load_from_json(DATA_PATH, 'curved_slicer.json')
-    slicer = BaseSlicer.from_data(slicer_data, mesh)
+        print_organizer = CurvedRoboticPrintOrganizer(slicer, machine_model=robot_printer,
+                                                      material=material_PLA, DATA_PATH=DATA_PATH)
 
-    print_organizer = CurvedRoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA)
+        utils.save_to_json(print_organizer.to_data(), DATA_PATH, 'print_organizer.json')
+
     # print_organizer.generate_commands()
     # print_organizer.save_commands_to_json(OUTPUT_FILE)
 

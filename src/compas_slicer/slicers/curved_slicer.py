@@ -71,7 +71,8 @@ class CurvedSlicer(BaseSlicer):
             segments.append(s)
             for isocurve in stratum_segment.isocurves:
                 s.append_(Path(isocurve.points, is_closed=True))
-        self.path_collections = segments
+
+        self.layers = segments
 
 
 

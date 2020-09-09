@@ -40,7 +40,8 @@ class BaseSlicer(object):
         # or VerticalLayer (vertical sorting)
 
     @classmethod
-    def from_data(cls, data, mesh):
+    def from_data(cls, data):
+        mesh = compas.datastructures.Mesh.from_data(data['mesh'])
         slicer = cls(mesh)
         path_collections_data = data['layers']
         slicer.layers = [Layer.from_data(path_collections_data[key]) for key in path_collections_data]
@@ -112,8 +113,10 @@ class BaseSlicer(object):
         utils.save_to_json(self.get_paths_collection_dict(), filepath, name)
 
     def get_slicer_all_data_dict(self):
-        data = {'flattened_path'   : self.get_flattened_path_dict(),
-                'layers' : self.get_paths_collection_dict()}
+        data = {'flattened_path' : self.get_flattened_path_dict(),
+                'layers' : self.get_paths_collection_dict(),
+                'mesh' : self.mesh.to_data()}
+
         return data
 
     def get_flattened_path_dict(self):

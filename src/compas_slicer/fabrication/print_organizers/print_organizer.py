@@ -16,6 +16,7 @@ class PrintOrganizer(object):
     """
     Base class for organizing the printing process
     """
+
     def __init__(self, slicer, machine_model, material, extruder_toggle_type="always_on"):
         # check input
         assert isinstance(slicer, compas_slicer.slicers.BaseSlicer)
@@ -30,10 +31,12 @@ class PrintOrganizer(object):
         self.printpoints_dict = {}
         self.create_printpoints_dict()
         self.set_extruder_toggle(extruder_toggle_type)
+        # logger.info('Created %d printpoints' % utils.length_of_flattened_dictionary(self.printpoints_dict))
 
         ### state booleans
         self.with_z_hop = False
         self.with_brim = False
+
 
     ### --- Initialization
     def create_printpoints_dict(self):
@@ -44,7 +47,6 @@ class PrintOrganizer(object):
                 self.printpoints_dict['layer_%d' % i]['path_%d' % j] = []
 
                 for k, point in enumerate(path.points):
-
                     printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height)
 
                     self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
@@ -110,7 +112,18 @@ class PrintOrganizer(object):
             for i, pt in enumerate(all_pts):
                 viewer.add(pt, name="Point %d" % i)
 
+    ### --- To data
+    def to_data(self):
+        print_organizer_data = {'printpoints': {}}
 
+        count = 0
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                for printpoint in self.printpoints_dict[layer_key][path_key]:
+                    print_organizer_data['printpoints'][count] = printpoint.to_data()
+                    count += 1
+
+        return print_organizer_data
 
 if __name__ == "__main__":
     pass

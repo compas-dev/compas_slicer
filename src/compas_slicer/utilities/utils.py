@@ -33,10 +33,24 @@ def get_average_point(points):
 
 ### --- Length of dictionary
 def length_of_flattened_dictionary(dictionary):
-    total_length = 0
-    for key in dictionary:
-        total_length += len(dictionary[key])
-    return total_length
+    pass
+#     total_length = 0
+#     for key in dictionary:
+#         a = dive_into(dictionary[key])
+#         total_length += a
+#         print('total_length : %d', total_length)
+#     return total_length
+#
+#
+# def dive_into(data):
+#     if isinstance(dict, data):
+#         for key in data:
+#             dive_into(data[key])
+#     else:
+#         print('returning : %d', len(data))
+#         return len(data)
+
+
 
 
 def check_triangular_mesh(mesh):
