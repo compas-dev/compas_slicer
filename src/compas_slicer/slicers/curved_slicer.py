@@ -10,16 +10,15 @@ from compas_slicer.geometry import Path
 import logging
 logger = logging.getLogger('logger')
 
-try:
-    import stratum.region_split.topological_sort as topo_sort
-    # from stratum.printpaths.path import Path
-    from stratum.printpaths.boundary import Boundary
-    from stratum.printpaths.path_collection import PathCollection
-    from stratum.isocurves.compound_target import CompoundTarget
-    from stratum.isocurves.marching_triangles import MarchingTriangles, find_desired_number_of_isocurves
-    import stratum.utils.utils as stratum_utils
-except:
-    pass
+# try:
+import stratum.region_split.topological_sort as topo_sort
+from stratum.printpaths.boundary import Boundary
+from stratum.printpaths.path_collection import PathCollection
+from stratum.isocurves.compound_target import CompoundTarget
+from stratum.isocurves.marching_triangles import MarchingTriangles, find_desired_number_of_isocurves
+import stratum.utils.utils as stratum_utils
+# except:
+#     print('Attention! Stratum library (for curved slicing) is not installed')
 
 
 __all__ = ['CurvedSlicer']
@@ -31,7 +30,7 @@ class CurvedSlicer(BaseSlicer):
 
         if not 'stratum' in sys.modules:
             for key in sys.modules:
-                print (key)
+                print(key)
             raise ValueError('Attention! You need to install stratum to use the curved slicer')
 
         self.min_layer_height = 0.2
@@ -46,37 +45,31 @@ class CurvedSlicer(BaseSlicer):
             elif vkey in high_boundary_vs:
                 data['boundary'] = 2
 
-    def slice_model(self, create_contours=True, create_infill=False, create_supports=False):
-        if create_infill or create_supports:
-            raise NotImplementedError
+    def slice_model(self):
+        target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH, is_smooth=False)
+        target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH, is_smooth=False)
+        target_HIGH.compute_uneven_boundaries_t_ends(target_LOW)
+        target_LOW.save_distances("distances_0.json")
+        target_HIGH.save_distances("distances_1.json")
 
-        if create_contours:
-            target_0 = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH, is_smooth=False)
-            target_1 = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH, is_smooth=False)
-            target_0.save_distances("distances_0.json")
-            target_1.save_distances("distances_1.json")
+        ## Marching Triangles
+        print('')
+        # number_of_curves = find_desired_number_of_isocurves(target_0, target_1)
+        number_of_curves = 5
+        marching_triangles = MarchingTriangles(self.mesh, target_LOW, target_HIGH, number_of_curves)
 
-            ## Marching Triangles
-            print('')
-            # number_of_curves = find_desired_number_of_isocurves(target_0, target_1)
-            number_of_curves = 5
-            marching_triangles = MarchingTriangles(self.mesh, target_0, target_1, number_of_curves)
+        ## Save to Json
+        stratum_utils.isocurves_segments_to_json(marching_triangles.segments, self.DATA_PATH,
+                                                 "isocurves_segments.json")
 
-            ## Save to Json
-            stratum_utils.isocurves_segments_to_json(marching_triangles.segments, self.DATA_PATH,
-                                                     "isocurves_segments.json")
-
-
-            ## convert stratum entities to compas_slicer entities
-            ## Not particularly useful
-            segments = []
-            for i, stratum_segment in enumerate(marching_triangles.segments):
-                s = Segment(i)
-                segments.append(s)
-                for isocurve in stratum_segment.isocurves:
-                    s.append_(Path(isocurve.points, is_closed=True))
-
-            self.print_paths = segments
+        ## convert stratum entities to compas_slicer entities
+        segments = [] ## path collections (vertical sorting)
+        for i, stratum_segment in enumerate(marching_triangles.segments):
+            s = Segment(i)
+            segments.append(s)
+            for isocurve in stratum_segment.isocurves:
+                s.append_(Path(isocurve.points, is_closed=True))
+        self.path_collections = segments
 
     def generate_printpoints(self):
         # segments = self.print_paths

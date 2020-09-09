@@ -94,18 +94,31 @@ class BaseSlicer(object):
     ##############################
     ### --- To json
 
-    def flattened_paths_to_json(self, path, name):
+    def to_json(self, filepath, name):
+        utils.save_to_json(self.get_slicer_all_data_dict(), filepath, name)
+
+    def flattened_paths_to_json(self, filepath, name):
+        utils.save_to_json(self.get_flattened_path_dict(), filepath, name)
+
+    def path_collections_to_json(self, filepath, name):
+        utils.save_to_json(self.get_paths_collection_dict(), filepath, name)
+
+    def get_slicer_all_data_dict(self):
+        data = {'flattened_path': self.get_flattened_path_dict()}
+        return data
+
+    def get_flattened_path_dict(self):
         data = {}
         count = 0
         for path_collection in self.path_collections:
-            for path in path_collection.contours:
+            for path in path_collection.paths:
                 for point in path.points:
                     xyz = [point[0], point[1], point[2]]
                     data[count] = xyz
                     count += 1
-        utils.save_to_json(data, path, name)
+        return data
 
-    def path_collections_to_json(self, filepath, name):
+    def get_paths_collection_dict(self):
         data = {}
         for i, path_collection in enumerate(self.path_collections):
             data[i] = {}
@@ -113,8 +126,7 @@ class BaseSlicer(object):
                 data[i][j] = {}
                 for k, point in enumerate(path.points):
                     data[i][j][k] = [point[0], point[1], point[2]]
-        utils.save_to_json(data, filepath, name)
-
+        return data
 
 if __name__ == "__main__":
     pass
