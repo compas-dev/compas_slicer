@@ -41,11 +41,11 @@ pip install -e .
 - You should get the message 'succesfully installed compas-slicer' (amongst other packages)
 
 ### Step 3: Install stratum
-- Navigate to the compas_slicer repository folder/dependencies/stratum and install stratum using:
-```bash
-pip install -e
-```
-- You should get the message 'succesfully installed stratum'
+-The stratum library can be found here: https://github.com/ioanna21/stratum
+
+Download it and install it.
+
+
 - Then install igl
 ```bash
 conda install -c conda-forge igl
