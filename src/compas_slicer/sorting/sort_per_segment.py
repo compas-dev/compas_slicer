@@ -1,5 +1,5 @@
 from compas.geometry import distance_point_point
-from compas_slicer.geometry import Segment
+from compas_slicer.geometry import VerticalLayer
 import compas_slicer.utilities as utils
 
 import logging
@@ -28,9 +28,9 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
     """
     logger.info("Sorting per segment")
 
-    segments = [Segment(id=0)]  # segments that contain isocurves
-    for path_collection in slicer.path_collections:
-        for path in path_collection.paths:
+    segments = [VerticalLayer(id=0)]  # segments that contain isocurves
+    for layer in slicer.layers:
+        for path in layer.paths:
             current_segment = None
 
             ## Find an eligible segment for contour (called current_segment)
@@ -48,7 +48,7 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
                         current_segment = candidate_segment
 
                 if not current_segment:  # then create new segment
-                    current_segment = Segment(id=segments[-1].id + 1)
+                    current_segment = VerticalLayer(id=segments[-1].id + 1)
                     segments.append(current_segment)
 
             ## Assign contour to current segment

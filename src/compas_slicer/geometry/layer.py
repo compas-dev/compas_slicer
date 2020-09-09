@@ -1,16 +1,17 @@
 import logging
 import compas_slicer
 import compas_slicer.utilities as utils
+from compas_slicer.geometry import Path
 
 logger = logging.getLogger('logger')
 
-__all__ = ['PathCollection',
-           'Layer',
-           'Segment']
+__all__ = ['Layer',
+           'VerticalLayer']
 
-class PathCollection(object):
+
+class Layer(object):
     """
-    A PathCollection stores a group of ordered print_paths
+    A Layer stores a group of ordered print_paths
 
     Attributes
     ----------
@@ -20,28 +21,28 @@ class PathCollection(object):
 
     def __init__(self, paths):
         # check input
-        if len(paths)>0:
+        if len(paths) > 0:
             assert isinstance(paths[0], compas_slicer.geometry.Path)
         self.paths = paths
 
     def __repr__(self):
         no_of_paths = len(self.paths) if self.paths else 0
-        return "<PathCollection object with %i paths" % (no_of_paths)
+        return "<Layer object with %i paths" % no_of_paths
 
-class Layer(PathCollection):
-    """
-    Horizontal ordering. A Layer stores the print paths on a specific height level.
-    """
-    def __init__(self, paths):
-        PathCollection.__init__(self, paths)
+    @classmethod
+    def from_data(cls, data):
+        paths = [Path.from_data(data[key]) for key in data]
+        path_collection = cls(paths=paths)
+        return path_collection
 
-class Segment(PathCollection):
+
+class VerticalLayer(Layer):
     """
-    Vertical ordering. A Segment stores the print paths sorted in vertical groups.
+    Vertical ordering. A VerticalLayer stores the print paths sorted in vertical groups.
     """
 
     def __init__(self, id):
-        PathCollection.__init__(self, paths=[])
+        Layer.__init__(self, paths=[])
         self.id = id
         self.head_centroid = None
 
@@ -60,5 +61,5 @@ class Segment(PathCollection):
         return num
 
     def printout_details(self):
-        logger.info("Segment id : %d" % self.id)
+        logger.info("VerticalLayer id : %d" % self.id)
         logger.info("Total number of paths : %d" % len(self.paths))

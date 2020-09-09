@@ -4,13 +4,13 @@ logger = logging.getLogger('logger')
 
 __all__ = ['generate_gcode']
 
-def generate_gcode(printpoints, FILE, machine_model, material):
+def generate_gcode(printpoints_dict, FILE, machine_model, material):
     """Creates all the commands in order for fabrication
 
     Attributes
     ----------
     paths: list
-        compas_slicer.geometry.PathCollection or any class inheriting from it
+        compas_slicer.geometry.Layer or any class inheriting from it
     FILE : str
         Path of gcode file to be saved.
     machine_model : The class that stores the information for the 3d printer
@@ -81,22 +81,29 @@ def generate_gcode(printpoints, FILE, machine_model, material):
 
         f.write("G1 F{0} ; set print speed\n".format(print_speed))
 
-        for i, printpoint in enumerate(printpoints):
-            point = printpoint.pt
-            filament_feed_length = get_filament_feed_length(printpoint, i, printpoints)  ## TODO!
-            f.write("G1 X{x} Y{y} Z{z} E{e}\n".format(x=point[0],
-                                                      y=point[1],
-                                                      z=point[2],
-                                                      e=filament_feed_length))
+        for layer_key in printpoints_dict:
+            logger.debug("Gcode layer number : %d" % layer_number)
+            f.write(";LAYER:{0}\n".format(layer_number))
 
+            for path_key in printpoints_dict[layer_key]:
+                for i, printpoint in enumerate(printpoints_dict[layer_key][path_key]):
+                    point = printpoint.pt
+                    filament_feed_length = get_filament_feed_length(printpoint, i, layer_key, path_key, printpoints_dict)  ## TODO!
+                    f.write("G1 X{x} Y{y} Z{z} E{e}\n".format(x=point[0],
+                                                              y=point[1],
+                                                              z=point[2],
+                                                              e=filament_feed_length))
+
+            layer_number += 1
 
         logger.info("Saved to gcode: " + FILE)
 
 
-def get_filament_feed_length(printpoint, i, printpoints):
-    if printpoint.extruder_toggle and i < len(printpoints)-1:
-        next_point = printpoints[i+1]
-        # TODO!!!
-        return 0
-    else:
-        return 0
+def get_filament_feed_length(printpoint, i, layer_key, path_key, printpoints_dict):
+    return 0
+    # if printpoint.extruder_toggle and i < len(printpoints)-1:
+    #     next_point = printpoints[i+1]
+    #     # TODO!!!
+    #     return 0
+    # else:
+    #     return 0

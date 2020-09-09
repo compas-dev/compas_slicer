@@ -24,5 +24,5 @@ def test_sort_per_segment():
     copy_slicer.sort_paths(method="per_segment", max_layers_per_segment=None)
     assert len(copy_slicer.print_paths) == 69, "Sorting per segment returned wrong number of segments"
     for i, segment in enumerate(copy_slicer.print_paths):
-        assert len(segment.contours) > 0, "The Segment at index %d has no contours" % i
-        assert isinstance(segment.contours[0], Contour), "Wrong class type in Segment.Contour list"
+        assert len(segment.contours) > 0, "The VerticalLayer at index %d has no contours" % i
+        assert isinstance(segment.contours[0], Contour), "Wrong class type in VerticalLayer.Contour list"

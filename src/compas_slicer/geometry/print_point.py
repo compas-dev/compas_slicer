@@ -4,15 +4,10 @@ __all__ = ['PrintPoint']
 
 
 class PrintPoint(object):
-    def __init__(self, pt, path_collection_index, path_index, point_index, layer_height):
+    def __init__(self, pt, layer_height):
 
         ### --- basic printpoint
         self.pt = pt  # position of center of mass (compas.geometry.Point)
-
-        self.path_collection_index = path_collection_index
-        self.path_index = path_index
-        self.point_index = point_index
-
         self.layer_height = layer_height  # float
 
         self.parent_path = None  # class inheriting from Path. The path in which this point belongs
@@ -31,13 +26,6 @@ class PrintPoint(object):
     def __repr__(self):
         x, y, z = self.pt[0], self.pt[1], self.pt[2]
         return "<PrintPoint object at (%.2f, %.2f, %.2f)>" % (x, y, z)
-
-    #### --- Printpoint neighbors and position
-    def is_last_path_printpoint(self, path_collections_indices):
-        return self.point_index == len(path_collections_indices[self.path_collection_index][self.path_index]) - 1
-
-    def is_first_path_printpoint(self):
-        return self.point_index == 0
 
     #### --- Initialization of advanced print point functions
 

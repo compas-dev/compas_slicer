@@ -1,6 +1,7 @@
 import compas_slicer
 import logging
 import compas
+from compas.geometry import Point
 
 logger = logging.getLogger('logger')
 
@@ -28,6 +29,12 @@ class Path(object):
     def __repr__(self):
         no_of_points = len(self.points) if self.points else 0
         return "<Path object with %i points>" % (no_of_points)
+
+    @classmethod
+    def from_data(cls, data):
+        pts = [Point(data[key][0], data[key][1], data[key][2]) for key in data]
+        path = cls(points=pts, is_closed=True) #TODO: work on 'is closed'
+        return path
 
     def get_lines_for_plotter(self, color=(255, 0, 0)):
         lines = []

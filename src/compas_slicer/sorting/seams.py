@@ -25,9 +25,9 @@ def align_seams(slicer, seam_orientation="next_path"):
     # TODO: Implement random seams 
     logger.info("Aligning seams to: %s" % seam_orientation)
 
-    for path_collection in slicer.path_collections:
-        for i, path in enumerate(path_collection.paths):
-            if i < len(path_collection.paths) - 1:
+    for layer in slicer.layers:
+        for i, path in enumerate(layer.paths):
+            if i < len(layer.paths) - 1:
                 if seam_orientation == "next_path":
                     current_pt0 = path.points[0]
                 elif seam_orientation == "origin":
@@ -38,7 +38,7 @@ def align_seams(slicer, seam_orientation="next_path"):
                     current_pt0 = Point(0, 2 ** 32, 0)
 
                 # gets the points of the next path
-                next_path_pts = path_collection.paths[i + 1].points
+                next_path_pts = layer.paths[i + 1].points
 
                 # removes the last element of the list before shifting
                 next_path_pts = next_path_pts[:-1]
@@ -50,14 +50,14 @@ def align_seams(slicer, seam_orientation="next_path"):
                 next_start_index = next_path_distance.index(min(next_path_distance))
 
                 # gets the list of points for the next path, minus the last point
-                next_path_list = path_collection.paths[i + 1].points[:-1]
+                next_path_list = layer.paths[i + 1].points[:-1]
 
                 # shifts the list by the distance determined
                 shift_list = next_path_list[next_start_index:] + next_path_list[:next_start_index]
 
                 # adds the first point to the end to create a closed path and
                 # adds the shifted point to the points
-                path_collection.paths[i + 1].points = shift_list + [shift_list[0]]
+                layer.paths[i + 1].points = shift_list + [shift_list[0]]
 
 
 if __name__ == "__main__":

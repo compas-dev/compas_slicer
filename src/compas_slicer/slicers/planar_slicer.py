@@ -24,15 +24,15 @@ class PlanarSlicer(BaseSlicer):
     def generate_paths(self):
         if self.slicer_type == "planar_numpy":
             logger.info("Planar contours compas numpy slicing")
-            self.path_collections = compas_slicer.slicers.create_planar_paths_numpy(self.mesh, self.layer_height)
+            self.layers = compas_slicer.slicers.create_planar_paths_numpy(self.mesh, self.layer_height)
 
         elif self.slicer_type == "planar_meshcut":
             logger.info("Planar contours meshcut slicing")
-            self.path_collections = compas_slicer.slicers.create_planar_paths_meshcut(self.mesh, self.layer_height)
+            self.layers = compas_slicer.slicers.create_planar_paths_meshcut(self.mesh, self.layer_height)
 
         elif self.slicer_type == "planar_cgal":
             logger.info("Planar contours CGAL slicing")
-            self.path_collections = compas_slicer.slicers.create_planar_paths_cgal(self.mesh, self.layer_height)
+            self.layers = compas_slicer.slicers.create_planar_paths_cgal(self.mesh, self.layer_height)
 
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)

@@ -10,7 +10,7 @@ from compas.geometry import Point
 __all__ = ['generate_brim']
 
 
-def generate_brim(printpoints, layer_width, number_of_brim_layers):
+def generate_brim(printpoints_dict, layer_width, number_of_brim_layers):
     """Creates a brim around the bottom contours of the print.
 
     Parameters
@@ -31,8 +31,8 @@ def generate_brim(printpoints, layer_width, number_of_brim_layers):
 
     xy_coords_for_clipper = []
 
-    for printpoint in printpoints:
-        if printpoint.path_collection_index == 0:
+    for path_key in printpoints_dict['layer_0']:
+        for printpoint in printpoints_dict['layer_0'][path_key]:
             # gets the X and Y coordinate since Clipper only does 2D offset operations
             xy_coords = [printpoint.pt[0], printpoint.pt[1]]
             xy_coords_for_clipper.append(xy_coords)
@@ -53,23 +53,20 @@ def generate_brim(printpoints, layer_width, number_of_brim_layers):
             # gets the X and Y coordinate from the Clipper result
             x = xy[0]
             y = xy[1]
-            # get the Z coordinate from the previous slicing result
-            z = printpoints[0].pt[2]
+            z = printpoints_dict['layer_0']['path_0'][0].pt[2] # get the Z coordinate from the previous slicing result
 
             clipper_points_per_brim_layer.append(Point(x, y, z))
 
         # adds first point again to form a closed polygon since clipper removes this point
         clipper_points_per_brim_layer = clipper_points_per_brim_layer + [clipper_points_per_brim_layer[0]]
         # create new contours for the Clipper offsets
-        for i,pt in enumerate(clipper_points_per_brim_layer):
-            pp = PrintPoint(pt, path_collection_index=0, path_index=0, point_index=i,
-                            layer_height=printpoints[0].layer_height)
-            pp.parent_path = printpoints[0].parent_path
+        for pt in clipper_points_per_brim_layer:
+            pp = PrintPoint(pt, layer_height=printpoints_dict['layer_0']['path_0'][0].layer_height)
             pp.extruder_toggle = True
-
             clipper_printpoints.append(pp)
 
-    return clipper_printpoints + printpoints
+        printpoints_dict['layer_0']['path_0'] = clipper_printpoints + printpoints_dict['layer_0']['path_0']
+
 
 
 if __name__ == "__main__":

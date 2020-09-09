@@ -68,9 +68,9 @@ def sort_per_shortest_path_mlrose(slicer,
 
     logger.info("Sorting per shortest path using mlrose")
 
-    for path_collection in slicer.path_collections:
+    for layer in slicer.layers:
         coords_list = []
-        for path in path_collection.paths:
+        for path in layer.paths:
             for i, pt in enumerate(path.points):
                 if i == 0:
                     coords = (pt[0], pt[1])
@@ -84,8 +84,8 @@ def sort_per_shortest_path_mlrose(slicer,
                                                       max_attempts=max_attempts,
                                                       random_state=random_state)
 
-        ordered_paths = [path_collection.paths[x] for x in best_state]
-        path_collection.paths = ordered_paths
+        ordered_paths = [layer.paths[x] for x in best_state]
+        layer.paths = ordered_paths
 
 
 if __name__ == "__main__":

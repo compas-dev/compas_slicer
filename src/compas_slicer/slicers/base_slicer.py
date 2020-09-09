@@ -2,6 +2,7 @@ import compas
 from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
+from compas_slicer.geometry import Layer
 
 import logging
 
@@ -35,8 +36,15 @@ class BaseSlicer(object):
 
         self.layer_height = None
 
-        self.path_collections = []  # any class inheriting from SortedPathCollection, i.e.  Layer(horizontal sorting)
-        # or Segment (vertical sorting)
+        self.layers = []  # any class inheriting from SortedPathCollection, i.e.  Layer(horizontal sorting)
+        # or VerticalLayer (vertical sorting)
+
+    @classmethod
+    def from_data(cls, data, mesh):
+        slicer = cls(mesh)
+        path_collections_data = data['layers']
+        slicer.layers = [Layer.from_data(path_collections_data[key]) for key in path_collections_data]
+        return slicer
 
     ##############################
     ### --- Functions
@@ -53,9 +61,9 @@ class BaseSlicer(object):
         total_number_of_pts = 0
         number_of_path_collections = 0
 
-        for path_collection in self.path_collections:
+        for layer in self.layers:
             number_of_path_collections += 1
-            for path in path_collection.paths:
+            for path in layer.paths:
                 total_number_of_pts += len(path.points)
                 if path.is_closed:
                     closed_paths += 1
@@ -63,7 +71,7 @@ class BaseSlicer(object):
                     open_paths += 1
 
         print("\n---- Slicer Info ----")
-        print("Number of path_collections: %d" % number_of_path_collections)
+        print("Number of layers: %d" % number_of_path_collections)
         print("Number of paths: %d, open paths: %d, closed paths: %d" % (
             open_paths + closed_paths, open_paths, closed_paths))
         print("Number of sampling printpoints on contours: %d" % total_number_of_pts)
@@ -71,7 +79,7 @@ class BaseSlicer(object):
 
     def get_path_lines_for_plotter(self, color=(255, 0, 0)):
         lines = []
-        for path_collection in self.path_collections:
+        for path_collection in self.layers:
             for path in path_collection.paths:
                 lines.extend(path.get_lines_for_plotter(color))
         return lines
@@ -82,7 +90,7 @@ class BaseSlicer(object):
                                             'opacity': 0.4,})
 
         if visualize_paths:
-            for i, path_collection in enumerate(self.path_collections):
+            for i, path_collection in enumerate(self.layers):
                 for j, path in enumerate(path_collection.paths):
                     polyline = Polyline(path.points)
                     viewer.add(polyline, name="Path_Collection %d, Path %d" % (i, j),
@@ -104,13 +112,14 @@ class BaseSlicer(object):
         utils.save_to_json(self.get_paths_collection_dict(), filepath, name)
 
     def get_slicer_all_data_dict(self):
-        data = {'flattened_path': self.get_flattened_path_dict()}
+        data = {'flattened_path'   : self.get_flattened_path_dict(),
+                'layers' : self.get_paths_collection_dict()}
         return data
 
     def get_flattened_path_dict(self):
         data = {}
         count = 0
-        for path_collection in self.path_collections:
+        for path_collection in self.layers:
             for path in path_collection.paths:
                 for point in path.points:
                     xyz = [point[0], point[1], point[2]]
@@ -120,7 +129,7 @@ class BaseSlicer(object):
 
     def get_paths_collection_dict(self):
         data = {}
-        for i, path_collection in enumerate(self.path_collections):
+        for i, path_collection in enumerate(self.layers):
             data[i] = {}
             for j, path in enumerate(path_collection.paths):
                 data[i][j] = {}
