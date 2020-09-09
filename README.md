@@ -48,7 +48,7 @@ pip install -e
 - You should get the message 'succesfully installed stratum'
 - Then install igl
 ```bash
-pip install -e .
+conda install -c conda-forge igl
 ```
 
 ### Step 4. Install compas_fab
