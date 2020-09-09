@@ -1,4 +1,1 @@
 
-[submodule "dependencies/stratum"]
-	path = dependencies/stratum
-	url = https://github.com/ioanna21/stratum.git
