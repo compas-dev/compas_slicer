@@ -30,9 +30,9 @@ def main():
     ### --- Slicer
     slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=30.0)
     slicer.slice_model()
+    slicer.generate_brim(layer_width=1.0, number_of_brim_paths=3)
 
     simplify_paths_rdp(slicer, threshold=0.2)
-    sort_per_shortest_path_mlrose(slicer, max_attempts=1)
     align_seams(slicer, seam_orientation="next_path")
 
     slicer.printout_info()
@@ -52,7 +52,6 @@ def main():
     print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA,
                                             extruder_toggle_type="off_when_travel")
 
-    print_organizer.add_brim_printpoints(layer_width=2.0, number_of_brim_layers=4)
     print_organizer.add_z_hop_printpoints(z_hop=20)
 
     print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)

@@ -88,12 +88,6 @@ class PrintOrganizer(object):
         logger.info("Generating z_hop of " + str(z_hop) + " mm")
         compas_slicer.fabrication.generate_z_hop(self.printpoints_dict, z_hop)
 
-    def add_brim_printpoints(self, layer_width, number_of_brim_layers):
-        self.with_brim = True
-        logger.info("Generating brim with layer width: %.2f mm, consisting of %d layers" %
-                    (layer_width, number_of_brim_layers))
-        compas_slicer.fabrication.generate_brim(self.printpoints_dict, layer_width, number_of_brim_layers)
-
     ### --- Visualize on viewer
 
     def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
