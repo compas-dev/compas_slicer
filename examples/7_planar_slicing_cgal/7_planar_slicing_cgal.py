@@ -4,6 +4,7 @@ from compas.geometry import Point
 
 from compas_slicer.utilities import simplify_paths_rdp, save_to_json
 from compas_slicer.slicers import PlanarSlicer
+from compas_slicer.slicers import spiralize_contours
 from compas_slicer.sorting import sort_per_shortest_path_mlrose
 from compas_slicer.sorting import align_seams
 from compas_slicer.fabrication import RoboticPrintOrganizer
@@ -35,10 +36,13 @@ def main():
     ### --- Slicer
     slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=7.0)
     slicer.slice_model()
-    slicer.generate_brim(layer_width=3.0, number_of_brim_paths=3)
+    # slicer.generate_brim(layer_width=3.0, number_of_brim_paths=3)
 
-    simplify_paths_rdp(slicer, threshold=0.2)
+    # simplify_paths_rdp(slicer, threshold=0.2)
     align_seams(slicer, seam_orientation="x_axis")
+
+    # WIP
+    spiralize_contours(slicer)
 
     slicer.printout_info()
 
@@ -57,15 +61,15 @@ def main():
     print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA,
                                             extruder_toggle_type="off_when_travel")
 
-    print_organizer.add_z_hop_printpoints(z_hop=20)
+    # print_organizer.add_z_hop_printpoints(z_hop=20)
 
     print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
 
     robotic_commands = print_organizer.generate_robotic_commands_dict()
     save_to_json(robotic_commands, DATA, OUTPUT_FILE)
 
-    viewer.update()
-    viewer.show()
+    # viewer.update()
+    # viewer.show()
 
 if __name__ == "__main__":
     main()
