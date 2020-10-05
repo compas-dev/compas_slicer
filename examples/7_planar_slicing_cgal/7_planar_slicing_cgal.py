@@ -55,6 +55,7 @@ def main():
 
     # slicer.path_collections_to_json(DATA, 'slicer_data_layers.json')
 
+    ### --- Fabrication
     robot_printer = RobotPrinter('UR5')
     material_PLA = Material('PLA')
 
@@ -68,8 +69,8 @@ def main():
     robotic_commands = print_organizer.generate_robotic_commands_dict()
     save_to_json(robotic_commands, DATA, OUTPUT_FILE)
 
-    # viewer.update()
-    # viewer.show()
+    viewer.update()
+    viewer.show()
 
 if __name__ == "__main__":
     main()

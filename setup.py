@@ -32,7 +32,7 @@ setup(
     description="additive manufacturing package for the compas framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/dbt-ethz/compas_am",
+    url="https://github.com/dbt-ethz/compas_slicer",
     author="Mathias Bernhard",
     author_email="bernhard@arch.ethz.ch",
     license="MIT license",

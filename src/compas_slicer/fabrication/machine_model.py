@@ -130,5 +130,6 @@ class RobotPrinter(MachineModel):
         MachineModel.printout_info(self)
         print(self.robot.info())
 
+
 if __name__ == "__main__":
     pass
