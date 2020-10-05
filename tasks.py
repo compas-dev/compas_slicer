@@ -146,6 +146,8 @@ def test(ctx, checks=False, doctest=False):
     if checks:
         check(ctx)
 
+    ctx.run('conda env list')
+
     with chdir(BASE_FOLDER):
         cmd = ['pytest']
         if doctest:
@@ -153,6 +155,7 @@ def test(ctx, checks=False, doctest=False):
 
         ctx.run(' '.join(cmd))
 
+        
 
 @task
 def prepare_changelog(ctx):
