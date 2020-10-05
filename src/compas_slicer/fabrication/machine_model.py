@@ -4,7 +4,7 @@ import compas_slicer
 from compas.geometry import Box
 from compas.datastructures import Mesh
 
-# from compas_fab.robots import PlanningScene, Tool
+from compas_fab.robots import PlanningScene, Tool
 
 logger = logging.getLogger('logger')
 
