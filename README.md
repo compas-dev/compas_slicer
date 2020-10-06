@@ -75,17 +75,6 @@ pip install path/to/compas_viewers
 
 
 
-Submodules
-------------
-
-Stratum, https://github.com/ioanna21/stratum
-
-To update the submodules use 
-
-```bash
-git pull --recurse-submodules
-```
-
 Contributions
 ------------
 
