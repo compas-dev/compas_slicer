@@ -31,7 +31,7 @@ pip install -e .
 ### Step 2: Install compas_slicer
 - Clone the repository and activate your environment. Do not forget to clone the repository using --recursive or the submodules will not work. 
 ```bash
-git clone --recursive https://github.com/dbt-ethz/compas_slicer.git
+git clone https://github.com/dbt-ethz/compas_slicer.git
 conda activate compas_slicer
 ```
 - Navigate to the folder where you cloned the compas_slicer repository and install compas_slicer using:
@@ -70,7 +70,7 @@ Additional Features
 ### Stratum, library for curved slicing. 
 
 If you want to create curved slices, you need to install the stratum library. 
--The stratum library can be found here: https://github.com/ioanna21/stratum
+You can find it here: https://github.com/ioanna21/stratum
 
 If you cannot access the repository, contact Ioanna <<mitropoulou@arch.ethz.ch>>.
 Once you have it, then download it and install it.
