@@ -1,30 +1,31 @@
 import sys
 
-from compas.geometry import Polyline
-
 from compas_slicer.slicers import BaseSlicer
 from compas_slicer.geometry import VerticalLayer
-import compas_slicer.utilities.utils as utils
+import compas_slicer.utilities as utils
 from compas_slicer.geometry import Path
 
 import logging
+
 logger = logging.getLogger('logger')
 
-# try:
-import stratum.region_split.topological_sort as topo_sort
-from stratum.printpaths.boundary import Boundary
-from stratum.isocurves.compound_target import CompoundTarget
-from stratum.isocurves.marching_triangles import MarchingTriangles, find_desired_number_of_isocurves
-import stratum.utils.utils as stratum_utils
-# except:
-#     print('Attention! Stratum library (for curved slicing) is not installed')
-
+packages = utils.TerminalCommand('conda list').get_split_output_strings()
+if 'stratum' in packages:
+    from stratum.isocurves.compound_target import CompoundTarget
+    from stratum.isocurves.marching_triangles import MarchingTriangles, find_desired_number_of_isocurves
+    import stratum.utils.utils as stratum_utils
 
 __all__ = ['CurvedSlicer']
 
 
 class CurvedSlicer(BaseSlicer):
     def __init__(self, mesh, low_boundary_vs, high_boundary_vs, DATA_PATH):
+        if 'stratum' not in packages:
+            raise NameError("--------ATTENTION! ----------- \
+                            STRATUM library (for curved slicing) is missing! \
+                            You can't use this slicer without it. \
+                            Check the README for instructions.")
+
         BaseSlicer.__init__(self, mesh)
 
         if not 'stratum' in sys.modules:
@@ -56,8 +57,7 @@ class CurvedSlicer(BaseSlicer):
 
         ## Marching Triangles
         print('')
-        # number_of_curves = find_desired_number_of_isocurves(target_0, target_1)
-        number_of_curves = 5
+        number_of_curves = find_desired_number_of_isocurves(target_LOW, target_HIGH)
         marching_triangles = MarchingTriangles(self.mesh, target_LOW, target_HIGH, number_of_curves)
 
         ## Save to Json
@@ -65,7 +65,7 @@ class CurvedSlicer(BaseSlicer):
                                                  "isocurves_segments.json")
 
         ## convert stratum entities to compas_slicer entities
-        segments = [] ## path collections (vertical sorting)
+        segments = []  ## path collections (vertical sorting)
         for i, stratum_segment in enumerate(marching_triangles.segments):
             s = VerticalLayer(i)
             segments.append(s)
@@ -73,9 +73,6 @@ class CurvedSlicer(BaseSlicer):
                 s.append_(Path(isocurve.points, is_closed=True))
 
         self.layers = segments
-
-
-
 
 
 if __name__ == "__main__":

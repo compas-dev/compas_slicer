@@ -36,8 +36,8 @@ if __name__ == "__main__":
         mesh = Mesh.from_obj(os.path.join(DATA_PATH, OBJ_INPUT_NAME))
 
         ### --- Load boundaries
-        low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
-        high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
+        low_boundary_vs = []  # utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
+        high_boundary_vs = []  # utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
 
         ### --- slicing
         slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH)
@@ -67,16 +67,15 @@ if __name__ == "__main__":
 
         utils.save_to_json(print_organizer.to_data(), DATA_PATH, 'print_organizer.json')
 
-    # print_organizer.generate_commands()
-    # print_organizer.save_commands_to_json(OUTPUT_FILE)
+        # print_organizer.generate_commands()
+        # print_organizer.save_commands_to_json(OUTPUT_FILE)
 
-    # ### ----- Visualize
-    # plotter = MeshPlotter(mesh, figsize=(16, 10))
-    # plotter.draw_edges(width=0.15)
-    # plotter.draw_faces()
-    # plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
-    # plotter.show()
-
+        # ### ----- Visualize
+        # plotter = MeshPlotter(mesh, figsize=(16, 10))
+        # plotter.draw_edges(width=0.15)
+        # plotter.draw_faces()
+        # plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
+        # plotter.show()
 
         ### ----- Visualize
         viewer = ObjectViewer()

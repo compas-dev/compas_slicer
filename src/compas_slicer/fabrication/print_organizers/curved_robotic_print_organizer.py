@@ -1,16 +1,18 @@
-import compas_slicer
-
 import logging
 
-from compas_slicer.fabrication.print_organizers.robotic_print_organizer import RoboticPrintOrganizer
-
 from compas.geometry import Polyline, Point, Vector, Frame
-import stratum.region_split.topological_sort as topo_sort
-from stratum.printpaths.boundary import Boundary
-import stratum.utils.utils as stratum_utils
-from stratum.printpaths.path import Path as StratumPath
-from stratum.printpaths.path_collection import PathCollection as StratumPathCollection
+from compas_slicer.fabrication.print_organizers.robotic_print_organizer import RoboticPrintOrganizer
 from compas_slicer.geometry import PrintPoint
+import compas_slicer.utilities as utils
+
+packages = utils.TerminalCommand('conda list').get_split_output_strings()
+if 'stratum' in packages:
+    import stratum.region_split.topological_sort as topo_sort
+    from stratum.printpaths.boundary import Boundary
+    import stratum.utils.utils as stratum_utils
+    from stratum.printpaths.path import Path as StratumPath
+    from stratum.printpaths.path_collection import PathCollection as StratumPathCollection
+
 
 logger = logging.getLogger('logger')
 
@@ -23,6 +25,12 @@ __all__ = ['CurvedRoboticPrintOrganizer']
 
 class CurvedRoboticPrintOrganizer(RoboticPrintOrganizer):
     def __init__(self, slicer, machine_model, material, DATA_PATH, extruder_toggle_type="always_on"):
+        if 'stratum' not in packages:
+            raise NameError("--------ATTENTION! ----------- \
+                            STRATUM library (for curved slicing) is missing! \
+                            You can't use this slicer without it. \
+                            Check the README for instructions.")
+
         RoboticPrintOrganizer.__init__(self, slicer, machine_model, material, extruder_toggle_type)
         self.DATA_PATH = DATA_PATH
 

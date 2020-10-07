@@ -24,15 +24,15 @@ compas_slicer.commands
 
 --------------------------------
 compas_slicer.fabrication_data
-    generate_ur_script(commands) 
+    generate_ur_script(commands)
     save_ur_script(script, filename)
 
-    generate_rapid(commands) 
+    generate_rapid(commands)
     save_rapid
 
 compas_slicer.send_commands
     UR direct communication
-    Rapid ?... 
+    Rapid ?...
 
 
 """
@@ -43,9 +43,7 @@ from __future__ import print_function
 
 from .machine_model import *  # noqa: F401 E402 F403
 from .materials import *  # noqa: F401 E402 F403
-
 from .print_process_utilities.generate_z_hop import *  # noqa: F401 E402 F403
-
 from .print_organizers.print_organizer import *  # noqa: F401 E402 F403
 from .print_organizers.curved_robotic_print_organizer import *  # noqa: F401 E402 F403
 from .print_organizers.robotic_print_organizer import *  # noqa: F401 E402 F403
