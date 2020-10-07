@@ -10,7 +10,7 @@ Main features
 
 * Planar slicing
 * Curved slicing (using the stratum library)
-
+* Export robotic commands in Json format
 
 Getting started
 ------------
