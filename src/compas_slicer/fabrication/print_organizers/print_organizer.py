@@ -2,7 +2,6 @@ import json
 import compas_slicer
 import logging
 
-from compas_slicer.fabrication import generate_gcode
 from compas_slicer.geometry import PrintPoint
 import compas_slicer.utilities as utils
 from compas.geometry import Polyline
@@ -70,18 +69,6 @@ class PrintOrganizer(object):
                             printpoint.extruder_toggle = False
                         else:
                             printpoint.extruder_toggle = True
-
-    ### --- 3D printing functions
-
-    def generate_gcode(self, FILE):
-        """
-        Saves gcode file with the print parameters provided in the machine_model
-        Only supports constant layer height
-        """
-        assert isinstance(self.slicer, compas_slicer.slicers.PlanarSlicer)
-        if len(self.material.parameters) == 0:
-            raise ValueError("The material provided does not have properties")
-        generate_gcode(self.printpoints_dict, FILE, self.machine_model, self.material)
 
     def add_z_hop_printpoints(self, z_hop):
         self.with_z_hop = True

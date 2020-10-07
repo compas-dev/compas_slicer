@@ -41,7 +41,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .gcode import *  # noqa: F401 E402 F403
 from .machine_model import *  # noqa: F401 E402 F403
 from .materials import *  # noqa: F401 E402 F403
 

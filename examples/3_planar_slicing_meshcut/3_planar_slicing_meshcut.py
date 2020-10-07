@@ -1,10 +1,10 @@
 import os
 from compas.datastructures import Mesh
 from compas_plotters import MeshPlotter
-from compas_slicer.utilities import simplify_paths_rdp
+from compas_slicer.functionality import simplify_paths_rdp
 from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.sorting import sort_per_segment, sort_per_shortest_path_mlrose
-from compas_slicer.sorting import align_seams
+from compas_slicer.functionality import sort_per_segment
+from compas_slicer.functionality import align_seams
 from compas_viewers.objectviewer import ObjectViewer
 
 ######################## Logging
@@ -27,7 +27,7 @@ def main():
     slicer.slice_model()
     slicer.printout_info()
 
-    simplify_paths_rdp(slicer, threshold=0.2)
+    # simplify_paths_rdp(slicer, threshold=0.02)
     sort_per_segment(slicer, max_layers_per_segment=False, threshold=slicer.layer_height * 1.6)
     align_seams(slicer)
 

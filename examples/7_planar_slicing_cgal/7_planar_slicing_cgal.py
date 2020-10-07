@@ -2,16 +2,16 @@ import os
 from compas.datastructures import Mesh
 from compas.geometry import Point
 
-from compas_slicer.utilities import simplify_paths_rdp, save_to_json
+from compas_slicer.utilities import save_to_json
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.slicers import spiralize_contours
-from compas_slicer.sorting import sort_per_shortest_path_mlrose
-from compas_slicer.sorting import align_seams
+from compas_slicer.functionality import sort_per_shortest_path_mlrose
+from compas_slicer.functionality import align_seams
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
 from compas_slicer.fabrication import Material
 from compas_viewers.objectviewer import ObjectViewer
-from compas_slicer.positioning import move_mesh_to_point
+from compas_slicer.functionality import move_mesh_to_point, simplify_paths_rdp
 import time
 
 ######################## Logging

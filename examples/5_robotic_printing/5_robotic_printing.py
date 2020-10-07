@@ -2,9 +2,9 @@ import os
 from compas.datastructures import Mesh
 from compas.geometry import Frame
 
-from compas_slicer.sorting import sort_per_segment, sort_per_shortest_path_mlrose
-from compas_slicer.sorting import align_seams
-from compas_slicer.utilities import simplify_paths_rdp
+from compas_slicer.functionality import sort_per_segment, sort_per_shortest_path_mlrose
+from compas_slicer.functionality import align_seams
+from compas_slicer.functionality import simplify_paths_rdp
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
@@ -34,7 +34,7 @@ def main():
     slicer.slice_model()
     slicer.printout_info()
 
-    simplify_paths_rdp(slicer, threshold=0.2)
+    # simplify_paths_rdp(slicer, threshold=0.02)
     sort_per_shortest_path_mlrose(slicer, max_attempts=4)
     align_seams(slicer)
 
@@ -64,6 +64,7 @@ def main():
 
     ### ----- Visualize
     viewer = ObjectViewer()
+    # slicer.visualize_on_viewer(viewer, visualize_mesh=True, visualize_paths=False)
     print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
     viewer.update()
     viewer.show()

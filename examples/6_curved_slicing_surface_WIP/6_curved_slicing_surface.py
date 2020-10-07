@@ -4,12 +4,14 @@ import logging
 import compas_slicer.utilities.utils as utils
 from compas_slicer.slicers import CurvedSlicer, BaseSlicer
 from compas_plotters import MeshPlotter
-from compas_slicer.utilities import simplify_paths_rdp
+from compas_slicer.functionality import simplify_paths_rdp
 
 from compas_slicer.fabrication import Material
 from compas.geometry import Frame
 from compas_slicer.fabrication import RobotPrinter
 from compas_slicer.fabrication import CurvedRoboticPrintOrganizer
+from compas_viewers.objectviewer import ObjectViewer
+
 from compas_viewers.objectviewer import ObjectViewer
 
 logger = logging.getLogger('logger')
@@ -23,7 +25,7 @@ logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, '_mesh.obj')
 
-slice_model = False
+slice_model = True
 create_print_organizer = True
 
 if __name__ == "__main__":
@@ -74,3 +76,11 @@ if __name__ == "__main__":
     # plotter.draw_faces()
     # plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
     # plotter.show()
+
+
+        ### ----- Visualize
+        viewer = ObjectViewer()
+        # slicer.visualize_on_viewer(viewer, visualize_mesh=True, visualize_paths=False)
+        print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
+        viewer.update()
+        viewer.show()

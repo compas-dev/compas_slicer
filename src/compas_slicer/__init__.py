@@ -57,11 +57,9 @@ except Exception:
 
 from .utilities import *  # noqa: F401 E402 F403
 from .fabrication import *  # noqa: F401 E402 F403
-from .positioning import *  # noqa: F401 E402 F403
+from .functionality import *  # noqa: F401 E402 F403
 from .geometry import *  # noqa: F401 E402 F403
 from .slicers import *  # noqa: F401 E402 F403
-from .sorting import *  # noqa: F401 E402 F403
-
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]
 
