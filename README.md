@@ -40,24 +40,13 @@ pip install -e .
 ```
 - You should get the message 'succesfully installed compas-slicer' (amongst other packages)
 
-### Step 3: Install stratum
--The stratum library can be found here: https://github.com/ioanna21/stratum
-
-Download it and install it.
-
-
-- Then install igl
-```bash
-conda install -c conda-forge igl
-```
-
-### Step 4. Install compas_fab
+### Step 3. Install compas_fab
 - Install compas_fab (https://gramaziokohler.github.io/compas_fab/latest/) in your current environment using:
 ```bash
 pip install compas_fab
 ```
 
-### Step 5. Install compas_viewers
+### Step 4. Install compas_viewers
 
 - Install compas_viewers (https://github.com/compas-dev/compas_viewers).
 
@@ -69,10 +58,27 @@ pip install PyOpenGL
 pip install path/to/compas_viewers
 ```
 
-
-### Step 6. Test if the library works
+### Step 5. Test if the library works
 - Run the file examples/1_versions_check.py
 
+Enjoy!
+
+
+Additional Features
+------------
+
+### Stratum, library for curved slicing. 
+
+If you want to create curved slices, you need to install the stratum library. 
+-The stratum library can be found here: https://github.com/ioanna21/stratum
+
+If you cannot access the repository, contact Ioanna <<mitropoulou@arch.ethz.ch>>.
+Once you have it, then download it and install it.
+
+- Then install igl
+```bash
+conda install -c conda-forge igl
+```
 
 
 Contributions
