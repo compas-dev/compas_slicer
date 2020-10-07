@@ -57,7 +57,7 @@ conda install -c conda-forge igl
 pip install compas_fab
 ```
 
-### Step 4. Install compas_viewers
+### Step 5. Install compas_viewers
 
 - Install compas_viewers (https://github.com/compas-dev/compas_viewers).
 
@@ -70,21 +70,10 @@ pip install path/to/compas_viewers
 ```
 
 
-### Step 5. Test if the library works
+### Step 6. Test if the library works
 - Run the file examples/1_versions_check.py
 
 
-
-Submodules
-------------
-
-Stratum, https://github.com/ioanna21/stratum
-
-To update the submodules use 
-
-```bash
-git pull --recurse-submodules
-```
 
 Contributions
 ------------

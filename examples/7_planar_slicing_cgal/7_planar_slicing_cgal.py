@@ -42,7 +42,7 @@ def main():
     align_seams(slicer, seam_orientation="x_axis")
 
     # WIP
-    spiralize_contours(slicer)
+    # spiralize_contours(slicer)
 
     slicer.printout_info()
 
