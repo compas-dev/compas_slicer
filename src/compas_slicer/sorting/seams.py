@@ -9,7 +9,7 @@ __all__ = ['align_seams']
 
 
 def align_seams(slicer, seam_orientation="next_path"):
-    """Aligns the seams of a print
+    """Aligns the seams (start- and endpoint) of a print.
 
     Parameters
     ----------
@@ -17,17 +17,16 @@ def align_seams(slicer, seam_orientation="next_path"):
         A compas_slicer.slicers instance
     seam_orientation : str
         Direction to orient the seams in.
-        next_path = orients the seam to the next path
-        origin       = orients the seam to the origin (0,0,0)
-        x_axis       = orients the seam to the x_axis
-        y_axis       = orients the seam to the y_axis
+        next_path   = orients the seam to the next path
+        origin      = orients the seam to the origin (0,0,0)
+        x_axis      = orients the seam to the x_axis
+        y_axis      = orients the seam to the y_axis
     """
     # TODO: Implement random seams 
     logger.info("Aligning seams to: %s" % seam_orientation)
 
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):            
-            # if i < len(layer.paths) - 1:
             if seam_orientation == "next_path":
                 current_pt0 = path.points[0]
             elif seam_orientation == "origin":

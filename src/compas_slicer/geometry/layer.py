@@ -11,7 +11,7 @@ __all__ = ['Layer',
 
 class Layer(object):
     """
-    A Layer stores a group of ordered print_paths
+    A Layer stores a group of ordered print_paths.
 
     Attributes
     ----------
@@ -27,7 +27,7 @@ class Layer(object):
 
     def __repr__(self):
         no_of_paths = len(self.paths) if self.paths else 0
-        return "<Layer object with %i paths" % no_of_paths
+        return "<Layer object with %i paths>" % no_of_paths
 
     @classmethod
     def from_data(cls, data):

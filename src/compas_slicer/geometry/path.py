@@ -11,12 +11,17 @@ __all__ = ['Path']
 class Path(object):
     """
     The Path class is the base class for all print paths.
+    It consists out of a list of compas Points.
     
     Attributes
     ----------
     points : list
         compas.geometry.Point
     is_closed : bool
+        ...
+    type : string
+        Stores whether the Path is a contour, infill or support.
+        Currently only contour is available.
     """
 
     def __init__(self, points, is_closed):

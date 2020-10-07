@@ -4,11 +4,25 @@ __all__ = ['PrintPoint']
 
 
 class PrintPoint(object):
+    """
+    A PrintPoint consists out of a single compas.geometry.Point, 
+    with additional functionality added for the printing process.
+
+    Attributes
+    ----------
+    pt : compas.geometry.Point
+        A compas Point consisting out of x, y, z coordinates
+    layer_height : float
+        The vertical distance between the point on this layer and the next layer
+    extruder_toggle : boolean
+        Toggles the extruder on (True) or off (False).
+    """
+
     def __init__(self, pt, layer_height):
         ### --- basic printpoint
-        self.pt = pt  # position of center of mass (compas.geometry.Point)
-        self.layer_height = layer_height  # float
-        self.extruder_toggle = None  # boolean
+        self.pt = pt  
+        self.layer_height = layer_height  
+        self.extruder_toggle = None 
 
         ### --- advanced printpoint
         self.up_vector = None  # compas.geometry.Vector
