@@ -10,7 +10,7 @@ Main features
 
 * Planar slicing
 * Curved slicing (using the stratum library)
-
+* Export robotic commands in Json format
 
 Getting started
 ------------
@@ -31,7 +31,7 @@ pip install -e .
 ### Step 2: Install compas_slicer
 - Clone the repository and activate your environment. Do not forget to clone the repository using --recursive or the submodules will not work. 
 ```bash
-git clone --recursive https://github.com/dbt-ethz/compas_slicer.git
+git clone https://github.com/dbt-ethz/compas_slicer.git
 conda activate compas_slicer
 ```
 - Navigate to the folder where you cloned the compas_slicer repository and install compas_slicer using:
@@ -40,24 +40,13 @@ pip install -e .
 ```
 - You should get the message 'succesfully installed compas-slicer' (amongst other packages)
 
-### Step 3: Install stratum
--The stratum library can be found here: https://github.com/ioanna21/stratum
-
-Download it and install it.
-
-
-- Then install igl
-```bash
-conda install -c conda-forge igl
-```
-
-### Step 4. Install compas_fab
+### Step 3. Install compas_fab
 - Install compas_fab (https://gramaziokohler.github.io/compas_fab/latest/) in your current environment using:
 ```bash
 pip install compas_fab
 ```
 
-### Step 5. Install compas_viewers
+### Step 4. Install compas_viewers
 
 - Install compas_viewers (https://github.com/compas-dev/compas_viewers).
 
@@ -69,10 +58,27 @@ pip install PyOpenGL
 pip install path/to/compas_viewers
 ```
 
-
-### Step 6. Test if the library works
+### Step 5. Test if the library works
 - Run the file examples/1_versions_check.py
 
+Enjoy!
+
+
+Additional Features
+------------
+
+### Stratum, library for curved slicing. 
+
+If you want to create curved slices, you need to install the stratum library. 
+You can find it here: https://github.com/ioanna21/stratum
+
+If you cannot access the repository, contact Ioanna <<mitropoulou@arch.ethz.ch>>.
+Once you have it, then download it and install it.
+
+- Then install igl
+```bash
+conda install -c conda-forge igl
+```
 
 
 Contributions
