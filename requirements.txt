@@ -1,6 +1,6 @@
+git+https://github.com/compas-dev/compas_fab.git#egg=compas_fab
 
-COMPAS
-compas_fab
+#compas_fab>=0.11,<0.12,
 
 rdp==0.8
 meshcut==0.2.1
