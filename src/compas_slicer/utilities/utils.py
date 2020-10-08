@@ -7,7 +7,9 @@ logger = logging.getLogger('logger')
 
 __all__ = ['save_to_json',
            'load_from_json',
-           'get_average_point']
+           'get_average_point',
+           'total_length_of_dictionary',
+           'flattened_list_of_dictionary']
 
 
 def save_to_json(data, filepath, name):
@@ -38,6 +40,21 @@ def check_triangular_mesh(mesh):
         if len(vs) != 3:
             raise TypeError("Found a quad at face key: " + str(f_key) + " ,number of face vertices:" + str(
                 len(vs)) + ". \nOnly triangular meshes supported.")
+
+
+### --- Length of dictionary
+def total_length_of_dictionary(dictionary):
+    total_length = 0
+    for key in dictionary:
+        total_length += len(dictionary[key])
+    return total_length
+
+### --- Falltened list of dictionary
+def flattened_list_of_dictionary(dictionary):
+    flattened_list = []
+    for key in dictionary:
+        [flattened_list.append(item) for item in dictionary[key]]
+    return flattened_list
 
 
 if __name__ == "__main__":

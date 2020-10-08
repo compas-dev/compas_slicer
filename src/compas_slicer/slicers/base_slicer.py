@@ -89,7 +89,7 @@ class BaseSlicer(object):
     def visualize_on_viewer(self, viewer, visualize_mesh, visualize_paths):
         if visualize_mesh:
             viewer.add(self.mesh, settings={'color': '#ff0000',
-                                            'opacity': 0.4,})
+                                            'opacity': 0.4, })
 
         if visualize_paths:
             for i, layer in enumerate(self.layers):
@@ -102,8 +102,6 @@ class BaseSlicer(object):
                         viewer.add(polyline, name="Layer %d, Path %d" % (i, j),
                                    settings={'color': '#ffffff'})
 
-        # for polyline in polylines:
-        #     viewer.add(polyline, settings={'color': '#ffffff'})
 
     ##############################
     ### --- To json
@@ -118,9 +116,9 @@ class BaseSlicer(object):
         utils.save_to_json(self.get_paths_collection_dict(), filepath, name)
 
     def get_slicer_all_data_dict(self):
-        data = {'flattened_path' : self.get_flattened_path_dict(),
-                'layers' : self.get_paths_collection_dict(),
-                'mesh' : self.mesh.to_data()}
+        data = {'flattened_path': self.get_flattened_path_dict(),
+                'layers': self.get_paths_collection_dict(),
+                'mesh': self.mesh.to_data()}
 
         return data
 
@@ -144,6 +142,7 @@ class BaseSlicer(object):
                 for k, point in enumerate(path.points):
                     data[i][j][k] = [point[0], point[1], point[2]]
         return data
+
 
 if __name__ == "__main__":
     pass
