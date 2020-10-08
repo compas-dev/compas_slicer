@@ -35,6 +35,7 @@ if not compas.IPY:
     from compas_slicer.slicers.planar_slice_functions.planar_slicing_meshcut import *  # noqa: F401 E402 F403
     from compas_slicer.slicers.planar_slice_functions.planar_slicing_numpy import *  # noqa: F401 E402 F403
     from compas_slicer.slicers.planar_slice_functions.planar_slicing_cgal import *  # noqa: F401 E402 F403
+    from compas_slicer.slicers.planar_slice_functions.planar_slicing import *  # noqa: F401 E402 F403
     from compas_slicer.slicers.generate_brim import *  # noqa: F401 E402 F403
     from compas_slicer.fabrication.print_process_utilities.generate_z_hop import *  # noqa: F401 E402 F403
     from compas_slicer.slicers.spiralize_contours import *  # noqa: F401 E402 F403

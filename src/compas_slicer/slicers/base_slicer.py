@@ -1,4 +1,5 @@
 import compas
+import compas_slicer
 from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
@@ -91,11 +92,15 @@ class BaseSlicer(object):
                                             'opacity': 0.4,})
 
         if visualize_paths:
-            for i, path_collection in enumerate(self.layers):
-                for j, path in enumerate(path_collection.paths):
+            for i, layer in enumerate(self.layers):
+                for j, path in enumerate(layer.paths):
                     polyline = Polyline(path.points)
-                    viewer.add(polyline, name="Path_Collection %d, Path %d" % (i, j),
-                               settings={'color': '#ffffff'})
+                    if isinstance(layer, compas_slicer.geometry.VerticalLayer):
+                        viewer.add(polyline, name="VerticalSegment %d, Path %d" % (i, j),
+                                   settings={'color': '#ffffff'})
+                    else:
+                        viewer.add(polyline, name="Layer %d, Path %d" % (i, j),
+                                   settings={'color': '#ffffff'})
 
         # for polyline in polylines:
         #     viewer.add(polyline, settings={'color': '#ffffff'})

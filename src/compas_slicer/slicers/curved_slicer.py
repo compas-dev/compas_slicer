@@ -4,6 +4,7 @@ from compas_slicer.slicers import BaseSlicer
 from compas_slicer.geometry import VerticalLayer
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import Path
+from compas.plugins import PluginNotInstalledError
 
 import logging
 
@@ -21,7 +22,7 @@ __all__ = ['CurvedSlicer']
 class CurvedSlicer(BaseSlicer):
     def __init__(self, mesh, low_boundary_vs, high_boundary_vs, DATA_PATH):
         if 'stratum' not in packages:
-            raise NameError("--------ATTENTION! ----------- \
+            raise PluginNotInstalledError("--------ATTENTION! ----------- \
                             STRATUM library (for curved slicing) is missing! \
                             You can't use this slicer without it. \
                             Check the README for instructions.")

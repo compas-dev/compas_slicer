@@ -10,7 +10,7 @@ __all__ = ['PlanarSlicer']
 
 
 class PlanarSlicer(BaseSlicer):
-    def __init__(self, mesh, slicer_type="planar_numpy", layer_height=2.0):
+    def __init__(self, mesh, slicer_type="planar_compas", layer_height=2.0):
         BaseSlicer.__init__(self, mesh)
 
         self.layer_height = layer_height
@@ -26,6 +26,10 @@ class PlanarSlicer(BaseSlicer):
         if self.slicer_type == "planar_numpy":
             logger.info("Planar contours compas numpy slicing")
             self.layers = compas_slicer.slicers.create_planar_paths_numpy(self.mesh, self.layer_height)
+
+        if self.slicer_type == "planar_compas":
+            logger.info("Planar contours compas slicing")
+            self.layers = compas_slicer.slicers.create_planar_paths(self.mesh, self.layer_height)
 
         elif self.slicer_type == "planar_meshcut":
             logger.info("Planar contours meshcut slicing")

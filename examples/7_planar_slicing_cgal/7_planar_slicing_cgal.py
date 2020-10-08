@@ -34,7 +34,7 @@ def main():
     move_mesh_to_point(compas_mesh, Point(0,0,0))
 
     ### --- Slicer
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=7.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_compas", layer_height=7.0)
     slicer.slice_model()
     # slicer.generate_brim(layer_width=3.0, number_of_brim_paths=3)
 

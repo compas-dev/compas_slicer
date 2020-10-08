@@ -4,6 +4,8 @@ from compas.geometry import Polyline, Point, Vector, Frame
 from compas_slicer.fabrication.print_organizers.robotic_print_organizer import RoboticPrintOrganizer
 from compas_slicer.geometry import PrintPoint
 import compas_slicer.utilities as utils
+from compas.plugins import PluginNotInstalledError
+
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
 if 'stratum' in packages:
@@ -26,7 +28,7 @@ __all__ = ['CurvedRoboticPrintOrganizer']
 class CurvedRoboticPrintOrganizer(RoboticPrintOrganizer):
     def __init__(self, slicer, machine_model, material, DATA_PATH, extruder_toggle_type="always_on"):
         if 'stratum' not in packages:
-            raise NameError("--------ATTENTION! ----------- \
+            raise PluginNotInstalledError("--------ATTENTION! ----------- \
                             STRATUM library (for curved slicing) is missing! \
                             You can't use this slicer without it. \
                             Check the README for instructions.")
@@ -36,7 +38,6 @@ class CurvedRoboticPrintOrganizer(RoboticPrintOrganizer):
 
     def create_printpoints_dict(self):
         ''' Without region split '''
-
         print('')
         logger.info('Creation of printpoints (curved slicer without region split)')
 
