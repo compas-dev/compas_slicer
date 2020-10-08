@@ -1,6 +1,6 @@
 
 COMPAS
-# compas_fab
+compas_fab
 
 rdp==0.8
 meshcut==0.2.1
