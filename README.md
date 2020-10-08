@@ -40,12 +40,6 @@ pip install -e .
 ```
 - You should get the message 'succesfully installed compas-slicer' (amongst other packages)
 
-### Step 3. Install compas_fab
-- Install compas_fab (https://gramaziokohler.github.io/compas_fab/latest/) in your current environment using:
-```bash
-pip install compas_fab
-```
-
 ### Step 4. Install compas_viewers
 
 - Install compas_viewers (https://github.com/compas-dev/compas_viewers).
