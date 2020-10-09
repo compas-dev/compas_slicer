@@ -24,6 +24,7 @@ from .simplify_paths_rdp import *  # noqa: F401 E402 F403
 
 ### Sorting
 from .align_seams import *  # noqa: F401 E402 F403
+from .smooth_seams import *  # noqa: F401 E402 F403
 from .sort_per_segment import *  # noqa: F401 E402 F403
 from .sort_per_shortest_path_mlrose import *  # noqa: F401 E402 F403
 
