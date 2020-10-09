@@ -6,8 +6,8 @@ from compas_slicer.utilities import save_to_json
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.slicers import spiralize_contours
 from compas_slicer.functionality import sort_per_shortest_path_mlrose
-from compas_slicer.functionality import align_seams
-from compas_slicer.functionality import smooth_seams
+from compas_slicer.functionality import seams_align
+from compas_slicer.functionality import seams_smooth
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
 from compas_slicer.fabrication import Material
@@ -40,8 +40,8 @@ def main():
     # slicer.generate_brim(layer_width=3.0, number_of_brim_paths=3)
 
     simplify_paths_rdp(slicer, threshold=0.2)
-    align_seams(slicer, seam_orientation="x_axis")
-    smooth_seams(slicer, smooth_distance=5)
+    seams_align(slicer, seam_orientation="x_axis")
+    seams_smooth(slicer, smooth_distance=5)
 
     # WIP
     # spiralize_contours(slicer)

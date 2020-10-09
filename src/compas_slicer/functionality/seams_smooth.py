@@ -5,10 +5,10 @@ from compas.geometry import Vector
 
 logger = logging.getLogger('logger')
 
-__all__ = ['smooth_seams']
+__all__ = ['seams_smooth']
 
 
-def smooth_seams(slicer, smooth_distance):
+def seams_smooth(slicer, smooth_distance):
     """Smoothes the seams (transition between layers)
     by removing points within a certain distance.
 

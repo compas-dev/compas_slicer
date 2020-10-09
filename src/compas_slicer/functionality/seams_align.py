@@ -5,10 +5,10 @@ from compas.geometry import distance_point_point
 
 logger = logging.getLogger('logger')
 
-__all__ = ['align_seams']
+__all__ = ['seams_align']
 
 
-def align_seams(slicer, seam_orientation="next_path"):
+def seams_align(slicer, seam_orientation="next_path"):
     """Aligns the seams (start- and endpoint) of a print.
 
     Parameters
