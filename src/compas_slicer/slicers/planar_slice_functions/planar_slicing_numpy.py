@@ -12,6 +12,8 @@ def create_planar_paths_numpy(mesh, layer_height):
     """
     Creates planar contours using the compas mesh_contours_numpy function. To be replaced with a better alternative
 
+    Considers all resulting paths as CLOSED paths
+
     Parameters
     ----------
     mesh : compas.datastructures.Mesh

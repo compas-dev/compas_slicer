@@ -17,10 +17,10 @@ class RoboticPrintOrganizer(PrintOrganizer):
     Creates fabrication data for robotic 3D printing.
     """
 
-    def __init__(self, slicer, machine_model, material, extruder_toggle_type="always_on"):
+    def __init__(self, slicer, machine_model, extruder_toggle_type="always_on"):
         assert isinstance(machine_model, compas_slicer.fabrication.machine_model.RobotPrinter), \
             "Machine Model does not represent a robot"
-        PrintOrganizer.__init__(self, slicer, machine_model, material, extruder_toggle_type)
+        PrintOrganizer.__init__(self, slicer, machine_model, extruder_toggle_type)
 
     def generate_robotic_commands_dict(self):
         logger.info("generating %d robotic commands: " % len(self.printpoints_dict))

@@ -79,13 +79,6 @@ class BaseSlicer(object):
         print("Number of sampling printpoints on contours: %d" % total_number_of_pts)
         print("")
 
-    def get_path_lines_for_plotter(self, color=(255, 0, 0)):
-        lines = []
-        for path_collection in self.layers:
-            for path in path_collection.paths:
-                lines.extend(path.get_lines_for_plotter(color))
-        return lines
-
     def visualize_on_viewer(self, viewer, visualize_mesh, visualize_paths):
         if visualize_mesh:
             viewer.add(self.mesh, settings={'color': '#ff0000',
@@ -109,10 +102,7 @@ class BaseSlicer(object):
     def to_json(self, filepath, name):
         utils.save_to_json(self.get_slicer_all_data_dict(), filepath, name)
 
-    def flattened_paths_to_json(self, filepath, name):
-        utils.save_to_json(self.get_flattened_path_dict(), filepath, name)
-
-    def path_collections_to_json(self, filepath, name):
+    def layers_to_json(self, filepath, name):
         utils.save_to_json(self.get_paths_collection_dict(), filepath, name)
 
     def get_slicer_all_data_dict(self):

@@ -23,13 +23,14 @@ class PlanarSlicer(BaseSlicer):
         logger.info("Slicing operation took: %.2f seconds" % (end_time - start_time))
 
     def generate_paths(self):
-        if self.slicer_type == "planar_numpy":
-            logger.info("Planar contours compas numpy slicing")
-            self.layers = compas_slicer.slicers.create_planar_paths_numpy(self.mesh, self.layer_height)
 
         if self.slicer_type == "planar_compas":
             logger.info("Planar contours compas slicing")
             self.layers = compas_slicer.slicers.create_planar_paths(self.mesh, self.layer_height)
+
+        elif self.slicer_type == "planar_numpy":
+            logger.info("Planar contours compas numpy slicing")
+            self.layers = compas_slicer.slicers.create_planar_paths_numpy(self.mesh, self.layer_height)
 
         elif self.slicer_type == "planar_meshcut":
             logger.info("Planar contours meshcut slicing")

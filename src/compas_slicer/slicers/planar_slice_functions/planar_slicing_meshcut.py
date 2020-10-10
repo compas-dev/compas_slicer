@@ -12,6 +12,8 @@ def create_planar_paths_meshcut(mesh, layer_height):
     """Creates planar slices using the Meshcut library
     https://pypi.org/project/meshcut/ from Julien Rebetez
 
+    Considers all resulting paths as CLOSED paths.
+
     Parameters
     ----------
     mesh : compas.datastructures.Mesh

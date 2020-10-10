@@ -16,15 +16,13 @@ class PrintOrganizer(object):
     Base class for organizing the printing process
     """
 
-    def __init__(self, slicer, machine_model, material, extruder_toggle_type="always_on"):
+    def __init__(self, slicer, machine_model, extruder_toggle_type="always_on"):
         # check input
         assert isinstance(slicer, compas_slicer.slicers.BaseSlicer)
         assert isinstance(machine_model, compas_slicer.fabrication.MachineModel)
-        assert isinstance(material, compas_slicer.fabrication.Material)
 
         self.slicer = slicer
         self.machine_model = machine_model
-        self.material = material
 
         ### initialize print points
         self.printpoints_dict = {}
@@ -35,7 +33,6 @@ class PrintOrganizer(object):
         ### state booleans
         self.with_z_hop = False
         self.with_brim = False
-
 
     ### --- Initialization
     def create_printpoints_dict(self):

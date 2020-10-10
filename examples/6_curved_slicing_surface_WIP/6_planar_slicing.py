@@ -6,7 +6,7 @@ from compas_slicer.utilities import save_to_json
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.slicers import spiralize_contours
 from compas_slicer.functionality import sort_per_shortest_path_mlrose
-from compas_slicer.functionality import align_seams
+from compas_slicer.functionality import seams_align, sort_per_segment
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
 from compas_slicer.fabrication import Material
@@ -36,10 +36,12 @@ def main():
     ### --- Slicer
     slicer = PlanarSlicer(compas_mesh, slicer_type="planar_compas", layer_height=5.0)
     slicer.slice_model()
+
     # slicer.generate_brim(layer_width=3.0, number_of_brim_paths=3)
 
-    # simplify_paths_rdp(slicer, threshold=0.2)
-    align_seams(slicer, seam_orientation="x_axis")
+    sort_per_segment(slicer, max_layers_per_segment=False, threshold=slicer.layer_height * 1.6)
+    simplify_paths_rdp(slicer, threshold=0.2)
+    seams_align(slicer, seam_orientation="next_path")
 
     # WIP
     # spiralize_contours(slicer)
@@ -53,7 +55,7 @@ def main():
     viewer.view.use_shaders = False
     slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
 
-    # slicer.path_collections_to_json(DATA, 'slicer_data_layers.json')
+    slicer.layers_to_json(DATA, 'slicer_data_layers.json')
 
     # ### --- Fabrication
     # robot_printer = RobotPrinter('UR5')
