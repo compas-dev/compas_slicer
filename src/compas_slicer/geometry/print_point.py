@@ -20,7 +20,8 @@ class PrintPoint(object):
         ### --- basic printpoint
         self.pt = pt  
         self.layer_height = layer_height  
-        self.extruder_toggle = None 
+        self.extruder_toggle = None
+        self.velocity = None
 
         self.wait_time = 0
         self.print_frame = self.get_print_frame(pt, desired_axis=Vector(0, 1, 0))  # compas.geometry.Frame

@@ -28,7 +28,6 @@ class PrintOrganizer(object):
         self.printpoints_dict = {}
         self.create_printpoints_dict()
         self.set_extruder_toggle(extruder_toggle_type)
-        # logger.info('Created %d printpoints' % utils.length_of_flattened_dictionary(self.printpoints_dict))
 
         ### state booleans
         self.with_z_hop = False
@@ -72,8 +71,44 @@ class PrintOrganizer(object):
         logger.info("Generating z_hop of " + str(z_hop) + " mm")
         compas_slicer.fabrication.generate_z_hop(self.printpoints_dict, z_hop)
 
-    ### --- Visualize on viewer
+    def set_linear_velocity(self, velocity_type, v=0.05,
+                            per_layer_velocities=None):
 
+        if not (velocity_type == "constant"
+                or velocity_type == "per_layer"
+                or velocity_type == "matching_layer_height"
+                or velocity_type == "matching_overhang"):
+            raise ValueError("Velocity method doesn't exist")
+
+        for i, layer_key in enumerate(self.printpoints_dict):
+            for path_key in self.printpoints_dict[layer_key]:
+                path_printpoints = self.printpoints_dict[layer_key][path_key]
+                for printpoint in path_printpoints:
+
+                    if velocity_type == "constant":
+                        printpoint.velocity = v
+
+                    elif velocity_type == "per_layer":
+                        assert per_layer_velocities, "You need to provide one velocity value per layer"
+                        assert len(per_layer_velocities) == self.number_of_layers(), \
+                            'Wrong number of velocity values. You need to provide one velocity value per layer, ' \
+                            'on the "per_layer_velocities" list.'
+                        printpoint.velocity = per_layer_velocities[i]
+
+                    elif velocity_type == "matching_layer_height":
+                        printpoint.velocity = calculate_linear_velocity(printpoint)
+
+                    elif velocity_type == "matching_overhang":
+                        raise NotImplementedError
+
+    def number_of_layers(self):
+        return len(self.printpoints_dict)
+
+    def number_of_paths(self, layer_index):
+        return len(self.printpoints_dict['layer_%d' % layer_index])
+
+    ##################################
+    ### --- Visualization on viewer
     def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
         all_pts = []
         for layer_key in self.printpoints_dict:
@@ -90,7 +125,8 @@ class PrintOrganizer(object):
             for i, pt in enumerate(all_pts):
                 viewer.add(pt, name="Point %d" % i)
 
-    ### --- To data
+    ##################################
+    ### --- To data, from data
     def to_data(self):
         print_organizer_data = {'printpoints': {}}
 
@@ -102,6 +138,31 @@ class PrintOrganizer(object):
                     count += 1
 
         return print_organizer_data
+
+    def from_data(cls, self):
+        raise NotImplementedError
+
+
+#############################
+### Nozzle linear velocity
+#############################
+import math
+
+motor_omega = 2 * math.pi  # 1 revolution / sec = 2*pi rad/sec
+motor_r = 4.0  # 4.25 #mm
+motor_linear_speed = motor_omega * motor_r
+D_filament = 2.75  # mm
+filament_area = math.pi * (D_filament / 2.0) ** 2  # pi*r^2
+
+multiplier = 0.25  # arbitrary value! You might have to change this
+
+
+def calculate_linear_velocity(printpoint):  # path_area * robot_linear_speed = filament_area * motor_linear_speed
+    layer_width = max(printpoint.layer_height, 0.4)
+    path_area = layer_width * printpoint.layer_height
+    linear_speed = (filament_area * motor_linear_speed) / path_area
+    return linear_speed * multiplier
+
 
 if __name__ == "__main__":
     pass
