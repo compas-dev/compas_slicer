@@ -71,7 +71,7 @@ class PrintOrganizer(object):
         logger.info("Generating z_hop of " + str(z_hop) + " mm")
         compas_slicer.fabrication.generate_z_hop(self.printpoints_dict, z_hop)
 
-    def set_linear_velocity(self, velocity_type, v=0.05,
+    def set_linear_velocity(self, velocity_type, v=25,
                             per_layer_velocities=None):
 
         if not (velocity_type == "constant"
