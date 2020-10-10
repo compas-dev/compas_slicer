@@ -1,39 +1,38 @@
 """
 ********************************************************************************
-compas_slicer.commands
+compas_slicer.fabrication
 ********************************************************************************
 
-Thought 06.05.2020: Could it make sense to change 'fabrication' to 'output' to resonate better with 'input'?
+Classes
+=======
 
--gcode
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
 
-compas_slicer.commands
-
-    generate commands
-    save commands : save to Json, save to Gcode
-    import commands
-    
-    Need to agree on a universal template for commands 
-    Ex:
-    Command
-    (Frame: ... , End effector parameters: ..., Waiting time: ..., Robot configuration: ..., Blend radius: ..., 
-    velocity: ..., acceleration: ... )
-
-    Then each project can only fill in the parameters they need 
+    PrintOrganizer
+    MachineModel
 
 
---------------------------------
-compas_slicer.fabrication_data
-    generate_ur_script(commands)
-    save_ur_script(script, filename)
+PrintOrganizer
+--------------
 
-    generate_rapid(commands)
-    save_rapid
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
 
-compas_slicer.send_commands
-    UR direct communication
-    Rapid ?...
+    RoboticPrintOrganizer
+    CurvedRoboticPrintOrganizer
 
+MachineModel
+--------------
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    RobotPrinter
+    FDMPrinter
 
 """
 

@@ -1,7 +1,7 @@
 import compas_slicer
 import logging
 from compas_slicer.fabrication.print_organizers.print_organizer import PrintOrganizer
-from compas.geometry import Frame, distance_point_point, norm_vector, Vector
+from compas.geometry import Frame, norm_vector, Vector
 import math
 
 logger = logging.getLogger('logger')
@@ -42,8 +42,6 @@ class RoboticPrintOrganizer(PrintOrganizer):
         return neighboring_items
 
     def generate_robotic_commands_dict(self):
-        logger.info("generating %d robotic commands: " % len(self.printpoints_dict))
-        # data dictionary
         commands = {}
 
         assert self.printpoints_dict['layer_0']['path_0'][0].velocity, \
@@ -69,6 +67,9 @@ class RoboticPrintOrganizer(PrintOrganizer):
                     commands[count]["extruder_toggle"] = printpoint.extruder_toggle
 
                     count += 1
+        
+        logger.info("Generated %d robotic commands" % count)
+
         return commands
 
 

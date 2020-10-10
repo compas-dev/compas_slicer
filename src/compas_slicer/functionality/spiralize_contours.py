@@ -9,7 +9,7 @@ __all__ = ['spiralize_contours']
 
 def spiralize_contours(slicer):
     """Spiralizes contours. Only supports a constant layer height.
-    Most useful for single contoured geometries (vases).
+    Can only be used for geometries consisting out of a single contour (vases).
 
     Parameters
     ----------

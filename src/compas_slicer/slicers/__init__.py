@@ -2,6 +2,27 @@
 ********************************************************************************
 compas_slicer.slicers
 ********************************************************************************
+
+Classes
+=======
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    BaseSlicer
+
+
+BaseSlicer
+----------
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    PlanarSlicer
+    CurvedSlicer
+    
 """
 
 

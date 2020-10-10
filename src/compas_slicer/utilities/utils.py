@@ -14,7 +14,7 @@ __all__ = ['save_to_json',
 
 def save_to_json(data, filepath, name):
     filename = os.path.join(filepath, name)
-    logger.info("Saving to Json: " + filename)
+    logger.info("Saving to json: " + filename)
     with open(filename, 'w') as f:
         f.write(json.dumps(data, indent=3, sort_keys=True))
 
@@ -23,7 +23,7 @@ def load_from_json(filepath, name):
     filename = os.path.join(filepath, name)
     with open(filename, 'r') as f:
         data = json.load(f)
-    logger.info("Loaded Json: " + filename)
+    logger.info("Loaded json: " + filename)
     return data
 
 
@@ -49,7 +49,7 @@ def total_length_of_dictionary(dictionary):
         total_length += len(dictionary[key])
     return total_length
 
-### --- Falltened list of dictionary
+### --- Flattened list of dictionary
 def flattened_list_of_dictionary(dictionary):
     flattened_list = []
     for key in dictionary:
