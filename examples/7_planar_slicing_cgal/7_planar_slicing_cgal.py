@@ -4,7 +4,8 @@ from compas.geometry import Point, Frame
 
 from compas_slicer.utilities import save_to_json
 from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.slicers import spiralize_contours
+from compas_slicer.functionality import generate_brim
+from compas_slicer.functionality import spiralize_contours
 from compas_slicer.functionality import sort_per_shortest_path_mlrose
 from compas_slicer.functionality import seams_align
 from compas_slicer.functionality import seams_smooth
@@ -34,13 +35,15 @@ def main():
     move_mesh_to_point(compas_mesh, Point(0,0,0))
 
     ### --- Slicer
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=7.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=100.0)
     slicer.slice_model()
-    # slicer.generate_brim(layer_width=3.0, number_of_brim_paths=3)
+
+    ### --- Generate brim    
+    # generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
 
     simplify_paths_rdp(slicer, threshold=0.2)
-    seams_align(slicer, seam_orientation="x_axis")
-    seams_smooth(slicer, smooth_distance=5)
+    seams_align(slicer, seam_orientation="next_path")
+    # seams_smooth(slicer, smooth_distance=5)
 
     # WIP
     # spiralize_contours(slicer)

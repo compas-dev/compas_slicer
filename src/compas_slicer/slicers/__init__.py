@@ -1,25 +1,7 @@
 """
 ********************************************************************************
-compas_slicer.slicing
+compas_slicer.slicers
 ********************************************************************************
-    Supports
-        identify and visualize big overhangs 
-        generate supports where needed
-
-    Slicing
-        slice planar layers with regular height
-        slice planar layers with adaptive height
-        slice curved layers 
-
-    Infill
-        infill generation
-
-    align seams
-    randomize seams
-    orient curves 
-    cull small curves 
-    solve self intersections 
-    other: find issues - Satinize the curves
 """
 
 
@@ -36,8 +18,6 @@ if not compas.IPY:
     from compas_slicer.slicers.planar_slice_functions.planar_slicing_numpy import *  # noqa: F401 E402 F403
     from compas_slicer.slicers.planar_slice_functions.planar_slicing_cgal import *  # noqa: F401 E402 F403
     from compas_slicer.slicers.planar_slice_functions.planar_slicing import *  # noqa: F401 E402 F403
-    from compas_slicer.slicers.generate_brim import *  # noqa: F401 E402 F403
     from compas_slicer.fabrication.print_process_utilities.generate_z_hop import *  # noqa: F401 E402 F403
-    from compas_slicer.slicers.spiralize_contours import *  # noqa: F401 E402 F403
 
 __all__ = [name for name in dir() if not name.startswith('_')]

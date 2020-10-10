@@ -27,8 +27,6 @@ def seams_align(slicer, seam_orientation="next_path"):
 
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
-            print('layer: ', i, ' path : ', j)
-            print('path.is_closed : ', path.is_closed)
 
             align_seams_for_current_path = path.is_closed  # should not happen if path is open
 
@@ -69,8 +67,6 @@ def seams_align(slicer, seam_orientation="next_path"):
                             next_path_pts = slicer.layers[i + 1].paths[0].points
                         else:
                             align_seams_for_current_path = False
-
-            print('align_seams_for_current_path : ', align_seams_for_current_path)
 
             if align_seams_for_current_path:
                 # removes the last element of the list before shifting

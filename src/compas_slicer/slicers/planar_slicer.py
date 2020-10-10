@@ -1,6 +1,5 @@
 import compas_slicer
 from compas_slicer.slicers import BaseSlicer
-from compas_slicer.slicers import generate_brim
 import logging
 import time
 
@@ -43,11 +42,10 @@ class PlanarSlicer(BaseSlicer):
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)
 
-    def generate_brim(self, layer_width, number_of_brim_paths):
-        print("GENERATING BRIM")
+    # def generate_brim(self, layer_width, number_of_brim_paths):
 
-        logger.info("Generating brim with layer width: %.2f mm, consisting of %d layers" %
-                    (layer_width, number_of_brim_paths))
-        compas_slicer.slicers.generate_brim(self, layer_width, number_of_brim_paths)
+    #     logger.info("Generating brim with layer width: %.2f mm, consisting of %d layers" %
+    #                 (layer_width, number_of_brim_paths))
+    #     compas_slicer.slicers.generate_brim(self, layer_width, number_of_brim_paths)
 
 

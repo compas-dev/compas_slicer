@@ -1,11 +1,12 @@
 import pyclipper
-
 from pyclipper import scale_from_clipper, scale_to_clipper
 
 from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Path
-from compas_slicer.geometry import PrintPoint
 from compas.geometry import Point
+
+import logging
+logger = logging.getLogger('logger')
 
 __all__ = ['generate_brim']
 
@@ -23,6 +24,8 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
     number_of_brim_paths : int
         Number of brim paths to add.
     """
+    logger.info("Generating brim with layer width: %.2f mm, consisting of %d layers" %(layer_width, number_of_brim_paths))
+    
     # TODO: Add functionality for merging several contours when the brims overlap.  
 
     # uses the default scaling factor of 2**32
