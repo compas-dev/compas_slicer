@@ -60,7 +60,7 @@ def main():
                                      frame=Frame(point=[0.153792, -0.01174, -0.03926],
                                                  xaxis=[1, 0, 0],
                                                  yaxis=[0, 1, 0]))
-    robot_printer.printout_info()
+    # robot_printer.printout_info()
 
     print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer,
                                             extruder_toggle_type="off_when_travel")

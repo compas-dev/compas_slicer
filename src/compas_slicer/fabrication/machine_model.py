@@ -119,6 +119,7 @@ class RobotPrinter(MachineModel):
             robot = Robot(load_geometry=False)
             scene = PlanningScene(robot)
 
+
         return robot, scene
 
     def attach_endeffector(self, FILENAME, frame):
