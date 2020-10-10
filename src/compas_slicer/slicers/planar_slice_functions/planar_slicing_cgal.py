@@ -19,6 +19,7 @@ __all__ = ['create_planar_paths_cgal']
 
 def create_planar_paths_cgal(mesh, layer_height):
     """Creates planar contours using CGAL
+    Considers all resulting paths as CLOSED paths.
 
     Parameters
     ----------

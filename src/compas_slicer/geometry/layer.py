@@ -32,9 +32,14 @@ class Layer(object):
     @classmethod
     def from_data(cls, data):
         paths = [Path.from_data(data[key]) for key in data]
-        path_collection = cls(paths=paths)
-        return path_collection
+        layer = cls(paths=paths)
+        return layer
 
+    def to_data(self):
+        data = {}
+        for i, path in enumerate(self.paths):
+            data[i] = path.to_data()
+        return data
 
 class VerticalLayer(Layer):
     """

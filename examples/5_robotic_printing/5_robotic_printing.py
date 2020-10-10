@@ -3,12 +3,12 @@ from compas.datastructures import Mesh
 from compas.geometry import Frame
 
 from compas_slicer.functionality import sort_per_segment, sort_per_shortest_path_mlrose
-from compas_slicer.functionality import align_seams
+from compas_slicer.functionality import seams_align
 from compas_slicer.functionality import simplify_paths_rdp
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
-from compas_slicer.fabrication import Material
+
 from compas_slicer.utilities import save_to_json
 from compas_plotters import MeshPlotter
 from compas_viewers.objectviewer import ObjectViewer
@@ -30,20 +30,13 @@ def main():
     compas_mesh = Mesh.from_stl(INPUT_FILE)
 
     ### --- Slicer
-    slicer = PlanarSlicer(compas_mesh, slicer_type='planar_cgal', layer_height=10.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type='planar_compas', layer_height=3.0)
     slicer.slice_model()
     slicer.printout_info()
 
     # simplify_paths_rdp(slicer, threshold=0.02)
     sort_per_shortest_path_mlrose(slicer, max_attempts=4)
-    align_seams(slicer)
-
-    # ### ----- Visualize slicing
-    # plotter = MeshPlotter(compas_mesh, figsize=(16, 10))
-    # plotter.draw_edges(width=0.15)
-    # plotter.draw_faces()
-    # plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
-    # plotter.show()
+    seams_align(slicer)
 
     ### --- Fabrication
     robot_printer = RobotPrinter('UR5')
@@ -53,10 +46,7 @@ def main():
                                                  yaxis=[0, 1, 0]))
     robot_printer.printout_info()
 
-    material_PLA = Material('PLA')
-    material_PLA.printout_info()
-
-    print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA,
+    print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer,
                                             extruder_toggle_type="always_on")
 
     robotic_commands = print_organizer.generate_robotic_commands_dict()
@@ -68,6 +58,7 @@ def main():
     print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
     viewer.update()
     viewer.show()
+
 
 if __name__ == '__main__':
     main()

@@ -162,6 +162,7 @@ class IntersectionCurveMeshPlane(object):
 def create_planar_paths(mesh, layer_height):
     """
     Creates planar contours. Does not rely on external libraries.
+    It is currently the only method that can return both OPEN and CLOSED paths.
 
     Parameters
     ----------
@@ -184,7 +185,7 @@ def create_planar_paths(mesh, layer_height):
         paths = []
         if len(i.point_clusters) > 0:
             for key in i.point_clusters:
-                is_closed = i.open_paths_booleans[key]
+                is_closed = i.closed_paths_booleans[key]
                 path = Path(points=i.point_clusters[key], is_closed=is_closed)
                 paths.append(path)
 

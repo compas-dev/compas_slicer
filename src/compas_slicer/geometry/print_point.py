@@ -14,8 +14,6 @@ class PrintPoint(object):
         A compas Point consisting out of x, y, z coordinates
     layer_height : float
         The vertical distance between the point on this layer and the next layer
-    extruder_toggle : boolean
-        Toggles the extruder on (True) or off (False).
     """
 
     def __init__(self, pt, layer_height):
@@ -24,10 +22,13 @@ class PrintPoint(object):
         self.layer_height = layer_height  
         self.extruder_toggle = None 
 
+        self.wait_time = 0
+        self.print_frame = self.get_print_frame(pt, desired_axis=Vector(0, 1, 0))  # compas.geometry.Frame
+
         ### --- advanced printpoint
         self.up_vector = None  # compas.geometry.Vector
         self.mesh_normal = None  # compas.geometry.Vector
-        self.frame = None  # compas.geometry.Frame
+        self.plane = None
 
         self.closest_support_pt = None  # class compas.geometry.point
         self.closest_upper_point = None
@@ -44,10 +45,15 @@ class PrintPoint(object):
     def initialize_advanced_print_point(self, mesh, up_vector):
         self.up_vector = up_vector
         self.normal = self.get_closest_mesh_normal(mesh)
-        self.frame = self.get_frame()
+        self.plane = self.get_plane()
+        self.print_frame = self.get_print_frame(pt=self.pt, desired_axis=self.plane.xaxis.scaled(-1))
 
-    def get_frame(self):
-        return Frame(self.pt, self.up_vector, self.normal)
+    def get_plane(self):
+        return Frame(self.pt, self.up_vector, self.mesh_normal)
+
+    def get_print_frame(self, pt, desired_axis):
+        desired_second_axis = Vector(1, 0, 0)
+        return Frame(pt, desired_axis, desired_second_axis)
 
     def get_closest_mesh_normal(self, mesh):
         vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
@@ -58,7 +64,7 @@ class PrintPoint(object):
 
     #### --- Visualization
     def generate_visualization_shape(self):
-        pass  # TODO
+        raise NotImplementedError  # TODO
 
     #### --- To data , from data
     def to_data(self):

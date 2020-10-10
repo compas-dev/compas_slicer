@@ -40,7 +40,7 @@ pip install -e .
 ```
 - You should get the message 'succesfully installed compas-slicer' (amongst other packages)
 
-### Step 4. Install compas_viewers
+### Step 3. Install compas_viewers
 
 - Install compas_viewers (https://github.com/compas-dev/compas_viewers).
 
@@ -52,7 +52,7 @@ pip install PyOpenGL
 pip install path/to/compas_viewers
 ```
 
-### Step 5. Test if the library works
+### Step 4. Test if the library works
 - Run the file examples/1_versions_check.py
 
 Enjoy!

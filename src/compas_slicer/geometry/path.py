@@ -29,7 +29,6 @@ class Path(object):
         assert isinstance(points[0], compas.geometry.Point)
         self.points = points  # class compas.geometry.Point
         self.is_closed = is_closed
-        self.type = 'contour'  ## / 'infill' / 'support'
 
     def __repr__(self):
         no_of_points = len(self.points) if self.points else 0
@@ -37,31 +36,16 @@ class Path(object):
 
     @classmethod
     def from_data(cls, data):
-        pts = [Point(data[key][0], data[key][1], data[key][2]) for key in data]
-        path = cls(points=pts, is_closed=True) #TODO: work on 'is closed'
+        pts = [Point(data[key][0], data[key][1], data[key][2]) for key in data['points']]
+        path = cls(points=pts, is_closed=data['is_closed'])
         return path
 
-    def get_lines_for_plotter(self, color=(255, 0, 0)):
-        lines = []
+    def to_data(self):
+        data = {'points': {},
+                'is_closed': self.is_closed}
         for i, point in enumerate(self.points):
-            if self.is_closed:
-                line = {
-                    'start': point,
-                    'end': self.points[(i + 1) % (len(self.points) - 1)],
-                    'width': 1.0,
-                    'color': color
-                }
-                lines.append(line)
-            else:
-                if i < len(self.points) - 1:
-                    line = {
-                        'start': point,
-                        'end': self.points[i + 1],
-                        'width': 1.0,
-                        'color': color
-                    }
-                    lines.append(line)
-        return lines
+            data['points'][i] = [point[0], point[1], point[2]]
+        return data
 
 
 if __name__ == '__main__':
