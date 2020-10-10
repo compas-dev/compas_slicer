@@ -42,7 +42,7 @@ class RoboticPrintOrganizer(PrintOrganizer):
         return neighboring_items
 
     def generate_robotic_commands_dict(self):
-        logger.info("generating %d robotic commands: " % len(self.printpoints_dict))
+        logger.info("Generating %d robotic commands: " % len(self.printpoints_dict))
         # data dictionary
         commands = {}
 

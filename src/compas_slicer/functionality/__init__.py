@@ -2,6 +2,49 @@
 ********************************************************************************
 compas_slicer.functionality
 ********************************************************************************
+
+Polyline simplification
+=======================
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    simplify_paths_rdp
+
+Sorting
+=======
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    seams_align
+    seams_smooth
+    sort_per_segment
+    sort_per_shortest_path_mlrose
+
+Positioning
+===========
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    center_on_build_platform
+    move_mesh_to_point
+    get_mid_pt_base
+
+Additional
+==========
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    generate_brim
+    spiralize_contours
+    
 """
 
 from __future__ import absolute_import

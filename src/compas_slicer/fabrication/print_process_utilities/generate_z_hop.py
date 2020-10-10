@@ -4,6 +4,17 @@ from compas_slicer.geometry import PrintPoint
 __all__ = ['generate_z_hop']
 
 def generate_z_hop(printpoints_dict, z_hop=10):
+    """Generates a z-hop between print paths.
+    To generate the z-hop it creates a point above every start- and end-point of a path.
+
+    Parameters
+    ----------
+    printpoints_dict : dictionary
+        The PrintPoints as a dictionary.
+    z_hop : float
+        The value (in mm) to use for the z-hop generation.
+    """
+    
     for layer_key in printpoints_dict:
         for path_key in printpoints_dict[layer_key]:
             path_printpoints = printpoints_dict[layer_key][path_key]

@@ -13,7 +13,7 @@ __all__ = ['PrintOrganizer']
 
 class PrintOrganizer(object):
     """
-    Base class for organizing the printing process
+    Base class for organizing the printing process.
     """
 
     def __init__(self, slicer, machine_model, extruder_toggle_type="always_on"):

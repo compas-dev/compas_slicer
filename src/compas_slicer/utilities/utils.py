@@ -49,7 +49,7 @@ def total_length_of_dictionary(dictionary):
         total_length += len(dictionary[key])
     return total_length
 
-### --- Falltened list of dictionary
+### --- Flattened list of dictionary
 def flattened_list_of_dictionary(dictionary):
     flattened_list = []
     for key in dictionary:
