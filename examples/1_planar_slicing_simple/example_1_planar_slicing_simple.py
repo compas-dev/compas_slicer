@@ -41,7 +41,7 @@ def main():
     slicer.slice_model()
 
     ### --- Generate brim    
-    generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
+    # generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
 
     ### --- Align the seams between layers
     # options: 'next_path', 'x_axis', 'y_axis', 'origin'
@@ -77,11 +77,15 @@ def main():
                                                  yaxis=[0, 1, 0]))
     # robot_printer.printout_info()
 
+    ### --- Initializes a robotic printing process
+    # options extruder_toggle_type: always_on, always_off, off_when_travel
     print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer,
                                             extruder_toggle_type="off_when_travel")
 
     ### --- Sets the linear velocity
-    print_organizer.set_linear_velocity(velocity_type="constant", v=25)
+    # options velocity_type: constant, per_layer, matching_layer_height, matching_overhang
+    print_organizer.set_linear_velocity(velocity_type="constant", v=35)
+
     # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
 
     ### --- Create robotic commands and save to json file
