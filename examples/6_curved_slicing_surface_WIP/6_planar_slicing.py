@@ -4,7 +4,7 @@ from compas.geometry import Point, Frame
 
 from compas_slicer.utilities import save_to_json
 from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.functionality import sort_per_shortest_path_mlrose
+from compas_slicer.functionality import unify_paths_orientation
 from compas_slicer.functionality import seams_align, sort_per_segment
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
@@ -42,9 +42,8 @@ def main():
     sort_per_segment(slicer, max_layers_per_segment=False, threshold=slicer.layer_height * 1.6)
     simplify_paths_rdp(slicer, threshold=0.2)
     seams_align(slicer, seam_orientation="next_path")
+    unify_paths_orientation(slicer)
 
-    # WIP
-    # spiralize_contours(slicer)
 
     slicer.printout_info()
 

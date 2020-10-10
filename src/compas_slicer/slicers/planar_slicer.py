@@ -16,7 +16,7 @@ class PlanarSlicer(BaseSlicer):
         self.slicer_type = slicer_type
 
     def slice_model(self):
-        start_time = time.time() # time measurement
+        start_time = time.time()  # time measurement
         self.generate_paths()
         end_time = time.time()
         logger.info("Slicing operation took: %.2f seconds" % (end_time - start_time))

@@ -60,6 +60,9 @@ from .seams_smooth import *  # noqa: F401 E402 F403
 from .sort_per_segment import *  # noqa: F401 E402 F403
 from .sort_per_shortest_path_mlrose import *  # noqa: F401 E402 F403
 
+### Orienting
+from .unify_paths_orientation import *  # noqa: F401 E402 F403
+
 ### Positioning
 from .center_on_build_platform import *  # noqa: F401 E402 F403
 from .move_mesh_to_point import *  # noqa: F401 E402 F403
