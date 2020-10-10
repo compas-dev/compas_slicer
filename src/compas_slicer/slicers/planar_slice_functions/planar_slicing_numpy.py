@@ -37,7 +37,7 @@ def create_planar_paths_numpy(mesh, layer_height):
             for polygon2d in path:
                 points = [Point(p[0], p[1], levels[i]) for p in polygon2d[:-1]]
                 if len(points) > 0:
-                    threshold_closed = 15.0  # TODO: VERY BAD!! Threshold should not be hardcoded
+                    threshold_closed = 25.0  # TODO: VERY BAD!! Threshold should not be hardcoded
                     is_closed = distance_point_point(points[0], points[-1]) < threshold_closed
 
                     # print_points = [PrintPoint(pt=p, layer_height=layer_height) for p in points]

@@ -14,8 +14,6 @@ class PrintPoint(object):
         A compas Point consisting out of x, y, z coordinates
     layer_height : float
         The vertical distance between the point on this layer and the next layer
-    extruder_toggle : boolean
-        Toggles the extruder on (True) or off (False).
     """
 
     def __init__(self, pt, layer_height):
@@ -58,7 +56,7 @@ class PrintPoint(object):
 
     #### --- Visualization
     def generate_visualization_shape(self):
-        pass  # TODO
+        raise NotImplementedError  # TODO
 
     #### --- To data , from data
     def to_data(self):

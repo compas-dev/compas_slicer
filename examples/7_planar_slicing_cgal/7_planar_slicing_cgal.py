@@ -1,6 +1,6 @@
 import os
 from compas.datastructures import Mesh
-from compas.geometry import Point
+from compas.geometry import Point, Frame
 
 from compas_slicer.utilities import save_to_json
 from compas_slicer.slicers import PlanarSlicer
@@ -10,7 +10,6 @@ from compas_slicer.functionality import seams_align
 from compas_slicer.functionality import seams_smooth
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
-from compas_slicer.fabrication import Material
 from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.functionality import move_mesh_to_point, simplify_paths_rdp
 import time
@@ -57,9 +56,13 @@ def main():
 
     ### --- Fabrication
     robot_printer = RobotPrinter('UR5')
-    material_PLA = Material('PLA')
+    robot_printer.attach_endeffector(FILENAME=os.path.join(DATA, 'plastic_extruder.obj'),
+                                     frame=Frame(point=[0.153792, -0.01174, -0.03926],
+                                                 xaxis=[1, 0, 0],
+                                                 yaxis=[0, 1, 0]))
+    robot_printer.printout_info()
 
-    print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer, material=material_PLA,
+    print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer,
                                             extruder_toggle_type="off_when_travel")
 
     # print_organizer.add_z_hop_printpoints(z_hop=20)

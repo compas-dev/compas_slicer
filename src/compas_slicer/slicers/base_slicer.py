@@ -40,14 +40,6 @@ class BaseSlicer(object):
         self.layers = []  # any class inheriting from SortedPathCollection, i.e.  Layer(horizontal sorting)
         # or VerticalLayer (vertical sorting)
 
-    @classmethod
-    def from_data(cls, data):
-        mesh = compas.datastructures.Mesh.from_data(data['mesh'])
-        slicer = cls(mesh)
-        path_collections_data = data['layers']
-        slicer.layers = [Layer.from_data(path_collections_data[key]) for key in path_collections_data]
-        return slicer
-
     ##############################
     ### --- Functions
 
@@ -95,42 +87,31 @@ class BaseSlicer(object):
                         viewer.add(polyline, name="Layer %d, Path %d" % (i, j),
                                    settings={'color': '#ffffff'})
 
-
     ##############################
-    ### --- To json
+    ### --- To data, from data
+
+    @classmethod
+    def from_data(cls, data):
+        mesh = compas.datastructures.Mesh.from_data(data['mesh'])
+        slicer = cls(mesh)
+        layers_data = data['layers']
+        slicer.layers = [Layer.from_data(layers_data[key]) for key in layers_data]
+        slicer.layer_height = data['layer_height']
+        return slicer
 
     def to_json(self, filepath, name):
-        utils.save_to_json(self.get_slicer_all_data_dict(), filepath, name)
+        utils.save_to_json(self.to_data(), filepath, name)
 
-    def layers_to_json(self, filepath, name):
-        utils.save_to_json(self.get_paths_collection_dict(), filepath, name)
-
-    def get_slicer_all_data_dict(self):
-        data = {'flattened_path': self.get_flattened_path_dict(),
-                'layers': self.get_paths_collection_dict(),
-                'mesh': self.mesh.to_data()}
-
+    def to_data(self):
+        data = {'layers': self.get_layers_dict(),
+                'mesh': self.mesh.to_data(),
+                'layer_height': self.layer_height}
         return data
 
-    def get_flattened_path_dict(self):
+    def get_layers_dict(self):
         data = {}
-        count = 0
-        for path_collection in self.layers:
-            for path in path_collection.paths:
-                for point in path.points:
-                    xyz = [point[0], point[1], point[2]]
-                    data[count] = xyz
-                    count += 1
-        return data
-
-    def get_paths_collection_dict(self):
-        data = {}
-        for i, path_collection in enumerate(self.layers):
-            data[i] = {}
-            for j, path in enumerate(path_collection.paths):
-                data[i][j] = {}
-                for k, point in enumerate(path.points):
-                    data[i][j][k] = [point[0], point[1], point[2]]
+        for i, layer in enumerate(self.layers):
+            data[i] = layer.to_data()
         return data
 
 

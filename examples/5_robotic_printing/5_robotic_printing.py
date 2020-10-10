@@ -3,12 +3,12 @@ from compas.datastructures import Mesh
 from compas.geometry import Frame
 
 from compas_slicer.functionality import sort_per_segment, sort_per_shortest_path_mlrose
-from compas_slicer.functionality import align_seams
+from compas_slicer.functionality import seams_align
 from compas_slicer.functionality import simplify_paths_rdp
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
-from compas_slicer.fabrication import Material
+
 from compas_slicer.utilities import save_to_json
 from compas_plotters import MeshPlotter
 from compas_viewers.objectviewer import ObjectViewer
@@ -36,7 +36,7 @@ def main():
 
     # simplify_paths_rdp(slicer, threshold=0.02)
     sort_per_shortest_path_mlrose(slicer, max_attempts=4)
-    align_seams(slicer)
+    seams_align(slicer)
 
     ### --- Fabrication
     robot_printer = RobotPrinter('UR5')
