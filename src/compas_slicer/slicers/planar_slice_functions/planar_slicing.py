@@ -2,6 +2,8 @@ from compas.geometry import Point
 from compas_slicer.geometry import Path
 from compas_slicer.geometry import Layer
 
+from progress.bar import Bar
+
 __all__ = ['create_planar_paths',
            'IntersectionCurveMeshPlane']
 
@@ -10,7 +12,7 @@ __all__ = ['create_planar_paths',
 ### Intersection function
 ###################################
 
-def create_planar_paths(mesh, min_z, max_z, planes):
+def create_planar_paths(mesh, planes):
     """
     Creates planar contours. Does not rely on external libraries.
     It is currently the only method that can return both OPEN and CLOSED paths.
@@ -23,11 +25,12 @@ def create_planar_paths(mesh, min_z, max_z, planes):
     max_z: float
     planes: list, compas.geometry.Plane
     """
+
+    # initializes progress_bar for measuring progress
+    progress_bar = Bar('Slicing', max=len(planes), suffix='Layer %(index)i/%(max)i - %(percent)d%%')
+
     layers = []
     for i, plane in enumerate(planes):
-        z = plane.point[2]
-        logger.info('Cutting at height %.3f, %d percent done' % (
-            z, int(100 * (z - min_z) / (max_z - min_z))))
 
         i = IntersectionCurveMeshPlane(mesh, plane)
 
@@ -39,7 +42,12 @@ def create_planar_paths(mesh, min_z, max_z, planes):
                 paths.append(path)
 
             layers.append(Layer(paths))
+        
+        # advance progress bar
+        progress_bar.next()
 
+    # finish progress bar
+    progress_bar.finish()
     return layers
 
 

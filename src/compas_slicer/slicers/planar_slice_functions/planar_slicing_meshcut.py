@@ -6,10 +6,12 @@ import logging
 logger = logging.getLogger('logger')
 import meshcut
 
+from progress.bar import Bar
+
 __all__ = ['create_planar_paths_meshcut']
 
 
-def create_planar_paths_meshcut(mesh, min_z, max_z, planes):
+def create_planar_paths_meshcut(mesh, planes):
     """Creates planar slices using the Meshcut library
     https://pypi.org/project/meshcut/ from Julien Rebetez
 
@@ -24,6 +26,9 @@ def create_planar_paths_meshcut(mesh, min_z, max_z, planes):
     max_z: float
     planes: list, compas.geometry.Plane
     """
+    # initializes progress_bar for measuring progress
+    progress_bar = Bar('Slicing', max=len(planes), suffix='Layer %(index)i/%(max)i - %(percent)d%%')
+
     # Convert compas mesh to meshcut mesh
     v = np.array(mesh.vertices_attributes('xyz'))
     vertices = v.reshape(-1, 3)  # vertices numpy array : #Vx3
@@ -37,9 +42,9 @@ def create_planar_paths_meshcut(mesh, min_z, max_z, planes):
     layers = []
 
     for i, plane in enumerate(planes):
-        z = plane.point[2]
-        logger.info('Cutting at height %.3f, %d percent done' % (
-            z, int(100 * (z - min_z) / (max_z - min_z))))
+        # z = plane.point[2]
+        # logger.info('Cutting at height %.3f, %d percent done' % (
+        #     z, int(100 * (z - min_z) / (max_z - min_z))))
 
         paths_per_layer = []
 
@@ -58,6 +63,13 @@ def create_planar_paths_meshcut(mesh, min_z, max_z, planes):
 
         layer = Layer(paths_per_layer)
         layers.append(layer)
+
+        # advance progressbar
+        progress_bar.next()
+    
+    # finish progressbar
+    progress_bar.finish()
+
     return layers
 
 

@@ -6,6 +6,8 @@ from compas_slicer.geometry import Layer
 import logging
 logger = logging.getLogger('logger')
 
+from progress.bar import Bar
+
 __all__ = ['create_planar_paths_numpy']
 
 
@@ -23,6 +25,10 @@ def create_planar_paths_numpy(mesh, min_z, max_z, planes):
     max_z: float
     planes: list, compas.geometry.Plane
     """
+
+    # initializes progress_bar for measuring progress
+    progress_bar = Bar('Slicing', max=len(planes), suffix='Layer %(index)i/%(max)i - %(percent)d%%')
+
     levels = [plane.point[2] for plane in planes]
 
     levels, np_layers = compas.datastructures.mesh_contours_numpy(mesh, levels=levels, density=20)
@@ -31,19 +37,10 @@ def create_planar_paths_numpy(mesh, min_z, max_z, planes):
     layers = []
 
     for i, layer in enumerate(np_layers):
-        z = levels[i]
-        logger.info('Cutting at height %.3f, %d percent done' % (
-            z, int(100 * (z - min_z) / (max_z - min_z))))
 
-        print('')
-        print('len(layer) : ', len(layer))
         for path in layer:
-            print('len(path) : ', len(path))
             paths_per_layer = []
             for polygon2d in path:
-                print('len(polygon2d) : ', len(polygon2d))
-
-                print(polygon2d)
                 points = [Point(p[0], p[1], levels[i]) for p in polygon2d[:-1]]
 
 
@@ -57,6 +54,13 @@ def create_planar_paths_numpy(mesh, min_z, max_z, planes):
                     paths_per_layer.append(path)
             l = Layer(paths_per_layer)
             layers.append(l)
+
+        # advance progressbar
+        progress_bar.next()
+
+    # finish progressbar
+    progress_bar.finish()
+
     return layers
 
 
