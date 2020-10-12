@@ -55,7 +55,6 @@ if __name__ == "__main__":
                                          frame=Frame(point=[0.153792, -0.01174, -0.03926],
                                                      xaxis=[1, 0, 0],
                                                      yaxis=[0, 1, 0]))
-        material_PLA = Material('PLA')
         #
         # ### --- Print organizer
         slicer_data = utils.load_from_json(DATA_PATH, 'curved_slicer.json')
