@@ -5,7 +5,7 @@ from compas.geometry import Point, Frame
 from compas_slicer.utilities import save_to_json
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.functionality import unify_paths_orientation
-from compas_slicer.functionality import seams_align, sort_per_segment
+from compas_slicer.functionality import seams_align, sort_per_segment, seams_smooth
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
 from compas_slicer.utilities import save_to_json
@@ -40,8 +40,9 @@ def main():
     slicer.slice_model()
 
     sort_per_segment(slicer, max_layers_per_segment=False, threshold=slicer.layer_height * 1.6)
-    simplify_paths_rdp(slicer, threshold=0.2)
+    # simplify_paths_rdp(slicer, threshold=0.2)
     seams_align(slicer, seam_orientation="next_path")
+    seams_smooth(slicer, 10)
     unify_paths_orientation(slicer)
 
 
@@ -56,26 +57,26 @@ def main():
 
     save_to_json(slicer.to_data(), DATA, 'slicer_data_layers.json')
 
-    ### --- Fabrication
-    UR5_printer = RobotPrinter('UR5')
-    UR5_printer.attach_endeffector(FILENAME=os.path.join(DATA, 'plastic_extruder.obj'),
-                                   frame=Frame(point=[0.153792, -0.01174, -0.03926],
-                                               xaxis=[1, 0, 0],
-                                               yaxis=[0, 1, 0]))
-
-    print_organizer = RoboticPrintOrganizer(slicer, machine_model=UR5_printer,
-                                            extruder_toggle_type="off_when_travel")
-
-    per_layer_velocities = [0.05 for _ in range(print_organizer.number_of_layers())]
-    per_layer_velocities[0], per_layer_velocities[1] = 0.025, 0.025
-    print_organizer.set_linear_velocity(velocity_type="per_layer",
-                                        per_layer_velocities=per_layer_velocities)
-    # print_organizer.add_z_hop_printpoints(z_hop=20)
-
-    print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
-
-    robotic_commands = print_organizer.generate_robotic_commands_dict()
-    save_to_json(robotic_commands, DATA, OUTPUT_FILE)
+    # ### --- Fabrication
+    # UR5_printer = RobotPrinter('UR5')
+    # UR5_printer.attach_endeffector(FILENAME=os.path.join(DATA, 'plastic_extruder.obj'),
+    #                                frame=Frame(point=[0.153792, -0.01174, -0.03926],
+    #                                            xaxis=[1, 0, 0],
+    #                                            yaxis=[0, 1, 0]))
+    #
+    # print_organizer = RoboticPrintOrganizer(slicer, machine_model=UR5_printer,
+    #                                         extruder_toggle_type="off_when_travel")
+    #
+    # per_layer_velocities = [0.05 for _ in range(print_organizer.number_of_layers())]
+    # per_layer_velocities[0], per_layer_velocities[1] = 0.025, 0.025
+    # print_organizer.set_linear_velocity(velocity_type="per_layer",
+    #                                     per_layer_velocities=per_layer_velocities)
+    # # print_organizer.add_z_hop_printpoints(z_hop=20)
+    #
+    # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
+    #
+    # robotic_commands = print_organizer.generate_robotic_commands_dict()
+    # save_to_json(robotic_commands, DATA, OUTPUT_FILE)
 
     viewer.update()
     viewer.show()
