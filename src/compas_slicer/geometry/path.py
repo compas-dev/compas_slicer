@@ -36,7 +36,7 @@ class Path(object):
 
     @classmethod
     def from_data(cls, data):
-        pts = [Point(data[key][0], data[key][1], data[key][2]) for key in data['points']]
+        pts = [Point(p[0], p[1], p[2])for p in data['points']]
         path = cls(points=pts, is_closed=data['is_closed'])
         return path
 
