@@ -47,7 +47,7 @@ def main():
     # change the threshold value to remove more or less points
     simplify_paths_rdp(slicer, threshold=0.2)
     
-    # seams_align(slicer, seam_orientation="next_path")
+    # seams_align(slicer, align_with="next_path")
     # seams_smooth(slicer, smooth_distance=5)
     
     # WIP

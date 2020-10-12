@@ -8,14 +8,14 @@ logger = logging.getLogger('logger')
 __all__ = ['seams_align']
 
 
-def seams_align(slicer, seam_orientation="next_path"):
+def seams_align(slicer, align_with="next_path"):
     """Aligns the seams (start- and endpoint) of a print.
 
     Parameters
     ----------
     slicer : compas_slicer.slicers
         A compas_slicer.slicers instance
-    seam_orientation : str
+    align_with : str
         Direction to orient the seams in.
         next_path   = orients the seam to the next path
         origin      = orients the seam to the origin (0,0,0)
@@ -23,23 +23,23 @@ def seams_align(slicer, seam_orientation="next_path"):
         y_axis      = orients the seam to the y_axis
     """
     # TODO: Implement random seams 
-    logger.info("Aligning seams to: %s" % seam_orientation)
+    logger.info("Aligning seams to: %s" % align_with)
 
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
 
             align_seams_for_current_path = path.is_closed  # should not happen if path is open
 
-            if seam_orientation == "next_path":
+            if align_with == "next_path":
                 current_pt0 = path.points[0]
-            elif seam_orientation == "origin":
+            elif align_with == "origin":
                 current_pt0 = Point(0, 0, 0)
-            elif seam_orientation == "x_axis":
+            elif align_with == "x_axis":
                 current_pt0 = Point(2 ** 32, 0, 0)
-            elif seam_orientation == "y_axis":
+            elif align_with == "y_axis":
                 current_pt0 = Point(0, 2 ** 32, 0)
             else:
-                raise NameError("Unknown seam_orientation : " + str(seam_orientation))
+                raise NameError("Unknown align_with : " + str(align_with))
 
             next_path_pts = []  # make sure list is emptied
 
@@ -48,12 +48,12 @@ def seams_align(slicer, seam_orientation="next_path"):
                     # if there is only one path per layer:
                     # take the next layer as the next path
                     if i < len(slicer.layers) - 1:
-                        if seam_orientation == "next_path":
+                        if align_with == "next_path":
                             next_path_pts = slicer.layers[i + 1].paths[0].points
                         else:
                             next_path_pts = slicer.layers[i].paths[0].points
                     else:
-                        if seam_orientation != "next_path":
+                        if align_with != "next_path":
                             next_path_pts = slicer.layers[i].paths[0].points
                         else:
                             align_seams_for_current_path = False
@@ -88,12 +88,12 @@ def seams_align(slicer, seam_orientation="next_path"):
                 # adds the shifted point to the points
                 if len(layer.paths) == 1:
                     if i < len(slicer.layers) - 1:
-                        if seam_orientation == "next_path":
+                        if align_with == "next_path":
                             slicer.layers[i + 1].paths[0].points = shift_list + [shift_list[0]]
                         else:
                             slicer.layers[i].paths[0].points = shift_list + [shift_list[0]]
                     else:
-                        if seam_orientation != "next_path":
+                        if align_with != "next_path":
                             slicer.layers[i].paths[0].points = shift_list + [shift_list[0]]
 
                 else:

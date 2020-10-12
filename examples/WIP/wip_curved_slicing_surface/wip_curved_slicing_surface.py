@@ -6,7 +6,6 @@ from compas_slicer.slicers import CurvedSlicer, BaseSlicer
 from compas_plotters import MeshPlotter
 from compas_slicer.functionality import simplify_paths_rdp
 
-from compas_slicer.fabrication import Material
 from compas.geometry import Frame
 from compas_slicer.fabrication import RobotPrinter
 from compas_slicer.fabrication import CurvedRoboticPrintOrganizer

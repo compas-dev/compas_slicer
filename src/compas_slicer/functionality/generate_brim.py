@@ -6,6 +6,7 @@ from compas_slicer.geometry import Path
 from compas.geometry import Point
 
 import logging
+
 logger = logging.getLogger('logger')
 
 __all__ = ['generate_brim']
@@ -24,8 +25,9 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
     number_of_brim_paths : int
         Number of brim paths to add.
     """
-    logger.info("Generating brim with layer width: %.2f mm, consisting of %d layers" %(layer_width, number_of_brim_paths))
-    
+    logger.info(
+        "Generating brim with layer width: %.2f mm, consisting of %d layers" % (layer_width, number_of_brim_paths))
+
     # TODO: Add functionality for merging several contours when the brims overlap.  
 
     # uses the default scaling factor of 2**32
@@ -44,15 +46,16 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
 
         # initialise Clipper
         pco = pyclipper.PyclipperOffset()
-        pco.AddPath(scale_to_clipper(xy_coords_for_clipper, SCALING_FACTOR), pyclipper.JT_MITER, pyclipper.ET_CLOSEDPOLYGON)
+        pco.AddPath(scale_to_clipper(xy_coords_for_clipper, SCALING_FACTOR), pyclipper.JT_MITER,
+                    pyclipper.ET_CLOSEDPOLYGON)
 
-        for i in range(number_of_brim_paths+1):
+        for i in range(number_of_brim_paths + 1):
             # iterate through a list of brim paths
             clipper_points_per_brim_path = []
 
             # gets result
             result = scale_from_clipper(pco.Execute((i) * layer_width * SCALING_FACTOR), SCALING_FACTOR)
-            
+
             for xy in result[0]:
                 # gets the X and Y coordinate from the Clipper result
                 x = xy[0]
@@ -63,14 +66,16 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
 
             # adds first point again to form a closed polygon since clipper removes this point
             clipper_points_per_brim_path = clipper_points_per_brim_path + [clipper_points_per_brim_path[0]]
-            
+
             # create a path per brim contour
             new_path = Path(points=clipper_points_per_brim_path, is_closed=True)
             paths_per_layer.append(new_path)
 
     new_layer = Layer(paths=paths_per_layer)
+    new_layer.paths.reverse()  # go from outside towards the object
 
     slicer.layers[0] = Layer(paths=paths_per_layer)
+
 
 if __name__ == "__main__":
     pass

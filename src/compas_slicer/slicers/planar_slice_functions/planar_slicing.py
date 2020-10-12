@@ -34,7 +34,7 @@ class IntersectionCurveMeshPlane(object):
 
         self.closed_paths_booleans = {}
         self.label_closed_paths()
-        print('Paths are closed: ', self.closed_paths_booleans)
+        # print('Paths are closed: ', self.closed_paths_booleans)
 
     def label_closed_paths(self):
         for key in self.sorted_edge_clusters:
@@ -171,12 +171,13 @@ def create_planar_paths(mesh, layer_height):
     layer_height : float
         A number representing the height between cutting planes.
     """
+
     z_heights = [mesh.vertex_attribute(key, 'z') for key in mesh.vertices()]
     layers = []
     z = min(z_heights)
-    z += layer_height * 0.5
+    z += layer_height
     while z < max(z_heights):
-        print('Cutting at height %.3f, %d percent done' % (
+        logger.info('Cutting at height %.3f, %d percent done' % (
             z, int(100 * (z - min(z_heights)) / (max(z_heights) - min(z_heights)))))
 
         plane = Plane(Point(0, 0, z), Vector(0, 0, 1))

@@ -7,7 +7,7 @@ from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.functionality import generate_brim
 from compas_slicer.functionality import spiralize_contours
 from compas_slicer.functionality import seams_align
-from compas_slicer.functionality import seams_smooth
+from compas_slicer.functionality import seams_smooth, unify_paths_orientation
 from compas_slicer.fabrication import RoboticPrintOrganizer
 from compas_slicer.fabrication import RobotPrinter
 from compas_viewers.objectviewer import ObjectViewer
@@ -22,15 +22,16 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 ### --- Data paths
 DATA = os.path.join(os.path.dirname(__file__), 'data')
-MODEL = 'simple_vase.stl'
+# MODEL = 'simple_vase.stl'
+MODEL = 'simple_vase.obj'
 OUTPUT_FILE = 'fabrication_commands.json'
 
 start_time = time.time()
 
 def main():
     ### --- Load stl
-    compas_mesh = Mesh.from_stl(os.path.join(DATA, MODEL))
-    
+    compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
+
     ### --- Move to origin
     move_mesh_to_point(compas_mesh, Point(0,0,0))
 
@@ -41,19 +42,22 @@ def main():
     slicer.slice_model()
 
     ### --- Generate brim    
-    # generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
+    generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
 
     ### --- Align the seams between layers
     # options: 'next_path', 'x_axis', 'y_axis', 'origin'
-    seams_align(slicer, seam_orientation="x_axis")
+    seams_align(slicer, align_with="x_axis")
+
+    ### --- Make sure all paths are looking in the same direction
+    unify_paths_orientation(slicer)
     
     ### --- Simplify the printpaths by removing points with a certain threshold
     # change the threshold value to remove more or less points
-    simplify_paths_rdp(slicer, threshold=0.2)
+    simplify_paths_rdp(slicer, threshold=0.1)
 
     ### --- Smooth the seams between layers
     # change the smooth_distance value to achieve smoother, or more abrupt seams
-    seams_smooth(slicer, smooth_distance=5)
+    seams_smooth(slicer, smooth_distance=15)
 
     # WIP
     # spiralize_contours(slicer)
@@ -63,6 +67,8 @@ def main():
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
+
+    save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
 
     ### --- Visualize using the compas_viewer
     viewer = ObjectViewer()

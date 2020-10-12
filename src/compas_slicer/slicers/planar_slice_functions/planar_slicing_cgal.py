@@ -14,6 +14,11 @@ try:
 except:
     pass
 
+import logging
+import time
+
+logger = logging.getLogger('logger')
+
 __all__ = ['create_planar_paths_cgal']
 
 
@@ -37,15 +42,13 @@ def create_planar_paths_cgal(mesh, layer_height):
     no_of_layers = int(d / layer_height) + 1
 
     normal = Vector(0, 0, 1)
-    layers = []
-    planes = []
-    contours_per_layer = []
 
     # prepare mesh for slicing
     M = mesh.to_vertices_and_faces()
 
     # generate planes
     planes = [Plane(Point(0, 0, min_z + i * layer_height), normal) for i in range(no_of_layers)]
+    planes.pop(0)  # remove planes that are on the print platform
 
     # slicing operation
     contours = slice_mesh(M, planes)
@@ -61,25 +64,32 @@ def create_planar_paths_cgal(mesh, layer_height):
     def key_function(item):
         return item[0][2]
 
-    grouped_contours = get_grouped_list(contours, key_function=key_function)
-    
-    for layer in grouped_contours:
-        contours_per_layer = []
-        for contour in layer:
+    cgal_layers = get_grouped_list(contours, key_function=key_function)
+
+    layers = []
+    for layer in cgal_layers:
+
+        z = layer[0][0][2]
+        logger.info('Cutting at height %.3f, %d percent done' % (
+            z, int(100 * (z - min_z) / (max_z - min_z))))
+
+        paths_per_layer = []
+        for path in layer:
             points_per_contour = []
-            for point in contour:
+            for point in path:
                 pt = Point(point[0], point[1], point[2])
                 points_per_contour.append(pt)
             # generate contours
             # TODO: add a check for is_closed
             path = Path(points=points_per_contour, is_closed=True)
-            contours_per_layer.append(path)
-        
+            paths_per_layer.append(path)
+
         # generate layers
-        l = Layer(contours_per_layer)
+        l = Layer(paths_per_layer)
         layers.append(l)
 
     return layers
+
 
 if __name__ == "__main__":
     pass
