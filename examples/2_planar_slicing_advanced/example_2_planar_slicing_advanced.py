@@ -76,7 +76,7 @@ def main():
                                             extruder_toggle_type="off_when_travel")
 
     ### --- Adds a z-hop value to the print
-    print_organizer.add_z_hop_printpoints(z_hop=20)
+    print_organizer.add_safety_printpoints(z_hop=20)
     
     # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
 

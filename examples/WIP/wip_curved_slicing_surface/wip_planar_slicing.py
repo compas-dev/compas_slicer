@@ -23,7 +23,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ### --- Data paths
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
-OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'vase.obj')
+OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'facade.obj')
 OUTPUT_FILE = 'fabrication_commands.json'
 
 start_time = time.time()
@@ -57,7 +57,7 @@ def main():
     viewer.view.use_shaders = False
     slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
 
-    save_to_json(slicer.to_data(), DATA, 'slicer_data_layers.json')
+    save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
 
     # ### --- Fabrication
     # UR5_printer = RobotPrinter('UR5')
@@ -73,7 +73,7 @@ def main():
     # per_layer_velocities[0], per_layer_velocities[1] = 0.025, 0.025
     # print_organizer.set_linear_velocity(velocity_type="per_layer",
     #                                     per_layer_velocities=per_layer_velocities)
-    # # print_organizer.add_z_hop_printpoints(z_hop=20)
+    # # print_organizer.add_safety_printpoints(z_hop=20)
     #
     # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
     #

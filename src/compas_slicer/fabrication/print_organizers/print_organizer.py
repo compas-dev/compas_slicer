@@ -5,6 +5,7 @@ import logging
 from compas_slicer.geometry import PrintPoint
 import compas_slicer.utilities as utils
 from compas.geometry import Polyline
+from compas_slicer.fabrication import add_safety_printpoints
 
 logger = logging.getLogger('logger')
 
@@ -28,10 +29,6 @@ class PrintOrganizer(object):
         self.printpoints_dict = {}
         self.create_printpoints_dict()
         self.set_extruder_toggle(extruder_toggle_type)
-
-        ### state booleans
-        self.with_z_hop = False
-        self.with_brim = False
 
     ### --- Initialization
     def create_printpoints_dict(self):
@@ -66,10 +63,15 @@ class PrintOrganizer(object):
                         else:
                             printpoint.extruder_toggle = True
 
-    def add_z_hop_printpoints(self, z_hop):
-        self.with_z_hop = True
-        logger.info("Generating z_hop of " + str(z_hop) + " mm")
-        compas_slicer.fabrication.generate_z_hop(self.printpoints_dict, z_hop)
+            # set extruder toggle of last print point to false
+            last_layer_key = 'layer_%d' % (len(self.slicer.layers) - 1)
+            last_path_key = 'path_%d' % (len(self.slicer.layers[-1].paths) - 1)
+            self.printpoints_dict[last_layer_key][last_path_key][-1].extruder_toggle = False
+
+
+    def add_safety_printpoints(self, z_hop):
+        logger.info("Generating safety print points with height " + str(z_hop) + " mm")
+        self.printpoints_dict = add_safety_printpoints(self.printpoints_dict, z_hop)
 
     def set_linear_velocity(self, velocity_type, v=25,
                             per_layer_velocities=None):

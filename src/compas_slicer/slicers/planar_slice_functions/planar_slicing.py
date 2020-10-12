@@ -1,9 +1,47 @@
-from compas.geometry import Plane, Point, Vector
+from compas.geometry import Point
 from compas_slicer.geometry import Path
 from compas_slicer.geometry import Layer
 
 __all__ = ['create_planar_paths',
            'IntersectionCurveMeshPlane']
+
+
+###################################
+### Intersection function
+###################################
+
+def create_planar_paths(mesh, min_z, max_z, planes):
+    """
+    Creates planar contours. Does not rely on external libraries.
+    It is currently the only method that can return both OPEN and CLOSED paths.
+
+    Parameters
+    ----------
+    mesh : compas.datastructures.Mesh
+        The mesh to be sliced
+    min_z: float
+    max_z: float
+    planes: list, compas.geometry.Plane
+    """
+    layers = []
+    for i, plane in enumerate(planes):
+        z = plane.point[2]
+        logger.info('Cutting at height %.3f, %d percent done' % (
+            z, int(100 * (z - min_z) / (max_z - min_z))))
+
+        i = IntersectionCurveMeshPlane(mesh, plane)
+
+        paths = []
+        if len(i.point_clusters) > 0:
+            for key in i.point_clusters:
+                is_closed = i.closed_paths_booleans[key]
+                path = Path(points=i.point_clusters[key], is_closed=is_closed)
+                paths.append(path)
+
+            layers.append(Layer(paths))
+
+    return layers
+
 
 ###################################
 ### Intersection class
@@ -153,44 +191,3 @@ class IntersectionCurveMeshPlane(object):
                             and (e not in sorted_edges
                                  and tuple(reversed(e)) not in sorted_edges):
                         return e
-
-
-###################################
-### Intersection function
-###################################
-
-def create_planar_paths(mesh, layer_height):
-    """
-    Creates planar contours. Does not rely on external libraries.
-    It is currently the only method that can return both OPEN and CLOSED paths.
-
-    Parameters
-    ----------
-    mesh : compas.datastructures.Mesh
-        The mesh to be sliced
-    layer_height : float
-        A number representing the height between cutting planes.
-    """
-
-    z_heights = [mesh.vertex_attribute(key, 'z') for key in mesh.vertices()]
-    layers = []
-    z = min(z_heights)
-    z += layer_height
-    while z < max(z_heights):
-        logger.info('Cutting at height %.3f, %d percent done' % (
-            z, int(100 * (z - min(z_heights)) / (max(z_heights) - min(z_heights)))))
-
-        plane = Plane(Point(0, 0, z), Vector(0, 0, 1))
-        i = IntersectionCurveMeshPlane(mesh, plane)
-
-        paths = []
-        if len(i.point_clusters) > 0:
-            for key in i.point_clusters:
-                is_closed = i.closed_paths_booleans[key]
-                path = Path(points=i.point_clusters[key], is_closed=is_closed)
-                paths.append(path)
-
-            layers.append(Layer(paths))
-        z += layer_height
-
-    return layers

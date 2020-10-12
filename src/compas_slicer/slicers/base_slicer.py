@@ -4,6 +4,7 @@ from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
 from compas_slicer.geometry import Layer
+from compas.geometry import Vector
 
 import logging
 

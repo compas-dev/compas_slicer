@@ -38,10 +38,10 @@ def main():
     ### --- Slicer
     # try out different slicers by changing the slicer_type
     # options: 'planar_compas', 'planar_numpy', 'planar_meshcut', 'planar_cgal'
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=5.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_compas", layer_height=5.0)
     slicer.slice_model()
 
-    ### --- Generate brim    
+    ### --- Generate brim
     generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
 
     ### --- Align the seams between layers
@@ -50,7 +50,7 @@ def main():
 
     ### --- Make sure all paths are looking in the same direction
     unify_paths_orientation(slicer)
-    
+
     ### --- Simplify the printpaths by removing points with a certain threshold
     # change the threshold value to remove more or less points
     simplify_paths_rdp(slicer, threshold=0.1)
@@ -86,7 +86,9 @@ def main():
     ### --- Initializes a robotic printing process
     # options extruder_toggle_type: always_on, always_off, off_when_travel
     print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer,
-                                            extruder_toggle_type="off_when_travel")
+                                            extruder_toggle_type="always_on")
+
+    print_organizer.add_safety_printpoints(z_hop=20)
 
     ### --- Sets the linear velocity
     # options velocity_type: constant, per_layer, matching_layer_height, matching_overhang
@@ -98,8 +100,8 @@ def main():
     robotic_commands = print_organizer.generate_robotic_commands_dict()
     save_to_json(robotic_commands, DATA, OUTPUT_FILE)
 
-    # viewer.update()
-    # viewer.show()
+    viewer.update()
+    viewer.show()
 
 if __name__ == "__main__":
     main()

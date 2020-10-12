@@ -41,7 +41,7 @@ from __future__ import division
 from __future__ import print_function
 
 from .machine_model import *  # noqa: F401 E402 F403
-from .print_process_utilities.generate_z_hop import *  # noqa: F401 E402 F403
+from .print_process_utilities.add_safety_printpoints import *  # noqa: F401 E402 F403
 from .print_organizers.print_organizer import *  # noqa: F401 E402 F403
 from .print_organizers.curved_robotic_print_organizer import *  # noqa: F401 E402 F403
 from .print_organizers.robotic_print_organizer import *  # noqa: F401 E402 F403

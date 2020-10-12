@@ -1,18 +1,8 @@
-import numpy as np
-import operator
 import itertools
-
 from compas.geometry import Point
-from compas.geometry import Vector
-from compas.geometry import Plane
-
 from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Path
-
-try:
-    from compas_cgal.slicer import slice_mesh
-except:
-    pass
+from compas_cgal.slicer import slice_mesh
 
 import logging
 import time
@@ -22,33 +12,22 @@ logger = logging.getLogger('logger')
 __all__ = ['create_planar_paths_cgal']
 
 
-def create_planar_paths_cgal(mesh, layer_height):
+def create_planar_paths_cgal(mesh, min_z, max_z, planes):
     """Creates planar contours using CGAL
     Considers all resulting paths as CLOSED paths.
+    This is a very fast method.
 
     Parameters
     ----------
     mesh : compas.datastructures.Mesh
         A compas mesh.
-    layer_height : float
-        A number representing the height between cutting planes.
+    min_z: float
+    max_z: float
+    planes: list, compas.geometry.Plane
     """
-
-    # get min and max z coordinates and determine number of layers
-    bbox = mesh.bounding_box()
-    x, y, z = zip(*bbox)
-    min_z, max_z = min(z), max(z)
-    d = abs(min_z - max_z)
-    no_of_layers = int(d / layer_height) + 1
-
-    normal = Vector(0, 0, 1)
 
     # prepare mesh for slicing
     M = mesh.to_vertices_and_faces()
-
-    # generate planes
-    planes = [Plane(Point(0, 0, min_z + i * layer_height), normal) for i in range(no_of_layers)]
-    planes.pop(0)  # remove planes that are on the print platform
 
     # slicing operation
     contours = slice_mesh(M, planes)
