@@ -42,7 +42,7 @@ def main():
     slicer.slice_model()
 
     ### --- Generate brim
-    # generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
+    generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
 
     ### --- Align the seams between layers
     # options: 'next_path', 'x_axis', 'y_axis', 'origin', 'Point(x,y,z)'

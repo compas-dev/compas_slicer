@@ -22,7 +22,7 @@ def seams_smooth(slicer, smooth_distance):
 
     logger.info("Smoothing seams with a distance of %i mm" % smooth_distance)
 
-    for layer in slicer.layers:
+    for i, layer in enumerate(slicer.layers):
         if len(layer.paths) == 1:
             for path in layer.paths:  
                 pt0 = path.points[0]
@@ -42,8 +42,7 @@ def seams_smooth(slicer, smooth_distance):
                         path.points.insert(0, new_pt)
                         break
         else:
-            logger.warning("Smooth seams only works for layers consisting out of a single path, paths were not changed, seam smoothing skipped")
-            break
+            logger.warning("Smooth seams only works for layers consisting out of a single path, paths were not changed, seam smoothing skipped for layer %i" %i)
 
 
 if __name__ == "__main__":
