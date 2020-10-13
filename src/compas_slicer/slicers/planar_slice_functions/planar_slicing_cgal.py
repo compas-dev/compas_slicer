@@ -4,15 +4,13 @@ from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Path
 from compas_cgal.slicer import slice_mesh
 
-from progress.bar import Bar
-
+import progressbar
 import logging
 import time
 
 logger = logging.getLogger('logger')
 
 __all__ = ['create_planar_paths_cgal']
-
 
 def create_planar_paths_cgal(mesh, planes):
     """Creates planar contours using CGAL
@@ -25,9 +23,6 @@ def create_planar_paths_cgal(mesh, planes):
         A compas mesh.
     planes: list, compas.geometry.Plane
     """
-
-    # initializes progress_bar for measuring progress
-    progress_bar = Bar('Slicing', max=len(planes), suffix='Layer %(index)i/%(max)i - %(percent)d%%')
 
     # prepare mesh for slicing
     M = mesh.to_vertices_and_faces()
@@ -50,28 +45,26 @@ def create_planar_paths_cgal(mesh, planes):
 
     layers = []
     
-    
-    for layer in cgal_layers:
-        paths_per_layer = []
-        for path in layer:
-            points_per_contour = []
-            for point in path:
-                pt = Point(point[0], point[1], point[2])
-                points_per_contour.append(pt)
-            # generate contours
-            # TODO: add a check for is_closed
-            path = Path(points=points_per_contour, is_closed=True)
-            paths_per_layer.append(path)
+    with progressbar.ProgressBar(max_value=len(planes)) as bar:
+        for i, layer in enumerate(cgal_layers):
+            paths_per_layer = []
+            for path in layer:
+                points_per_contour = []
+                for point in path:
+                    pt = Point(point[0], point[1], point[2])
+                    points_per_contour.append(pt)
+                # generate contours
+                # TODO: add a check for is_closed
+                path = Path(points=points_per_contour, is_closed=True)
+                paths_per_layer.append(path)
 
-        # generate layers
-        l = Layer(paths_per_layer)
-        layers.append(l)
+            # generate layers
+            l = Layer(paths_per_layer)
+            layers.append(l)
 
-        # advance progressbar
-        progress_bar.next()
+            # advance progressbar
+            bar.update(i)
 
-    # finish progressbar
-    progress_bar.finish()
     return layers
 
 

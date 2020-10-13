@@ -1,12 +1,13 @@
 import numpy as np
-from compas.geometry import Point, distance_point_point
+from compas.geometry import Point
 from compas_slicer.geometry import Path
 from compas_slicer.geometry import Layer
-import logging
-logger = logging.getLogger('logger')
-import meshcut
 
-from progress.bar import Bar
+import meshcut
+import progressbar
+import logging
+
+logger = logging.getLogger('logger')
 
 __all__ = ['create_planar_paths_meshcut']
 
@@ -24,8 +25,6 @@ def create_planar_paths_meshcut(mesh, planes):
         A compas mesh.
     planes: list, compas.geometry.Plane
     """
-    # initializes progress_bar for measuring progress
-    progress_bar = Bar('Slicing', max=len(planes), suffix='Layer %(index)i/%(max)i - %(percent)d%%')
 
     # Convert compas mesh to meshcut mesh
     v = np.array(mesh.vertices_attributes('xyz'))
@@ -38,36 +37,29 @@ def create_planar_paths_meshcut(mesh, planes):
     meshcut_mesh = meshcut.TriangleMesh(vertices, faces)
 
     layers = []
+    with progressbar.ProgressBar(max_value=len(planes)) as bar:
+        for i, plane in enumerate(planes):
+            paths_per_layer = []
 
-    for i, plane in enumerate(planes):
-        # z = plane.point[2]
-        # logger.info('Cutting at height %.3f, %d percent done' % (
-        #     z, int(100 * (z - min_z) / (max_z - min_z))))
+            plane = meshcut.Plane(plane.point, plane.normal) # define plane
 
-        paths_per_layer = []
+            meshcut_array = meshcut.cross_section_mesh(meshcut_mesh, plane)
 
-        plane = meshcut.Plane(plane.point, plane.normal) # define plane
+            for j, item in enumerate(meshcut_array):
+                # convert np array to list
+                meshcut_list = item.tolist()
 
-        meshcut_array = meshcut.cross_section_mesh(meshcut_mesh, plane)
+                points = [Point(p[0], p[1], p[2]) for p in meshcut_list]
+                is_closed = True # TODO is_closed is always set to True, has to be checked
+                path = Path(points=points, is_closed=is_closed)
+                paths_per_layer.append(path)
 
-        for j, item in enumerate(meshcut_array):
-            # convert np array to list
-            meshcut_list = item.tolist()
+            layer = Layer(paths_per_layer)
+            layers.append(layer)
 
-            points = [Point(p[0], p[1], p[2]) for p in meshcut_list]
-            is_closed = True # TODO is_closed is always set to True, has to be checked
-            path = Path(points=points, is_closed=is_closed)
-            paths_per_layer.append(path)
-
-        layer = Layer(paths_per_layer)
-        layers.append(layer)
-
-        # advance progressbar
-        progress_bar.next()
-    
-    # finish progressbar
-    progress_bar.finish()
-
+            # advance progressbar
+            bar.update(i)
+        
     return layers
 
 
