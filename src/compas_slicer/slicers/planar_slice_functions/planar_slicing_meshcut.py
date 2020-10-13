@@ -22,8 +22,6 @@ def create_planar_paths_meshcut(mesh, planes):
     ----------
     mesh : compas.datastructures.Mesh
         A compas mesh.
-    min_z: float
-    max_z: float
     planes: list, compas.geometry.Plane
     """
     # initializes progress_bar for measuring progress

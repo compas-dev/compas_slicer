@@ -23,8 +23,6 @@ def create_planar_paths(mesh, planes):
     ----------
     mesh : compas.datastructures.Mesh
         The mesh to be sliced
-    min_z: float
-    max_z: float
     planes: list, compas.geometry.Plane
     """
 
@@ -88,7 +86,7 @@ class IntersectionCurveMeshPlane(object):
 
         self.closed_paths_booleans = {}
         self.label_closed_paths()
-        print('Paths are closed: ', self.closed_paths_booleans)
+        # print('Paths are closed: ', self.closed_paths_booleans)
 
     def label_closed_paths(self):
         for key in self.sorted_edge_clusters:
@@ -132,7 +130,7 @@ class IntersectionCurveMeshPlane(object):
             # find current neighboring edges
             current_edge_connections = []
             for f in self.mesh.edge_faces(u=mesh_edge[0], v=mesh_edge[1]):
-                if f:
+                if f != None:
                     face_edges = self.mesh.face_halfedges(f)
                     for e in face_edges:
                         if (e != mesh_edge and tuple(reversed(e)) != mesh_edge) \
@@ -165,7 +163,7 @@ class IntersectionCurveMeshPlane(object):
                 if node_index_2 not in sorted_node_indices:
                     sorted_node_indices.append(node_index_2)
 
-            assert len(sorted_node_indices) == len(G.nodes()), 'Attention. len(sorted_node_indices) != len(G.nodes())'
+            assert len(sorted_node_indices) == len(cp), 'Attention. len(sorted_node_indices) != len(G.nodes())'
 
             # now transform them to the corresponding sorted lists
             self.sorted_point_clusters[j] = []

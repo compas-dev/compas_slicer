@@ -23,8 +23,6 @@ def create_planar_paths_cgal(mesh, planes):
     ----------
     mesh : compas.datastructures.Mesh
         A compas mesh.
-    min_z: float
-    max_z: float
     planes: list, compas.geometry.Plane
     """
 

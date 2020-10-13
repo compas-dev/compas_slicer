@@ -40,7 +40,7 @@ def main():
     slicer.slice_model()
 
     sort_per_segment(slicer, max_layers_per_segment=False, threshold=slicer.layer_height * 1.6)
-    # simplify_paths_rdp(slicer, threshold=0.2)
+    simplify_paths_rdp(slicer, threshold=0.2)
     generate_brim(slicer, layer_width=3.0, number_of_brim_paths=4)
 
     seams_align(slicer, align_with="next_path")
