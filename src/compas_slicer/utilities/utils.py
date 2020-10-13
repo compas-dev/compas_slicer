@@ -9,7 +9,9 @@ __all__ = ['save_to_json',
            'load_from_json',
            'get_average_point',
            'total_length_of_dictionary',
-           'flattened_list_of_dictionary']
+           'flattened_list_of_dictionary',
+           'interrupt',
+           'point_list_to_dict']
 
 
 def save_to_json(data, filepath, name):
@@ -42,6 +44,17 @@ def check_triangular_mesh(mesh):
                 len(vs)) + ". \nOnly triangular meshes supported.")
 
 
+#######################################
+### dict utils
+#######################################
+
+def point_list_to_dict(pts_list):
+    data = {}
+    for i in range(len(pts_list)):
+        data[i] = list(pts_list[i])
+    return data
+
+
 ### --- Length of dictionary
 def total_length_of_dictionary(dictionary):
     total_length = 0
@@ -49,12 +62,25 @@ def total_length_of_dictionary(dictionary):
         total_length += len(dictionary[key])
     return total_length
 
+
 ### --- Flattened list of dictionary
 def flattened_list_of_dictionary(dictionary):
     flattened_list = []
     for key in dictionary:
         [flattened_list.append(item) for item in dictionary[key]]
     return flattened_list
+
+
+#######################################
+### control flow
+#######################################
+
+def interrupt():
+    value = input("Press enter to continue, Press 1 to abort ")
+    print("")
+    if isinstance(value, str):
+        if value == '1':
+            raise ValueError("Aborted")
 
 
 if __name__ == "__main__":

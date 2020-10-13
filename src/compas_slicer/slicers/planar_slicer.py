@@ -38,11 +38,6 @@ class PlanarSlicer(BaseSlicer):
             logger.info("Planar slicing using compas  ...")
             self.layers = compas_slicer.slicers.create_planar_paths(self.mesh, min_z, max_z, planes)
 
-        elif self.slicer_type == "planar_numpy":
-            logger.info('')
-            logger.info("Planar slicing using numpy ...")
-            self.layers = compas_slicer.slicers.create_planar_paths_numpy(self.mesh, min_z, max_z, planes)
-
         elif self.slicer_type == "planar_meshcut":
             logger.info('')
             logger.info("Planar slicing using meshcut ...")
@@ -52,6 +47,8 @@ class PlanarSlicer(BaseSlicer):
             logger.info('')
             logger.info("Planar slicing using CGAL ...")
             self.layers = compas_slicer.slicers.create_planar_paths_cgal(self.mesh, min_z, max_z, planes)
+
+
 
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)
