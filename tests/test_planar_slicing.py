@@ -9,7 +9,7 @@ DATA = os.path.join(os.path.dirname(__file__), '..', 'data/test_geometries')
 FILE = os.path.abspath(os.path.join(DATA, 'cylinder.obj'))
 
 compas_mesh = Mesh.from_obj(os.path.join(DATA, FILE))
-layer_height = 10.0
+layer_height = 15.0
 
 z = [compas_mesh.vertex_attribute(key, 'z') for key in compas_mesh.vertices()]
 min_z, max_z = min(z), max(z)
@@ -62,7 +62,3 @@ no_of_layers = int(d / layer_height)
 
 if __name__ == '__main__':
     pass
-    # test_planar_contours()
-
-    test_planar_contours_cgal()
-    print('Done!')
