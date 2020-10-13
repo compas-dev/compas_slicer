@@ -55,11 +55,11 @@ class RoboticPrintOrganizer(PrintOrganizer):
                     neighboring_items = self.get_printpoint_neighboring_items(layer_key, path_key, i)
 
                     commands[count] = {}
-                    commands[count]["x"] = -tcp_RCS.point[0]  # transform from Rhino coordinates to UR5 coordinates
-                    commands[count]["y"] = -tcp_RCS.point[1]  # transform from Rhino coordinates to UR5 coordinates
+                    commands[count]["x"] = tcp_RCS.point[0]  # -? transform from Rhino coordinates to UR5 coordinates
+                    commands[count]["y"] = tcp_RCS.point[1]  # -? transform from Rhino coordinates to UR5 coordinates
                     commands[count]["z"] = tcp_RCS.point[2]
-                    commands[count]["ax"] = -tcp_RCS.axis_angle_vector[0]
-                    commands[count]["ay"] = -tcp_RCS.axis_angle_vector[1]
+                    commands[count]["ax"] = tcp_RCS.axis_angle_vector[0]  # -?
+                    commands[count]["ay"] = tcp_RCS.axis_angle_vector[1]  # -?
                     commands[count]["az"] = tcp_RCS.axis_angle_vector[2]
                     commands[count]["velocity"] = printpoint.velocity
                     commands[count]["radius"] = get_radius(printpoint, neighboring_items)
@@ -67,7 +67,7 @@ class RoboticPrintOrganizer(PrintOrganizer):
                     commands[count]["extruder_toggle"] = printpoint.extruder_toggle
 
                     count += 1
-        
+
         logger.info("Generated %d robotic commands" % count)
 
         return commands
@@ -83,10 +83,12 @@ def get_radius(printpoint, neighboring_items):
     radius = d_fillet
     if neighboring_items[0]:
         radius = min(radius,
-                     norm_vector(Vector.from_start_end(neighboring_items[0].pt, printpoint.print_frame.point)) * buffer_d)
+                     norm_vector(
+                         Vector.from_start_end(neighboring_items[0].pt, printpoint.print_frame.point)) * buffer_d)
     if neighboring_items[1]:
         radius = min(radius,
-                     norm_vector(Vector.from_start_end(neighboring_items[1].pt, printpoint.print_frame.point)) * buffer_d)
+                     norm_vector(
+                         Vector.from_start_end(neighboring_items[1].pt, printpoint.print_frame.point)) * buffer_d)
 
     radius = round(radius, 5)
     return radius

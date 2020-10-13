@@ -53,7 +53,7 @@ def main():
 
     ### --- Simplify the printpaths by removing points with a certain threshold
     # change the threshold value to remove more or less points
-    simplify_paths_rdp(slicer, threshold=0.1)
+    simplify_paths_rdp(slicer, threshold=0.4)
 
     ### --- Smooth the seams between layers
     # change the smooth_distance value to achieve smoother, or more abrupt seams

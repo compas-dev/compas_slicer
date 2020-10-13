@@ -68,7 +68,6 @@ class PrintOrganizer(object):
             last_path_key = 'path_%d' % (len(self.slicer.layers[-1].paths) - 1)
             self.printpoints_dict[last_layer_key][last_path_key][-1].extruder_toggle = False
 
-
     def add_safety_printpoints(self, z_hop):
         logger.info("Generating safety print points with height " + str(z_hop) + " mm")
         self.printpoints_dict = add_safety_printpoints(self.printpoints_dict, z_hop)

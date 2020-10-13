@@ -3,6 +3,11 @@ from compas.geometry import Point, Frame, distance_point_point_sqrd, Vector
 __all__ = ['PrintPoint']
 
 
+def get_default_print_frame(pt, desired_axis):
+    desired_second_axis = Vector(1, 0, 0)
+    return Frame(pt, desired_axis, desired_second_axis)
+
+
 class PrintPoint(object):
     """
     A PrintPoint consists out of a single compas.geometry.Point, 
@@ -18,13 +23,13 @@ class PrintPoint(object):
 
     def __init__(self, pt, layer_height):
         ### --- basic printpoint
-        self.pt = pt  
-        self.layer_height = layer_height  
+        self.pt = pt
+        self.layer_height = layer_height
         self.extruder_toggle = None
         self.velocity = None
 
         self.wait_time = 0
-        self.print_frame = self.get_print_frame(pt, desired_axis=Vector(0, 1, 0))  # compas.geometry.Frame
+        self.print_frame = get_default_print_frame(pt, desired_axis=Vector(0, 1, 0))  # compas.geometry.Frame
 
         ### --- advanced printpoint
         self.up_vector = None  # compas.geometry.Vector
@@ -47,14 +52,11 @@ class PrintPoint(object):
         self.up_vector = up_vector
         self.normal = self.get_closest_mesh_normal(mesh)
         self.plane = self.get_plane()
-        self.print_frame = self.get_print_frame(pt=self.pt, desired_axis=self.plane.xaxis.scaled(-1))
+        # update print frame with correct plane orientation
+        self.print_frame = get_default_print_frame(pt=self.pt, desired_axis=self.plane.xaxis.scaled(-1))
 
     def get_plane(self):
         return Frame(self.pt, self.up_vector, self.mesh_normal)
-
-    def get_print_frame(self, pt, desired_axis):
-        desired_second_axis = Vector(1, 0, 0)
-        return Frame(pt, desired_axis, desired_second_axis)
 
     def get_closest_mesh_normal(self, mesh):
         vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
@@ -63,10 +65,12 @@ class PrintPoint(object):
         closest_vkey = vertex_tupples[0][0]
         return mesh.vertex_normal(closest_vkey)
 
+    #################################
     #### --- Visualization
     def generate_visualization_shape(self):
         raise NotImplementedError  # TODO
 
+    #################################
     #### --- To data , from data
     def to_data(self):
         if self.closest_upper_point:
