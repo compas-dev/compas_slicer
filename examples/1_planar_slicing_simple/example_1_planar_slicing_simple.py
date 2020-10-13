@@ -104,7 +104,7 @@ def main():
     robotic_commands = print_organizer.generate_robotic_commands_dict()
     save_to_json(robotic_commands, DATA, OUTPUT_FILE)
 
-    # viewer.update()
+    # viewer.update() #ok
     # viewer.show()
 
 if __name__ == "__main__":
