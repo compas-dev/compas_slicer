@@ -72,7 +72,7 @@ class BaseSlicer(object):
         print("Number of sampling printpoints on contours: %d" % total_number_of_pts)
         print("")
 
-    def visualize_on_viewer(self, viewer, visualize_mesh, visualize_paths):
+    def visualize_on_viewer(self, viewer, visualize_mesh=False, visualize_paths=True):
         if visualize_mesh:
             viewer.add(self.mesh, settings={'color': '#ff0000',
                                             'opacity': 0.4, })
