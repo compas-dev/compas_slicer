@@ -68,6 +68,10 @@ def main():
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
 
+    viewer = ObjectViewer()
+    viewer.view.use_shaders = False
+    slicer.visualize_on_viewer(viewer)
+
     save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
 
     ### --- Visualize using the compas_viewer
@@ -100,8 +104,8 @@ def main():
     robotic_commands = print_organizer.generate_robotic_commands_dict()
     save_to_json(robotic_commands, DATA, OUTPUT_FILE)
 
-    # viewer.update()
-    # viewer.show()
+    viewer.update()
+    viewer.show()
 
 if __name__ == "__main__":
     main()
