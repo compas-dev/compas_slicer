@@ -36,17 +36,17 @@ class PlanarSlicer(BaseSlicer):
         if self.slicer_type == "planar_compas":
             logger.info('')
             logger.info("Planar slicing using compas  ...")
-            self.layers = compas_slicer.slicers.create_planar_paths(self.mesh, min_z, max_z, planes)
+            self.layers = compas_slicer.slicers.create_planar_paths(self.mesh, planes)
 
         elif self.slicer_type == "planar_meshcut":
             logger.info('')
             logger.info("Planar slicing using meshcut ...")
-            self.layers = compas_slicer.slicers.create_planar_paths_meshcut(self.mesh, min_z, max_z, planes)
+            self.layers = compas_slicer.slicers.create_planar_paths_meshcut(self.mesh, planes)
 
         elif self.slicer_type == "planar_cgal":
             logger.info('')
             logger.info("Planar slicing using CGAL ...")
-            self.layers = compas_slicer.slicers.create_planar_paths_cgal(self.mesh, min_z, max_z, planes)
+            self.layers = compas_slicer.slicers.create_planar_paths_cgal(self.mesh, planes)
 
 
 

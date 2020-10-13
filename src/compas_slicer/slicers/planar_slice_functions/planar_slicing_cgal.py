@@ -4,6 +4,8 @@ from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Path
 from compas_cgal.slicer import slice_mesh
 
+from progress.bar import Bar
+
 import logging
 import time
 
@@ -12,7 +14,7 @@ logger = logging.getLogger('logger')
 __all__ = ['create_planar_paths_cgal']
 
 
-def create_planar_paths_cgal(mesh, min_z, max_z, planes):
+def create_planar_paths_cgal(mesh, planes):
     """Creates planar contours using CGAL
     Considers all resulting paths as CLOSED paths.
     This is a very fast method.
@@ -25,6 +27,9 @@ def create_planar_paths_cgal(mesh, min_z, max_z, planes):
     max_z: float
     planes: list, compas.geometry.Plane
     """
+
+    # initializes progress_bar for measuring progress
+    progress_bar = Bar('Slicing', max=len(planes), suffix='Layer %(index)i/%(max)i - %(percent)d%%')
 
     # prepare mesh for slicing
     M = mesh.to_vertices_and_faces()
@@ -46,12 +51,9 @@ def create_planar_paths_cgal(mesh, min_z, max_z, planes):
     cgal_layers = get_grouped_list(contours, key_function=key_function)
 
     layers = []
+    
+    
     for layer in cgal_layers:
-
-        z = layer[0][0][2]
-        logger.info('Cutting at height %.3f, %d percent done' % (
-            z, int(100 * (z - min_z) / (max_z - min_z))))
-
         paths_per_layer = []
         for path in layer:
             points_per_contour = []
@@ -67,6 +69,11 @@ def create_planar_paths_cgal(mesh, min_z, max_z, planes):
         l = Layer(paths_per_layer)
         layers.append(l)
 
+        # advance progressbar
+        progress_bar.next()
+
+    # finish progressbar
+    progress_bar.finish()
     return layers
 
 

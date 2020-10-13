@@ -15,12 +15,13 @@ def seams_align(slicer, align_with="next_path"):
     ----------
     slicer : compas_slicer.slicers
         A compas_slicer.slicers instance
-    align_with : str
+    align_with : str or compas.geometry.Point
         Direction to orient the seams in.
-        next_path   = orients the seam to the next path
-        origin      = orients the seam to the origin (0,0,0)
-        x_axis      = orients the seam to the x_axis
-        y_axis      = orients the seam to the y_axis
+        next_path    = orients the seam to the next path
+        origin       = orients the seam to the origin (0,0,0)
+        x_axis       = orients the seam to the x_axis
+        y_axis       = orients the seam to the y_axis
+        Point(x,y,z) = orients the seam according to the given point
     """
     # TODO: Implement random seams 
     logger.info("Aligning seams to: %s" % align_with)
@@ -28,78 +29,57 @@ def seams_align(slicer, align_with="next_path"):
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
 
-            align_seams_for_current_path = path.is_closed  # should not happen if path is open
-
-            if align_with == "next_path":
-                current_pt0 = path.points[0]
-            elif align_with == "origin":
-                current_pt0 = Point(0, 0, 0)
-            elif align_with == "x_axis":
-                current_pt0 = Point(2 ** 32, 0, 0)
-            elif align_with == "y_axis":
-                current_pt0 = Point(0, 2 ** 32, 0)
-            else:
-                raise NameError("Unknown align_with : " + str(align_with))
-
-            next_path_pts = []  # make sure list is emptied
-
+            align_seams_for_current_path = path.is_closed  # should not happen if path is open          
+            
             if align_seams_for_current_path:
-                if len(layer.paths) == 1:
-                    # if there is only one path per layer:
-                    # take the next layer as the next path
-                    if i < len(slicer.layers) - 1:
-                        if align_with == "next_path":
-                            next_path_pts = slicer.layers[i + 1].paths[0].points
-                        else:
-                            next_path_pts = slicer.layers[i].paths[0].points
-                    else:
-                        if align_with != "next_path":
-                            next_path_pts = slicer.layers[i].paths[0].points
-                        else:
-                            align_seams_for_current_path = False
+                # get the points of the current layer and path
+                path_to_change = slicer.layers[i].paths[j].points
+
+                if align_with == "next_path":
+                    pt_to_align_with = None # make sure aligning point is cleared
+                    
+                    # determines the correct point to align the current layer with
+
+                    if len(layer.paths) == 1 and i == 0:
+                        # if ONE PATH and FIRST LAYER
+                        # >>> align with second layer
+                        pt_to_align_with = slicer.layers[i+1].paths[0].points[0]
+                    if len(layer.paths) == 1 and i != 0:
+                        # if ONE PATH and NOT FIRST LAYER
+                        # >>> align with previous layer
+                        pt_to_align_with = slicer.layers[i-1].paths[0].points[0]
+                    if len(layer.paths) != 1 and i == 0 and j == 0:
+                        # if MULTIPLE PATHS and FIRST LAYER and FIRST PATH
+                        # >>> align with second path of first layer
+                        pt_to_align_with = slicer.layers[i].paths[i+1].points[0]
+                    if len(layer.paths) != 1 and j != 0:
+                        # if MULTIPLE PATHS and NOT FIRST PATH
+                        # >>> align with previous path
+                        pt_to_align_with = slicer.layers[i].paths[j-1].points[0]
+                    if len(layer.paths) != 1 and i != 0 and j == 0:
+                        # if MULTIPLE PATHS and NOT FIRST LAYER and FIRST PATH
+                        # >>> align with first path of previous layer
+                        pt_to_align_with = slicer.layers[i-1].paths[j].points[0]
+                
+                elif align_with == "origin":
+                    pt_to_align_with = Point(0, 0, 0)
+                elif align_with == "x_axis":
+                    pt_to_align_with = Point(2 ** 32, 0, 0)
+                elif align_with == "y_axis":
+                    pt_to_align_with = Point(0, 2 ** 32, 0)
+                elif isinstance(align_with, Point):
+                    pt_to_align_with = align_with
                 else:
-                    # if there are multiple paths per layer
-                    # gets the points of the next path
-                    if j < len(layer.paths) - 1:
-                        next_path_pts = layer.paths[j + 1].points
-                    else:
-                        if i < len(slicer.layers) - 1:
-                            next_path_pts = slicer.layers[i + 1].paths[0].points
-                        else:
-                            align_seams_for_current_path = False
+                    raise NameError("Unknown align_with : " + str(align_with))
 
-            if align_seams_for_current_path:
-                # removes the last element of the list before shifting
-                next_path_pts = next_path_pts[:-1]
-
-                # computes distance between current_pt0 and the next path points
-                next_path_distance = [distance_point_point(current_pt0, pt) for pt in next_path_pts]
-
+                # computes distance between pt_to_align_with and the current path points
+                distance_current_pt_align_pt = [distance_point_point(pt_to_align_with, pt) for pt in path_to_change]
                 # gets the index of the closest point by looking for the minimum
-                next_start_index = next_path_distance.index(min(next_path_distance))
-
-                # gets the list of points for the next path, minus the last point
-                next_path_list = next_path_pts[:-1]
-
+                new_start_index = distance_current_pt_align_pt.index(min(distance_current_pt_align_pt))
                 # shifts the list by the distance determined
-                shift_list = next_path_list[next_start_index:] + next_path_list[:next_start_index]
-
-                # adds the first point to the end to create a closed path and
-                # adds the shifted point to the points
-                if len(layer.paths) == 1:
-                    if i < len(slicer.layers) - 1:
-                        if align_with == "next_path":
-                            slicer.layers[i + 1].paths[0].points = shift_list + [shift_list[0]]
-                        else:
-                            slicer.layers[i].paths[0].points = shift_list + [shift_list[0]]
-                    else:
-                        if align_with != "next_path":
-                            slicer.layers[i].paths[0].points = shift_list + [shift_list[0]]
-
-                else:
-                    if j < len(layer.paths) - 1:
-                        layer.paths[j + 1].points = shift_list + [shift_list[0]]
-
+                shift_list = path_to_change[new_start_index:] + path_to_change[:new_start_index]
+                # shifts the list by the distance determined
+                layer.paths[j].points = shift_list + [shift_list[0]]
 
 if __name__ == "__main__":
     pass
