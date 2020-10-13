@@ -55,16 +55,17 @@ def create_planar_paths(mesh, planes):
 ### Intersection class
 ###################################
 import logging
-import matplotlib.pyplot as plt
+
 from compas.geometry import intersection_segment_plane
 
 logger = logging.getLogger('logger')
 
 
-def plot_graph(G):
-    plt.subplot(121)
-    nx.draw(G, with_labels=True, font_weight='bold', node_color=range(len(list(G.nodes()))))
-    plt.show()
+# def plot_graph(G):
+#     import matplotlib.pyplot as plt
+#     plt.subplot(121)
+#     nx.draw(G, with_labels=True, font_weight='bold', node_color=range(len(list(G.nodes()))))
+#     plt.show()
 
 
 ### --- Class
