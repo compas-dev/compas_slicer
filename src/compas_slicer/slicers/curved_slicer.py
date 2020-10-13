@@ -29,11 +29,6 @@ class CurvedSlicer(BaseSlicer):
 
         BaseSlicer.__init__(self, mesh)
 
-        if not 'stratum' in sys.modules:
-            for key in sys.modules:
-                print(key)
-            raise ValueError('Attention! You need to install stratum to use the curved slicer')
-
         self.min_layer_height = 0.2
         self.max_layer_height = 2.0
         self.DATA_PATH = DATA_PATH
