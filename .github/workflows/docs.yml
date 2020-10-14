@@ -45,11 +45,16 @@ jobs:
           echo "Docs will be deployed to https://github.com/dbt-ethz/compas_slicer/$BRANCH_OR_TAG"
           mkdir -p deploy/compas_slicer/$BRANCH_OR_TAG && mv -T dist/docs deploy/compas_slicer/$BRANCH_OR_TAG/
 
+      - name: Extract branch name
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
       - name: Deploy docs
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
-          target_branch: ${GITHUB_REF##*/}
+          target_branch: ${{ steps.extract_branch.outputs.branch }}
           build_dir: deploy/compas_slicer
           keep_history: true
         env:
