@@ -29,7 +29,7 @@ jobs:
       - name: Generate docs
         if: ${{ success() }}
         run: |
-          invoke docs
+          rm -rf dist/docs && invoke docs
           # Get branch/tag/latest name from git
           GITHUB_REF_REGEX="tags/([0-9a-zA-Z\.\-]+)|(pull/[0-9]+)|heads/(.+)"
           if [[ $GITHUB_REF =~ $GITHUB_REF_REGEX ]]; then
@@ -50,7 +50,7 @@ jobs:
         uses: crazy-max/ghaction-github-pages@v2
         with:
           target_branch: master
-          build_dir: dist/docs
+          build_dir: deploy/compas_slicer
           keep_history: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

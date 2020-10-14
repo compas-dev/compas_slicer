@@ -29,7 +29,7 @@ def seams_align(slicer, align_with="next_path"):
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
 
-            align_seams_for_current_path = path.is_closed  # should not happen if path is open
+            align_seams_for_current_path = path.is_closed  # should not happen if path is open          
 
             if align_seams_for_current_path:
                 #  get the points of the current layer and path
