@@ -49,9 +49,9 @@ jobs:
 
 
        # run tests
-       - name: Run linter
-         run: |
-           invoke lint
+      - name: Run linter
+        run: |
+         invoke lint
       - name: Run tests
         id: testing
         run: |
