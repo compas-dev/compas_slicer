@@ -48,7 +48,5 @@ class PlanarSlicer(BaseSlicer):
             logger.info("Planar slicing using CGAL ...")
             self.layers = compas_slicer.slicers.create_planar_paths_cgal(self.mesh, planes)
 
-
-
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)

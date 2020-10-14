@@ -1,6 +1,5 @@
 import logging
 import compas
-import compas_slicer
 from compas.geometry import Box
 from compas.datastructures import Mesh
 
@@ -51,7 +50,7 @@ class MachineModel(object):
 
 
 ##############################
-#### FDM 3D printer
+#  FDM 3D printer
 ##############################
 
 class FDMPrinter(MachineModel):
@@ -78,7 +77,7 @@ class FDMPrinter(MachineModel):
 
 
 ##############################
-#### Robot 3D printer
+#  Robot 3D printer
 ##############################
 
 class RobotPrinter(MachineModel):
@@ -91,7 +90,7 @@ class RobotPrinter(MachineModel):
 
         self.robot, self.scene = self.get_robot_model()  # compas robot
 
-        ## print parameters
+        #  print parameters
         self.properties = self.get_machine_properties()
 
     def get_machine_properties(self):
@@ -114,11 +113,10 @@ class RobotPrinter(MachineModel):
         robot, scene = None, None
 
         if self.id == "UR5":  # How to load different robots from here?
-            ### Load robot from github
+            #  Load robot from github
             from compas_fab.robots.ur5 import Robot
             robot = Robot(load_geometry=False)
             scene = PlanningScene(robot)
-
 
         return robot, scene
 

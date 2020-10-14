@@ -5,6 +5,7 @@ import subprocess as p
 
 __all__ = ['TerminalCommand']
 
+
 class TerminalCommand:
     def __init__(self, cmd, cwd=None, env=None):
         """

@@ -8,12 +8,10 @@ logger = logging.getLogger('logger')
 
 __all__ = ['sort_per_segment']
 
-# self.print_paths = sort_per_segment(self.print_paths, max_layers_per_segment,
-#                                     d_threshold=self.layer_height * 1.6)
 
 def sort_per_segment(slicer, max_layers_per_segment, threshold):
     """Sorts in vertical segments the contours that are stored in the horizontal layers.
-    This is done by grouping the centroids of the paths based on proximity. 
+    This is done by grouping the centroids of the paths based on proximity.
 
     Parameters
     ----------
@@ -33,7 +31,7 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
         for path in layer.paths:
             current_segment = None
 
-            ## Find an eligible segment for contour (called current_segment)
+            #  Find an eligible segment for contour (called current_segment)
             if len(segments[0].paths) == 0:  # first contour
                 current_segment = segments[0]
             else:  # find the candidate segment for new isocurve
@@ -51,12 +49,8 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
                     current_segment = VerticalLayer(id=segments[-1].id + 1)
                     segments.append(current_segment)
 
-            ## Assign contour to current segment
+            #  Assign contour to current segment
             current_segment.append_(path)
-
-        ##TODO: 
-        # if layer.infill_paths: ...
-        # if layer.support_paths: ...
 
     logger.info("Number of segments : %d" % len(segments))
     slicer.print_paths = segments

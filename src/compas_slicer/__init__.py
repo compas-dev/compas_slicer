@@ -17,7 +17,6 @@ from __future__ import absolute_import
 from __future__ import division
 import os
 import compas
-import sys
 
 
 __author__ = ["Mathias Bernhard"]
@@ -62,8 +61,3 @@ from .geometry import *  # noqa: F401 E402 F403
 from .slicers import *  # noqa: F401 E402 F403
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]
-
-
-
-
-

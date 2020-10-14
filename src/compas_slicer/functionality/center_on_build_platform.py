@@ -7,6 +7,7 @@ logger = logging.getLogger('logger')
 
 __all__ = ['center_mesh_on_build_platform']
 
+
 def center_mesh_on_build_platform(mesh, machine_data):
     # get center point of build platform
     max_x, max_y = machine_data[0], machine_data[1]

@@ -13,7 +13,6 @@ Classes
     Layer
     Path
     PrintPoint
-    
 """
 
 from __future__ import absolute_import

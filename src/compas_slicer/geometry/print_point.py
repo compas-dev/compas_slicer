@@ -10,7 +10,7 @@ def get_default_print_frame(pt, desired_axis):
 
 class PrintPoint(object):
     """
-    A PrintPoint consists out of a single compas.geometry.Point, 
+    A PrintPoint consists out of a single compas.geometry.Point,
     with additional functionality added for the printing process.
 
     Attributes
@@ -22,7 +22,7 @@ class PrintPoint(object):
     """
 
     def __init__(self, pt, layer_height):
-        ### --- basic printpoint
+        #  --- basic printpoint
         self.pt = pt
         self.layer_height = layer_height
         self.extruder_toggle = None
@@ -31,7 +31,7 @@ class PrintPoint(object):
         self.wait_time = 0
         self.print_frame = get_default_print_frame(pt, desired_axis=Vector(0, 1, 0))  # compas.geometry.Frame
 
-        ### --- advanced printpoint
+        #  --- advanced printpoint
         self.up_vector = None  # compas.geometry.Vector
         self.mesh_normal = None  # compas.geometry.Vector
         self.plane = None
@@ -46,7 +46,7 @@ class PrintPoint(object):
         x, y, z = self.pt[0], self.pt[1], self.pt[2]
         return "<PrintPoint object at (%.2f, %.2f, %.2f)>" % (x, y, z)
 
-    #### --- Initialization of advanced print point functions
+    #  --- Initialization of advanced print point functions
 
     def initialize_advanced_print_point(self, mesh, up_vector):
         self.up_vector = up_vector
@@ -66,12 +66,12 @@ class PrintPoint(object):
         return mesh.vertex_normal(closest_vkey)
 
     #################################
-    #### --- Visualization
+    #  --- Visualization
     def generate_visualization_shape(self):
         raise NotImplementedError  # TODO
 
     #################################
-    #### --- To data , from data
+    #  --- To data , from data
     def to_data(self):
         if self.closest_upper_point:
             closest_upper_point = [self.closest_upper_point[0], self.closest_upper_point[1],

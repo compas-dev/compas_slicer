@@ -1,11 +1,9 @@
 import logging
-
-from compas.geometry import Polyline, Point, Vector, Frame
+from compas.geometry import Polyline
 from compas_slicer.fabrication.print_organizers.robotic_print_organizer import RoboticPrintOrganizer
 from compas_slicer.geometry import PrintPoint
 import compas_slicer.utilities as utils
 from compas.plugins import PluginNotInstalledError
-
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
 if 'stratum' in packages:
@@ -15,14 +13,13 @@ if 'stratum' in packages:
     from stratum.printpaths.path import Path as StratumPath
     from stratum.printpaths.path_collection import PathCollection as StratumPathCollection
 
-
 logger = logging.getLogger('logger')
 
 __all__ = ['CurvedRoboticPrintOrganizer']
 
 
 #############################################
-### RoboticPrintOrganizer
+#  RoboticPrintOrganizer
 #############################################
 
 class CurvedRoboticPrintOrganizer(RoboticPrintOrganizer):
@@ -37,15 +34,15 @@ class CurvedRoboticPrintOrganizer(RoboticPrintOrganizer):
         self.DATA_PATH = DATA_PATH
 
     def create_printpoints_dict(self):
-        ''' Without region split '''
+        #  Without region split
         print('')
         logger.info('Creation of printpoints (curved slicer without region split)')
 
         mesh = self.slicer.mesh
         verticalLayers = self.slicer.layers
 
-        ###### --- Topological sort
-        verticalLayers_dictList = [] ## conver to format required for toposort ##TODO: fix this!! Very wrong!!
+        #  --- Topological sort
+        verticalLayers_dictList = []  # convert to format required for toposort. Fix this!! Very wrong!!
         for vl in verticalLayers:
             dictionary = {}
             for i, path in enumerate(vl.paths):
@@ -63,14 +60,14 @@ class CurvedRoboticPrintOrganizer(RoboticPrintOrganizer):
         for i, verticalLayer in enumerate(verticalLayers):
             self.printpoints_dict['layer_%d' % i] = {}
 
-            ###### --- Create stratum paths
+            #  --- Create stratum paths
             stratumPaths = []
             for path in verticalLayer.paths:
                 path_points = path.points
                 path_points.append(path_points[0])  # Close curve. Attention! Only works for closed curves!
                 stratumPaths.append(StratumPath(Polyline(path_points), mesh))
 
-            ## find the parent nodes of the current segment
+            #  find the parent nodes of the current segment
             parents_of_segment = graph.get_parents_of_node(i)
             print('PARENTS : ', parents_of_segment)
             if len(parents_of_segment) == 0:
@@ -90,7 +87,7 @@ class CurvedRoboticPrintOrganizer(RoboticPrintOrganizer):
 
             logger.info('stratum_path_collection.paths : ' + str(len(stratum_path_collection.paths)))
 
-            ### convert to compas_slicer printpoints
+            #  convert to compas_slicer printpoints
             for j, stratum_path in enumerate(stratum_path_collection.paths):
                 self.printpoints_dict['layer_%d' % i]['path_%d' % j] = \
                     [PrintPoint.from_data(stratum_printpoint.to_dict())

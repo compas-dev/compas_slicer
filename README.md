@@ -15,21 +15,12 @@ Main features
 Getting started
 ------------
 
-### Step 1: Install compas_cal
-- Clone compas_cgal repository (https://github.com/BlockResearchGroup/compas_cgal)
-- Create a new environment (you can replace 'compas_slicer' with your own environment name) and install COMPAS.
+### Step 1: Install compas_slicer
+- Create a new environment (you can replace 'compas_slicer' with your own environment name).
 ```bash
-conda create -n compas_slicer python=3.7 eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0"
-conda activate compas_slicer
+conda create -n compas_slicer python=3.7
 ```
-- Navigate to the folder where you cloned the compas_cgal repository and install compas_cgal using:
-```bash
-pip install -e .
-```
-- You should get the message 'succesfully installed compas-cgal'
-
-### Step 2: Install compas_slicer
-- Clone the repository and activate your environment. Do not forget to clone the repository using --recursive or the submodules will not work. 
+- Clone the repository and activate your environment.
 ```bash
 git clone https://github.com/dbt-ethz/compas_slicer.git
 conda activate compas_slicer
@@ -40,7 +31,7 @@ pip install -e .
 ```
 - You should get the message 'succesfully installed compas-slicer' (amongst other packages)
 
-### Step 3. Install compas_viewers
+### Step 2. Install compas_viewers
 
 - Install compas_viewers (https://github.com/compas-dev/compas_viewers).
 
@@ -52,7 +43,7 @@ pip install PyOpenGL
 pip install path/to/compas_viewers
 ```
 
-### Step 4. Test if the library works
+### Step 3. Test if the library works
 - Run the file examples/1_versions_check.py
 
 Enjoy!
@@ -60,6 +51,20 @@ Enjoy!
 
 Additional Features
 ------------
+
+### Compas_cal
+Compas_cgal offers a very fast planar slicing method, in order to install it on your <environment> follow the steps described below
+
+- Clone compas_cgal repository (https://github.com/BlockResearchGroup/compas_cgal)
+```bash
+conda activate <environment>
+conda install eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11
+```
+- Navigate to the folder where you cloned the compas_cgal repository and install compas_cgal using:
+```bash
+pip install -e .
+```
+- You should get the message 'succesfully installed compas-cgal'
 
 ### Stratum, library for curved slicing. 
 
@@ -71,6 +76,7 @@ Once you have it, then download it and install it.
 
 - Then install igl
 ```bash
+conda activate <environment>
 conda install -c conda-forge igl
 ```
 

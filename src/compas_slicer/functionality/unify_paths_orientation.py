@@ -19,7 +19,7 @@ def unify_paths_orientation(slicer):
 
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
-            ## find reference points for each path, if possible
+            # find reference points for each path, if possible
             if path.is_closed:
                 reference_points = None
                 if j > 0:

@@ -41,6 +41,7 @@ class Layer(object):
             data[i] = path.to_data()
         return data
 
+
 class VerticalLayer(Layer):
     """
     Vertical ordering. A VerticalLayer stores the print paths sorted in vertical groups.
@@ -56,7 +57,7 @@ class VerticalLayer(Layer):
         self.compute_head_centroid()
 
     def compute_head_centroid(self):
-        ## Avoid using numpy for this
+        #  Avoid using numpy for this
         self.head_centroid = utils.get_average_point(self.paths[-1].points)
 
     def total_number_of_points(self):

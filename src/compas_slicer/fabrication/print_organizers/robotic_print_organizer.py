@@ -2,7 +2,6 @@ import compas_slicer
 import logging
 from compas_slicer.fabrication.print_organizers.print_organizer import PrintOrganizer
 from compas.geometry import Frame, norm_vector, Vector
-import math
 
 logger = logging.getLogger('logger')
 
@@ -10,7 +9,7 @@ __all__ = ['RoboticPrintOrganizer']
 
 
 #############################################
-### RoboticPrintOrganizer
+#  RoboticPrintOrganizer
 #############################################
 
 class RoboticPrintOrganizer(PrintOrganizer):
@@ -74,7 +73,7 @@ class RoboticPrintOrganizer(PrintOrganizer):
 
 
 #############################
-### Blend radius
+#  Blend radius
 #############################
 
 def get_radius(printpoint, neighboring_items):

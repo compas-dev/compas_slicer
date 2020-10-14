@@ -44,31 +44,30 @@ Additional
 
     generate_brim
     spiralize_contours
-    
+
 """
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-### Polyline simplification
+#  Polyline simplification
 from .simplify_paths_rdp import *  # noqa: F401 E402 F403
 
-### Sorting
+#  Sorting
 from .seams_align import *  # noqa: F401 E402 F403
 from .seams_smooth import *  # noqa: F401 E402 F403
 from .sort_per_segment import *  # noqa: F401 E402 F403
-from .sort_per_shortest_path_mlrose import *  # noqa: F401 E402 F403
 
-### Orienting
+#  Orienting
 from .unify_paths_orientation import *  # noqa: F401 E402 F403
 
-### Positioning
+#  Positioning
 from .center_on_build_platform import *  # noqa: F401 E402 F403
 from .move_mesh_to_point import *  # noqa: F401 E402 F403
 from .get_mid_pt_base import *  # noqa: F401 E402 F403
 
-### Additional
+#  Additional
 from .generate_brim import *  # noqa: F401 E402 F403
 from .spiralize_contours import *  # noqa: F401 E402 F403
 

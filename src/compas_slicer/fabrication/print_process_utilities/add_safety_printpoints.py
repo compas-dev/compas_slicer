@@ -11,7 +11,7 @@ def add_safety_printpoints(printpoints_dict, z_hop=20):
     ----------
     printpoints_dict : dictionary
         The PrintPoints as a dictionary.
-    height : float
+    z_hop : float
         The value (in mm) to use for the height of the safety command.
     """
     print_points_copy_dict = {}  # should not be altering the dict that we are iterating through > copy
@@ -21,29 +21,29 @@ def add_safety_printpoints(printpoints_dict, z_hop=20):
         for path_key in printpoints_dict[layer_key]:
             print_points_copy_dict[layer_key][path_key] = []
 
-            # get length of path to calculate last point
+            #  get length of path to calculate last point
             path_len = len(printpoints_dict[layer_key][path_key])
 
             for i, printpoint in enumerate(printpoints_dict[layer_key][path_key]):
-                # adds a safety point before the first point, if it's not the first point of the whole print
+                #  adds a safety point before the first point, if it's not the first point of the whole print
                 if printpoint is not printpoints_dict['layer_0']['path_0'][0]:
-                    if i == 0 and not printpoints_dict[layer_key][path_key][path_len-1].extruder_toggle:
+                    if i == 0 and not printpoints_dict[layer_key][path_key][path_len - 1].extruder_toggle:
                         safety_printpoint = create_safety_printpoint(printpoint, z_hop, False)
                         print_points_copy_dict[layer_key][path_key].append(safety_printpoint)
 
-                # regular printing points
+                #  regular printing points
                 print_points_copy_dict[layer_key][path_key].append(printpoint)
 
-                # adds a safety point after the last point                 
+                #  adds a safety point after the last point
                 if not printpoint.extruder_toggle:
                     safety_printpoint = create_safety_printpoint(printpoint, z_hop, False)
                     print_points_copy_dict[layer_key][path_key].append(safety_printpoint)
 
-    # insert a safety print point at the beginning 
+    #  insert a safety print point at the beginning
     safety_printpoint = create_safety_printpoint(printpoints_dict['layer_0']['path_0'][0], z_hop, False)
     print_points_copy_dict['layer_0']['path_0'].insert(0, safety_printpoint)
 
-    # the safety printpoint has already been added at the end since the last printpoint extruder_toggle is False
+    #  the safety printpoint has already been added at the end since the last printpoint extruder_toggle is False
     return print_points_copy_dict
 
 
