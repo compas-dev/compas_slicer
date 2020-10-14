@@ -146,8 +146,6 @@ def test(ctx, checks=False, doctest=False):
     if checks:
         check(ctx)
 
-    ctx.run('conda env list')
-
     with chdir(BASE_FOLDER):
         cmd = ['pytest']
         if doctest:
