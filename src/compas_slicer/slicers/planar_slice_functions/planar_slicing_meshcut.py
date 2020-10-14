@@ -1,12 +1,12 @@
 import numpy as np
-from compas.geometry import Point, distance_point_point
+from compas.geometry import Point
 from compas_slicer.geometry import Path
 from compas_slicer.geometry import Layer
 import logging
-logger = logging.getLogger('logger')
 import meshcut
-
 from progress.bar import Bar
+
+logger = logging.getLogger('logger')
 
 __all__ = ['create_planar_paths_meshcut']
 
@@ -46,7 +46,7 @@ def create_planar_paths_meshcut(mesh, planes):
 
         paths_per_layer = []
 
-        plane = meshcut.Plane(plane.point, plane.normal) # define plane
+        plane = meshcut.Plane(plane.point, plane.normal)  # define plane
 
         meshcut_array = meshcut.cross_section_mesh(meshcut_mesh, plane)
 
@@ -55,7 +55,7 @@ def create_planar_paths_meshcut(mesh, planes):
             meshcut_list = item.tolist()
 
             points = [Point(p[0], p[1], p[2]) for p in meshcut_list]
-            is_closed = True # TODO is_closed is always set to True, has to be checked
+            is_closed = True  # TODO is_closed is always set to True, has to be checked
             path = Path(points=points, is_closed=is_closed)
             paths_per_layer.append(path)
 
@@ -64,7 +64,7 @@ def create_planar_paths_meshcut(mesh, planes):
 
         # advance progressbar
         progress_bar.next()
-    
+
     # finish progressbar
     progress_bar.finish()
 

@@ -1,7 +1,8 @@
 from compas.geometry import Point
 from compas_slicer.geometry import Path
 from compas_slicer.geometry import Layer
-
+import logging
+from compas.geometry import intersection_segment_plane
 from progress.bar import Bar
 
 __all__ = ['create_planar_paths',
@@ -11,7 +12,7 @@ import networkx as nx
 
 
 ###################################
-### Intersection function
+#  Intersection function
 ###################################
 
 def create_planar_paths(mesh, planes):
@@ -42,7 +43,6 @@ def create_planar_paths(mesh, planes):
                 paths.append(path)
 
             layers.append(Layer(paths))
-        
         # advance progress bar
         progress_bar.next()
 
@@ -52,11 +52,9 @@ def create_planar_paths(mesh, planes):
 
 
 ###################################
-### Intersection class
+#  Intersection class
 ###################################
-import logging
 
-from compas.geometry import intersection_segment_plane
 
 logger = logging.getLogger('logger')
 
@@ -68,7 +66,7 @@ logger = logging.getLogger('logger')
 #     plt.show()
 
 
-### --- Class
+#  --- Class
 class IntersectionCurveMeshPlane(object):
 
     def __init__(self, mesh, plane):
@@ -131,7 +129,7 @@ class IntersectionCurveMeshPlane(object):
             # find current neighboring edges
             current_edge_connections = []
             for f in self.mesh.edge_faces(u=mesh_edge[0], v=mesh_edge[1]):
-                if f != None:
+                if f is not None:
                     face_edges = self.mesh.face_halfedges(f)
                     for e in face_edges:
                         if (e != mesh_edge and tuple(reversed(e)) != mesh_edge) \
@@ -177,4 +175,3 @@ class IntersectionCurveMeshPlane(object):
 
                 p = self.intersection_points[parent_edge][0]
                 self.sorted_point_clusters[j].append(p)
-

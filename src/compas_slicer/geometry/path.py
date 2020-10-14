@@ -1,4 +1,3 @@
-import compas_slicer
 import logging
 import compas
 from compas.geometry import Point
@@ -12,7 +11,7 @@ class Path(object):
     """
     The Path class is the base class for all print paths.
     It consists out of a list of compas Points.
-    
+
     Attributes
     ----------
     points : list
@@ -25,7 +24,7 @@ class Path(object):
     """
 
     def __init__(self, points, is_closed):
-        ## check input
+        #  check input
         assert isinstance(points[0], compas.geometry.Point)
         self.points = points  # class compas.geometry.Point
         self.is_closed = is_closed

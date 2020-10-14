@@ -58,8 +58,6 @@ def create_planar_paths_cgal(mesh, planes):
     cgal_layers = get_grouped_list(contours, key_function=key_function)
 
     layers = []
-    
-    
     for layer in cgal_layers:
         paths_per_layer = []
         for path in layer:
@@ -73,8 +71,8 @@ def create_planar_paths_cgal(mesh, planes):
             paths_per_layer.append(path)
 
         # generate layers
-        l = Layer(paths_per_layer)
-        layers.append(l)
+        layer = Layer(paths_per_layer)
+        layers.append(layer)
 
         # advance progressbar
         progress_bar.next()

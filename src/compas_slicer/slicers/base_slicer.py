@@ -1,10 +1,8 @@
 import compas
 import compas_slicer
-from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
 from compas_slicer.geometry import Layer
-from compas.geometry import Vector
 
 import logging
 
@@ -18,20 +16,20 @@ class BaseSlicer(object):
     Slicer class is an organizational class that holds all the information for the slice process
     This class is meant to be extended for the implementation of the various slicers.
     See PlanarSlicer as an example
-    
+
     Attributes
     ----------
-    mesh : compas.datastructures.Mesh 
+    mesh : compas.datastructures.Mesh
         Input mesh
     """
 
     def __init__(self, mesh):
-        ## check input
+        #  check input
         assert isinstance(mesh, compas.datastructures.Mesh), \
             "Input mesh must be of type <compas.datastructures.Mesh>, not " + str(type(mesh))
         utils.check_triangular_mesh(mesh)
 
-        ### input
+        #  input
         self.mesh = mesh
         logger.info(
             "Input Mesh with : %d vertices, %d Faces" % (len(list(self.mesh.vertices())), len(list(self.mesh.faces()))))
@@ -42,13 +40,13 @@ class BaseSlicer(object):
         # or VerticalLayer (vertical sorting)
 
     ##############################
-    ### --- Functions
+    #  --- Functions
 
     def slice_model(self, *args, **kwargs):
         raise NotImplementedError
 
     ##############################
-    ### --- Output 
+    #  --- Output
 
     def printout_info(self):
         open_paths = 0
@@ -89,7 +87,7 @@ class BaseSlicer(object):
                                    settings={'color': '#ffffff'})
 
     ##############################
-    ### --- To data, from data
+    #  --- To data, from data
 
     @classmethod
     def from_data(cls, data):

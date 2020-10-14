@@ -1,15 +1,15 @@
 name: build
 
 on:
-#  [push]
+  [push]
   # Trigger the workflow on push or pull request,
   # but only for the main branch
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    branches:
+#      - main
 
 jobs:
   build:
@@ -48,10 +48,10 @@ jobs:
           python -m pip install --no-cache-dir -r requirements-dev.txt
 
 
-      # run tests
-#       - name: Run linter
-#         run: |
-#           invoke lint
+       # run tests
+       - name: Run linter
+         run: |
+           invoke lint
       - name: Run tests
         id: testing
         run: |

@@ -7,6 +7,7 @@ logger = logging.getLogger('logger')
 
 __all__ = ['get_mid_pt_base']
 
+
 def get_mid_pt_base(mesh):
     # get center bottom point of mesh model
     bbox = mesh_bounding_box(mesh)

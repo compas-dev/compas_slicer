@@ -18,7 +18,7 @@ def spiralize_contours(slicer):
     """
     # retrieves layer height by subtracting z of first point of layer 1 from layer 0
     layer_height = slicer.layers[1].paths[0].points[0][2] - slicer.layers[0].paths[0].points[0][2]
-    
+
     for i, layer in enumerate(slicer.layers):
         if len(layer.paths) == 1:
             for path in layer.paths:
@@ -32,8 +32,8 @@ def spiralize_contours(slicer):
                 # removes the first item to create a smooth transition to the next layer
                 path.points.pop(0)
         else:
-            logger.warning("Spiralize contours only works for layers consisting out of a single path, contours were not changed, spiralize contour skipped for layer %i" %i)
-    
+            logger.warning("Spiralize contours only works for layers consisting out of a single path, contours were not changed, spiralize contour skipped for layer %i" % i)
+
 
 if __name__ == "__main__":
     pass

@@ -1,4 +1,5 @@
-from compas.geometry import Point, Frame, Transformation
+from compas.geometry import Frame
+from compas.geometry import Transformation
 from compas.datastructures import mesh_bounding_box
 
 import logging
@@ -6,6 +7,7 @@ import logging
 logger = logging.getLogger('logger')
 
 __all__ = ['move_mesh_to_point']
+
 
 def move_mesh_to_point(mesh, target_point):
     """Moves (translates) a mesh to a target point.
@@ -15,7 +17,7 @@ def move_mesh_to_point(mesh, target_point):
     mesh : compas.datastructures.Mesh
         A compas mesh.
     target_point : compas.geometry.Point
-        The point to move the mesh to. 
+        The point to move the mesh to.
     """
 
     # get center bottom point of mesh model

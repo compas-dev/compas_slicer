@@ -1,7 +1,6 @@
 import rdp
 import numpy as np
 import logging
-from rdp import rdp
 
 from compas.geometry import Point
 # from compas_slicer.geometry import PrintPoint, Contour
@@ -20,7 +19,7 @@ def simplify_paths_rdp(slicer, threshold):
     slicer : compas_slicer.slicers
         An instance of one of the compas_slicer.slicers classes.
     threshold : float
-        Controls the degree of polyline simplification. 
+        Controls the degree of polyline simplification.
         Low threshold removes few points, high threshold removes many points.
     """
 

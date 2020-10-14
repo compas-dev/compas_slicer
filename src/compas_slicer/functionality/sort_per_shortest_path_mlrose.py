@@ -1,14 +1,4 @@
-import warnings
-
-# workaround to import six since from sklarn.externals import six is deprecated
-import six
-import sys
-sys.modules['sklearn.externals.six'] = six
-
-warnings.filterwarnings("ignore")
 import mlrose
-
-warnings.filterwarnings("default")
 import logging
 
 logger = logging.getLogger('logger')
@@ -17,19 +7,18 @@ __all__ = ['sort_per_shortest_path_mlrose']
 
 
 def sort_per_shortest_path_mlrose(slicer,
-                              population_size=200,
-                              mutation_probability=0.1,
-                              max_attempts=10,
-                              random_state=None):
-
+                                  population_size=200,
+                                  mutation_probability=0.1,
+                                  max_attempts=10,
+                                  random_state=None):
     """Attempts to find the shortest path between the contours in a layer,
-    most useful when dealing with many contours within one layer. 
-    Heavily increases computation time but reduces printing time. 
+    most useful when dealing with many contours within one layer.
+    Heavily increases computation time but reduces printing time.
 
-    Based on the Travelling Salesperson Problem (TSP), makes use of 
+    Based on the Travelling Salesperson Problem (TSP), makes use of
     a Randomized Optimization Algorithm as implemented in mlrose:
 
-    Hayes, G. (2019). mlrose: Machine Learning, Randomized Optimization 
+    Hayes, G. (2019). mlrose: Machine Learning, Randomized Optimization
     and SEarch package for Python. https://github.com/gkhayes/mlrose.
 
     Parameters
@@ -58,13 +47,14 @@ def sort_per_shortest_path_mlrose(slicer,
 
         problem_no_fit = mlrose.TSPOpt(length = 8, coords = coords_list, maximize=False)
         best_state, best_fitness = mlrose.genetic_alg(problem_no_fit, random_state = 2)
-                               
+
         print('The best state found is: ', best_state)
         print('The fitness at the best state is: ', best_fitness)
+        :param slicer:
     """
 
     # TODO: MLrose optimisation does not always give better results
-    # than standard slicing with compas_cgal, should be optimised. 
+    # than standard slicing with compas_cgal, should be optimised.
 
     logger.info("Sorting per shortest path using mlrose")
 
@@ -78,8 +68,7 @@ def sort_per_shortest_path_mlrose(slicer,
                     coords_list.append(coords)
 
         problem_no_fit = mlrose.TSPOpt(length=len(coords_list), coords=coords_list, maximize=False)
-        best_state, best_fitness = mlrose.genetic_alg(problem_no_fit,
-                                                      pop_size=population_size,
+        best_state, best_fitness = mlrose.genetic_alg(problem_no_fit, pop_size=population_size,
                                                       mutation_prob=mutation_probability,
                                                       max_attempts=max_attempts,
                                                       random_state=random_state)
