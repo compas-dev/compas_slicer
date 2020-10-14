@@ -1,7 +1,15 @@
 name: build
 
 on:
-  [push]
+#  [push]
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -45,31 +53,6 @@ jobs:
 #         run: |
 #           invoke lint
       - name: Run tests
+        id: testing
         run: |
           invoke test
-
-#      # find pull request
-#        - name: Find Pull Request
-#          uses: juliangruber/find-pull-request-action@v1
-#          id: find-pull-request
-#          with:
-#            github-token: ${{ secrets.GITHUB_TOKEN }}
-#            branch: my-branch-name
-#        - run: echo "Pull Request ${number} (${sha})"
-#          env:
-#            number: ${{ steps.find-pull-request.outputs.number }}
-#            sha: ${{ steps.find-pull-request.outputs.head-sha }}
-#
-#      # comment pull request
-#      - name: Comment pull request
-#        uses: thollander/actions-comment-pull-request@master
-#        with:
-#          message: 'Example of message !'
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
-#      # approve pull request
-#      - name: Approve Pull Request
-#        uses: juliangruber/approve-pull-request-action@v1
-#        with:
-#          github-token: ${{ secrets.GITHUB_TOKEN }}
-#          number: 1
