@@ -44,13 +44,25 @@ jobs:
           fi;
           echo "Docs will be deployed to https://github.com/dbt-ethz/compas_slicer/$BRANCH_OR_TAG"
           mkdir -p deploy/compas_slicer/$BRANCH_OR_TAG && mv -T dist/docs deploy/compas_slicer/$BRANCH_OR_TAG/
+
       - name: Deploy docs
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
-          repo: https://github.com/dbt-ethz/compas_slicer
           target_branch: master
-          build_dir: deploy
+          build_dir: dist/docs
           keep_history: true
         env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+#      - name: Deploy docs
+#        if: success()
+#        uses: crazy-max/ghaction-github-pages@v2
+#        with:
+#          repo: https://github.com/dbt-ethz/compas_slicer
+#          target_branch: master
+#          build_dir: deploy
+#          keep_history: true
+#        env:
+#          GH_PAT: ${{ secrets.GH_PAT }}
