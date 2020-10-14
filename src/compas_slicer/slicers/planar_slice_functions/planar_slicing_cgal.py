@@ -8,7 +8,8 @@ import compas_slicer.utilities as utils
 from compas.plugins import PluginNotInstalledError
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
-if 'compas_cgal' in packages:
+
+if 'compas-cgal' in packages:
     from compas_cgal.slicer import slice_mesh
 
 logger = logging.getLogger('logger')
@@ -27,7 +28,7 @@ def create_planar_paths_cgal(mesh, planes):
         A compas mesh.
     planes: list, compas.geometry.Plane
     """
-    if 'compas_cgal' not in packages:
+    if 'compas-cgal' not in packages:
         raise PluginNotInstalledError("--------ATTENTION! ----------- \
                         Compas_cgal library is missing! \
                         You can't use this planar slicing method without it. \
