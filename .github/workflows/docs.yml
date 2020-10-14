@@ -10,6 +10,7 @@ on:
 #      - master
 
 jobs:
+  build-docs:
     needs: build-packages
     runs-on: ubuntu-latest
     steps:
