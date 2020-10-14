@@ -1,5 +1,4 @@
 import sys
-
 from compas_slicer.slicers import BaseSlicer
 from compas_slicer.geometry import VerticalLayer
 import compas_slicer.utilities as utils
@@ -33,7 +32,7 @@ class CurvedSlicer(BaseSlicer):
         self.max_layer_height = 2.0
         self.DATA_PATH = DATA_PATH
 
-        ### --- Update vertex attributes
+        #  --- Update vertex attributes
         self.mesh.update_default_vertex_attributes({'boundary': 0})
         for vkey, data in self.mesh.vertices(data=True):
             if vkey in low_boundary_vs:
@@ -51,17 +50,17 @@ class CurvedSlicer(BaseSlicer):
         target_LOW.save_distances("distances_0.json")
         target_HIGH.save_distances("distances_1.json")
 
-        ## Marching Triangles
+        #  Marching Triangles
         print('')
         number_of_curves = find_desired_number_of_isocurves(target_LOW, target_HIGH)
         marching_triangles = MarchingTriangles(self.mesh, target_LOW, target_HIGH, number_of_curves)
 
-        ## Save to Json
+        #  Save to Json
         stratum_utils.isocurves_segments_to_json(marching_triangles.segments, self.DATA_PATH,
                                                  "isocurves_segments.json")
 
-        ## convert stratum entities to compas_slicer entities
-        segments = []  ## path collections (vertical sorting)
+        #  convert stratum entities to compas_slicer entities
+        segments = []  #  path collections (vertical sorting)
         for i, stratum_segment in enumerate(marching_triangles.segments):
             s = VerticalLayer(i)
             segments.append(s)

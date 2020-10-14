@@ -5,6 +5,7 @@ import subprocess as p
 
 __all__ = ['TerminalCommand']
 
+
 class TerminalCommand:
     def __init__(self, cmd, cwd=None, env=None):
         """
@@ -37,3 +38,4 @@ class TerminalCommand:
         words = []
         [words.append(word) for line in lines for word in line.split()]
         return words
+        

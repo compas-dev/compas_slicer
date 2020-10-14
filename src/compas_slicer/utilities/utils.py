@@ -45,7 +45,7 @@ def check_triangular_mesh(mesh):
 
 
 #######################################
-### dict utils
+#  dict utils
 #######################################
 
 def point_list_to_dict(pts_list):
@@ -55,7 +55,7 @@ def point_list_to_dict(pts_list):
     return data
 
 
-### --- Length of dictionary
+#  --- Length of dictionary
 def total_length_of_dictionary(dictionary):
     total_length = 0
     for key in dictionary:
@@ -63,7 +63,7 @@ def total_length_of_dictionary(dictionary):
     return total_length
 
 
-### --- Flattened list of dictionary
+#  --- Flattened list of dictionary
 def flattened_list_of_dictionary(dictionary):
     flattened_list = []
     for key in dictionary:
@@ -72,7 +72,7 @@ def flattened_list_of_dictionary(dictionary):
 
 
 #######################################
-### control flow
+#  control flow
 #######################################
 
 def interrupt():
