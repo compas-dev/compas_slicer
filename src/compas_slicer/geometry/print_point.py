@@ -29,7 +29,7 @@ class PrintPoint(object):
         self.velocity = None
 
         self.wait_time = 0
-        self.print_frame = get_default_print_frame(pt, desired_axis=Vector(0, 1, 0))  # compas.geometry.Frame
+        self.print_frame = get_default_print_frame(pt, desired_axis=Vector(0, -1, 0))  # compas.geometry.Frame
 
         #  --- advanced printpoint
         self.up_vector = None  # compas.geometry.Vector

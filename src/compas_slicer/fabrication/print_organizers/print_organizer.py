@@ -51,11 +51,11 @@ class PrintOrganizer(object):
             for path_key in self.printpoints_dict[layer_key]:
                 path_printpoints = self.printpoints_dict[layer_key][path_key]
                 for i, printpoint in enumerate(path_printpoints):
-                    if extruder_toggle == "always_on":
+                    if extruder_toggle == "always_on":  #  single shell printing
                         printpoint.extruder_toggle = True
-                    elif extruder_toggle == "always_off":
-                        printpoint.extruder_toggle = False
-                    elif extruder_toggle == "off_when_travel":
+                    # elif extruder_toggle == "always_off":
+                    #     printpoint.extruder_toggle = False
+                    elif extruder_toggle == "off_when_travel": #  multiple contours
                         if i == len(path_printpoints) - 1:
                             printpoint.extruder_toggle = False
                         else:

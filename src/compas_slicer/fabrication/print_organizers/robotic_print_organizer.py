@@ -60,6 +60,7 @@ class RoboticPrintOrganizer(PrintOrganizer):
                     commands[count]["ax"] = tcp_RCS.axis_angle_vector[0]  # -?
                     commands[count]["ay"] = tcp_RCS.axis_angle_vector[1]  # -?
                     commands[count]["az"] = tcp_RCS.axis_angle_vector[2]
+                    commands[count]["plane"] = printpoint.print_frame.to_data()  # THIS SHOULD
                     commands[count]["velocity"] = printpoint.velocity
                     commands[count]["radius"] = get_radius(printpoint, neighboring_items)
                     commands[count]["wait_time"] = printpoint.wait_time

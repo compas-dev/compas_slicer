@@ -23,22 +23,22 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ### --- Data paths
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 # MODEL = 'simple_vase.stl'
-MODEL = 'simple_vase.stl'
+MODEL = 'simple_vase.obj'
 OUTPUT_FILE = 'fabrication_commands.json'
 
 start_time = time.time()
 
 def main():
     ### --- Load stl
-    compas_mesh = Mesh.from_stl(os.path.join(DATA, MODEL))
+    compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
 
     ### --- Move to origin
-    move_mesh_to_point(compas_mesh, Point(0,0,0))
+    move_mesh_to_point(compas_mesh, Point(934.42, 159.12, -719.32))
 
     ### --- Slicer
     # try out different slicers by changing the slicer_type
     # options: 'planar_compas', 'planar_numpy', 'planar_meshcut', 'planar_cgal'
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=3.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=1.5)
     slicer.slice_model()
 
     ### --- Generate brim
@@ -53,7 +53,7 @@ def main():
 
     ### --- Simplify the printpaths by removing points with a certain threshold
     # change the threshold value to remove more or less points
-    simplify_paths_rdp(slicer, threshold=0.4)
+    simplify_paths_rdp(slicer, threshold=1.2)
 
     ### --- Smooth the seams between layers
     # change the smooth_distance value to achieve smoother, or more abrupt seams
@@ -82,7 +82,7 @@ def main():
     ### --- Fabrication
     robot_printer = RobotPrinter('UR5')
     robot_printer.attach_endeffector(FILENAME=os.path.join(DATA, 'plastic_extruder.obj'),
-                                     frame=Frame(point=[0.153792, -0.01174, -0.03926],
+                                     frame=Frame(point=[0,0,0], #[0.153792, -0.01174, -0.03926],
                                                  xaxis=[1, 0, 0],
                                                  yaxis=[0, 1, 0]))
     # robot_printer.printout_info()
