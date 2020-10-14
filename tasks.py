@@ -113,12 +113,12 @@ def docs(ctx, doctest=False, rebuild=True, check_links=False):
 
     with chdir(BASE_FOLDER):
         if doctest:
-            ctx.run('sphinx-build -E -b doctest docsource docs')
+            ctx.run('sphinx-build -b doctest docs dist/docs')
 
-        ctx.run('sphinx-build -E -b html docsource docs')
+        ctx.run('sphinx-build -b html docs dist/docs')
 
         if check_links:
-            ctx.run('sphinx-build -E -b linkcheck docsource docs')
+            ctx.run('sphinx-build -b linkcheck docs dist/docs')
 
 
 @task()
@@ -153,6 +153,11 @@ def test(ctx, checks=False, doctest=False):
 
         ctx.run(' '.join(cmd))
 
+@task()
+def lint(ctx):
+    """Check the consistency of coding style."""
+    log.write('Running flake8 python linter...')
+    ctx.run('flake8 src')
         
 
 @task
