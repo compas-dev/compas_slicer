@@ -1,11 +1,9 @@
-import json
 import compas_slicer
 import logging
-
 from compas_slicer.geometry import PrintPoint
-import compas_slicer.utilities as utils
 from compas.geometry import Polyline
 from compas_slicer.fabrication import add_safety_printpoints
+import math
 
 logger = logging.getLogger('logger')
 
@@ -25,12 +23,12 @@ class PrintOrganizer(object):
         self.slicer = slicer
         self.machine_model = machine_model
 
-        ### initialize print points
+        #  initialize print points
         self.printpoints_dict = {}
         self.create_printpoints_dict()
         self.set_extruder_toggle(extruder_toggle_type)
 
-    ### --- Initialization
+    #  --- Initialization
     def create_printpoints_dict(self):
         for i, layer in enumerate(self.slicer.layers):
             self.printpoints_dict['layer_%d' % i] = {}
@@ -109,7 +107,7 @@ class PrintOrganizer(object):
         return len(self.printpoints_dict['layer_%d' % layer_index])
 
     ##################################
-    ### --- Visualization on viewer
+    #  --- Visualization on viewer
     def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
         all_pts = []
         for layer_key in self.printpoints_dict:
@@ -127,7 +125,7 @@ class PrintOrganizer(object):
                 viewer.add(pt, name="Point %d" % i)
 
     ##################################
-    ### --- To data, from data
+    #  --- To data, from data
     def to_data(self):
         print_organizer_data = {'printpoints': {}}
 
@@ -145,9 +143,9 @@ class PrintOrganizer(object):
 
 
 #############################
-### Nozzle linear velocity
+#  Nozzle linear velocity
 #############################
-import math
+
 
 motor_omega = 2 * math.pi  # 1 revolution / sec = 2*pi rad/sec
 motor_r = 4.0  # 4.25 #mm
