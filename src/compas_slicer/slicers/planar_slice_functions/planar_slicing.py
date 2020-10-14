@@ -54,9 +54,7 @@ def create_planar_paths(mesh, planes):
 ###################################
 #  Intersection class
 ###################################
-import logging
 
-from compas.geometry import intersection_segment_plane
 
 logger = logging.getLogger('logger')
 

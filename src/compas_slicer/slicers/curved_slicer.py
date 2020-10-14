@@ -1,4 +1,3 @@
-import sys
 from compas_slicer.slicers import BaseSlicer
 from compas_slicer.geometry import VerticalLayer
 import compas_slicer.utilities as utils
@@ -60,7 +59,7 @@ class CurvedSlicer(BaseSlicer):
                                                  "isocurves_segments.json")
 
         #  convert stratum entities to compas_slicer entities
-        segments = []  #  path collections (vertical sorting)
+        segments = []
         for i, stratum_segment in enumerate(marching_triangles.segments):
             s = VerticalLayer(i)
             segments.append(s)

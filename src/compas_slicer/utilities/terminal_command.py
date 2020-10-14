@@ -38,4 +38,3 @@ class TerminalCommand:
         words = []
         [words.append(word) for line in lines for word in line.split()]
         return words
-        
