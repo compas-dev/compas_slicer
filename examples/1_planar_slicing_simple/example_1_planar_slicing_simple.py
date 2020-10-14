@@ -23,14 +23,14 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ### --- Data paths
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 # MODEL = 'simple_vase.stl'
-MODEL = 'simple_vase.stl'
+MODEL = 'simple_vase.obj'
 OUTPUT_FILE = 'fabrication_commands.json'
 
 start_time = time.time()
 
 def main():
     ### --- Load stl
-    compas_mesh = Mesh.from_stl(os.path.join(DATA, MODEL))
+    compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
 
     ### --- Move to origin
     move_mesh_to_point(compas_mesh, Point(0,0,0))
@@ -38,7 +38,7 @@ def main():
     ### --- Slicer
     # try out different slicers by changing the slicer_type
     # options: 'planar_compas', 'planar_numpy', 'planar_meshcut', 'planar_cgal'
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=3.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=0.01)
     slicer.slice_model()
 
     ### --- Generate brim
