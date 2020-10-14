@@ -49,7 +49,7 @@ jobs:
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
-          target_branch: master
+          target_branch: $BRANCH_OR_TAG
           build_dir: deploy/compas_slicer
           keep_history: true
         env:
