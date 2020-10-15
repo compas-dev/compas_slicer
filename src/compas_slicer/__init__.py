@@ -15,7 +15,6 @@ compas_slicer
     compas_slicer.functionality
     compas_slicer.utilities
 
-
 """
 
 from __future__ import print_function
