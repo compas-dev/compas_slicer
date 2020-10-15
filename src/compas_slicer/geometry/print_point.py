@@ -1,4 +1,4 @@
-from compas.geometry import Point, Frame, distance_point_point_sqrd, Vector
+from compas.geometry import Point, Frame, Vector
 import compas
 __all__ = ['PrintPoint']
 

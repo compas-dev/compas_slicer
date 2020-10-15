@@ -1,6 +1,6 @@
 import logging
 import compas_slicer
-import compas_slicer.utilities as utils
+import numpy as np
 from compas_slicer.geometry import Path
 
 logger = logging.getLogger('logger')
@@ -57,8 +57,8 @@ class VerticalLayer(Layer):
         self.compute_head_centroid()
 
     def compute_head_centroid(self):
-        #  Avoid using numpy for this
-        self.head_centroid = utils.get_average_point(self.paths[-1].points)
+        pts = np.array(self.paths[-1].points)
+        self.head_centroid = np.mean(pts, axis=0)
 
     def total_number_of_points(self):
         num = 0

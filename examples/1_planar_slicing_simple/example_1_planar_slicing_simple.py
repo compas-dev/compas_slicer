@@ -37,7 +37,7 @@ def main():
     ### --- Slicer
     # try out different slicers by changing the slicer_type
     # options: 'planar_compas', 'planar_meshcut', 'planar_cgal'
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=1.5)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_compas", layer_height=1.5)
     slicer.slice_model()
 
     ### --- Generate brim

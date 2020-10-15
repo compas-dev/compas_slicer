@@ -2,29 +2,20 @@ from compas_slicer.slicers import BaseSlicer
 from compas_slicer.geometry import VerticalLayer
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import Path
-from compas.plugins import PluginNotInstalledError
-
+from compas_slicer.slicers.curved_slicing import CompoundTarget
+from compas_slicer.slicers.curved_slicing import find_desired_number_of_isocurves
 import logging
 
 logger = logging.getLogger('logger')
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
-if 'stratum' in packages:
-    from stratum.isocurves.compound_target import CompoundTarget
-    from stratum.isocurves.marching_triangles import MarchingTriangles, find_desired_number_of_isocurves
-    import stratum.utils.utils as stratum_utils
+
 
 __all__ = ['CurvedSlicer']
 
 
 class CurvedSlicer(BaseSlicer):
     def __init__(self, mesh, low_boundary_vs, high_boundary_vs, DATA_PATH):
-        if 'stratum' not in packages:
-            raise PluginNotInstalledError("--------ATTENTION! ----------- \
-                            STRATUM library (for curved slicing) is missing! \
-                            You can't use this slicer without it. \
-                            Check the README for instructions.")
-
         BaseSlicer.__init__(self, mesh)
 
         self.min_layer_height = 0.2
@@ -45,14 +36,18 @@ class CurvedSlicer(BaseSlicer):
     def slice_model(self):
         target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH, is_smooth=False)
         target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH, is_smooth=False)
+
         target_HIGH.compute_uneven_boundaries_t_ends(target_LOW)
         target_LOW.save_distances("distances_0.json")
         target_HIGH.save_distances("distances_1.json")
 
         #  Marching Triangles
-        print('')
-        number_of_curves = find_desired_number_of_isocurves(target_LOW, target_HIGH)
-        marching_triangles = MarchingTriangles(self.mesh, target_LOW, target_HIGH, number_of_curves)
+        number_of_curves = find_desired_number_of_isocurves(target_LOW, target_HIGH, avg_layer_height=1.1)
+
+        isocurves_generator = IsocurvesGenerator(self.mesh, target_LOW, target_HIGH, number_of_curves)
+
+        marching_triangles = MarchingTriangles
+
 
         #  Save to Json
         stratum_utils.isocurves_segments_to_json(marching_triangles.segments, self.DATA_PATH,

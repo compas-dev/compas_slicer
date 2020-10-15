@@ -33,7 +33,8 @@ class PrintOrganizer(object):
     ###############################
     #  --- Initialization
     def create_printpoints_dict(self, mesh):
-        progress_bar = Bar('Print points', max=len(self.slicer.layers), suffix='Layer %(index)i/%(max)i - %(percent)d%%')
+        progress_bar = Bar('Print points', max=len(self.slicer.layers),
+                           suffix='Layer %(index)i/%(max)i - %(percent)d%%')
 
         for i, layer in enumerate(self.slicer.layers):
             self.printpoints_dict['layer_%d' % i] = {}
@@ -86,8 +87,6 @@ class PrintOrganizer(object):
                     count += 1
         logger.info("Generated %d print points" % count)
         return data
-
-
 
     ##################################
     #  --- Fabrication related parameters

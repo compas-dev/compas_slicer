@@ -56,4 +56,3 @@ class PlanarSlicer(BaseSlicer):
         #  --- Align the seams between layers and unify orientation
         seams_align(self, align_with='x_axis')
         unify_paths_orientation(self)
-

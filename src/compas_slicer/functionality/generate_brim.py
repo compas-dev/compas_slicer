@@ -76,7 +76,6 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
 
     slicer.layers[0] = Layer(paths=paths_per_layer)
 
-
     seams_align(slicer, align_with="next_path")
 
 
