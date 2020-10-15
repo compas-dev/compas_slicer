@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import statistics
+from compas.geometry import Point, distance_point_point_sqrd, Vector
 
 logger = logging.getLogger('logger')
 
@@ -11,7 +12,8 @@ __all__ = ['save_to_json',
            'total_length_of_dictionary',
            'flattened_list_of_dictionary',
            'interrupt',
-           'point_list_to_dict']
+           'point_list_to_dict',
+           'get_closest_mesh_normal']
 
 
 def save_to_json(data, filepath, name):
@@ -42,6 +44,14 @@ def check_triangular_mesh(mesh):
         if len(vs) != 3:
             raise TypeError("Found a quad at face key: " + str(f_key) + " ,number of face vertices:" + str(
                 len(vs)) + ". \nOnly triangular meshes supported.")
+
+
+def get_closest_mesh_normal(mesh, pt):
+    vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
+    vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(pt, v_tupple[1]))
+    closest_vkey = vertex_tupples[0][0]
+    v = mesh.vertex_normal(closest_vkey)
+    return Vector(v[0], v[1], v[2])
 
 
 #######################################

@@ -7,8 +7,8 @@ from compas_plotters import MeshPlotter
 from compas_slicer.functionality import simplify_paths_rdp
 
 from compas.geometry import Frame
-from compas_slicer.fabrication import RobotPrinter
-from compas_slicer.fabrication import CurvedRoboticPrintOrganizer
+from compas_slicer.print_organization import RobotPrinter
+from compas_slicer.print_organization import CurvedRoboticPrintOrganizer
 from compas_viewers.objectviewer import ObjectViewer
 
 from compas_viewers.objectviewer import ObjectViewer

@@ -1,6 +1,6 @@
 import compas_slicer
 import logging
-from compas_slicer.fabrication.print_organizers.print_organizer import PrintOrganizer
+from compas_slicer.print_organization.print_organizers.print_organizer import PrintOrganizer
 from compas.geometry import Frame, norm_vector, Vector
 
 logger = logging.getLogger('logger')
@@ -14,11 +14,11 @@ __all__ = ['RoboticPrintOrganizer']
 
 class RoboticPrintOrganizer(PrintOrganizer):
     """
-    Creates fabrication data for robotic 3D printing.
+    Creates print_organization data for robotic 3D printing.
     """
 
     def __init__(self, slicer, machine_model, extruder_toggle_type="always_on"):
-        assert isinstance(machine_model, compas_slicer.fabrication.machine_model.RobotPrinter), \
+        assert isinstance(machine_model, compas_slicer.print_organization.machine_model.RobotPrinter), \
             "Machine Model does not represent a robot"
         PrintOrganizer.__init__(self, slicer, machine_model, extruder_toggle_type)
 
@@ -27,18 +27,6 @@ class RoboticPrintOrganizer(PrintOrganizer):
                       frame.zaxis)  # In UR the Z of the frame points down the end effector axis
         tcp_RCS = self.machine_model.robot.from_tcf_to_t0cf([frame])[0]
         return tcp_RCS
-
-    def get_printpoint_neighboring_items(self, layer_key, path_key, i):
-        neighboring_items = []
-        if i > 0:
-            neighboring_items.append(self.printpoints_dict[layer_key][path_key][i - 1])
-        else:
-            neighboring_items.append(None)
-        if i < len(self.printpoints_dict[layer_key][path_key]) - 1:
-            neighboring_items.append(self.printpoints_dict[layer_key][path_key][i + 1])
-        else:
-            neighboring_items.append(None)
-        return neighboring_items
 
     def generate_robotic_commands_dict(self):
         commands = {}
@@ -73,25 +61,6 @@ class RoboticPrintOrganizer(PrintOrganizer):
         return commands
 
 
-#############################
-#  Blend radius
-#############################
-
-def get_radius(printpoint, neighboring_items):
-    d_fillet = 10.0
-    buffer_d = 0.3
-    radius = d_fillet
-    if neighboring_items[0]:
-        radius = min(radius,
-                     norm_vector(
-                         Vector.from_start_end(neighboring_items[0].pt, printpoint.print_frame.point)) * buffer_d)
-    if neighboring_items[1]:
-        radius = min(radius,
-                     norm_vector(
-                         Vector.from_start_end(neighboring_items[1].pt, printpoint.print_frame.point)) * buffer_d)
-
-    radius = round(radius, 5)
-    return radius
 
 
 if __name__ == "__main__":

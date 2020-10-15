@@ -4,10 +4,10 @@ from compas.datastructures import Mesh
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.sorting import align_seams
 from compas_slicer.utilities import simplify_paths_rdp
-from compas_slicer.fabrication import PrintOrganizer
-from compas_slicer.fabrication import FDMPrinter
+from compas_slicer.print_organization import PrintOrganizer
+from compas_slicer.print_organization import FDMPrinter
 from compas_slicer.positioning import center_mesh_on_build_platform
-from compas_slicer.fabrication import Material
+from compas_slicer.print_organization import Material
 
 ######################## Logging
 import logging

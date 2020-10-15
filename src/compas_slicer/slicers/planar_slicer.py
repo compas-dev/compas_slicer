@@ -3,6 +3,8 @@ from compas_slicer.slicers import BaseSlicer
 from compas.geometry import Vector, Plane, Point
 import logging
 import time
+from compas_slicer.functionality import seams_align
+from compas_slicer.functionality import unify_paths_orientation
 
 logger = logging.getLogger('logger')
 
@@ -50,3 +52,8 @@ class PlanarSlicer(BaseSlicer):
 
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)
+
+        #  --- Align the seams between layers and unify orientation
+        seams_align(self, align_with='x_axis')
+        unify_paths_orientation(self)
+

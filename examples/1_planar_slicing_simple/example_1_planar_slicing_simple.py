@@ -8,8 +8,7 @@ from compas_slicer.functionality import generate_brim
 from compas_slicer.functionality import spiralize_contours
 from compas_slicer.functionality import seams_align
 from compas_slicer.functionality import seams_smooth, unify_paths_orientation
-from compas_slicer.fabrication import RoboticPrintOrganizer
-from compas_slicer.fabrication import RobotPrinter
+from compas_slicer.print_organization import PrintOrganizer
 from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.functionality import move_mesh_to_point, simplify_paths_rdp
 import time
@@ -24,7 +23,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 # MODEL = 'simple_vase.stl'
 MODEL = 'simple_vase.obj'
-OUTPUT_FILE = 'fabrication_commands.json'
+OUTPUT_FILE = 'out_printpoints.json'
 
 start_time = time.time()
 
@@ -37,19 +36,12 @@ def main():
 
     ### --- Slicer
     # try out different slicers by changing the slicer_type
-    # options: 'planar_compas', 'planar_numpy', 'planar_meshcut', 'planar_cgal'
+    # options: 'planar_compas', 'planar_meshcut', 'planar_cgal'
     slicer = PlanarSlicer(compas_mesh, slicer_type="planar_cgal", layer_height=1.5)
     slicer.slice_model()
 
     ### --- Generate brim
     generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
-
-    ### --- Align the seams between layers
-    # options: 'next_path', 'x_axis', 'y_axis', 'origin', 'Point(x,y,z)'
-    seams_align(slicer, align_with='x_axis')
-
-    ### --- Make sure all paths are looking in the same direction
-    unify_paths_orientation(slicer)
 
     ### --- Simplify the printpaths by removing points with a certain threshold
     # change the threshold value to remove more or less points
@@ -79,30 +71,18 @@ def main():
     # viewer.view.use_shaders = False
     # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
 
-    ### --- Fabrication
-    robot_printer = RobotPrinter('UR5')
-    robot_printer.attach_endeffector(FILENAME=os.path.join(DATA, 'plastic_extruder.obj'),
-                                     frame=Frame(point=[0,0,0], #[0.153792, -0.01174, -0.03926],
-                                                 xaxis=[1, 0, 0],
-                                                 yaxis=[0, 1, 0]))
-    # robot_printer.printout_info()
-
-    ### --- Initializes a robotic printing process
+    ### --- Fabrication - related information
     # options extruder_toggle_type: always_on, always_off, off_when_travel
-    print_organizer = RoboticPrintOrganizer(slicer, machine_model=robot_printer,
-                                            extruder_toggle_type="always_on")
+    print_organizer = PrintOrganizer(slicer, compas_mesh,
+                                     extruder_toggle_type="always_on")
 
-    # print_organizer.add_safety_printpoints(z_hop=20)
-
-    ### --- Sets the linear velocity
-    # options velocity_type: constant, per_layer, matching_layer_height, matching_overhang
-    print_organizer.set_linear_velocity(velocity_type="constant", v=35)
+    print_organizer.add_safety_printpoints(z_hop=20)
 
     # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
 
     ### --- Create robotic commands and save to json file
-    robotic_commands = print_organizer.generate_robotic_commands_dict()
-    save_to_json(robotic_commands, DATA, OUTPUT_FILE)
+    printpoints_data = print_organizer.generate_printpoints_dict()
+    save_to_json(printpoints_data, DATA, OUTPUT_FILE)
 
     # viewer.update()
     # viewer.show()

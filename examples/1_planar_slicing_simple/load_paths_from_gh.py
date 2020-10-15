@@ -8,8 +8,8 @@ from compas_slicer.functionality import generate_brim
 from compas_slicer.functionality import spiralize_contours
 from compas_slicer.functionality import seams_align
 from compas_slicer.functionality import seams_smooth, unify_paths_orientation
-from compas_slicer.fabrication import RoboticPrintOrganizer
-from compas_slicer.fabrication import RobotPrinter
+from compas_slicer.print_organization import RoboticPrintOrganizer
+from compas_slicer.print_organization import RobotPrinter
 from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.functionality import move_mesh_to_point, simplify_paths_rdp
 import time

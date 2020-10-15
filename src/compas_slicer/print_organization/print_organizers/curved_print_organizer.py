@@ -1,6 +1,6 @@
 import logging
 from compas.geometry import Polyline
-from compas_slicer.fabrication.print_organizers.robotic_print_organizer import RoboticPrintOrganizer
+from compas_slicer.print_organization.print_organizers.print_organizer import PrintOrganizer
 from compas_slicer.geometry import PrintPoint
 import compas_slicer.utilities as utils
 from compas.plugins import PluginNotInstalledError
@@ -15,14 +15,14 @@ if 'stratum' in packages:
 
 logger = logging.getLogger('logger')
 
-__all__ = ['CurvedRoboticPrintOrganizer']
+__all__ = ['CurvedPrintOrganizer']
 
 
 #############################################
 #  RoboticPrintOrganizer
 #############################################
 
-class CurvedRoboticPrintOrganizer(RoboticPrintOrganizer):
+class CurvedPrintOrganizer(PrintOrganizer):
     def __init__(self, slicer, machine_model, material, DATA_PATH, extruder_toggle_type="always_on"):
         if 'stratum' not in packages:
             raise PluginNotInstalledError("--------ATTENTION! ----------- \
@@ -30,7 +30,7 @@ class CurvedRoboticPrintOrganizer(RoboticPrintOrganizer):
                             You can't use this slicer without it. \
                             Check the README for instructions.")
 
-        RoboticPrintOrganizer.__init__(self, slicer, machine_model, material, extruder_toggle_type)
+        PrintOrganizer.__init__(self, slicer, machine_model, material, extruder_toggle_type)
         self.DATA_PATH = DATA_PATH
 
     def create_printpoints_dict(self):

@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-compas_slicer.fabrication
+compas_slicer.print_organization
 ********************************************************************************
 
 Classes
@@ -40,7 +40,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .machine_model import *  # noqa: F401 E402 F403
 from .print_process_utilities import *  # noqa: F401 E402 F403
 from .print_organizers import *  # noqa: F401 E402 F403
 

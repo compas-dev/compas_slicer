@@ -14,7 +14,7 @@ __all__ = ['MachineModel',
 
 class MachineModel(object):
     """
-    Class for representing various fabrication machines (3D printers, robots etc.)
+    Class for representing various print_organization machines (3D printers, robots etc.)
     """
 
     def __init__(self, id):
