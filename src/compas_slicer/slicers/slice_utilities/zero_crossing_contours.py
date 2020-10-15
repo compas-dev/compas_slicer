@@ -1,14 +1,8 @@
-import networkx as nx
-import matplotlib.pyplot as plt
-import logging
-logger = logging.getLogger('logger')
 from compas.geometry import Point
-from compas_slicer.geometry import Path
-from compas_slicer.geometry import Layer
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_edges, sort_graph_connected_components
 import logging
-from compas.geometry import intersection_segment_plane
-from progress.bar import Bar
+
+logger = logging.getLogger('logger')
 
 __all__ = ['ZeroCrossingContours']
 
@@ -45,7 +39,7 @@ class ZeroCrossingContours(object):
         for edge in list(self.mesh.edges()):
             if self.edge_is_intersected(edge[0], edge[1]):
                 point = self.find_zero_crossing_point(edge[0], edge[1])
-                if point: # Sometimes the result can be None
+                if point:  # Sometimes the result can be None
                     if edge not in self.intersected_edges and tuple(reversed(edge)) not in self.intersected_edges:
                         self.intersected_edges.append(edge)
                         # create [edge - point] dictionary

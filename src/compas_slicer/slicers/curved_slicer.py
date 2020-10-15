@@ -1,5 +1,4 @@
 from compas_slicer.slicers import BaseSlicer
-import compas_slicer.utilities as utils
 from compas_slicer.functionality import seams_align, unify_paths_orientation
 from compas_slicer.slicers.curved_slicing import CompoundTarget
 from compas_slicer.slicers.curved_slicing import find_desired_number_of_isocurves
@@ -18,7 +17,7 @@ class CurvedSlicer(BaseSlicer):
         self.min_layer_height = 0.2
         self.max_layer_height = 2.0
         self.DATA_PATH = DATA_PATH
-        self.avg_layer_height  = avg_layer_height
+        self.avg_layer_height = avg_layer_height
 
         #  --- Update vertex attributes
         self.mesh.update_default_vertex_attributes({'boundary': 0})

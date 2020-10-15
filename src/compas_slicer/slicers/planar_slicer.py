@@ -58,4 +58,3 @@ class PlanarSlicer(BaseSlicer):
 
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)
-

@@ -19,12 +19,12 @@ class IsocurvesGenerator:
         self.target_LOW = target_LOW
         self.target_HIGH = target_HIGH
 
-        ### main
+        #  main
         self.segments = [VerticalLayer(id=0)]  # segments that contain isocurves (compas_slicer.Path)
         t_list = get_t_list(number_of_curves)
         self.create_isocurves(t_list)
 
-    ### --- main
+    #  --- main
 
     def create_isocurves(self, t_list):
         progress_bar = Bar(' Isocurves Generation', max=len(t_list),
@@ -39,7 +39,7 @@ class IsocurvesGenerator:
 
                 if len(pts) > 4:  # discard curves that are too small
 
-                    ### --- Assign resulting clusters to the correct segment: current segment
+                    #  --- Assign resulting clusters to the correct segment: current segment
                     if (i == 0 and j == 0) or len(self.segments[0].paths) == 0:
                         current_segment = self.segments[0]
                     else:  # find the candidate segment for new isocurve
@@ -53,14 +53,13 @@ class IsocurvesGenerator:
                             current_segment = VerticalLayer(id=self.segments[-1].id + 1)
                             self.segments.append(current_segment)
 
-                    ### --- Create paths
+                    # --- Create paths
                     isocurve = Path(pts, is_closed=zero_contours.closed_paths_booleans[key])
                     current_segment.append_(isocurve)
             # advance progress bar
             progress_bar.next()
         # finish progress bar
         progress_bar.finish()
-
 
     def assign_distance_attribute_to_mesh_vertices(self, weight):
         if self.target_LOW and self.target_HIGH:

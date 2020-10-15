@@ -1,7 +1,5 @@
-from compas.geometry import Point
 from compas_slicer.geometry import Path
 from compas_slicer.geometry import Layer
-from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_edges, sort_graph_connected_components
 import logging
 from compas.geometry import intersection_segment_plane
 from progress.bar import Bar
@@ -60,7 +58,7 @@ logger = logging.getLogger('logger')
 class IntersectionCurveMeshPlane(ZeroCrossingContours):
     def __init__(self, mesh, plane):
         self.plane = plane
-        ZeroCrossingContours.__init__(self, mesh) # initialize from parent class
+        ZeroCrossingContours.__init__(self, mesh)  # initialize from parent class
 
     def edge_is_intersected(self, u, v):
         a = self.mesh.vertex_attributes(u, 'xyz')
@@ -72,4 +70,3 @@ class IntersectionCurveMeshPlane(ZeroCrossingContours):
         a = self.mesh.vertex_attributes(u, 'xyz')
         b = self.mesh.vertex_attributes(v, 'xyz')
         return intersection_segment_plane((a, b), self.plane)
-

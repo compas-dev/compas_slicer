@@ -1,12 +1,4 @@
-import numpy as np
-import math
-import igl
-from compas_slicer.geometry import VerticalLayer
 import logging
-from progress.bar import Bar
-import networkx as nx
-from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
-from compas_slicer.slicers.slice_utilities import ZeroCrossingContours
 
 logger = logging.getLogger('logger')
 
@@ -14,7 +6,7 @@ __all__ = ['get_weighted_distance']
 
 
 def get_weighted_distance(vkey, t, target_LOW, target_HIGH):
-    ## calculation with uneven weights
+    # calculation with uneven weights
     if target_HIGH.use_uneven_weights():
         d_low = target_LOW.distance(vkey)  # float
         ds_high = target_HIGH.all_clusters_distances(vkey)  # list of floats
@@ -39,7 +31,7 @@ def get_weighted_distance(vkey, t, target_LOW, target_HIGH):
         else:
             return min(distances)
 
-    ## simple calculation
+    # simple calculation
     else:
         d_low = target_LOW.distance(vkey)
         d_high = target_HIGH.distance(vkey)

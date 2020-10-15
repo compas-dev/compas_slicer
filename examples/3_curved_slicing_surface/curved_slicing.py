@@ -40,31 +40,18 @@ if __name__ == "__main__":
     slicer.to_json(DATA_PATH, 'curved_slicer.json')
 
     # if create_print_organizer:
-    #     # ### --- Fabrication data
-    #     robot_printer = RobotPrinter('UR5')
-    #     robot_printer.attach_endeffector(FILENAME=os.path.join(DATA_PATH, 'plastic_extruder.obj'),
-    #                                      frame=Frame(point=[0.153792, -0.01174, -0.03926],
-    #                                                  xaxis=[1, 0, 0],
-    #                                                  yaxis=[0, 1, 0]))
-    #     #
     #     # ### --- Print organizer
     #     slicer_data = utils.load_from_json(DATA_PATH, 'curved_slicer.json')
     #     slicer = BaseSlicer.from_data(slicer_data)
     #
-    #     print_organizer = CurvedRoboticPrintOrganizer(slicer, machine_model=robot_printer,
+    #     print_organizer = CurvedPrintOrganizer(slicer, machine_model=robot_printer,
     #                                                   material=material_PLA, DATA_PATH=DATA_PATH)
     #
     #     utils.save_to_json(print_organizer.to_data(), DATA_PATH, 'print_organizer.json')
     #
     #     # print_organizer.generate_commands()
     #     # print_organizer.save_commands_to_json(OUTPUT_FILE)
-    #
-    #     # ### ----- Visualize
-    #     # plotter = MeshPlotter(mesh, figsize=(16, 10))
-    #     # plotter.draw_edges(width=0.15)
-    #     # plotter.draw_faces()
-    #     # plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
-    #     # plotter.show()
+
 
     ### ----- Visualize
     viewer = ObjectViewer()

@@ -68,7 +68,7 @@ class CompoundTarget:
 
         self.distances_lists = [list(dl) for dl in distances_lists]  # list of lists
 
-    #### ---- Uneven boundaries
+    # ---- Uneven boundaries
     def compute_uneven_boundaries_t_ends(self, other_target):
         if self.number_of_boundaries > 1:
             ds_avg_HIGH = self.get_boundaries_avg_dist_from_other_target(other_target)
