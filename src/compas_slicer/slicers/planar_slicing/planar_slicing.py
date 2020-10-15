@@ -12,7 +12,7 @@ __all__ = ['create_planar_paths']
 
 ###################################
 #  Intersection function
-###################################
+
 
 def create_planar_paths(mesh, planes):
     """
@@ -33,6 +33,7 @@ def create_planar_paths(mesh, planes):
     for i, plane in enumerate(planes):
 
         i = IntersectionCurveMeshPlane(mesh, plane)
+        i.compute()
 
         paths = []
         if len(i.sorted_point_clusters) > 0:
@@ -52,13 +53,10 @@ def create_planar_paths(mesh, planes):
 
 ###################################
 #  Intersection class
-###################################
-
 
 logger = logging.getLogger('logger')
 
 
-#  --- Class
 class IntersectionCurveMeshPlane(ZeroCrossingContours):
     def __init__(self, mesh, plane):
         self.plane = plane

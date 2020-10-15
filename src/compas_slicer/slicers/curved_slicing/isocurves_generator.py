@@ -1,11 +1,11 @@
 import numpy as np
-import math
-import igl
-from compas_slicer.geometry import VerticalLayer
+from compas.geometry import Vector, add_vectors, scale_vector
+import compas_slicer.utilities as utils
+from compas_slicer.geometry import VerticalLayer, Path
 import logging
+from compas_slicer.slicers.curved_slicing.get_weighted_distance import get_weighted_distance
 from progress.bar import Bar
-import networkx as nx
-from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
+from compas_slicer.slicers.slice_utilities import ZeroCrossingContours
 
 logger = logging.getLogger('logger')
 
@@ -20,59 +20,90 @@ class IsocurvesGenerator:
         self.target_HIGH = target_HIGH
 
         ### main
-        self.segments = [VerticalLayer(id=0)]  # segments that contain isocurves
+        self.segments = [VerticalLayer(id=0)]  # segments that contain isocurves (compas_slicer.Path)
         t_list = get_t_list(number_of_curves)
         self.create_isocurves(t_list)
 
-        # ### post processing
-        # self.orient_isocurves_and_align_seams()
-        #
-        # total_number_of_points = 0
-        # for segment in self.segments:
-        #     total_number_of_points += segment.total_number_of_points()
-        # logger.info("Created %d segments with %d total number of points" % (len(self.segments), total_number_of_points))
-
     ### --- main
 
-
     def create_isocurves(self, t_list):
+        progress_bar = Bar(' Isocurves Generation', max=len(t_list),
+                           suffix='Layer %(index)i/%(max)i - %(percent)d%%')
         for i, t in enumerate(t_list):
-            logger.info("--- %d : Creating isocurve(s) on level %.3f" % (i, t))
-    
-            t_clustering = EdgeClustering(self.mesh, t, self.target_LOW, self.target_HIGH)
-            t_clustering.generate_edge_clusters_method(sort_clusters=True)
-            t_clustering.generate_point_clusters_method()
+            self.assign_distance_attribute_to_mesh_vertices(t)
+            zero_contours = GeodesicsZeroCrossingContour(self.mesh)
+            zero_contours.compute()
 
-            for j, cluster_key in enumerate(t_clustering.point_clusters):
-                pts = t_clustering.point_clusters[cluster_key]
+            for j, key in enumerate(zero_contours.sorted_point_clusters):
+                pts = zero_contours.sorted_point_clusters[key]
 
                 if len(pts) > 4:  # discard curves that are too small
 
                     ### --- Assign resulting clusters to the correct segment: current segment
-                    if (i == 0 and j == 0) or len(self.segments[0].isocurves) == 0:
+                    if (i == 0 and j == 0) or len(self.segments[0].paths) == 0:
                         current_segment = self.segments[0]
                     else:  # find the candidate segment for new isocurve
                         centroid = np.mean(np.array(pts), axis=0)
                         other_centroids = self.get_segments_centroids_list()
                         candidate_segment = self.segments[utils.get_closest_pt_index(centroid, other_centroids)]
-                        if np.linalg.norm(candidate_segment.head_centroid - centroid) < get_param(
-                                'segments_max_centroid_dist'):
+                        threshold_max_centroid_dist = 25
+                        if np.linalg.norm(candidate_segment.head_centroid - centroid) < threshold_max_centroid_dist:
                             current_segment = candidate_segment
                         else:  # then create new segment
-                            current_segment = Segment(id=self.segments[-1].id + 1)
+                            current_segment = VerticalLayer(id=self.segments[-1].id + 1)
                             self.segments.append(current_segment)
 
-                    ### --- Create isocurves
-                    if len(current_segment.isocurves) == 0:
-                        isocurve = Isocurve(pts, reference_isocurve=None)
-                    else:
-                        isocurve = Isocurve(pts, reference_isocurve=current_segment.isocurves[-1])
+                    ### --- Create paths
+                    isocurve = Path(pts, is_closed=zero_contours.closed_paths_booleans[key])
+                    current_segment.append_(isocurve)
+            # advance progress bar
+            progress_bar.next()
+        # finish progress bar
+        progress_bar.finish()
 
-                    if isocurve.is_valid:
-                        current_segment.append_(isocurve)
 
- #########################
- #  Additional utils
+    def assign_distance_attribute_to_mesh_vertices(self, weight):
+        if self.target_LOW and self.target_HIGH:
+            for vkey in self.mesh.vertices():
+                d = get_weighted_distance(vkey, weight, self.target_LOW, self.target_HIGH)
+                self.mesh.vertex[vkey]["distance"] = d
+        else:
+            assert self.target_LOW, 'You need to provide one target at least.'
+            offset = weight * max(self.target_LOW.all_distances())
+            for vkey in self.mesh.vertices():
+                self.mesh.vertex[vkey]["distance"] = self.target_LOW.distance(vkey) - offset
+
+    def get_segments_centroids_list(self):
+        head_centroids = []
+        for segment in self.segments:
+            head_centroids.append(segment.head_centroid)
+        return head_centroids
+
+
+#################################
+#  Additional functionality
+
+class GeodesicsZeroCrossingContour(ZeroCrossingContours):
+    def __init__(self, mesh):
+        ZeroCrossingContours.__init__(self, mesh)  # initialize from parent class
+
+    def edge_is_intersected(self, u, v):
+        d1 = self.mesh.vertex[u]['distance']
+        d2 = self.mesh.vertex[v]['distance']
+        if (d1 > 0 and d2 > 0) or (d1 < 0 and d2 < 0):
+            return False
+        else:
+            return True
+
+    def find_zero_crossing_point(self, u, v):
+        dist_a, dist_b = self.mesh.vertex[u]['distance'], self.mesh.vertex[v]['distance']
+        if abs(dist_a) + abs(dist_b) > 0:
+            v_coords_a, v_coords_b = self.mesh.vertex_coordinates(u), self.mesh.vertex_coordinates(v)
+            vec = Vector.from_start_end(v_coords_a, v_coords_b)
+            vec = scale_vector(vec, abs(dist_a) / (abs(dist_a) + abs(dist_b)))
+            pt = add_vectors(v_coords_a, vec)
+            return pt
+
 
 def get_t_list(number_of_curves):
     t_list = [0.001]  # [0.001]

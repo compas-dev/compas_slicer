@@ -22,29 +22,22 @@ logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'vase.obj')
 
-slice_model = True
-create_print_organizer = False
-
 if __name__ == "__main__":
+    ### --- Load initial_mesh
+    mesh = Mesh.from_obj(os.path.join(DATA_PATH, OBJ_INPUT_NAME))
 
+    ### --- Load targets (boundaries)
+    low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
+    high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
 
-    if slice_model:
-        ### --- Load initial_mesh
-        mesh = Mesh.from_obj(os.path.join(DATA_PATH, OBJ_INPUT_NAME))
+    ### --- slicing
+    slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH, avg_layer_height = 3.0)
+    slicer.slice_model()  # generate contours
+    simplify_paths_rdp(slicer, threshold=0.6)
 
-        ### --- Load boundaries
-        low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
-        high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
+    slicer.printout_info()
 
-        ### --- slicing
-        slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH)
-        slicer.slice_model()  # generate contours
-        simplify_paths_rdp(slicer, threshold=0.6)
-
-        # viewer.view.use_shaders = False
-        # slicer.visualize_on_viewer(viewer, visualize_mesh=True, visualize_paths=False)
-
-        slicer.to_json(DATA_PATH, 'curved_slicer.json')
+    slicer.to_json(DATA_PATH, 'curved_slicer.json')
 
     # if create_print_organizer:
     #     # ### --- Fabrication data
@@ -73,10 +66,9 @@ if __name__ == "__main__":
     #     # plotter.draw_lines(slicer.get_path_lines_for_plotter(color=(255, 0, 0)))
     #     # plotter.show()
 
-        # ### ----- Visualize
-        # viewer = ObjectViewer()
-        # viewer = ObjectViewer()
-        # # slicer.visualize_on_viewer(viewer, visualize_mesh=True, visualize_paths=False)
-        # # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
-        # viewer.update()
-        # viewer.show()
+    ### ----- Visualize
+    viewer = ObjectViewer()
+    slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
+    # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
+    viewer.update()
+    viewer.show()

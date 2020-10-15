@@ -2,7 +2,8 @@ import os
 import json
 import logging
 import statistics
-from compas.geometry import Point, distance_point_point_sqrd, Vector
+from compas.geometry import Point, distance_point_point_sqrd
+from compas.geometry import Vector, closest_point_in_cloud
 
 logger = logging.getLogger('logger')
 
@@ -13,7 +14,8 @@ __all__ = ['save_to_json',
            'flattened_list_of_dictionary',
            'interrupt',
            'point_list_to_dict',
-           'get_closest_mesh_normal']
+           'get_closest_mesh_normal',
+           'get_closest_pt_index']
 
 
 def save_to_json(data, filepath, name):
@@ -52,6 +54,13 @@ def get_closest_mesh_normal(mesh, pt):
     closest_vkey = vertex_tupples[0][0]
     v = mesh.vertex_normal(closest_vkey)
     return Vector(v[0], v[1], v[2])
+
+
+def get_closest_pt_index(pt, pts):
+    ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
+    # distances = [distance_point_point_sqrd(p, pt) for p in pts]
+    # ci = distances.index(min(distances))
+    return ci
 
 
 #######################################

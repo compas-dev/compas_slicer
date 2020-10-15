@@ -24,7 +24,7 @@ class ZeroCrossingContours(object):
         self.sorted_point_clusters = {}
         self.sorted_edge_clusters = {}
         self.closed_paths_booleans = {}
-        self.compute()
+        # self.compute()
 
     def compute(self):
         G = create_graph_from_mesh_edges(self.mesh, self.intersected_edges,
@@ -45,8 +45,7 @@ class ZeroCrossingContours(object):
         for edge in list(self.mesh.edges()):
             if self.edge_is_intersected(edge[0], edge[1]):
                 point = self.find_zero_crossing_point(edge[0], edge[1])
-                # assert point, 'Attention. Edge is intersected but no intersection point was found.'
-                if point:
+                if point: # Sometimes the result can be None
                     if edge not in self.intersected_edges and tuple(reversed(edge)) not in self.intersected_edges:
                         self.intersected_edges.append(edge)
                         # create [edge - point] dictionary

@@ -3,8 +3,7 @@ from compas_slicer.slicers import BaseSlicer
 from compas.geometry import Vector, Plane, Point
 import logging
 import time
-from compas_slicer.functionality import seams_align
-from compas_slicer.functionality import unify_paths_orientation
+from compas_slicer.functionality import seams_align, unify_paths_orientation
 
 logger = logging.getLogger('logger')
 
@@ -24,6 +23,13 @@ class PlanarSlicer(BaseSlicer):
         end_time = time.time()
         logger.info('')
         logger.info("Slicing operation took: %.2f seconds" % (end_time - start_time))
+
+        #  --- Align the seams between layers and unify orientation
+        seams_align(self, align_with='x_axis')
+        unify_paths_orientation(self)
+
+        logger.info("Created %d Layers with %d total number of points"
+                    % (len(self.layers), self.total_number_of_points))
 
     def generate_paths(self):
 
@@ -53,6 +59,3 @@ class PlanarSlicer(BaseSlicer):
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)
 
-        #  --- Align the seams between layers and unify orientation
-        seams_align(self, align_with='x_axis')
-        unify_paths_orientation(self)
