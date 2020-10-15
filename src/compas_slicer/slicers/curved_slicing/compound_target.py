@@ -1,10 +1,13 @@
 import numpy as np
 import math
-import igl
+from compas_slicer.utilities import TerminalCommand
 import compas_slicer.utilities as utils
 import logging
 import networkx as nx
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
+packages = TerminalCommand('conda list').get_split_output_strings()
+if 'igl' in packages:
+    import igl
 
 logger = logging.getLogger('logger')
 
