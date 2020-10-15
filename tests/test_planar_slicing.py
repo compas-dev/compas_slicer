@@ -31,10 +31,6 @@ def test_planar_contours_success():
         assert slicer.layers[i].paths[0].is_closed, "Path resulting from slicing of cylinder using 'planar_compas' is " \
                                                     "open. It should be closed "
 
-z = [compas_mesh.vertex_attribute(key, 'z') for key in compas_mesh.vertices()]
-min_z, max_z = min(z), max(z)
-d = abs(min_z - max_z)
-no_of_layers = int(d / layer_height)
 
 if __name__ == '__main__':
     pass
