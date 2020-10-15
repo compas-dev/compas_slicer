@@ -5,7 +5,7 @@ logger = logging.getLogger('logger')
 __all__ = ['generate_gcode']
 
 def generate_gcode(printpoints_dict, FILE, machine_model, material):
-    """Creates all the commands in order for fabrication
+    """Creates all the commands in order for print_organization
 
     Attributes
     ----------
@@ -14,7 +14,7 @@ def generate_gcode(printpoints_dict, FILE, machine_model, material):
     FILE : str
         Path of gcode file to be saved.
     machine_model : The class that stores the information for the 3d printer
-        compas_slicer.fabrication.MachineModel
+        compas_slicer.print_organization.MachineModel
     
     GCODE COMMANDS (for reference)
 

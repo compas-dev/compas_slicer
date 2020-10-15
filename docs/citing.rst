@@ -1,0 +1,6 @@
+******
+Citing
+******
+
+.. rst-class:: lead
+

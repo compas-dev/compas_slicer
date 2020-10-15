@@ -22,7 +22,6 @@ Sorting
     seams_align
     seams_smooth
     sort_per_segment
-    sort_per_shortest_path_mlrose
 
 Positioning
 ===========

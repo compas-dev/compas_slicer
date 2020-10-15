@@ -1,4 +1,4 @@
-import rdp
+import rdp as rdp
 import numpy as np
 import logging
 
@@ -27,7 +27,7 @@ def simplify_paths_rdp(slicer, threshold):
     remaining_pts_num = 0
     for layer in slicer.layers:
         for path in layer.paths:
-            pts_rdp = rdp(np.array(path.points), epsilon=threshold)
+            pts_rdp = rdp.rdp(np.array(path.points), epsilon=threshold)
             path.points = [Point(pt[0], pt[1], pt[2]) for pt in pts_rdp]
             remaining_pts_num += len(path.points)
     logger.info('%d Points remaining after rdp simplification' % remaining_pts_num)

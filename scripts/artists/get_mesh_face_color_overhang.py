@@ -10,7 +10,7 @@ def get_mesh_face_color_overhang(mesh, max_angle=45, mode="adaptive", infill=Tru
     mesh : compas.datastructures.Mesh
         Input mesh.
     max_angle : int
-        Maximum overhang possible with fabrication machine.
+        Maximum overhang possible with print_organization machine.
     mode : str
         "adaptive", "fixed"
 

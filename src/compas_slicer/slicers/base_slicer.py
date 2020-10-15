@@ -31,13 +31,20 @@ class BaseSlicer(object):
 
         #  input
         self.mesh = mesh
-        logger.info(
-            "Input Mesh with : %d vertices, %d Faces" % (len(list(self.mesh.vertices())), len(list(self.mesh.faces()))))
+        logger.info("Input Mesh with : %d vertices, %d Faces"
+                    % (len(list(self.mesh.vertices())), len(list(self.mesh.faces()))))
 
         self.layer_height = None
-
         self.layers = []  # any class inheriting from SortedPathCollection, i.e.  Layer(horizontal sorting)
         # or VerticalLayer (vertical sorting)
+
+    @property
+    def total_number_of_points(self):
+        total_number_of_pts = 0
+        for layer in self.layers:
+            for path in layer.paths:
+                total_number_of_pts += len(path.points)
+        return total_number_of_pts
 
     ##############################
     #  --- Functions

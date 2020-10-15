@@ -1,5 +1,5 @@
-from compas.geometry import Point, Frame, distance_point_point_sqrd, Vector
-
+from compas.geometry import Point, Frame, Vector
+import compas
 __all__ = ['PrintPoint']
 
 
@@ -19,23 +19,28 @@ class PrintPoint(object):
         A compas Point consisting out of x, y, z coordinates
     layer_height : float
         The vertical distance between the point on this layer and the next layer
+    mesh:
+    up_vector:
+
     """
 
-    def __init__(self, pt, layer_height):
+    def __init__(self, pt, layer_height, mesh_normal, up_vector):
         #  --- basic printpoint
         self.pt = pt
         self.layer_height = layer_height
+
+        assert isinstance(mesh_normal, compas.geometry.Vector)
+
+        self.up_vector = up_vector  # compas.geometry.Vector
+        self.mesh_normal = mesh_normal  # compas.geometry.Vector
+        self.frame = self.get_frame()  # compas.geometry.Frame
+
+        #  --- print_organization related attributes
         self.extruder_toggle = None
         self.velocity = None
-
-        self.wait_time = 0
-        self.print_frame = get_default_print_frame(pt, desired_axis=Vector(0, 1, 0))  # compas.geometry.Frame
+        self.wait_time = None
 
         #  --- advanced printpoint
-        self.up_vector = None  # compas.geometry.Vector
-        self.mesh_normal = None  # compas.geometry.Vector
-        self.plane = None
-
         self.closest_support_pt = None  # class compas.geometry.point
         self.closest_upper_point = None
         self.distance_to_support = None
@@ -46,88 +51,35 @@ class PrintPoint(object):
         x, y, z = self.pt[0], self.pt[1], self.pt[2]
         return "<PrintPoint object at (%.2f, %.2f, %.2f)>" % (x, y, z)
 
-    #  --- Initialization of advanced print point functions
-
-    def initialize_advanced_print_point(self, mesh, up_vector):
-        self.up_vector = up_vector
-        self.normal = self.get_closest_mesh_normal(mesh)
-        self.plane = self.get_plane()
-        # update print frame with correct plane orientation
-        self.print_frame = get_default_print_frame(pt=self.pt, desired_axis=self.plane.xaxis.scaled(-1))
-
-    def get_plane(self):
+    def get_frame(self):
         return Frame(self.pt, self.up_vector, self.mesh_normal)
-
-    def get_closest_mesh_normal(self, mesh):
-        vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
-        # sort according to distance from self.pt
-        vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(self.pt, v_tupple[1]))
-        closest_vkey = vertex_tupples[0][0]
-        return mesh.vertex_normal(closest_vkey)
-
-    #################################
-    #  --- Visualization
-    def generate_visualization_shape(self):
-        raise NotImplementedError  # TODO
 
     #################################
     #  --- To data , from data
     def to_data(self):
-        if self.closest_upper_point:
-            closest_upper_point = [self.closest_upper_point[0], self.closest_upper_point[1],
-                                   self.closest_upper_point[2]]
-        else:
-            closest_upper_point = None
-
-        if self.closest_support_pt:
-            closest_support_pt = [self.closest_support_pt[0], self.closest_support_pt[1], self.closest_support_pt[2]]
-        else:
-            closest_support_pt = None
-
         point = {
             "point": [self.pt[0], self.pt[1], self.pt[2]],
-            "closest_support_pt": closest_support_pt,
-            "distance_to_support": self.distance_to_support,
-            "closest_upper_point": closest_upper_point,
-            "up_vector": [self.up_vector[0], self.up_vector[1], self.up_vector[2]],
+            "up_vector": self.up_vector.to_data(),
             "layer_height": self.layer_height,
-            "frame": {'point': [self.frame.point[0], self.frame.point[1], self.frame.point[2]],
-                      'xaxis': [self.frame.xaxis[0], self.frame.xaxis[1], self.frame.xaxis[2]],
-                      'yaxis': [self.frame.yaxis[0], self.frame.yaxis[1], self.frame.yaxis[2]]},
-            "mesh_normal": [self.mesh_normal[0], self.mesh_normal[1], self.mesh_normal[2]]
+            "frame": self.frame.to_data(),
+            "mesh_normal": self.mesh_normal.to_data(),
+
+            "closest_support_pt": self.closest_support_pt.to_data() if self.closest_support_pt else None,
+            "distance_to_support": self.distance_to_support.to_data() if self.distance_to_support else None,
+            "closest_upper_point": self.closest_upper_point.to_data() if self.closest_upper_point else None,
         }
         return point
 
     @classmethod
     def from_data(cls, data):
         pp = cls(pt=Point(data['point'][0], data['point'][1], data['point'][2]),
-                 layer_height=data['layer_height'])
+                 layer_height=data['layer_height'], mesh_normal=data['mesh_normal'].from_data(),
+                 up_vector=Vector.from_data(data['up_vector']))
 
-        if data['closest_support_pt']:
-            pp.closest_support_pt = Point(data['closest_support_pt'][0],
-                                          data['closest_support_pt'][1],
-                                          data['closest_support_pt'][2])
+        pp.frame = Frame.from_data(data['frame'])
 
-        if data['distance_to_support']:
-            pp.distance_to_support = data['distance_to_support']
-
-        if data['closest_upper_point']:
-            pp.closest_upper_point = Point(data['closest_upper_point'][0],
-                                           data['closest_upper_point'][1],
-                                           data['closest_upper_point'][2])
-
-        if data['up_vector']:
-            pp.up_vector = Vector(data['up_vector'][0], data['up_vector'][1], data['up_vector'][2])
-
-        if data['frame']:
-            pp.frame = Frame(
-                Point(data['frame']['point'][0], data['frame']['point'][1], data['frame']['point'][2]),
-                Vector(data["frame"]["xaxis"][0], data['frame']['xaxis'][1],
-                       data['frame']['xaxis'][2]),
-                Vector(data['frame']['yaxis'][0], data['frame']['yaxis'][1],
-                       data['frame']['yaxis'][2]))
-
-        if data['mesh_normal']:
-            pp.mesh_normal = Vector(data['mesh_normal'][0], data['mesh_normal'][1], data['mesh_normal'][2])
+        pp.closest_support_pt = Point.from_data(data['closest_support_pt'])
+        pp.distance_to_support = data['distance_to_support']
+        pp.closest_upper_point = Point.from_data(data['closest_upper_point'])
 
         return pp

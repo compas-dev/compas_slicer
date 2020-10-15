@@ -6,6 +6,7 @@ from compas_slicer.geometry import Path
 from compas.geometry import Point
 
 import logging
+from compas_slicer.functionality import seams_align
 
 logger = logging.getLogger('logger')
 
@@ -74,6 +75,8 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
     new_layer.paths.reverse()  # go from outside towards the object
 
     slicer.layers[0] = Layer(paths=paths_per_layer)
+
+    seams_align(slicer, align_with="next_path")
 
 
 if __name__ == "__main__":

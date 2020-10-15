@@ -1,57 +1,70 @@
 name: build
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
- push:
-   branches:
-     - main
- pull_request:
-   branches:
-     - main
+  [push]
+#  push:
+#    branches:
+#      - master
+#  pull_request:
+#    branches:
+#      - master
 
 jobs:
-  build:
+  build-packages:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        name: [
-          "windows-py38",
-          "macos-py37",
-          "ubuntu-py36",
-        ]
-        include:
-          - name: "windows-py38"
-            os: windows-latest
-            python-version: 3.8
-          - name: "macos-py37"
-            os: macos-latest
-            python-version: 3.7
-          - name: "ubuntu-py36"
-            os: ubuntu-latest
-            python-version: 3.6
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.7]
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install cython --install-option="--no-cython-compile"
+          pip install cython --install-option='--no-cython-compile'
       - name: Install
         run: |
-          python -m pip install --no-cache-dir -r requirements-dev.txt
-
-
-       # run tests
-      - name: Run linter
+          pip install --no-cache-dir -r requirements-dev.txt
+      - name: Lint with flake8
         run: |
-         invoke lint
-      - name: Run tests
-        id: testing
+          invoke lint
+      - name: Test import
+        run: |
+          python -m compas
+      - name: Test with pytest
         run: |
           invoke test
+  build-docs:
+    needs: build-packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install cython --install-option='--no-cython-compile'
+      - name: Install
+        run: |
+          pip install --no-cache-dir -r requirements-dev.txt
+      - name: Build docs with sphinx
+        run: |
+          rm -rf dist/docs && invoke docs
+      - name: Deploy docs
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          target_branch: gh-pages
+          build_dir: dist/docs
+          keep_history: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
