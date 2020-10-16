@@ -73,9 +73,9 @@ def main():
 
     ### --- Fabrication - related information
     # options extruder_toggle_type: always_on, always_off, off_when_travel
-    print_organizer = PrintOrganizer(slicer, compas_mesh,
-                                     extruder_toggle_type="always_on")
-
+    print_organizer = PrintOrganizer(slicer, compas_mesh)
+    print_organizer.create_printpoints_dict(compas_mesh)
+    print_organizer.set_extruder_toggle(extruder_toggle_type="always_on")
     print_organizer.add_safety_printpoints(z_hop=20)
 
     # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)

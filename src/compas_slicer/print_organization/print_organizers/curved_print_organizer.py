@@ -2,16 +2,8 @@ import logging
 from compas.geometry import Polyline
 from compas_slicer.print_organization.print_organizers.print_organizer import PrintOrganizer
 from compas_slicer.geometry import PrintPoint
-import compas_slicer.utilities as utils
-from compas.plugins import PluginNotInstalledError
 
-packages = utils.TerminalCommand('conda list').get_split_output_strings()
-if 'stratum' in packages:
-    import stratum.region_split.topological_sort as topo_sort
-    from stratum.printpaths.boundary import Boundary
-    import stratum.utils.utils as stratum_utils
-    from stratum.printpaths.path import Path as StratumPath
-    from stratum.printpaths.path_collection import PathCollection as StratumPathCollection
+
 
 logger = logging.getLogger('logger')
 
@@ -23,17 +15,20 @@ __all__ = ['CurvedPrintOrganizer']
 #############################################
 
 class CurvedPrintOrganizer(PrintOrganizer):
-    def __init__(self, slicer, machine_model, material, DATA_PATH, extruder_toggle_type="always_on"):
-        if 'stratum' not in packages:
-            raise PluginNotInstalledError("--------ATTENTION! ----------- \
-                            STRATUM library (for curved slicing) is missing! \
-                            You can't use this slicer without it. \
-                            Check the README for instructions.")
-
-        PrintOrganizer.__init__(self, slicer, machine_model, material, extruder_toggle_type)
+    def __init__(self, slicer, mesh, extruder_toggle_type, DATA_PATH):
+        self.slicer = slicer
         self.DATA_PATH = DATA_PATH
 
-    def create_printpoints_dict(self):
+        #  topological sorting
+
+
+        #  initialize print points
+        self.printpoints_dict = {}
+        self.create_printpoints_dict(mesh)
+        self.set_extruder_toggle(extruder_toggle_type)
+
+
+    def create_printpoints_dict(self, mesh):
         #  Without region split
         print('')
         logger.info('Creation of printpoints (curved slicer without region split)')

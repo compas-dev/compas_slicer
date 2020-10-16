@@ -18,21 +18,16 @@ class PrintOrganizer(object):
     Base class for organizing the printing process.
     """
 
-    def __init__(self, slicer, mesh, extruder_toggle_type="always_on"):
-        # check input
-        assert isinstance(slicer, compas_slicer.slicers.BaseSlicer)
-        logger.info('Creating print points ...')
-
+    def __init__(self, slicer):
+        assert isinstance(slicer, compas_slicer.slicers.BaseSlicer)  # check input
         self.slicer = slicer
-
-        #  initialize print points
         self.printpoints_dict = {}
-        self.create_printpoints_dict(mesh)
-        self.set_extruder_toggle(extruder_toggle_type)
+
 
     ###############################
     #  --- Initialization
     def create_printpoints_dict(self, mesh):
+        logger.info('Creating print points ...')
         progress_bar = Bar('Print points', max=len(self.slicer.layers),
                            suffix='Layer %(index)i/%(max)i - %(percent)d%%')
 
