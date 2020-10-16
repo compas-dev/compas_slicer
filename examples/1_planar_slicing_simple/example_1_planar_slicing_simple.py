@@ -15,6 +15,7 @@ import time
 
 ######################## Logging
 import logging
+
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ######################## 
@@ -26,6 +27,7 @@ MODEL = 'simple_vase.obj'
 OUTPUT_FILE = 'out_printpoints.json'
 
 start_time = time.time()
+
 
 def main():
     ### --- Load stl
@@ -73,19 +75,19 @@ def main():
 
     ### --- Fabrication - related information
     # options extruder_toggle_type: always_on, always_off, off_when_travel
-    print_organizer = PrintOrganizer(slicer, compas_mesh)
-    print_organizer.create_printpoints_dict(compas_mesh)
+    print_organizer = PrintOrganizer(slicer)
+    print_organizer.create_printpoints(compas_mesh)
     print_organizer.set_extruder_toggle(extruder_toggle_type="always_on")
     print_organizer.add_safety_printpoints(z_hop=20)
 
-    # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
-
-    ### --- Create robotic commands and save to json file
-    printpoints_data = print_organizer.generate_printpoints_dict()
+    ### --- Save printpoints dictionary to json file
+    printpoints_data = print_organizer.output_printpoints_dict()
     save_to_json(printpoints_data, DATA, OUTPUT_FILE)
 
+    # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
     # viewer.update()
     # viewer.show()
+
 
 if __name__ == "__main__":
     main()

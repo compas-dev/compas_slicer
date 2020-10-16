@@ -15,20 +15,13 @@ __all__ = ['CurvedPrintOrganizer']
 #############################################
 
 class CurvedPrintOrganizer(PrintOrganizer):
-    def __init__(self, slicer, mesh, extruder_toggle_type, DATA_PATH):
-        self.slicer = slicer
-        self.DATA_PATH = DATA_PATH
+    def __init__(self, slicer):
+        PrintOrganizer.__init__(slicer)
 
-        #  topological sorting
-
-
-        #  initialize print points
-        self.printpoints_dict = {}
-        self.create_printpoints_dict(mesh)
-        self.set_extruder_toggle(extruder_toggle_type)
+    def topological_sorting(self):
 
 
-    def create_printpoints_dict(self, mesh):
+    def create_printpoints(self, mesh):
         #  Without region split
         print('')
         logger.info('Creation of printpoints (curved slicer without region split)')

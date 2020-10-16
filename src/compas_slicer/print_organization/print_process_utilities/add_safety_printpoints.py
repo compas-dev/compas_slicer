@@ -43,7 +43,7 @@ def add_safety_printpoints(printpoints_dict, z_hop=20):
     safety_printpoint = create_safety_printpoint(printpoints_dict['layer_0']['path_0'][0], z_hop, False)
     print_points_copy_dict['layer_0']['path_0'].insert(0, safety_printpoint)
 
-    #  the safety printpoint has already been added at the end since the last printpoint extruder_toggle is False
+    #  the safety printpoint has already been added at the end since the last printpoint extruder_toggle_type is False
     return print_points_copy_dict
 
 
