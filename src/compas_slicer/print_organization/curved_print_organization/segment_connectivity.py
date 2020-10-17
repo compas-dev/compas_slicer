@@ -1,19 +1,20 @@
 import compas
 
 import compas_slicer
-from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, normalize_vector
+from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, normalize_vector, Point
 import logging
 from compas_slicer.geometry import Path, PrintPoint
 import compas_slicer.utilities as utils
+from progress.bar import Bar
 
 logger = logging.getLogger('logger')
-__all__ = ['VerticalPathCollection']
+__all__ = ['SegmentConnectivity']
 
 
-class VerticalPathCollection:
+class SegmentConnectivity:
     def __init__(self, paths, base_boundary, mesh, parameters):
         """
-        VerticalPathCollection finds the vertical relation between paths in a segment.
+        SegmentConnectivity finds the vertical relation between paths in a segment.
         Creates PrintPoints and fills in their information.
 
         Attributes
@@ -34,7 +35,7 @@ class VerticalPathCollection:
         self.printpoints = {}  # dict with pne list of printpoints per path
 
     def __repr__(self):
-        return "<VerticalPathCollection with %i paths>" % len(self.paths)
+        return "<SegmentConnectivity with %i paths>" % len(self.paths)
 
     ######################
     # Main
@@ -58,13 +59,15 @@ class VerticalPathCollection:
                                    for p in path.points]
 
     def fill_in_printpoints_information(self):
+        progress_bar = Bar(' PrintPoints generation', max=len(self.paths),
+                           suffix='Path %(index)i/%(max)i - %(percent)d%%')
         crv_to_check = Path(self.base_boundary.points, True)  # Fake path for the lower boundary
         for i, path in enumerate(self.paths):
             for j, p in enumerate(path.points):
                 cp = closest_point_on_polyline(p, Polyline(crv_to_check.points))
                 d = distance_point_point(cp, p)
 
-                self.printpoints[i][j].closest_support_pt = cp
+                self.printpoints[i][j].closest_support_pt = Point(*cp)
                 self.printpoints[i][j].distance_to_support = d
                 self.printpoints[i][j].layer_height = max(min(d, self.parameters['max_layer_height']),
                                                           self.parameters['min_layer_height'])
@@ -73,8 +76,10 @@ class VerticalPathCollection:
                 self.printpoints[i][j].frame = self.printpoints[i][j].get_frame()
 
                 if d < self.parameters['min_layer_height'] or d > self.parameters['max_layer_height']:
-                    self.printpoints[i][j].is_unfeasible = True
+                    self.printpoints[i][j].is_feasible = False
             crv_to_check = path
+            progress_bar.next()
+        progress_bar.finish()
 
     def smooth_printpoints_heights(self):
         iterations = self.parameters['layer_heights_smoothing'][2]

@@ -31,7 +31,7 @@ class PrintOrganizer(object):
     #  --- Initialization
     def create_printpoints(self, mesh):
         logger.info('Creating print points ...')
-        progress_bar = Bar('Print points', max=len(self.slicer.layers),
+        progress_bar = Bar(' PrintPoints generation', max=len(self.slicer.layers),
                            suffix='Layer %(index)i/%(max)i - %(percent)d%%')
 
         for i, layer in enumerate(self.slicer.layers):
@@ -58,21 +58,26 @@ class PrintOrganizer(object):
     ###############################
     #  ---  add fabrication related information
 
-    def set_extruder_toggle(self, extruder_toggle_type="always_on"):
+    def set_extruder_toggle(self, extruder_toggle_type="continuous_shell_printing"):
         logger.info("Setting extruder toggle with type : " + str(extruder_toggle_type))
         set_extruder_toggle(self.printpoints_dict, extruder_toggle_type)
 
     def add_safety_printpoints(self, z_hop):
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
-                assert self.printpoints_dict[layer_key][path_key].extruder_toggle, \
-                    'You need to set the extruder toggles first, before you can create safety points'
+                for pp in self.printpoints_dict[layer_key][path_key]:
+                    assert pp.extruder_toggle is not None, \
+                        'You need to set the extruder toggles first, before you can create safety points'
         logger.info("Generating safety print points with height " + str(z_hop) + " mm")
         self.printpoints_dict = add_safety_printpoints(self.printpoints_dict, z_hop)
 
     def set_linear_velocity(self, velocity_type, v=25, per_layer_velocities=None):
         logger.info("Setting linear velocity with type : " + str(velocity_type))
         set_linear_velocity(self.printpoints_dict, velocity_type, v=v, per_layer_velocities=per_layer_velocities)
+
+    def check_feasibility(self):
+        # TODO
+        raise NotImplementedError
 
     ###############################
     #  ---  output printpoints data
@@ -97,7 +102,12 @@ class PrintOrganizer(object):
                         "velocity": printpoint.velocity,
                         "wait_time": printpoint.wait_time,
                         "blend_radius": get_blend_radius(printpoint, neighboring_items),
-                        "extruder_toggle": printpoint.extruder_toggle}
+                        "extruder_toggle": printpoint.extruder_toggle,
+
+                        "closest_support_pt": printpoint.closest_support_pt.to_data() if printpoint.closest_support_pt
+                                                else None,
+                        "is_feasible": printpoint.is_feasible
+                        }
 
                     count += 1
         logger.info("Generated %d print points" % count)

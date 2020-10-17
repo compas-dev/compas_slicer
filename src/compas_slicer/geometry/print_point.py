@@ -48,7 +48,7 @@ class PrintPoint(object):
         self.support_path = None  # <compas_slicer.geometry.Path>
 
         self.visualization_geometry = None
-        self.is_unfeasible = False
+        self.is_feasible = True
 
     def __repr__(self):
         x, y, z = self.pt[0], self.pt[1], self.pt[2]

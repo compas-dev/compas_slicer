@@ -65,10 +65,10 @@ def main():
     save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
 
     ### --- Fabrication - related information
-    # options extruder_toggle_type: always_on, always_off, off_when_travel
+    # options extruder_toggle_type: continuous_shell_printing, interrupt_between_paths
     print_organizer = PrintOrganizer(slicer)
     print_organizer.create_printpoints(compas_mesh)
-    print_organizer.set_extruder_toggle(extruder_toggle_type="always_on")
+    print_organizer.set_extruder_toggle(extruder_toggle_type="continuous_shell_printing")
     print_organizer.add_safety_printpoints(z_hop=20)
     print_organizer.set_linear_velocity("constant", v=25)
 

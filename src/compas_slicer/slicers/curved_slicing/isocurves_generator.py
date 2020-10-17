@@ -22,6 +22,7 @@ class IsocurvesGenerator:
         #  main
         self.segments = [VerticalLayer(id=0)]  # segments that contain isocurves (compas_slicer.Path)
         t_list = get_t_list(number_of_curves)
+        t_list.pop(0)  # remove first curves that is on 0 (lies on BaseBoundary)
         self.create_isocurves(t_list)
 
     #  --- main

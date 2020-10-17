@@ -36,16 +36,16 @@ if __name__ == "__main__":
     # ### --- Print organizer
     parameters = {
         'min_layer_height': 0.1,
-        'max_layer_height': 2.0,
+        'max_layer_height': 50.0, #2.0,
         'layer_heights_smoothing': [False, 3, 0.5],  # boolean, iterations, strength
         'up_vectors_smoothing': [False, 3, 0.5]  # boolean, iterations, strength
     }
 
     print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
     print_organizer.create_printpoints(mesh)
-    # print_organizer.set_extruder_toggle(extruder_toggle_type="always_on")
-    # print_organizer.add_safety_printpoints(z_hop=20)
-    # print_organizer.set_linear_velocity("constant", v=25)
+    print_organizer.set_extruder_toggle("continuous_shell_printing")
+    print_organizer.add_safety_printpoints(z_hop=20)
+    print_organizer.set_linear_velocity()
 
     ### --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()

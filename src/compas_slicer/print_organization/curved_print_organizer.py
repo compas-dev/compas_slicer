@@ -5,7 +5,7 @@ from compas_slicer.geometry import VerticalLayer
 from compas_slicer.print_organization.curved_print_organization import topological_sorting
 import compas_slicer.utilities as utils
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
-from compas_slicer.print_organization.curved_print_organization import VerticalPathCollection
+from compas_slicer.print_organization.curved_print_organization import SegmentConnectivity
 from compas_slicer.print_organization import set_extruder_toggle, set_linear_velocity
 
 logger = logging.getLogger('logger')
@@ -29,13 +29,12 @@ class CurvedPrintOrganizer(PrintOrganizer):
         self.topo_sort_graph = None
         if len(self.slicer.vertical_layers) > 1:
             self.topological_sorting()
+        self.selected_order = None
 
         self.segments = {}  # one segment per vertical layer
         self.create_segments_dict()
-        self.base_boundaries_creation()  # creation of one base boundary per vertical_layer and segment
-        self.create_vertical_path_collections()
-
-        self.print_interruption = {}  # stores the printpoints positions where the print needs to be interrupted.
+        self.base_boundaries_creation(save_json=True)  # creation of one base boundary per vertical_layer and segment
+        self.create_segment_connectivity()
 
     def __repr__(self):
         return "<CurvedPrintOrganizer with %i segments>" % len(self.segments)
@@ -49,7 +48,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
             self.segments[i] = {'boundary': None,
                                 'path_collection': None}
 
-    def base_boundaries_creation(self):
+    def base_boundaries_creation(self, save_json):
         """ Creates one BaseBoundary per vertical_layer / segment """
         root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
@@ -69,14 +68,20 @@ class CurvedPrintOrganizer(PrintOrganizer):
         else:
             self.segments[0]['boundary'] = root_boundary
 
-    def create_vertical_path_collections(self):
+        if save_json:
+            b_data = {}
+            for i in self.segments:
+                b_data[i] = self.segments[i]['boundary'].to_data()
+            utils.save_to_json(b_data, self.DATA_PATH, 'boundaries.json')
+
+    def create_segment_connectivity(self):
         """ A vertical_path_collection finds vertical relation between paths. Creates and fills in printpoints """
         for i, vertical_layer in enumerate(self.slicer.vertical_layers):
-            logger.info('Creating VerticalPathCollection no %d' % i)
-            path_collection = VerticalPathCollection(paths=vertical_layer.paths,
-                                                     base_boundary=self.segments[i]['boundary'],
-                                                     mesh=self.slicer.mesh,
-                                                     parameters=self.parameters)
+            logger.info('Creating connectivity of segment no %d' % i)
+            path_collection = SegmentConnectivity(paths=vertical_layer.paths,
+                                                  base_boundary=self.segments[i]['boundary'],
+                                                  mesh=self.slicer.mesh,
+                                                  parameters=self.parameters)
             path_collection.compute()
             self.segments[i]['path_collection'] = path_collection
 
@@ -87,11 +92,11 @@ class CurvedPrintOrganizer(PrintOrganizer):
         """
         if len(self.slicer.vertical_layers) > 1:  # the you need to select one topological order
             all_orders = self.topo_sort_graph.get_all_topological_orders()
-            selected_order = all_orders[0]  # TODO: add more elaborate selection strategy
+            self.selected_order = all_orders[0]  # TODO: add more elaborate selection strategy
         else:
-            selected_order = [0]  # there is only one segment, only this option
+            self.selected_order = [0]  # there is only one segment, only this option
 
-        for i in selected_order:
+        for i in self.selected_order:
             path_collection = self.segments[i]['path_collection']
             self.printpoints_dict['layer_%d' % i] = {}
 
@@ -99,15 +104,24 @@ class CurvedPrintOrganizer(PrintOrganizer):
                 self.printpoints_dict['layer_%d' % i]['path_%d' % j] = \
                     [path_collection.printpoints[j][k] for k, p in enumerate(path.points)]
 
-
-
     ############################################
     #  ---  override functions from base class
 
-    def set_extruder_toggle(self, extruder_toggle_type=None):
-        logger.info("Setting extruder toggle for vertical_layers")
-        pass
+    def set_extruder_toggle(self, extruder_toggle_type='continuous_shell_printing'):
+        if extruder_toggle_type != "continuous_shell_printing":
+            logger.warning("For non-planar slicing, extruder toggle should be continuous_shell_printing")
+        logger.info("Setting extruder toggle for continuous_shell_printing")
+
+        for i in self.selected_order:
+            path_collection = self.segments[i]['path_collection']
+            for j, path in enumerate(path_collection.paths):
+                for k, pp in enumerate(self.printpoints_dict['layer_%d' % i]['path_%d' % j]):
+                    pp.extruder_toggle = True
+            # last_path = len(path_collection.paths) - 1
+            self.printpoints_dict['layer_%d' % i]['path_%d' % j][-1].extruder_toggle = False  # set last toggle to False
 
     def set_linear_velocity(self, velocity_type="matching_layer_height", v=None, per_layer_velocities=None):
-        logger.info("Setting linear velocity with type : " + str(velocity_type))
+        if velocity_type != "matching_layer_height":
+            logger.warning("For non-planar slicing, print velocity should match layer_height")
+        logger.info("Setting linear velocity to match layer_height")
         set_linear_velocity(self.printpoints_dict, velocity_type, v=v, per_layer_velocities=per_layer_velocities)

@@ -14,11 +14,11 @@ layer_height = 15.0
 z = [compas_mesh.vertex_attribute(key, 'z') for key in compas_mesh.vertices()]
 min_z, max_z = min(z), max(z)
 d = abs(min_z - max_z)
-no_of_layers = int(d / layer_height) + 1
+no_of_layers = int(d / layer_height)
 
 
 def test_planar_contours_success():
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_compas", layer_height=layer_height)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=layer_height)
     slicer.slice_model()
 
     assert isinstance(slicer.layers, list), "The layers are not a list"
