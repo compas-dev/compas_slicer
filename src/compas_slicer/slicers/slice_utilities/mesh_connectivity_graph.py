@@ -1,10 +1,8 @@
 import networkx as nx
-import matplotlib.pyplot as plt
 
 __all__ = ['create_graph_from_mesh_edges',
            'sort_graph_connected_components',
-           'create_graph_from_mesh_vkeys',
-           'plot_graph']
+           'create_graph_from_mesh_vkeys']
 
 
 def create_graph_from_mesh_edges(mesh, intersected_edges,
@@ -87,7 +85,4 @@ def sort_graph_connected_components(G, intersection_points):
     return sorted_point_clusters, sorted_edge_clusters
 
 
-def plot_graph(G):
-    plt.subplot(121)
-    nx.draw(G, with_labels=True, font_weight='bold', node_color=range(len(list(G.nodes()))))
-    plt.show()
+

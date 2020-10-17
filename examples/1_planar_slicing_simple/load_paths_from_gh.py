@@ -4,14 +4,14 @@ from compas.geometry import Point, Frame
 
 from compas_slicer.utilities import load_from_json
 from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.functionality import generate_brim
-from compas_slicer.functionality import spiralize_contours
-from compas_slicer.functionality import seams_align
-from compas_slicer.functionality import seams_smooth, unify_paths_orientation
+from compas_slicer.post_processing import generate_brim
+from compas_slicer.post_processing import spiralize_contours
+from compas_slicer.post_processing import seams_align
+from compas_slicer.post_processing import seams_smooth, unify_paths_orientation
 from compas_slicer.print_organization import RoboticPrintOrganizer
 from compas_slicer.print_organization import RobotPrinter
 from compas_viewers.objectviewer import ObjectViewer
-from compas_slicer.functionality import move_mesh_to_point, simplify_paths_rdp
+from compas_slicer.post_processing import move_mesh_to_point, simplify_paths_rdp
 import time
 
 ######################## Logging

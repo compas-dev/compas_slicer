@@ -1,5 +1,6 @@
 from compas.geometry import Point, Frame, Vector
 import compas
+
 __all__ = ['PrintPoint']
 
 
@@ -11,7 +12,7 @@ def get_default_print_frame(pt, desired_axis):
 class PrintPoint(object):
     """
     A PrintPoint consists out of a single compas.geometry.Point,
-    with additional functionality added for the printing process.
+    with additional post_processing added for the printing process.
 
     Attributes
     ----------
@@ -19,20 +20,21 @@ class PrintPoint(object):
         A compas Point consisting out of x, y, z coordinates
     layer_height : float
         The vertical distance between the point on this layer and the next layer
-    mesh:
+    mesh_normal:
     up_vector:
 
     """
 
-    def __init__(self, pt, layer_height, mesh_normal, up_vector):
+    def __init__(self, pt, layer_height, mesh_normal):
+        assert isinstance(pt, compas.geometry.Point)
+        assert isinstance(mesh_normal, compas.geometry.Vector)
+
         #  --- basic printpoint
         self.pt = pt
         self.layer_height = layer_height
 
-        assert isinstance(mesh_normal, compas.geometry.Vector)
-
-        self.up_vector = up_vector  # compas.geometry.Vector
         self.mesh_normal = mesh_normal  # compas.geometry.Vector
+        self.up_vector = Vector(1, 0, 0)  # default value that can be updated
         self.frame = self.get_frame()  # compas.geometry.Frame
 
         #  --- print_organization related attributes
@@ -41,11 +43,12 @@ class PrintPoint(object):
         self.wait_time = None
 
         #  --- advanced printpoint
-        self.closest_support_pt = None  # class compas.geometry.point
-        self.closest_upper_point = None
-        self.distance_to_support = None
+        self.closest_support_pt = None  # <compas.geometry.Point>
+        self.distance_to_support = None  # float
+        self.support_path = None  # <compas_slicer.geometry.Path>
 
         self.visualization_geometry = None
+        self.is_unfeasible = False
 
     def __repr__(self):
         x, y, z = self.pt[0], self.pt[1], self.pt[2]

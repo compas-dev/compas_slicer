@@ -3,7 +3,7 @@ from compas_slicer.slicers import BaseSlicer
 from compas.geometry import Vector, Plane, Point
 import logging
 import time
-from compas_slicer.functionality import seams_align, unify_paths_orientation
+from compas_slicer.post_processing import seams_align, unify_paths_orientation
 
 logger = logging.getLogger('logger')
 
@@ -16,6 +16,10 @@ class PlanarSlicer(BaseSlicer):
 
         self.layer_height = layer_height
         self.slicer_type = slicer_type
+
+    def __repr__(self):
+        return "<PlanarSlicer with %d layers and layer_height : %.2f mm>" % \
+               (len(self.layers), self.layer_height)
 
     def slice_model(self):
         start_time = time.time()  # time measurement
@@ -41,7 +45,7 @@ class PlanarSlicer(BaseSlicer):
         planes = [Plane(Point(0, 0, min_z + i * self.layer_height), normal) for i in range(no_of_layers)]
         # planes.pop(0)  # remove planes that are on the print platform
 
-        if self.slicer_type == "planar_compas":
+        if self.slicer_type == "default":
             logger.info('')
             logger.info("Planar slicing using compas  ...")
             self.layers = compas_slicer.slicers.create_planar_paths(self.mesh, planes)

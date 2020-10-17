@@ -1,5 +1,5 @@
-from compas.geometry import Point
-from compas_slicer.geometry import PrintPoint
+from compas.geometry import Vector
+import copy
 
 __all__ = ['add_safety_printpoints']
 
@@ -49,8 +49,8 @@ def add_safety_printpoints(printpoints_dict, z_hop=20):
 
 def create_safety_printpoint(printpoint, z_hop, extruder_toggle):
     pt0 = printpoint.pt
-    safety_printpoint = PrintPoint(pt=Point(pt0[0], pt0[1], pt0[2] + z_hop), layer_height=printpoint.layer_height,
-                                   mesh_normal=printpoint.mesh_normal, up_vector=printpoint.up_vector)
+    safety_printpoint = copy.deepcopy(printpoint)
+    safety_printpoint.pt = pt0 + Vector(0, 0, z_hop)
     safety_printpoint.extruder_toggle = extruder_toggle
     return safety_printpoint
 

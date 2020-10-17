@@ -1,5 +1,5 @@
 from compas_slicer.slicers import BaseSlicer
-from compas_slicer.functionality import seams_align, unify_paths_orientation
+from compas_slicer.post_processing import seams_align, unify_paths_orientation
 from compas_slicer.slicers.curved_slicing import CompoundTarget
 from compas_slicer.slicers.curved_slicing import find_desired_number_of_isocurves
 import logging
@@ -27,8 +27,8 @@ class CurvedSlicer(BaseSlicer):
             elif vkey in high_boundary_vs:
                 data['boundary'] = 2
 
-    def split_regions(self):
-        pass
+    def __repr__(self):
+        return "<CurvedSlicer with %d layers>" % len(self.layers)
 
     def slice_model(self):
         target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH, is_smooth=False)

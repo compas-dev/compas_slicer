@@ -4,14 +4,14 @@ from compas.geometry import Point, Frame
 
 from compas_slicer.utilities import save_to_json
 from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.functionality import generate_brim
-from compas_slicer.functionality import seams_align
-from compas_slicer.functionality import seams_smooth
-from compas_slicer.functionality import sort_per_shortest_path_mlrose
+from compas_slicer.post_processing import generate_brim
+from compas_slicer.post_processing import seams_align
+from compas_slicer.post_processing import seams_smooth
+from compas_slicer.post_processing import sort_per_shortest_path_mlrose
 from compas_slicer.print_organization import RoboticPrintOrganizer
 from compas_slicer.print_organization import RobotPrinter
 from compas_viewers.objectviewer import ObjectViewer
-from compas_slicer.functionality import move_mesh_to_point, simplify_paths_rdp
+from compas_slicer.post_processing import move_mesh_to_point, simplify_paths_rdp
 import time
 
 ######################## Logging
@@ -29,6 +29,10 @@ start_time = time.time()
 
 def main():
     ### --- Load stl
+
+    ##################
+    # ATTENTION! THIS EXAMPLE HAS NOT BEEN UPDATED, LOOK AT EXAMPLE 1
+    ##################
 
     compas_mesh = Mesh.from_stl(os.path.join(DATA, MODEL))
     ### --- Move to origin

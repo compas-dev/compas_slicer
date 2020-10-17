@@ -20,8 +20,12 @@ class PrintOrganizer(object):
 
     def __init__(self, slicer):
         assert isinstance(slicer, compas_slicer.slicers.BaseSlicer)  # check input
+        logger.info('Print Organizer')
         self.slicer = slicer
         self.printpoints_dict = {}
+
+    def __repr__(self):
+        return "<PrintOrganizer>"
 
     ###############################
     #  --- Initialization
@@ -38,8 +42,7 @@ class PrintOrganizer(object):
 
                 for k, point in enumerate(path.points):
                     printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height,
-                                            mesh_normal=utils.get_closest_mesh_normal(mesh, point),
-                                            up_vector=Vector(0, 0, 1))
+                                            mesh_normal=utils.get_closest_mesh_normal(mesh, point))
 
                     self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
             progress_bar.next()
@@ -55,17 +58,21 @@ class PrintOrganizer(object):
     ###############################
     #  ---  add fabrication related information
 
-    def set_extruder_toggle(self, extruder_toggle_type):
+    def set_extruder_toggle(self, extruder_toggle_type="always_on"):
         logger.info("Setting extruder toggle with type : " + str(extruder_toggle_type))
         set_extruder_toggle(self.printpoints_dict, extruder_toggle_type)
 
     def add_safety_printpoints(self, z_hop):
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                assert self.printpoints_dict[layer_key][path_key].extruder_toggle, \
+                    'You need to set the extruder toggles first, before you can create safety points'
         logger.info("Generating safety print points with height " + str(z_hop) + " mm")
         self.printpoints_dict = add_safety_printpoints(self.printpoints_dict, z_hop)
 
     def set_linear_velocity(self, velocity_type, v=25, per_layer_velocities=None):
         logger.info("Setting linear velocity with type : " + str(velocity_type))
-        set_linear_velocity(self.printpoints_dict, velocity_type, v=25, per_layer_velocities=None)
+        set_linear_velocity(self.printpoints_dict, velocity_type, v=v, per_layer_velocities=per_layer_velocities)
 
     ###############################
     #  ---  output printpoints data
@@ -90,7 +97,7 @@ class PrintOrganizer(object):
                         "velocity": printpoint.velocity,
                         "wait_time": printpoint.wait_time,
                         "blend_radius": get_blend_radius(printpoint, neighboring_items),
-                        "extruder_toggle_type": printpoint.extruder_toggle}
+                        "extruder_toggle": printpoint.extruder_toggle}
 
                     count += 1
         logger.info("Generated %d print points" % count)

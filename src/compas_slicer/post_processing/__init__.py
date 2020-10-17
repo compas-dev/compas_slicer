@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-compas_slicer.functionality
+compas_slicer.post_processing
 ********************************************************************************
 
 Polyline simplification
@@ -56,7 +56,7 @@ from .simplify_paths_rdp import *  # noqa: F401 E402 F403
 #  Sorting
 from .seams_align import *  # noqa: F401 E402 F403
 from .seams_smooth import *  # noqa: F401 E402 F403
-from .sort_per_segment import *  # noqa: F401 E402 F403
+from .sort_paths_per_vertical_segment import *  # noqa: F401 E402 F403
 
 #  Orienting
 from .unify_paths_orientation import *  # noqa: F401 E402 F403

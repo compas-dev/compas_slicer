@@ -35,13 +35,15 @@ pip install -e .
 
 - Install compas_viewers (https://github.com/compas-dev/compas_viewers).
 
+Download the wheel file from here: https://www.lfd.uci.edu/~gohlke/pythonlibs/
 To install on an existing environment with python=3.7, use:
 ```bash
 conda activate <environment_name>
 pip install PySide2 
-pip install PyOpenGL 
-pip install path/to/compas_viewers
+pip install <path/to/file>/PyOpenGL‑3.1.5‑cp37‑cp37m‑win_amd64.whl
+pip install <path/to/compas_viewers>
 ```
+
 
 ### Step 3. Test if the library works
 - Run the file examples/1_versions_check.py

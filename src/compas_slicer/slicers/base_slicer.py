@@ -2,7 +2,7 @@ import compas
 import compas_slicer
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
-from compas_slicer.geometry import Layer
+from compas_slicer.geometry import Layer, VerticalLayer
 
 import logging
 
@@ -46,6 +46,16 @@ class BaseSlicer(object):
                 total_number_of_pts += len(path.points)
         return total_number_of_pts
 
+    @property
+    def vertical_layers(self):
+        if len(self.layers) > 0:
+            if isinstance(self.layers[0], VerticalLayer):
+                return self.layers  # What a hacky way to do this...
+            else:
+                raise NameError('The slicer does not have vertical_layers')
+        else:
+            return []
+
     ##############################
     #  --- Functions
 
@@ -74,7 +84,7 @@ class BaseSlicer(object):
         print("Number of layers: %d" % number_of_path_collections)
         print("Number of paths: %d, open paths: %d, closed paths: %d" % (
             open_paths + closed_paths, open_paths, closed_paths))
-        print("Number of sampling printpoints on contours: %d" % total_number_of_pts)
+        print("Number of sampling printpoints on layers: %d" % total_number_of_pts)
         print("")
 
     def visualize_on_viewer(self, viewer, visualize_mesh=False, visualize_paths=True):

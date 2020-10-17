@@ -6,7 +6,7 @@ from compas_slicer.geometry import Path
 from compas.geometry import Point
 
 import logging
-from compas_slicer.functionality import seams_align
+from compas_slicer.post_processing import seams_align
 
 logger = logging.getLogger('logger')
 
@@ -29,7 +29,7 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
     logger.info(
         "Generating brim with layer width: %.2f mm, consisting of %d layers" % (layer_width, number_of_brim_paths))
 
-    #  TODO: Add functionality for merging several contours when the brims overlap.
+    #  TODO: Add post_processing for merging several contours when the brims overlap.
     #  uses the default scaling factor of 2**32
     #  see: https://github.com/fonttools/pyclipper/wiki/Deprecating-SCALING_FACTOR
     SCALING_FACTOR = 2 ** 32
