@@ -14,12 +14,11 @@ __all__ = ['MeshDirectedGraph',
 
 class DirectedGraph(object):
     """
-    Base class for topological sorting of prints that consist of several segments that lie on each other.
+    Base class for topological sorting of prints that consist of several parts that lie on each other.
     For example the graph A->B->C would represent a print that consists of three parts; A, B, C
     where A lies on the build platform, B lies on A, and C lies on B.
     This graph cannot have cycles; cycles would represent an unfeasible print.
     """
-
     def __init__(self):
         logger.info('Topological sorting')
 
@@ -39,7 +38,7 @@ class DirectedGraph(object):
         return "<DirectedGraph with %i nodes>" % len(list(self.G.nodes()))
 
     #################################
-    # Methods to be implemented
+    # Methods to be implemented by inheriting classes
     def find_roots(self):
         """Roots are segments that lie on the build platform, i.e. they can be print first"""
         raise NotImplementedError
@@ -129,74 +128,79 @@ class DirectedGraph(object):
 ### Meshes DirectedGraph
 
 class MeshDirectedGraph(DirectedGraph):
+    """ The MeshDirectedGraph is used for topological sorting of multiple meshes that have been
+    generated as a result of region split over the saddle points of the mesh scalar function """
     def __init__(self, all_meshes):
-        self.all_meshes = all_meshes
-        DirectedGraph.__init__(self)
+        raise NotImplementedError
 
-    def find_roots(self):
-        roots = []
-        for i, mesh in enumerate(self.all_meshes):
-            for vkey, data in mesh.vertices(data=True):
-                if i not in roots:
-                    if data['boundary'] == 1:
-                        roots.append(i)
-        return roots
+        # self.all_meshes = all_meshes
+        # DirectedGraph.__init__(self)
 
-    def create_graph_nodes(self):
-        # initialize graph Meshes as nodes. Cuts and boundaries as attributes
-        self.G = nx.DiGraph()
-        for i, m in enumerate(self.all_meshes):
-            self.G.add_node(i, cuts=region_split_utils.get_existing_cut_indices(m),
-                            boundaries=region_split_utils.get_existing_boundary_indices(m))
-
-    def get_children_of_node(self, root):
-        children = []
-        cut_ids = []
-        parent_data = self.G.nodes(data=True)[root]
-
-        for key, data in self.G.nodes(data=True):
-            common_cuts = list(set(parent_data['cuts']).intersection(data['cuts']))
-
-            if key != root \
-                and (key, root) not in self.G.edges() \
-                and (root, key) not in self.G.edges() \
-                and len(common_cuts) > 0:
-                if self.true_mesh_adjacency(key, root):
-                    try:
-                        assert len(common_cuts) == 1
-                    except:
-                        print('More than one common cuts between two pieces in the following split meshes')
-                        print('root  : ', root)
-                        print('child : ', key)
-                        print('common_cuts : ', common_cuts)
-                        # TODO: improve this. Two meshes COULD have more common cuts, resulting for example from one-vertex connections
-                        raise ValueError
-
-                    children.append(key)
-                    cut_ids.append(common_cuts[0])
-        return children, cut_ids
-
-    def true_mesh_adjacency(self, key1, key2):
-        count = 0
-        mesh1 = self.all_meshes[key1]
-        mesh2 = self.all_meshes[key2]
-        pts_mesh2 = [mesh2.vertex_coordinates(vkey) for vkey, data in mesh2.vertices(data=True)
-                     if (data['cut'] > 0 or data['boundary'] > 0)]
-        for vkey, data in mesh1.vertices(data=True):
-            if data['cut'] > 0 or data['boundary'] > 0:
-                pt = mesh1.vertex_coordinates(vkey)
-                ci = utils.get_closest_pt_index(pt, pts_mesh2)
-                if distance_point_point_sqrd(pt, pts_mesh2[ci]) < 0.00001:
-                    count += 1
-                    if count == 3:  # TODO: improve this. Two meshes could have 3 one-vertex-connections for example. Also two meshes could have only two vertex connection and depend on each other.
-                        return True
-        return False
+    # def find_roots(self):
+    #     roots = []
+    #     for i, mesh in enumerate(self.all_meshes):
+    #         for vkey, data in mesh.vertices(data=True):
+    #             if i not in roots:
+    #                 if data['boundary'] == 1:
+    #                     roots.append(i)
+    #     return roots
+    #
+    # def create_graph_nodes(self):
+    #     # initialize graph Meshes as nodes. Cuts and boundaries as attributes
+    #     self.G = nx.DiGraph()
+    #     for i, m in enumerate(self.all_meshes):
+    #         self.G.add_node(i, cuts=region_split_utils.get_existing_cut_indices(m),
+    #                         boundaries=region_split_utils.get_existing_boundary_indices(m))
+    #
+    # def get_children_of_node(self, root):
+    #     children = []
+    #     cut_ids = []
+    #     parent_data = self.G.nodes(data=True)[root]
+    #
+    #     for key, data in self.G.nodes(data=True):
+    #         common_cuts = list(set(parent_data['cuts']).intersection(data['cuts']))
+    #
+    #         if key != root \
+    #             and (key, root) not in self.G.edges() \
+    #             and (root, key) not in self.G.edges() \
+    #             and len(common_cuts) > 0:
+    #             if self.true_mesh_adjacency(key, root):
+    #                 try:
+    #                     assert len(common_cuts) == 1
+    #                 except:
+    #                     print('More than one common cuts between two pieces in the following split meshes')
+    #                     print('root  : ', root)
+    #                     print('child : ', key)
+    #                     print('common_cuts : ', common_cuts)
+    #                     # TODO: improve this. Two meshes COULD have more common cuts, resulting for example from one-vertex connections
+    #                     raise ValueError
+    #
+    #                 children.append(key)
+    #                 cut_ids.append(common_cuts[0])
+    #     return children, cut_ids
+    #
+    # def true_mesh_adjacency(self, key1, key2):
+    #     count = 0
+    #     mesh1 = self.all_meshes[key1]
+    #     mesh2 = self.all_meshes[key2]
+    #     pts_mesh2 = [mesh2.vertex_coordinates(vkey) for vkey, data in mesh2.vertices(data=True)
+    #                  if (data['cut'] > 0 or data['boundary'] > 0)]
+    #     for vkey, data in mesh1.vertices(data=True):
+    #         if data['cut'] > 0 or data['boundary'] > 0:
+    #             pt = mesh1.vertex_coordinates(vkey)
+    #             ci = utils.get_closest_pt_index(pt, pts_mesh2)
+    #             if distance_point_point_sqrd(pt, pts_mesh2[ci]) < 0.00001:
+    #                 count += 1
+    #                 if count == 3:  # TODO: improve this. Two meshes could have 3 one-vertex-connections for example. Also two meshes could have only two vertex connection and depend on each other.
+    #                     return True
+    #     return False
 
 
 #################################
 ### Segments DirectedGraph
 
 class SegmentsDirectedGraph(DirectedGraph):
+    """ The SegmentsDirectedGraph is used for topological sorting of multiple segments in one mesh"""
     def __init__(self, mesh, segments):
         self.mesh = mesh
         self.segments = segments

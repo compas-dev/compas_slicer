@@ -13,6 +13,13 @@ __all__ = ['IsocurvesGenerator']
 
 
 class IsocurvesGenerator:
+    """
+    IsocurvesGenerator is...
+
+    Attributes
+    ----------
+    params : Fill things in!
+    """
     def __init__(self, mesh_, target_LOW, target_HIGH, number_of_curves):
         logging.info("Isocurves Generator...")
         self.mesh = mesh_  # compas mesh

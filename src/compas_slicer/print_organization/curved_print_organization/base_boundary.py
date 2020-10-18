@@ -10,6 +10,18 @@ __all__ = ['BaseBoundary']
 
 
 class BaseBoundary:
+    """
+    The BaseBoundary is like a fake initial layer that supports the first path of the segment.
+    This is useful, because for our computations we need to have a support layer for evey path.
+    The first path has as support the Base Boundary, and every other path has its previous path.
+
+    Attributes
+    ----------
+    mesh :
+    points :
+    override_vector :
+    """
+
     def __init__(self, mesh, points, override_vector=None):
         self.mesh = mesh
         self.points = points

@@ -19,6 +19,7 @@ __all__ = ['save_to_json',
            'point_list_to_dict',
            'get_closest_mesh_normal',
            'get_closest_pt_index',
+           'get_closest_pt',
            'plot_networkx_graph',
            'get_mesh_vertex_coords_with_attribute',
            'get_dict_key_from_value',
@@ -38,6 +39,11 @@ def get_closest_pt_index(pt, pts):
     # distances = [distance_point_point_sqrd(p, pt) for p in pts]
     # ci = distances.index(min(distances))
     return ci
+
+
+def get_closest_pt(pt, pts):
+    ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
+    return pts[ci]
 
 
 def smooth_vectors(vectors, strength, iterations):

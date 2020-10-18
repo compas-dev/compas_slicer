@@ -2,6 +2,16 @@ __all__ = ['set_extruder_toggle']
 
 
 def set_extruder_toggle(printpoints_dict, extruder_toggle_type):
+    """General description.
+    Parameters
+    ----------
+    param : type
+        Explanation sentence.
+    Returns
+    -------
+    what it returns
+        Explanation sentence.
+    """
     if not (extruder_toggle_type == "continuous_shell_printing"
             or extruder_toggle_type == "interrupt_between_paths"):
         raise ValueError("Extruder toggle method doesn't exist")

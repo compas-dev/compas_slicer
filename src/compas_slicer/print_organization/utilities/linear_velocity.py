@@ -6,6 +6,16 @@ logger = logging.getLogger('logger')
 __all__ = ['set_linear_velocity']
 
 def set_linear_velocity(printpoints_dict, velocity_type, v=25, per_layer_velocities=None):
+    """General description.
+    Parameters
+    ----------
+    param : type
+        Explanation sentence.
+    Returns
+    -------
+    what it returns
+        Explanation sentence.
+    """
     if not (velocity_type == "constant"
             or velocity_type == "per_layer"
             or velocity_type == "matching_layer_height"

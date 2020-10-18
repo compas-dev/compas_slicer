@@ -2,8 +2,6 @@ import compas_slicer
 from compas_slicer.slicers import BaseSlicer
 from compas.geometry import Vector, Plane, Point
 import logging
-import time
-from compas_slicer.post_processing import seams_align, unify_paths_orientation
 
 logger = logging.getLogger('logger')
 
@@ -11,6 +9,16 @@ __all__ = ['PlanarSlicer']
 
 
 class PlanarSlicer(BaseSlicer):
+    """
+    PlanarSlicer is....
+
+    Attributes
+    ----------
+    mesh : compas.datastructures.Mesh
+        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
+    slicer_type :
+    layer_height :
+    """
     def __init__(self, mesh, slicer_type="default", layer_height=2.0):
         BaseSlicer.__init__(self, mesh)
 
@@ -21,22 +29,7 @@ class PlanarSlicer(BaseSlicer):
         return "<PlanarSlicer with %d layers and layer_height : %.2f mm>" % \
                (len(self.layers), self.layer_height)
 
-    def slice_model(self):
-        start_time = time.time()  # time measurement
-        self.generate_paths()
-        end_time = time.time()
-        logger.info('')
-        logger.info("Slicing operation took: %.2f seconds" % (end_time - start_time))
-
-        #  --- Align the seams between layers and unify orientation
-        seams_align(self, align_with='x_axis')
-        unify_paths_orientation(self)
-
-        logger.info("Created %d Layers with %d total number of points"
-                    % (len(self.layers), self.total_number_of_points))
-
     def generate_paths(self):
-
         z = [self.mesh.vertex_attribute(key, 'z') for key in self.mesh.vertices()]
         min_z, max_z = min(z), max(z)
         d = abs(min_z - max_z)

@@ -9,6 +9,16 @@ __all__ = ['center_mesh_on_build_platform']
 
 
 def center_mesh_on_build_platform(mesh, machine_data):
+    """General description.
+    Parameters
+    ----------
+    param : type
+        Explanation sentence.
+    Returns
+    -------
+    what it returns
+        Explanation sentence.
+    """
     # get center point of build platform
     max_x, max_y = machine_data[0], machine_data[1]
     build_platform_center_pt = Point(max_x / 2, max_y / 2, 0)

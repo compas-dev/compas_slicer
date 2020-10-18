@@ -21,4 +21,4 @@ def region_splitting():
     this pre-processing step, and in the curved_print_organizer.
 
     """
-    pass  # TODO, bring region split from Stratum here.
+    raise NotImplementedError  # TODO, bring region_split from Stratum library here.

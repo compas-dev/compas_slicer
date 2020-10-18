@@ -12,18 +12,20 @@ __all__ = ['SegmentConnectivity']
 
 
 class SegmentConnectivity:
-    def __init__(self, paths, base_boundary, mesh, parameters):
-        """
-        SegmentConnectivity finds the vertical relation between paths in a segment.
-        Creates PrintPoints and fills in their information.
+    """
+    SegmentConnectivity finds the vertical relation between paths in a segment.
+    It assumes that each path is supported by the path below, and the first path is
+    supported by the BaseBoundary.
+    This class creates PrintPoints and fills in their information.
 
-        Attributes
-        ----------
-        paths :
-        base_boundary :
-        mesh :
-        parameters :
-        """
+    Attributes
+    ----------
+    paths : list of instances of compas_slicer.geometry.Path
+    base_boundary : compas_slicer.print_organization.BaseBoundary
+    mesh : compas.geometry.Mesh
+    parameters : dict
+    """
+    def __init__(self, paths, base_boundary, mesh, parameters):
         assert isinstance(paths[0], compas_slicer.geometry.Path)
         assert isinstance(base_boundary, compas_slicer.print_organization.BaseBoundary)
         assert isinstance(mesh, compas.datastructures.Mesh)
@@ -96,7 +98,17 @@ class SegmentConnectivity:
                                                   set_attr_value=set_printpoint_up_vec)
 
     def smooth_path_printpoint_attribute(self, path_index, iterations, strength, get_attr_value, set_attr_value):
-        """
+
+        """General description.
+        Parameters
+        ----------
+        param : type
+            Explanation sentence.
+        Returns
+        -------
+        what it returns
+            Explanation sentence.
+
         :param path_index: int
         :param iterations: int
         :param strength: float

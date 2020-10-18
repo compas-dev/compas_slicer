@@ -13,10 +13,6 @@ logger = logging.getLogger('logger')
 __all__ = ['CurvedPrintOrganizer']
 
 
-#############################################
-#  RoboticPrintOrganizer
-#############################################
-
 class CurvedPrintOrganizer(PrintOrganizer):
 
     def __init__(self, slicer, parameters, DATA_PATH=None):
