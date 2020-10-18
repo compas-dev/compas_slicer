@@ -29,7 +29,7 @@ conda activate compas_slicer
 ```bash
 pip install -e .
 ```
-- You should get the message 'succesfully installed compas-slicer' (amongst other packages)
+- You should get the message 'Successfully installed compas-slicer' (amongst other packages)
 
 ### Step 2. Install compas_viewers
 
@@ -66,21 +66,7 @@ conda install eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11
 ```bash
 pip install -e .
 ```
-- You should get the message 'succesfully installed compas-cgal'
-
-### Stratum, library for curved slicing. 
-
-If you want to create curved slices, you need to install the stratum library. 
-You can find it here: https://github.com/ioanna21/stratum
-
-If you cannot access the repository, contact Ioanna <<mitropoulou@arch.ethz.ch>>.
-Once you have it, then download it and install it.
-
-- Then install igl
-```bash
-conda activate <environment>
-conda install -c conda-forge igl
-```
+- You should get the message 'Successfully installed compas-cgal'
 
 
 Contributions
@@ -94,14 +80,19 @@ pip install -r requirements-dev.txt
 ```
 
 - Make sure all tests pass:
-
 ```bash
 invoke test
 ```
 
+- Make sure you pass flake8 tests. (hint: This is the most annoying part of the process)
+```bash
+invoke lint
+```
+
 - Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly. Ideally also add a visualization of the result using compas.MeshPlotter (see the other examples in the same folder)
 
-- Run the python file: `` tests/test_examples.py ``.  Visually inspect the results that appear to see that no example produces unexpected results. To make sure that none of the examples throws an error, check your terminal. When all examples have been executed you should see the message  `` ---- Successfully executed all examples``
+- Create a pull request for the master branch, where you explain in detail what you fixed. When you create a pull request, there is an automatic action that runs the tests for your code again on the server.
+Make sure the pull request passes the automatic tests as well. If not, then inspect the result, find what went wrong, fix it, and push again the result on your branch. The action will run again automatically on the open pull request.
 
 
 Authors
