@@ -113,6 +113,9 @@ class BaseSlicer(object):
         if visualize_paths:
             for i, layer in enumerate(self.layers):
                 for j, path in enumerate(layer.paths):
+                    pts = path.points
+                    if path.is_closed:
+                        pts.append(pts[0])
                     polyline = Polyline(path.points)
                     if isinstance(layer, compas_slicer.geometry.VerticalLayer):
                         viewer.add(polyline, name="VerticalSegment %d, Path %d" % (i, j),
@@ -120,6 +123,7 @@ class BaseSlicer(object):
                     else:
                         viewer.add(polyline, name="Layer %d, Path %d" % (i, j),
                                    settings={'color': '#ffffff'})
+
 
     ##############################
     #  --- To data, from data

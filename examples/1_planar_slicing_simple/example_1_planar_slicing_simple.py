@@ -34,7 +34,7 @@ def main():
 
     ### --- Slicer
     # try out different slicers by changing the slicer_type
-    # options: 'planar', 'planar_meshcut', 'planar_cgal'
+    # options: 'default', 'planar_meshcut', 'planar_cgal'
     slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=1.5)
     slicer.slice_model()
 
