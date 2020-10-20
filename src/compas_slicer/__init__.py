@@ -12,7 +12,7 @@ compas_slicer
     compas_slicer.geometry
     compas_slicer.slicers
     compas_slicer.print_organization
-    compas_slicer.functionality
+    compas_slicer.post_processing
     compas_slicer.utilities
 
 """
@@ -62,7 +62,6 @@ except Exception:
 from .geometry import *  # noqa: F401 E402 F403
 from .slicers import *  # noqa: F401 E402 F403
 from .print_organization import *  # noqa: F401 E402 F403
-from .functionality import *  # noqa: F401 E402 F403
 from .utilities import *  # noqa: F401 E402 F403
 
 

@@ -15,8 +15,16 @@ __all__ = ['CompoundTarget']
 
 
 class CompoundTarget:
+    """
+    CompoundTarget is...
+
+    Attributes
+    ----------
+    params : Fill things in!
+    """
     def __init__(self, mesh, v_attr, value, DATA_PATH, is_smooth=False, r=15.0,
                  geodesics_method='exact', anisotropic_scaling=False):
+
         self.mesh = mesh
         self.v_attr = v_attr
         self.value = value

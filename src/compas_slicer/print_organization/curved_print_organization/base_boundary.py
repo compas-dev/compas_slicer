@@ -1,0 +1,66 @@
+import logging
+from compas.geometry import Vector, normalize_vector
+from compas_slicer.geometry import PrintPoint
+import compas_slicer.utilities as utils
+
+logger = logging.getLogger('logger')
+
+__all__ = ['BaseBoundary']
+
+
+class BaseBoundary:
+    """
+    The BaseBoundary is like a fake initial layer that supports the first path of the segment.
+    This is useful, because for our computations we need to have a support layer for evey path.
+    The first path has as support the Base Boundary, and every other path has its previous path.
+
+    Attributes
+    ----------
+    mesh :
+    points :
+    override_vector :
+    """
+
+    def __init__(self, mesh, points, override_vector=None):
+        self.mesh = mesh
+        self.points = points
+        self.override_vector = override_vector
+        if self.override_vector:
+            self.up_vectors = [self.override_vector for p in self.points]
+        else:
+            self.up_vectors = self.get_up_vectors()
+
+        self.printpoints = [PrintPoint(pt=pt,  # Create fake print points
+                                       layer_height=1.0,
+                                       mesh_normal=utils.get_closest_mesh_normal(self.mesh, pt)) \
+                            for pt in self.points]
+
+        for i, pp in enumerate(self.printpoints):
+            pp.up_vector = self.up_vectors[i]
+
+    def __repr__(self):
+        return "<BaseBoundary object with %i points>" % len(self.points)
+
+    def get_up_vectors(self):
+        up_vectors = []
+        for i, p in enumerate(self.points):
+            v1 = Vector.from_start_end(p, self.points[(i + 1) % len(self.points)])
+            cross = v1.cross(utils.get_closest_mesh_normal_to_pt(p, self.mesh))
+            v = normalize_vector(cross)
+            v = Vector(v[0], v[1], v[2])
+            if v[2] < 0:
+                v.scale(-1)
+            up_vectors.append(v)
+        up_vectors = utils.smooth_vectors(up_vectors, strength=0.4, iterations=3)
+        return up_vectors
+
+    def get_closest_normal(self, pt):
+        if self.override_vector:
+            return self.override_vector
+        else:
+            i = utils.get_closest_pt_index(pt, self.points)
+            return self.up_vectors[i]
+
+    def to_data(self):
+        return {"points": utils.point_list_to_dict(self.points),
+                "up_vectors": utils.point_list_to_dict(self.up_vectors)}

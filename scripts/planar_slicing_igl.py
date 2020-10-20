@@ -40,7 +40,7 @@ def create_planar_paths_igl(mesh, min_z, max_z, planes):
     iso['isoV'] = [[v[0], v[1], v[2]] for v in isoV]
     iso['isoE'] = [[int(v[0]), int(v[1])] for v in isoE]
 
-    save_to_json(data=iso, filepath='/examples/WIP/3_curved_slicing_surface/data/',
+    save_to_json(data=iso, filepath='/examples/WIP/3_curved_slicing/data/',
                  name='iso.json')
     print(nx.number_connected_components(G))
 
@@ -49,7 +49,7 @@ def create_planar_paths_igl(mesh, min_z, max_z, planes):
         print(e)
         es[i] = [int(e[0]), int(e[1])]
 
-    save_to_json(data=es, filepath='/examples/WIP/3_curved_slicing_surface/data/',
+    save_to_json(data=es, filepath='/examples/WIP/3_curved_slicing/data/',
                  name='es.json')
 
     layers = {}
@@ -66,7 +66,7 @@ def create_planar_paths_igl(mesh, min_z, max_z, planes):
 
     print(layers[0])
 
-    save_to_json(data=layers, filepath ='/examples/WIP/3_curved_slicing_surface/data/', name='isolines.json')
+    save_to_json(data=layers, filepath ='/examples/WIP/3_curved_slicing/data/', name='isolines.json')
 
     raise ValueError
 

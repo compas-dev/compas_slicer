@@ -101,7 +101,7 @@ def generate_gcode(printpoints_dict, FILE, machine_model, material):
 
 def get_filament_feed_length(printpoint, i, layer_key, path_key, printpoints_dict):
     return 0
-    # if printpoint.extruder_toggle and i < len(printpoints)-1:
+    # if printpoint.extruder_toggle_type and i < len(printpoints)-1:
     #     next_point = printpoints[i+1]
     #     # TODO!!!
     #     return 0

@@ -13,6 +13,17 @@ __all__ = ['IsocurvesGenerator']
 
 
 class IsocurvesGenerator:
+    """
+    IsocurvesGenerator is a class that generates isocurves that lie on the input
+    mesh and interpolate the targets (target_LOW, target_HIGH)
+
+    Attributes
+    ----------
+    mesh_ : compas.datastructures.Mesh
+    target_LOW : compas_slicer.slicing.curved_slicing.CompoundTarget
+    target_HIGH : compas_slicer.slicing.curved_slicing.CompoundTarget
+    number_of_curves : int
+    """
     def __init__(self, mesh_, target_LOW, target_HIGH, number_of_curves):
         logging.info("Isocurves Generator...")
         self.mesh = mesh_  # compas mesh
@@ -22,6 +33,7 @@ class IsocurvesGenerator:
         #  main
         self.segments = [VerticalLayer(id=0)]  # segments that contain isocurves (compas_slicer.Path)
         t_list = get_t_list(number_of_curves)
+        t_list.pop(0)  # remove first curves that is on 0 (lies on BaseBoundary)
         self.create_isocurves(t_list)
 
     #  --- main
@@ -46,7 +58,7 @@ class IsocurvesGenerator:
                         centroid = np.mean(np.array(pts), axis=0)
                         other_centroids = self.get_segments_centroids_list()
                         candidate_segment = self.segments[utils.get_closest_pt_index(centroid, other_centroids)]
-                        threshold_max_centroid_dist = 25
+                        threshold_max_centroid_dist = 15
                         if np.linalg.norm(candidate_segment.head_centroid - centroid) < threshold_max_centroid_dist:
                             current_segment = candidate_segment
                         else:  # then create new segment
@@ -80,7 +92,7 @@ class IsocurvesGenerator:
 
 
 #################################
-#  Additional functionality
+#  Additional post_processing
 
 class GeodesicsZeroCrossingContour(ZeroCrossingContours):
     def __init__(self, mesh):

@@ -52,7 +52,7 @@ class RoboticPrintOrganizer(PrintOrganizer):
                     commands[count]["velocity"] = printpoint.velocity
                     commands[count]["radius"] = get_radius(printpoint, neighboring_items)
                     commands[count]["wait_time"] = printpoint.wait_time
-                    commands[count]["extruder_toggle"] = printpoint.extruder_toggle
+                    commands[count]["extruder_toggle_type"] = printpoint.extruder_toggle
 
                     count += 1
 

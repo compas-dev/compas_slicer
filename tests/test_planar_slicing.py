@@ -4,7 +4,6 @@ import os
 from compas.datastructures import Mesh
 from compas_slicer.slicers import PlanarSlicer
 
-
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data/test_geometries')
 FILE = os.path.abspath(os.path.join(DATA, 'cylinder.obj'))
 
@@ -14,11 +13,11 @@ layer_height = 15.0
 z = [compas_mesh.vertex_attribute(key, 'z') for key in compas_mesh.vertices()]
 min_z, max_z = min(z), max(z)
 d = abs(min_z - max_z)
-no_of_layers = int(d / layer_height) + 1
+no_of_layers = int(d / layer_height)
 
 
-def test_planar_contours_success():
-    slicer = PlanarSlicer(compas_mesh, slicer_type="planar_compas", layer_height=layer_height)
+def test_planar_slicing_success():
+    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=layer_height)
     slicer.slice_model()
 
     assert isinstance(slicer.layers, list), "The layers are not a list"
@@ -32,5 +31,6 @@ def test_planar_contours_success():
                                                     "open. It should be closed "
 
 
+# test inclined cylinder. How many paths open, how many paths closed
 if __name__ == '__main__':
     pass

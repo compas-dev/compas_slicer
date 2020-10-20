@@ -2,8 +2,9 @@ import compas
 import compas_slicer
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
-from compas_slicer.geometry import Layer
-
+from compas_slicer.geometry import Layer, VerticalLayer
+from compas_slicer.slicers.post_processing import seams_align, unify_paths_orientation
+import time
 import logging
 
 logger = logging.getLogger('logger')
@@ -15,12 +16,12 @@ class BaseSlicer(object):
     """
     Slicer class is an organizational class that holds all the information for the slice process
     This class is meant to be extended for the implementation of the various slicers.
-    See PlanarSlicer as an example
+    See PlanarSlicer and Curved slicer as examples
 
     Attributes
     ----------
     mesh : compas.datastructures.Mesh
-        Input mesh
+        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
     """
 
     def __init__(self, mesh):
@@ -46,11 +47,38 @@ class BaseSlicer(object):
                 total_number_of_pts += len(path.points)
         return total_number_of_pts
 
+    @property
+    def vertical_layers(self):
+        if len(self.layers) > 0:
+            if isinstance(self.layers[0], VerticalLayer):
+                return self.layers  # What a hacky way to do this...
+            else:
+                raise NameError('The slicer does not have vertical_layers')
+        else:
+            return []
+
     ##############################
     #  --- Functions
 
     def slice_model(self, *args, **kwargs):
+        start_time = time.time()  # time measurement
+        self.generate_paths()
+        end_time = time.time()
+        logger.info('')
+        logger.info("Slicing operation took: %.2f seconds" % (end_time - start_time))
+        self.post_processing()
+
+    def generate_paths(self):
+        # To be implemented by the inheriting classes
         raise NotImplementedError
+
+    def post_processing(self):
+        #  --- Align the seams between layers and unify orientation
+        seams_align(self, align_with='x_axis')
+        unify_paths_orientation(self)
+
+        logger.info("Created %d Layers with %d total number of points"
+                    % (len(self.layers), self.total_number_of_points))
 
     ##############################
     #  --- Output
@@ -74,7 +102,7 @@ class BaseSlicer(object):
         print("Number of layers: %d" % number_of_path_collections)
         print("Number of paths: %d, open paths: %d, closed paths: %d" % (
             open_paths + closed_paths, open_paths, closed_paths))
-        print("Number of sampling printpoints on contours: %d" % total_number_of_pts)
+        print("Number of sampling printpoints on layers: %d" % total_number_of_pts)
         print("")
 
     def visualize_on_viewer(self, viewer, visualize_mesh=False, visualize_paths=True):
@@ -85,6 +113,9 @@ class BaseSlicer(object):
         if visualize_paths:
             for i, layer in enumerate(self.layers):
                 for j, path in enumerate(layer.paths):
+                    pts = path.points
+                    if path.is_closed:
+                        pts.append(pts[0])
                     polyline = Polyline(path.points)
                     if isinstance(layer, compas_slicer.geometry.VerticalLayer):
                         viewer.add(polyline, name="VerticalSegment %d, Path %d" % (i, j),
