@@ -44,6 +44,7 @@ def main():
     # change the threshold value to remove more or less points
     simplify_paths_rdp(slicer, threshold=1.5)
 
+
     ### --- Prints out the info of the slicer
     slicer.printout_info()
 
