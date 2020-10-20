@@ -2,13 +2,9 @@ import os
 from compas.datastructures import Mesh
 import logging
 from compas_slicer.utilities import load_from_json, save_to_json
-from compas_slicer.slicers import CurvedSlicer, BaseSlicer
-from compas_slicer.post_processing import simplify_paths_rdp
+from compas_slicer.slicers import CurvedSlicer
+from compas_slicer.slicers.post_processing import simplify_paths_rdp
 from compas_slicer.print_organization import CurvedPrintOrganizer
-from compas.geometry import Frame
-from compas_viewers.objectviewer import ObjectViewer
-
-from compas_viewers.objectviewer import ObjectViewer
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)

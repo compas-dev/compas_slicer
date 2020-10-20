@@ -3,7 +3,7 @@ import compas_slicer
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
 from compas_slicer.geometry import Layer, VerticalLayer
-from compas_slicer.post_processing import seams_align, unify_paths_orientation
+from compas_slicer.slicers.post_processing import seams_align, unify_paths_orientation
 import time
 import logging
 
