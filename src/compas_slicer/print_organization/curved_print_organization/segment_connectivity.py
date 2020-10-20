@@ -1,5 +1,4 @@
 import compas
-
 import compas_slicer
 from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, normalize_vector, Point
 import logging
@@ -25,6 +24,7 @@ class SegmentConnectivity:
     mesh : compas.geometry.Mesh
     parameters : dict
     """
+
     def __init__(self, paths, base_boundary, mesh, parameters):
         assert isinstance(paths[0], compas_slicer.geometry.Path)
         assert isinstance(base_boundary, compas_slicer.print_organization.BaseBoundary)
@@ -134,6 +134,7 @@ class SegmentConnectivity:
 
 def set_printpoint_up_vec(pp, v):
     pp.up_vector = v
+
 
 def set_printpoint_height(pp, h):
     pp.height = h

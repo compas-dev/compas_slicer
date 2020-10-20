@@ -25,7 +25,7 @@ __all__ = ['save_to_json',
            'get_dict_key_from_value',
            'get_closest_mesh_normal_to_pt',
            'smooth_vectors',
-            'get_normal_of_path_on_xy_plane']
+           'get_normal_of_path_on_xy_plane']
 
 
 def get_average_point(points):
@@ -142,6 +142,7 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     normal = normalize_vector(normal)
     normal = Vector(*list(normal))
     return normal
+
 
 #######################################
 #  networkx graph

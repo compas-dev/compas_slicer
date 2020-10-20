@@ -1,5 +1,4 @@
 import networkx as nx
-from compas_slicer.utilities import save_to_json
 
 __all__ = ['create_graph_from_mesh_edges',
            'sort_graph_connected_components',
@@ -72,21 +71,7 @@ def sort_graph_connected_components(G, intersection_points):
             if node_index_2 not in sorted_node_indices:
                 sorted_node_indices.append(node_index_2)
 
-        if len(sorted_node_indices) != len(cp):
-            print('Oh no! This will fail because len(sorted_node_indices) != len(cp). \
-                  But at least you get the debug_pts.json to see whats going on')
-            sorted_point_clusters[j] = []
-            sorted_edge_clusters[j] = []
-            pts = []
-            for node_index in sorted_node_indices:
-                nodeDict = dict(G.nodes(data=True))
-                parent_edge = nodeDict[node_index]['mesh_edge']
-                sorted_edge_clusters[j].append(parent_edge)
-                p = intersection_points[parent_edge][0]
-                pts.append(p.to_data())
-            save_to_json(pts, 'C:/dev/compas_slicer/examples/2_planar_slicing_advanced/data/', 'debug_pts.json')
-            raise ValueError('Attention. len(sorted_node_indices) != len(G.nodes())')
-        # assert len(sorted_node_indices) == len(cp), 'Attention. len(sorted_node_indices) != len(G.nodes())'
+        assert len(sorted_node_indices) == len(cp), 'Attention. len(sorted_node_indices) != len(G.nodes())'
 
         # now transform them to the corresponding sorted lists
         sorted_point_clusters[j] = []
@@ -100,6 +85,3 @@ def sort_graph_connected_components(G, intersection_points):
             p = intersection_points[parent_edge][0]
             sorted_point_clusters[j].append(p)
     return sorted_point_clusters, sorted_edge_clusters
-
-
-

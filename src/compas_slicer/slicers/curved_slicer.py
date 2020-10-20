@@ -3,6 +3,7 @@ from compas_slicer.slicers.curved_slicing import CompoundTarget
 from compas_slicer.slicers.curved_slicing import find_desired_number_of_isocurves
 import logging
 from compas_slicer.slicers.curved_slicing import IsocurvesGenerator
+from compas_slicer.utilities import save_to_json
 
 logger = logging.getLogger('logger')
 
@@ -46,8 +47,10 @@ class CurvedSlicer(BaseSlicer):
 
         target_HIGH.compute_uneven_boundaries_t_ends(target_LOW)
         if self.intermediary_outputs:
-            target_LOW.save_distances("distances_0.json")
-            target_HIGH.save_distances("distances_1.json")
+            target_LOW.save_distances("distances_LOW.json")
+            target_HIGH.save_distances("distances_HIGH.json")
+            target_HIGH.save_distances_clusters("distances_clusters_HIGH.json")
+            save_to_json(target_HIGH.t_end_per_cluster, self.DATA_PATH, "t_end_per_cluster_HIGH.json")
 
         number_of_curves = find_desired_number_of_isocurves(target_LOW, target_HIGH, self.avg_layer_height)
 

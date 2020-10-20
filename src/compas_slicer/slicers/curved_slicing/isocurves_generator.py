@@ -58,7 +58,7 @@ class IsocurvesGenerator:
                         centroid = np.mean(np.array(pts), axis=0)
                         other_centroids = self.get_segments_centroids_list()
                         candidate_segment = self.segments[utils.get_closest_pt_index(centroid, other_centroids)]
-                        threshold_max_centroid_dist = 25
+                        threshold_max_centroid_dist = 15
                         if np.linalg.norm(candidate_segment.head_centroid - centroid) < threshold_max_centroid_dist:
                             current_segment = candidate_segment
                         else:  # then create new segment

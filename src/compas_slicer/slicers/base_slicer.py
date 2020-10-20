@@ -124,7 +124,6 @@ class BaseSlicer(object):
                         viewer.add(polyline, name="Layer %d, Path %d" % (i, j),
                                    settings={'color': '#ffffff'})
 
-
     ##############################
     #  --- To data, from data
 

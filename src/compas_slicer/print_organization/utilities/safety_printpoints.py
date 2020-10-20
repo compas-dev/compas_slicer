@@ -21,9 +21,6 @@ def add_safety_printpoints(printpoints_dict, z_hop=20):
         for path_key in printpoints_dict[layer_key]:
             print_points_copy_dict[layer_key][path_key] = []
 
-            #  get length of path to calculate last point
-            path_len = len(printpoints_dict[layer_key][path_key])
-
             for i, printpoint in enumerate(printpoints_dict[layer_key][path_key]):
                 #  regular printing points
                 print_points_copy_dict[layer_key][path_key].append(printpoint)

@@ -2,11 +2,11 @@ import logging
 from compas.geometry import Point
 from compas_slicer.print_organization.print_organizer import PrintOrganizer
 from compas_slicer.geometry import VerticalLayer
-from compas_slicer.print_organization.curved_print_organization import topological_sorting
+from compas_slicer.print_organization.curved_print_organization import topological_sorting as topo_sort
 import compas_slicer.utilities as utils
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
 from compas_slicer.print_organization.curved_print_organization import SegmentConnectivity
-from compas_slicer.print_organization import set_extruder_toggle, set_linear_velocity
+from compas_slicer.print_organization import set_linear_velocity
 
 logger = logging.getLogger('logger')
 
@@ -15,7 +15,7 @@ __all__ = ['CurvedPrintOrganizer']
 
 class CurvedPrintOrganizer(PrintOrganizer):
 
-    def __init__(self, slicer, parameters, DATA_PATH=None):
+    def __init__(self, slicer, parameters, DATA_PATH=None, intermediary_outputs=True):
         assert isinstance(slicer.layers[0], VerticalLayer)  # curved printing only works with vertical layers
         PrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
@@ -29,17 +29,19 @@ class CurvedPrintOrganizer(PrintOrganizer):
 
         self.segments = {}  # one segment per vertical layer
         self.create_segments_dict()
-        self.base_boundaries_creation(save_json=True)  # creation of one base boundary per vertical_layer and segment
+        self.base_boundaries_creation(intermediary_outputs)  # creation of one base boundary per vertical_layer
         self.create_segment_connectivity()
 
     def __repr__(self):
         return "<CurvedPrintOrganizer with %i segments>" % len(self.segments)
 
     def topological_sorting(self):
-        """ When the print consists of various parths, this function initializes a class that creates
+        """ When the print consists of various paths, this function initializes a class that creates
         a directed graph with all these parts, with the connectivity of each part reflecting which
         other parts it lies on, and which other parts lie on it."""
-        self.topo_sort_graph = topological_sorting.SegmentsDirectedGraph(self.slicer.mesh, self.slicer.layers)
+        self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.slicer.vertical_layers,
+                                                               max_d_threshold=self.parameters['max_layer_height'],
+                                                               DATA_PATH=self.DATA_PATH)
 
     def create_segments_dict(self):
         """ Initializes segments dictionary with empty segments """
@@ -47,7 +49,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
             self.segments[i] = {'boundary': None,
                                 'path_collection': None}
 
-    def base_boundaries_creation(self, save_json):
+    def base_boundaries_creation(self, intermediary_outputs):
         """ Creates one BaseBoundary per vertical_layer  """
         root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
@@ -67,7 +69,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
         else:
             self.segments[0]['boundary'] = root_boundary
 
-        if save_json:
+        if intermediary_outputs:
             b_data = {}
             for i in self.segments:
                 b_data[i] = self.segments[i]['boundary'].to_data()

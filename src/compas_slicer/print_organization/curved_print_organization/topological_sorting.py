@@ -9,8 +9,9 @@ logger = logging.getLogger('logger')
 __all__ = ['MeshDirectedGraph',
            'SegmentsDirectedGraph']
 
+
 #################################
-### DirectedGraph
+#  DirectedGraph
 
 class DirectedGraph(object):
     """
@@ -19,17 +20,20 @@ class DirectedGraph(object):
     where A lies on the build platform, B lies on A, and C lies on B.
     This graph cannot have cycles; cycles would represent an unfeasible print.
     """
+
     def __init__(self):
         logger.info('Topological sorting')
 
-        self.G = None
+        self.G = nx.DiGraph()
         self.create_graph_nodes()
-        self.create_directed_graph_edges(root_indices=self.find_roots())
+        self.root_indices = self.find_roots()
+        self.create_directed_graph_edges(copy.deepcopy(self.root_indices))
         logger.info('Nodes : ' + str(self.G.nodes(data=True)))
         logger.info('Edges : ' + str(self.G.edges(data=True)))
 
         self.N = len(list(self.G.nodes()))
         self.adj_list = self.get_adjacency_list()
+        self.check_that_all_nodes_found_their_connectivity()
         logger.info('Adjacency list : ' + str(self.adj_list))
         self.in_degree = self.get_in_degree()
         self.all_orders = []
@@ -64,8 +68,15 @@ class DirectedGraph(object):
             children, cut_ids = self.get_children_of_node(current_node)
             [self.G.add_edge(current_node, child_key, cut=cut_id) for child_key, cut_id in zip(children, cut_ids)]
             for child_key in children:
-                assert child_key not in passed_nodes, 'Error, cyclic directed graph'
+                assert child_key not in passed_nodes, 'Error, cyclic directed graph.'
             [queue.append(child_key) for child_key in children if child_key not in queue]
+
+    def check_that_all_nodes_found_their_connectivity(self):
+        good_nodes = [r for r in self.root_indices]
+        for children_list in self.adj_list:
+            [good_nodes.append(child) for child in children_list if child not in good_nodes]
+        assert len(good_nodes) == self.N, 'There are floating segments on directed graph. Investigate the process of \
+                                          the creation of the graph. '
 
     #################################
     # Find all topological orders
@@ -125,11 +136,12 @@ class DirectedGraph(object):
 
 
 #################################
-### Meshes DirectedGraph
+#  Meshes DirectedGraph
 
 class MeshDirectedGraph(DirectedGraph):
     """ The MeshDirectedGraph is used for topological sorting of multiple meshes that have been
     generated as a result of region split over the saddle points of the mesh scalar function """
+
     def __init__(self, all_meshes):
         raise NotImplementedError
 
@@ -147,7 +159,6 @@ class MeshDirectedGraph(DirectedGraph):
     #
     # def create_graph_nodes(self):
     #     # initialize graph Meshes as nodes. Cuts and boundaries as attributes
-    #     self.G = nx.DiGraph()
     #     for i, m in enumerate(self.all_meshes):
     #         self.G.add_node(i, cuts=region_split_utils.get_existing_cut_indices(m),
     #                         boundaries=region_split_utils.get_existing_boundary_indices(m))
@@ -160,20 +171,11 @@ class MeshDirectedGraph(DirectedGraph):
     #     for key, data in self.G.nodes(data=True):
     #         common_cuts = list(set(parent_data['cuts']).intersection(data['cuts']))
     #
-    #         if key != root \
-    #             and (key, root) not in self.G.edges() \
-    #             and (root, key) not in self.G.edges() \
-    #             and len(common_cuts) > 0:
-    #             if self.true_mesh_adjacency(key, root):
-    #                 try:
-    #                     assert len(common_cuts) == 1
-    #                 except:
-    #                     print('More than one common cuts between two pieces in the following split meshes')
-    #                     print('root  : ', root)
-    #                     print('child : ', key)
-    #                     print('common_cuts : ', common_cuts)
-    #                     # TODO: improve this. Two meshes COULD have more common cuts, resulting for example from one-vertex connections
-    #                     raise ValueError
+    # if key != root \ and (key, root) not in self.G.edges() \ and (root, key) not in self.G.edges() \ and len(
+    # common_cuts) > 0: if self.true_mesh_adjacency(key, root): try: assert len(common_cuts) == 1 except: print('More
+    # than one common cuts between two pieces in the following split meshes') print('root  : ', root) print('child :
+    # ', key) print('common_cuts : ', common_cuts) # TODO: improve this. Two meshes COULD have more common cuts,
+    #  resulting for example from one-vertex connections raise ValueError
     #
     #                 children.append(key)
     #                 cut_ids.append(common_cuts[0])
@@ -191,56 +193,68 @@ class MeshDirectedGraph(DirectedGraph):
     #             ci = utils.get_closest_pt_index(pt, pts_mesh2)
     #             if distance_point_point_sqrd(pt, pts_mesh2[ci]) < 0.00001:
     #                 count += 1
-    #                 if count == 3:  # TODO: improve this. Two meshes could have 3 one-vertex-connections for example. Also two meshes could have only two vertex connection and depend on each other.
+    #                 if count == 3:
+    #                     TODO: improve this. Two meshes could have 3 one-vertex-connections for example.
+    #                             Also two meshes could have only two vertex connection and depend on each other.
     #                     return True
     #     return False
 
 
 #################################
-### Segments DirectedGraph
+#  Segments DirectedGraph
+
 
 class SegmentsDirectedGraph(DirectedGraph):
     """ The SegmentsDirectedGraph is used for topological sorting of multiple segments in one mesh"""
-    def __init__(self, mesh, segments):
+
+    def __init__(self, mesh, segments, max_d_threshold, DATA_PATH):
         self.mesh = mesh
         self.segments = segments
+        self.max_d_threshold = max_d_threshold
+        self.DATA_PATH = DATA_PATH
         DirectedGraph.__init__(self)
 
     def find_roots(self):
         boundary_pts = utils.get_mesh_vertex_coords_with_attribute(self.mesh, 'boundary', 1)
         root_segments = []
         for i, segment in enumerate(self.segments):
-            first_curve_pts = segment['Isocurve_0']
-            if self.are_neighboring_point_clouds(boundary_pts, first_curve_pts):
+            first_curve_pts = segment.paths[0].points
+            if are_neighboring_point_clouds(boundary_pts, first_curve_pts, self.max_d_threshold):
                 root_segments.append(i)
+        logger.info('Graph roots : ' + str(root_segments))
         return root_segments
 
     def create_graph_nodes(self):
         # initialize graph Meshes as nodes. Cuts and boundaries as attributes
-        self.G = nx.DiGraph()
         for i, segment in enumerate(self.segments):
             self.G.add_node(i)
 
     def get_children_of_node(self, root):
         children = []
         root_segment = self.segments[root]
-        root_last_crv_pts = root_segment['Isocurve_' + str(len(root_segment) - 1)]
+        root_last_crv_pts = root_segment.paths[-1].points
 
+        # utils.save_to_json(utils.point_list_to_dict(root_last_crv_pts), self.DATA_PATH, 'root_last_crv_pts.json')
         for i, segment in enumerate(self.segments):
             if i != root:
-                segment_first_curve_pts = segment['Isocurve_0']
-                if self.are_neighboring_point_clouds(root_last_crv_pts, segment_first_curve_pts):
-                    children.append(i)
-        return children
+                segment_first_curve_pts = segment.paths[0].points
+                # utils.save_to_json(utils.point_list_to_dict(segment_first_curve_pts), self.DATA_PATH,
+                #                    'segment_first_curve_pts.json')
+                # utils.interrupt()
 
-    def are_neighboring_point_clouds(self, pts1, pts2):
-        count = 0
-        for pt in pts1:
-            if distance_point_point_sqrd(pt, utils.get_closest_pt(pt, pts2)) < 4.0:
-                count += 1
-                if count > 3:  # Attention, hardcoded threshold
-                    return True
-        return False
+                if are_neighboring_point_clouds(root_last_crv_pts, segment_first_curve_pts, self.max_d_threshold):
+                    children.append(i)
+        return children, [None for _ in children]  # this graph doesn't have cut ids
+
+
+def are_neighboring_point_clouds(pts1, pts2, threshold):
+    count = 0
+    for pt in pts1:
+        if distance_point_point_sqrd(pt, utils.get_closest_pt(pt, pts2)) < threshold:
+            count += 1
+            if count > 3:
+                return True
+    return False
 
 
 if __name__ == '__main__':

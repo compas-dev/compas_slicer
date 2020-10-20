@@ -1,4 +1,3 @@
-from compas.geometry import Polyline
 import logging
 from compas.geometry import Vector, normalize_vector
 from compas_slicer.geometry import PrintPoint

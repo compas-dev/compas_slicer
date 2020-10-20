@@ -21,7 +21,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ########################
 
 DATA = os.path.join(os.path.dirname(__file__), 'data')
-MODEL = 'facade.obj'
+MODEL = 'connection.obj' #'facade.obj'
 
 
 def main():
@@ -43,7 +43,6 @@ def main():
     ### --- Simplify the printpaths by removing points with a certain threshold
     # change the threshold value to remove more or less points
     simplify_paths_rdp(slicer, threshold=0.9)
-
 
     ### --- Prints out the info of the slicer
     slicer.printout_info()

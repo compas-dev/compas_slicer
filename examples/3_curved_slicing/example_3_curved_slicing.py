@@ -13,8 +13,11 @@ from compas_viewers.objectviewer import ObjectViewer
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
+DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_basic_example')
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'vase.obj')
+
+# DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_advanced_example')
+# OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection.obj')
 
 if __name__ == "__main__":
     ### --- Load initial_mesh
@@ -25,7 +28,7 @@ if __name__ == "__main__":
     high_boundary_vs = load_from_json(DATA_PATH, 'boundaryHIGH.json')
 
     ### --- slicing
-    slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH, avg_layer_height=12.0)
+    slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH, avg_layer_height=5.0)
     slicer.slice_model()  # compute contours
 
     simplify_paths_rdp(slicer, threshold=1.0)
