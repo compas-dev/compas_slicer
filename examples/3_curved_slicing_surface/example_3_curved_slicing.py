@@ -27,12 +27,12 @@ if __name__ == "__main__":
     ### --- slicing
     slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH, avg_layer_height=12.0)
     slicer.slice_model()  # compute contours
-    # simplify_paths_rdp(slicer, threshold=1.0)
+
+    simplify_paths_rdp(slicer, threshold=1.0)
+
+    save_to_json(slicer.to_data(), DATA_PATH, 'curved_slicer.json')
 
     slicer.printout_info()
-
-    slicer.to_json(DATA_PATH, 'curved_slicer.json')
-    raise NameError
 
     # ### --- Print organizer
     parameters = {

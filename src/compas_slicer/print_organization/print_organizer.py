@@ -3,7 +3,6 @@ import logging
 from compas_slicer.geometry import PrintPoint
 from compas.geometry import Polyline
 from compas_slicer.print_organization import add_safety_printpoints
-from compas.geometry import Vector, normalize_vector
 import compas_slicer.utilities as utils
 from progress.bar import Bar
 import numpy as np
@@ -107,6 +106,8 @@ class PrintOrganizer(object):
         count = 0
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
+                self.remove_duplicate_points_in_path(layer_key, path_key)
+
                 for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
                     neighboring_items = self.get_printpoint_neighboring_items(layer_key, path_key, i)
 
@@ -132,6 +133,24 @@ class PrintOrganizer(object):
                     count += 1
         logger.info("Generated %d print points" % count)
         return data
+
+    def remove_duplicate_points_in_path(self, layer_key, path_key):
+        # find duplicates
+        duplicate_ppts = []
+        for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
+            prev = self.printpoints_dict[layer_key][path_key][i - 1]
+            if np.linalg.norm(np.array(printpoint.pt) - np.array(prev.pt)) < 0.0001:
+                duplicate_ppts.append(printpoint)
+
+        # warn user
+        if len(duplicate_ppts) > 0:
+            logger.error('Attention! It looks like you had %d printpoints on the same position.' % len(duplicate_ppts)
+                         + ' on ' + layer_key + ' , ' + path_key + ' .They will be removed.')
+
+        # remove duplicates
+        if len(duplicate_ppts) > 0:
+            for ppt in duplicate_ppts:
+                self.printpoints_dict[layer_key][path_key].remove(ppt)
 
     def get_printpoint_neighboring_items(self, layer_key, path_key, i):
         neighboring_items = []

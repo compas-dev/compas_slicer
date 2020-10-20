@@ -136,7 +136,7 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
 
     # TODO: Attention! This is just a workaround! find the source of the problem and imrpove this!
     if length_vector(normal) == 0:
-        logger.error('Attention! It looks like you might have some duplicated points')
+        # logger.error('Attention! It looks like you might have some duplicated points')
         normal = get_closest_mesh_normal_to_pt(point, mesh)
 
     normal = normalize_vector(normal)

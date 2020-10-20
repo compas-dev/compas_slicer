@@ -42,7 +42,7 @@ def main():
 
     ### --- Simplify the printpaths by removing points with a certain threshold
     # change the threshold value to remove more or less points
-    simplify_paths_rdp(slicer, threshold=1.5)
+    simplify_paths_rdp(slicer, threshold=0.9)
 
 
     ### --- Prints out the info of the slicer
@@ -59,7 +59,7 @@ def main():
     print_organizer = PrintOrganizer(slicer)
     print_organizer.create_printpoints(compas_mesh)
     print_organizer.set_extruder_toggle()
-    # print_organizer.add_safety_printpoints(z_hop=20)
+    print_organizer.add_safety_printpoints(z_hop=20)
     print_organizer.set_linear_velocity("constant", v=25)
 
     ### --- Save printpoints dictionary to json file

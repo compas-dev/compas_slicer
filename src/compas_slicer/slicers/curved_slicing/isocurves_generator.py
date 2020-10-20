@@ -14,11 +14,15 @@ __all__ = ['IsocurvesGenerator']
 
 class IsocurvesGenerator:
     """
-    IsocurvesGenerator is...
+    IsocurvesGenerator is a class that generates isocurves that lie on the input
+    mesh and interpolate the targets (target_LOW, target_HIGH)
 
     Attributes
     ----------
-    params : Fill things in!
+    mesh_ : compas.datastructures.Mesh
+    target_LOW : compas_slicer.slicing.curved_slicing.CompoundTarget
+    target_HIGH : compas_slicer.slicing.curved_slicing.CompoundTarget
+    number_of_curves : int
     """
     def __init__(self, mesh_, target_LOW, target_HIGH, number_of_curves):
         logging.info("Isocurves Generator...")

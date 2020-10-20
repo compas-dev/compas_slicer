@@ -22,6 +22,7 @@ def set_extruder_toggle(printpoints_dict, slicer):
                 interrupt_path = True
                 # horizontal layers with multiple paths should be interrupted so that the extruder
                 # can travel from one path to the other
+                # Note: Maybe an exception should be added here for the first brim layer?
 
             if is_vertical_layer and j == len(layer.paths) - 1:
                 interrupt_path = True
