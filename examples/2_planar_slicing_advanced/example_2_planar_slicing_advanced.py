@@ -34,7 +34,7 @@ def main():
     ### --- Slicer
     # try out different slicers by changing the slicer_type
     # options: 'default', 'planar_meshcut', 'planar_cgal'
-    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=1.5)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=16.0)
     slicer.slice_model()
 
     ### --- Generate brim
@@ -53,21 +53,21 @@ def main():
 
     save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
 
-    # ### --- Fabrication - related information
-    # # options extruder_toggle_type: continuous_shell_printing, interrupt_between_paths
-    # print_organizer = PrintOrganizer(slicer)
-    # print_organizer.create_printpoints(compas_mesh)
-    # print_organizer.set_extruder_toggle(extruder_toggle_type="continuous_shell_printing")
+    ### --- Fabrication - related information
+    # options extruder_toggle_type: continuous_shell_printing, interrupt_between_paths
+    print_organizer = PrintOrganizer(slicer)
+    print_organizer.create_printpoints(compas_mesh)
+    print_organizer.set_extruder_toggle()
     # print_organizer.add_safety_printpoints(z_hop=20)
-    # print_organizer.set_linear_velocity("constant", v=25)
-    #
-    # ### --- Save printpoints dictionary to json file
-    # printpoints_data = print_organizer.output_printpoints_dict()
-    # save_to_json(printpoints_data, DATA, 'out_printpoints.json')
+    print_organizer.set_linear_velocity("constant", v=25)
+
+    ### --- Save printpoints dictionary to json file
+    printpoints_data = print_organizer.output_printpoints_dict()
+    save_to_json(printpoints_data, DATA, 'out_printpoints.json')
     #
     # # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
-    viewer.update()
-    viewer.show()
+    # viewer.update()
+    # viewer.show()
 
 
 if __name__ == "__main__":

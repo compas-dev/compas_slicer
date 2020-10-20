@@ -34,7 +34,7 @@ class PrintPoint(object):
         self.layer_height = layer_height
 
         self.mesh_normal = mesh_normal  # compas.geometry.Vector
-        self.up_vector = Vector(1, 0, 0)  # default value that can be updated
+        self.up_vector = Vector(0, 0, 1)  # default value that can be updated
         self.frame = self.get_frame()  # compas.geometry.Frame
 
         #  --- print_organization related attributes

@@ -39,11 +39,15 @@ def main():
     slicer.slice_model()
 
     ### --- Generate brim
-    generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
+    # generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
 
     ### --- Simplify the printpaths by removing points with a certain threshold
     # change the threshold value to remove more or less points
     simplify_paths_rdp(slicer, threshold=1.5)
+
+
+    save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
+    raise NameError
 
     ### --- Smooth the seams between layers
     # change the smooth_distance value to achieve smoother, or more abrupt seams
@@ -68,7 +72,7 @@ def main():
     # options extruder_toggle_type: continuous_shell_printing, interrupt_between_paths
     print_organizer = PrintOrganizer(slicer)
     print_organizer.create_printpoints(compas_mesh)
-    print_organizer.set_extruder_toggle(extruder_toggle_type="continuous_shell_printing")
+    print_organizer.set_extruder_toggle()
     print_organizer.add_safety_printpoints(z_hop=20)
     print_organizer.set_linear_velocity("constant", v=25)
 

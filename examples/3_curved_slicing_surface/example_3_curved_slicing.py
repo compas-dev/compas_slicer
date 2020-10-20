@@ -27,11 +27,12 @@ if __name__ == "__main__":
     ### --- slicing
     slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH, avg_layer_height=12.0)
     slicer.slice_model()  # compute contours
-    simplify_paths_rdp(slicer, threshold=1.0)
+    # simplify_paths_rdp(slicer, threshold=1.0)
 
     slicer.printout_info()
 
     slicer.to_json(DATA_PATH, 'curved_slicer.json')
+    raise NameError
 
     # ### --- Print organizer
     parameters = {
@@ -43,7 +44,7 @@ if __name__ == "__main__":
 
     print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
     print_organizer.create_printpoints(mesh)
-    print_organizer.set_extruder_toggle("continuous_shell_printing")
+    print_organizer.set_extruder_toggle()
     print_organizer.add_safety_printpoints(z_hop=20)
     print_organizer.set_linear_velocity()
 

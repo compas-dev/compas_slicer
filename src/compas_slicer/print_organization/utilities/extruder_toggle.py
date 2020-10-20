@@ -1,34 +1,43 @@
+import compas_slicer
+
 __all__ = ['set_extruder_toggle']
 
 
-def set_extruder_toggle(printpoints_dict, extruder_toggle_type):
-    """General description.
-    Parameters
-    ----------
-    param : type
-        Explanation sentence.
-    Returns
-    -------
-    what it returns
-        Explanation sentence.
-    """
-    if not (extruder_toggle_type == "continuous_shell_printing"
-            or extruder_toggle_type == "interrupt_between_paths"):
-        raise ValueError("Extruder toggle method doesn't exist")
+def set_extruder_toggle(printpoints_dict, slicer):
+    for i, layer in enumerate(slicer.layers):
+        layer_key = 'layer_%d' % i
+        is_vertical_layer = isinstance(layer, compas_slicer.geometry.VerticalLayer)
 
-    for layer_key in printpoints_dict:
-        for path_key in printpoints_dict[layer_key]:
+        for j, path in enumerate(layer.paths):
+            path_key = 'path_%d' % j
+            is_closed_path = path.is_closed
+
+            # --- decide if the path should be interrupted at the end
+            interrupt_path = False
+            if not is_closed_path:
+                interrupt_path = True
+                # open paths should always be interrupted
+
+            if not is_vertical_layer and len(layer.paths) > 1:
+                interrupt_path = True
+                # horizontal layers with multiple paths should be interrupted so that the extruder
+                # can travel from one path to the other
+
+            if is_vertical_layer and j == len(layer.paths) - 1:
+                interrupt_path = True
+                # the last path of a vertical layer should be interrupted
+
+            # --- create extruder toggles
             path_printpoints = printpoints_dict[layer_key][path_key]
-            for i, printpoint in enumerate(path_printpoints):
-                if extruder_toggle_type == "continuous_shell_printing":  # single shell printing
-                    printpoint.extruder_toggle = True
-                # elif extruder_toggle_type == "always_off":
-                #     printpoint.extruder_toggle_type = False
-                elif extruder_toggle_type == "interrupt_between_paths":  # multiple contours
-                    if i == len(path_printpoints) - 1:
+            for k, printpoint in enumerate(path_printpoints):
+
+                if interrupt_path:
+                    if k == len(path_printpoints) - 1:
                         printpoint.extruder_toggle = False
                     else:
                         printpoint.extruder_toggle = True
+                else:
+                    printpoint.extruder_toggle = True
 
         # set extruder toggle of last print point to false
         last_layer_key = 'layer_%d' % (len(printpoints_dict) - 1)

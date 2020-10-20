@@ -36,6 +36,9 @@ class CurvedPrintOrganizer(PrintOrganizer):
         return "<CurvedPrintOrganizer with %i segments>" % len(self.segments)
 
     def topological_sorting(self):
+        """ When the print consists of various parths, this function initializes a class that creates
+        a directed graph with all these parts, with the connectivity of each part reflecting which
+        other parts it lies on, and which other parts lie on it."""
         self.topo_sort_graph = topological_sorting.SegmentsDirectedGraph(self.slicer.mesh, self.slicer.layers)
 
     def create_segments_dict(self):
@@ -45,7 +48,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
                                 'path_collection': None}
 
     def base_boundaries_creation(self, save_json):
-        """ Creates one BaseBoundary per vertical_layer / segment """
+        """ Creates one BaseBoundary per vertical_layer  """
         root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
 
@@ -71,7 +74,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
             utils.save_to_json(b_data, self.DATA_PATH, 'boundaries.json')
 
     def create_segment_connectivity(self):
-        """ A vertical_path_collection finds vertical relation between paths. Creates and fills in printpoints """
+        """ A SegmentConnectivity finds vertical relation between paths. Creates and fills in printpoints """
         for i, vertical_layer in enumerate(self.slicer.vertical_layers):
             logger.info('Creating connectivity of segment no %d' % i)
             path_collection = SegmentConnectivity(paths=vertical_layer.paths,
@@ -83,7 +86,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
 
     def create_printpoints(self, mesh):
         """
-        Based on the topological graph, select one order.
+        Based on the directed graph, select one topological order.
         From each path collection in that order fill in the PrintPoints dictionary
         """
         if len(self.slicer.vertical_layers) > 1:  # the you need to select one topological order
@@ -101,20 +104,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
                     [path_collection.printpoints[j][k] for k, p in enumerate(path.points)]
 
     ############################################
-    #  ---  override functions from base class
-
-    def set_extruder_toggle(self, extruder_toggle_type='continuous_shell_printing'):
-        if extruder_toggle_type != "continuous_shell_printing":
-            logger.warning("For non-planar slicing, extruder toggle should be continuous_shell_printing")
-        logger.info("Setting extruder toggle for continuous_shell_printing")
-
-        for i in self.selected_order:
-            path_collection = self.segments[i]['path_collection']
-            for j, path in enumerate(path_collection.paths):
-                for k, pp in enumerate(self.printpoints_dict['layer_%d' % i]['path_%d' % j]):
-                    pp.extruder_toggle = True
-            # last_path = len(path_collection.paths) - 1
-            self.printpoints_dict['layer_%d' % i]['path_%d' % j][-1].extruder_toggle = False  # set last toggle to False
+    #  ---  override function from base class
 
     def set_linear_velocity(self, velocity_type="matching_layer_height", v=None, per_layer_velocities=None):
         if velocity_type != "matching_layer_height":

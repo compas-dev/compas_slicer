@@ -3,9 +3,10 @@ import logging
 from compas_slicer.geometry import PrintPoint
 from compas.geometry import Polyline
 from compas_slicer.print_organization import add_safety_printpoints
-from compas.geometry import Vector
+from compas.geometry import Vector, normalize_vector
 import compas_slicer.utilities as utils
 from progress.bar import Bar
+import numpy as np
 from compas_slicer.print_organization import get_blend_radius, set_extruder_toggle, set_linear_velocity
 
 logger = logging.getLogger('logger')
@@ -41,8 +42,10 @@ class PrintOrganizer(object):
                 self.printpoints_dict['layer_%d' % i]['path_%d' % j] = []
 
                 for k, point in enumerate(path.points):
+                    normal = utils.get_normal_of_path_on_xy_plane(k, point, path, mesh)
+
                     printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height,
-                                            mesh_normal=utils.get_closest_mesh_normal(mesh, point))
+                                            mesh_normal=normal)
 
                     self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
             progress_bar.next()
@@ -58,11 +61,18 @@ class PrintOrganizer(object):
     ###############################
     #  ---  add fabrication related information
 
-    def set_extruder_toggle(self, extruder_toggle_type="continuous_shell_printing"):
-        logger.info("Setting extruder toggle with type : " + str(extruder_toggle_type))
-        set_extruder_toggle(self.printpoints_dict, extruder_toggle_type)
+    def set_extruder_toggle(self):
+        """General description.
+        """
+        logger.info("Setting extruder toggle")
+        set_extruder_toggle(self.printpoints_dict, self.slicer)
 
     def add_safety_printpoints(self, z_hop):
+        """General description.
+        Parameters
+        ----------
+        param : type
+        """
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
                 for pp in self.printpoints_dict[layer_key][path_key]:
@@ -72,10 +82,20 @@ class PrintOrganizer(object):
         self.printpoints_dict = add_safety_printpoints(self.printpoints_dict, z_hop)
 
     def set_linear_velocity(self, velocity_type, v=25, per_layer_velocities=None):
+        """General description.
+        Parameters
+        ----------
+        param : type
+        """
         logger.info("Setting linear velocity with type : " + str(velocity_type))
         set_linear_velocity(self.printpoints_dict, velocity_type, v=v, per_layer_velocities=per_layer_velocities)
 
     def check_feasibility(self):
+        """General description.
+        Parameters
+        ----------
+        param : type
+        """
         # TODO
         raise NotImplementedError
 
@@ -105,9 +125,9 @@ class PrintOrganizer(object):
                         "extruder_toggle": printpoint.extruder_toggle,
 
                         "closest_support_pt": printpoint.closest_support_pt.to_data() if printpoint.closest_support_pt
-                                                else None,
+                        else None,
                         "is_feasible": printpoint.is_feasible
-                        }
+                    }
 
                     count += 1
         logger.info("Generated %d print points" % count)
