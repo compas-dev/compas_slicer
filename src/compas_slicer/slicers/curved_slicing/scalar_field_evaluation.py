@@ -20,6 +20,7 @@ class ScalarFieldEvaluation:
         self.add_exemplary_distance_attribute_on_vertices(t=0.5)
         self.add_distance_speed_scalar_evaluation()
 
+
     #####################################
     # --- Prepare vertex distance attributes
     def add_exemplary_distance_attribute_on_vertices(self, t=0.5):

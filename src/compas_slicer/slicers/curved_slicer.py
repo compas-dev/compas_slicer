@@ -47,22 +47,27 @@ class CurvedSlicer(BaseSlicer):
         target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH, is_smooth=False)
         target_HIGH.compute_uneven_boundaries_t_ends(target_LOW)
 
+        #  --- scalar field evaluation
         if self.parameters['evaluate_scalar_field']:
             s = ScalarFieldEvaluation(self.mesh, target_LOW, target_HIGH)
             s.compute()
-            save_to_json(s.vertex_scalars_flattened, self.DATA_PATH, 'vertex_scalar_field_evaluation.json')
+            minima, maxima, saddles = s.find_critical_points()
+            if self.parameters['create_intermediary_outputs']:
+                save_to_json(s.vertex_scalars_flattened, self.DATA_PATH, 'vertex_scalar_field_evaluation.json')
+                save_to_json(minima, self.DATA_PATH, "minima.json")
+                save_to_json(maxima, self.DATA_PATH, "maxima.json")
+                save_to_json(saddles, self.DATA_PATH, "saddles.json")
 
-        # save intermediary distance outputs
+        #  --- save intermediary distance outputs
         if self.parameters['create_intermediary_outputs']:
             target_LOW.save_distances("distances_LOW.json")
             target_HIGH.save_distances("distances_HIGH.json")
             target_HIGH.save_distances_clusters("distances_clusters_HIGH.json")
             save_to_json(target_HIGH.t_end_per_cluster, self.DATA_PATH, "t_end_per_cluster_HIGH.json")
 
+        # --- generate paths
         number_of_curves = find_desired_number_of_isocurves(target_LOW, target_HIGH,
                                                             self.parameters['avg_layer_height'])
-
-        # generate paths
         isocurves_generator = IsocurvesGenerator(self.mesh, target_LOW, target_HIGH, number_of_curves)
         self.layers = isocurves_generator.segments
 

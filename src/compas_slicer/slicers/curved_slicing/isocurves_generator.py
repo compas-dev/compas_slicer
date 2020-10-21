@@ -90,7 +90,7 @@ class IsocurvesGenerator:
 
 
 #################################
-#  Additional post_processing
+#  Additional functionality
 
 class GeodesicsZeroCrossingContour(ZeroCrossingContours):
     def __init__(self, mesh):

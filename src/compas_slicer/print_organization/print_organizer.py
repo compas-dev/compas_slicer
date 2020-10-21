@@ -142,7 +142,7 @@ class PrintOrganizer(object):
 
         # warn user
         if len(duplicate_ppts) > 0:
-            logger.error('Attention! It looks like you had %d printpoints on the same position.' % len(duplicate_ppts)
+            logger.warning('Attention! It looks like you had %d printpoint(s) on the same position.' % len(duplicate_ppts)
                          + ' on ' + layer_key + ' , ' + path_key + ' .They will be removed.')
 
         # remove duplicates

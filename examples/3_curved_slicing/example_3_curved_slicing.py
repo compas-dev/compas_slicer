@@ -3,17 +3,16 @@ from compas.datastructures import Mesh
 import logging
 from compas_slicer.utilities import load_from_json, save_to_json
 from compas_slicer.slicers import CurvedSlicer
-from compas_slicer.slicers.post_processing import simplify_paths_rdp
-from compas_slicer.print_organization import CurvedPrintOrganizer
+from compas_slicer.post_processing import simplify_paths_rdp
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_basic_example')
-OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'vase.obj')
+# DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_basic_example')
+# OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'vase.obj')
 
-# DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_advanced_example')
-# OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection.obj')
+DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_advanced_example')
+OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection.obj')
 
 if __name__ == "__main__":
     ### --- Load initial_mesh

@@ -6,7 +6,7 @@ from compas_slicer.geometry import Path
 from compas.geometry import Point
 
 import logging
-from compas_slicer.slicers.post_processing import seams_align
+from compas_slicer.post_processing import seams_align
 
 logger = logging.getLogger('logger')
 

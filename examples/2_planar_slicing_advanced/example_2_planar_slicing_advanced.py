@@ -4,11 +4,11 @@ from compas.geometry import Point
 
 from compas_slicer.utilities import save_to_json
 from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.slicers.post_processing import generate_brim
+from compas_slicer.post_processing import generate_brim
 from compas_slicer.print_organization import PrintOrganizer
 from compas_viewers.objectviewer import ObjectViewer
-from compas_slicer.slicers.post_processing import simplify_paths_rdp
-from compas_slicer.slicers.pre_processing import move_mesh_to_point
+from compas_slicer.post_processing import simplify_paths_rdp
+from compas_slicer.pre_processing import move_mesh_to_point
 
 ######################## Logging
 import logging
@@ -18,7 +18,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ########################
 
 DATA = os.path.join(os.path.dirname(__file__), 'data')
-MODEL = 'connection.obj' #'facade.obj'
+MODEL = 'facade.obj'
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
 
     ### --- Slicer
     # try out different slicers by changing the slicer_type
-    # options: 'default', 'planar_meshcut', 'planar_cgal'
+    # options: 'default', 'meshcut', 'cgal'
     slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=16.0)
     slicer.slice_model()
 
@@ -51,7 +51,6 @@ def main():
     save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
 
     ### --- Fabrication - related information
-    # options extruder_toggle_type: continuous_shell_printing, interrupt_between_paths
     print_organizer = PrintOrganizer(slicer)
     print_organizer.create_printpoints(compas_mesh)
     print_organizer.set_extruder_toggle()
