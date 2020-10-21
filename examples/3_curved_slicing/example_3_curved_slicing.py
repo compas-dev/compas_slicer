@@ -23,33 +23,36 @@ if __name__ == "__main__":
     low_boundary_vs = load_from_json(DATA_PATH, 'boundaryLOW.json')
     high_boundary_vs = load_from_json(DATA_PATH, 'boundaryHIGH.json')
 
-    ### --- slicing
-    slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH, avg_layer_height=5.0)
-    slicer.slice_model()  # compute contours
-
-    simplify_paths_rdp(slicer, threshold=1.0)
-
-    save_to_json(slicer.to_data(), DATA_PATH, 'curved_slicer.json')
-
-    slicer.printout_info()
-
-    # ### --- Print organizer
     parameters = {
-        'min_layer_height': 0.1,
-        'max_layer_height': 50.0, #2.0,
-        'layer_heights_smoothing': [False, 3, 0.5],  # boolean, iterations, strength
-        'up_vectors_smoothing': [False, 3, 0.5]  # boolean, iterations, strength
+        'create_intermediary_outputs': True,
+        'evaluate_scalar_field': True,
+        'avg_layer_height': 5.0
     }
 
-    print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
-    print_organizer.create_printpoints(mesh)
-    print_organizer.set_extruder_toggle()
-    print_organizer.add_safety_printpoints(z_hop=20)
-    print_organizer.set_linear_velocity()
+    ### --- slicing
+    slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH, parameters)
+    slicer.slice_model()  # compute contours
+    simplify_paths_rdp(slicer, threshold=1.0)
+    slicer.printout_info()
+    save_to_json(slicer.to_data(), DATA_PATH, 'curved_slicer.json')
 
-    ### --- Save printpoints dictionary to json file
-    printpoints_data = print_organizer.output_printpoints_dict()
-    save_to_json(printpoints_data, DATA_PATH, 'out_printpoints.json')
+    # # ### --- Print organizer
+    # parameters = {
+    #     'min_layer_height': 0.1,
+    #     'max_layer_height': 50.0, #2.0,
+    #     'layer_heights_smoothing': [False, 3, 0.5],  # boolean, iterations, strength
+    #     'up_vectors_smoothing': [False, 3, 0.5]  # boolean, iterations, strength
+    # }
+    #
+    # print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
+    # print_organizer.create_printpoints(mesh)
+    # print_organizer.set_extruder_toggle()
+    # print_organizer.add_safety_printpoints(z_hop=20)
+    # print_organizer.set_linear_velocity()
+    #
+    # ### --- Save printpoints dictionary to json file
+    # printpoints_data = print_organizer.output_printpoints_dict()
+    # save_to_json(printpoints_data, DATA_PATH, 'out_printpoints.json')
 
     # ### ----- Visualize
     # viewer = ObjectViewer()
