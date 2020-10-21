@@ -2,7 +2,6 @@ import itertools
 from compas.geometry import Point
 from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Path
-from compas_cgal.slicer import slice_mesh
 
 import progressbar
 import logging
