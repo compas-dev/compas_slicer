@@ -4,7 +4,7 @@ from compas_slicer.geometry import PrintPoint
 from compas.geometry import Polyline
 from compas_slicer.print_organization import add_safety_printpoints
 import compas_slicer.utilities as utils
-from progress.bar import Bar
+import progressbar
 import numpy as np
 from compas_slicer.print_organization import get_blend_radius, set_extruder_toggle, set_linear_velocity
 
@@ -31,24 +31,22 @@ class PrintOrganizer(object):
     #  --- Initialization
     def create_printpoints(self, mesh):
         logger.info('Creating print points ...')
-        progress_bar = Bar(' PrintPoints generation', max=len(self.slicer.layers),
-                           suffix='Layer %(index)i/%(max)i - %(percent)d%%')
+        with progressbar.ProgressBar(max_value=len(self.slicer.layers)) as bar:
 
-        for i, layer in enumerate(self.slicer.layers):
-            self.printpoints_dict['layer_%d' % i] = {}
+            for i, layer in enumerate(self.slicer.layers):
+                self.printpoints_dict['layer_%d' % i] = {}
 
-            for j, path in enumerate(layer.paths):
-                self.printpoints_dict['layer_%d' % i]['path_%d' % j] = []
+                for j, path in enumerate(layer.paths):
+                    self.printpoints_dict['layer_%d' % i]['path_%d' % j] = []
 
-                for k, point in enumerate(path.points):
-                    normal = utils.get_normal_of_path_on_xy_plane(k, point, path, mesh)
+                    for k, point in enumerate(path.points):
+                        normal = utils.get_normal_of_path_on_xy_plane(k, point, path, mesh)
 
-                    printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height,
-                                            mesh_normal=normal)
+                        printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height,
+                                                mesh_normal=normal)
 
-                    self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
-            progress_bar.next()
-        progress_bar.finish()
+                        self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
+                bar.update()
 
     @property
     def number_of_layers(self):

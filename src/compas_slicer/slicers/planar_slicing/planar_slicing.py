@@ -29,14 +29,14 @@ def create_planar_paths(mesh, planes):
     with progressbar.ProgressBar(max_value=len(planes)) as bar:
         for i, plane in enumerate(planes):
 
-            i = IntersectionCurveMeshPlane(mesh, plane)
-            i.compute()
+            int = IntersectionCurveMeshPlane(mesh, plane)
+            int.compute()
 
             paths = []
-            if len(i.sorted_point_clusters) > 0:
-                for key in i.sorted_point_clusters:
-                    is_closed = i.closed_paths_booleans[key]
-                    path = Path(points=i.sorted_point_clusters[key], is_closed=is_closed)
+            if len(int.sorted_point_clusters) > 0:
+                for key in int.sorted_point_clusters:
+                    is_closed = int.closed_paths_booleans[key]
+                    path = Path(points=int.sorted_point_clusters[key], is_closed=is_closed)
                     paths.append(path)
 
                 layers.append(Layer(paths))
