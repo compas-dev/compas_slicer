@@ -18,6 +18,7 @@ logger = logging.getLogger('logger')
 
 __all__ = ['create_planar_paths_cgal']
 
+
 def create_planar_paths_cgal(mesh, planes):
     """Creates planar contours using CGAL
     Considers all resulting paths as CLOSED paths.
@@ -56,7 +57,6 @@ def create_planar_paths_cgal(mesh, planes):
     cgal_layers = get_grouped_list(contours, key_function=key_function)
 
     layers = []
-    
     with progressbar.ProgressBar(max_value=len(planes)) as bar:
         for i, layer in enumerate(cgal_layers):
             paths_per_layer = []
@@ -71,8 +71,8 @@ def create_planar_paths_cgal(mesh, planes):
                 paths_per_layer.append(path)
 
             # generate layers
-            l = Layer(paths_per_layer)
-            layers.append(l)
+            layer = Layer(paths_per_layer)
+            layers.append(layer)
 
             # advance progressbar
             bar.update(i)

@@ -56,13 +56,13 @@ def create_planar_paths_meshcut(mesh, planes):
                 is_closed = True  # TODO is_closed is always set to True, has to be checked
                 path = Path(points=points, is_closed=is_closed)
                 paths_per_layer.append(path)
-            
+
             layer = Layer(paths_per_layer)
             layers.append(layer)
 
             # advance progressbar
             bar.update(i)
-        
+
     return layers
 
 
