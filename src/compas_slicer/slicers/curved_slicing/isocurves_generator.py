@@ -4,8 +4,9 @@ import compas_slicer.utilities as utils
 from compas_slicer.geometry import VerticalLayer, Path
 import logging
 from compas_slicer.slicers.curved_slicing.get_weighted_distance import get_weighted_distance
-from progress.bar import Bar
 from compas_slicer.slicers.slice_utilities import ZeroCrossingContours
+
+import progressbar
 
 logger = logging.getLogger('logger')
 
@@ -39,39 +40,36 @@ class IsocurvesGenerator:
     #  --- main
 
     def create_isocurves(self, t_list):
-        progress_bar = Bar(' Isocurves Generation', max=len(t_list),
-                           suffix='Layer %(index)i/%(max)i - %(percent)d%%')
-        for i, t in enumerate(t_list):
-            self.assign_distance_attribute_to_mesh_vertices(t)
-            zero_contours = GeodesicsZeroCrossingContour(self.mesh)
-            zero_contours.compute()
+        with progressbar.ProgressBar(max_value=len(t_list)) as bar:
+            for i, t in enumerate(t_list):
+                self.assign_distance_attribute_to_mesh_vertices(t)
+                zero_contours = GeodesicsZeroCrossingContour(self.mesh)
+                zero_contours.compute()
 
-            for j, key in enumerate(zero_contours.sorted_point_clusters):
-                pts = zero_contours.sorted_point_clusters[key]
+                for j, key in enumerate(zero_contours.sorted_point_clusters):
+                    pts = zero_contours.sorted_point_clusters[key]
 
-                if len(pts) > 4:  # discard curves that are too small
+                    if len(pts) > 4:  # discard curves that are too small
 
-                    #  --- Assign resulting clusters to the correct segment: current segment
-                    if (i == 0 and j == 0) or len(self.segments[0].paths) == 0:
-                        current_segment = self.segments[0]
-                    else:  # find the candidate segment for new isocurve
-                        centroid = np.mean(np.array(pts), axis=0)
-                        other_centroids = self.get_segments_centroids_list()
-                        candidate_segment = self.segments[utils.get_closest_pt_index(centroid, other_centroids)]
-                        threshold_max_centroid_dist = 15
-                        if np.linalg.norm(candidate_segment.head_centroid - centroid) < threshold_max_centroid_dist:
-                            current_segment = candidate_segment
-                        else:  # then create new segment
-                            current_segment = VerticalLayer(id=self.segments[-1].id + 1)
-                            self.segments.append(current_segment)
+                        #  --- Assign resulting clusters to the correct segment: current segment
+                        if (i == 0 and j == 0) or len(self.segments[0].paths) == 0:
+                            current_segment = self.segments[0]
+                        else:  # find the candidate segment for new isocurve
+                            centroid = np.mean(np.array(pts), axis=0)
+                            other_centroids = self.get_segments_centroids_list()
+                            candidate_segment = self.segments[utils.get_closest_pt_index(centroid, other_centroids)]
+                            threshold_max_centroid_dist = 15
+                            if np.linalg.norm(candidate_segment.head_centroid - centroid) < threshold_max_centroid_dist:
+                                current_segment = candidate_segment
+                            else:  # then create new segment
+                                current_segment = VerticalLayer(id=self.segments[-1].id + 1)
+                                self.segments.append(current_segment)
 
-                    # --- Create paths
-                    isocurve = Path(pts, is_closed=zero_contours.closed_paths_booleans[key])
-                    current_segment.append_(isocurve)
-            # advance progress bar
-            progress_bar.next()
-        # finish progress bar
-        progress_bar.finish()
+                        # --- Create paths
+                        isocurve = Path(pts, is_closed=zero_contours.closed_paths_booleans[key])
+                        current_segment.append_(isocurve)
+                # advance progress bar
+                bar.update(i)
 
     def assign_distance_attribute_to_mesh_vertices(self, weight):
         if self.target_LOW and self.target_HIGH:
