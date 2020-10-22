@@ -9,7 +9,7 @@ __all__ = ['Path']
 
 class Path(object):
     """
-    A Path is a contour within a Layer. A Path consists out of a list of 
+    A Path is a contour within a Layer. A Path consists out of a list of
     compas.Points, plus some additional attributes.
 
     Attributes

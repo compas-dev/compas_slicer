@@ -2,5 +2,5 @@
 Citing
 ******
 
-.. rst-class:: lead
+To be added. 
 

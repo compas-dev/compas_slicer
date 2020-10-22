@@ -24,7 +24,7 @@ def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
     xx : xx
         xx
     """
-    
+
     if 'igl' not in packages:
         raise PluginNotInstalledError("--------ATTENTION! ----------- \
                         Libigl library is missing! \

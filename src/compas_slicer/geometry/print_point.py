@@ -32,7 +32,7 @@ class PrintPoint(object):
         Velocity to use for printing (print speed), in mm/s.
     wait_time : float
         Time in seconds to wait at this PrintPoint.
-    
+
     """
 
     def __init__(self, pt, layer_height, mesh_normal):

@@ -194,7 +194,7 @@ def get_mesh_vertex_coords_with_attribute(mesh, attr, value):
     xx : xx
         xx
     """
-    
+
     pts = []
     for vkey, data in mesh.vertices(data=True):
         if data[attr] == value:
@@ -234,7 +234,7 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     xx : xx
         xx
     """
-    
+
     # find mesh normal is not really needed in the 2D case of planar slicer
     # instead we only need the normal of the curve based on the neighboring pts
     if (0 < k < len(path.points) - 1) or path.is_closed:
@@ -299,7 +299,7 @@ def point_list_to_dict(pts_list):
     xx : xx
         xx
     """
-    
+
     data = {}
     for i in range(len(pts_list)):
         data[i] = list(pts_list[i])
@@ -318,7 +318,7 @@ def total_length_of_dictionary(dictionary):
     xx : xx
         xx
     """
-    
+
     total_length = 0
     for key in dictionary:
         total_length += len(dictionary[key])
@@ -377,7 +377,7 @@ def interrupt():
     xx : xx
         xx
     """
-    
+
     value = input("Press enter to continue, Press 1 to abort ")
     print("")
     if isinstance(value, str):
