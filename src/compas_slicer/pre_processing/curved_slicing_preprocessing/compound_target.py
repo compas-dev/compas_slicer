@@ -1,10 +1,11 @@
 import numpy as np
 import math
 from compas_slicer.utilities import TerminalCommand
-import compas_slicer.utilities as utils
+from compas_slicer.utilities import save_to_json
 import logging
 import networkx as nx
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
+from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances, get_custom_HEAT_geodesic_distances
 
 packages = TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
@@ -71,12 +72,12 @@ class CompoundTarget:
     #  --- Geodesic distances
     def compute_geodesic_distances(self):
         if self.geodesics_method == 'exact':
-            distances_lists = [utils.get_igl_EXACT_geodesic_distances(self.mesh, vstarts) for vstarts in
+            distances_lists = [get_igl_EXACT_geodesic_distances(self.mesh, vstarts) for vstarts in
                                self.clustered_vkeys]
 
         elif self.geodesics_method == 'heat':
-            distances_lists = [utils.get_custom_HEAT_geodesic_distances(self.mesh, vstarts, self.DATA_PATH,
-                                                                        anisotropic_scaling=self.anisotropic_scaling)
+            distances_lists = [get_custom_HEAT_geodesic_distances(self.mesh, vstarts, self.DATA_PATH,
+                                                                  anisotropic_scaling=self.anisotropic_scaling)
                                for vstarts in self.clustered_vkeys]
         else:
             raise ValueError('Unknown geodesics method : ' + self.geodesics_method)
@@ -167,7 +168,7 @@ class CompoundTarget:
     #############################
     #  ------ output
     def save_distances(self, name):
-        utils.save_to_json(self.all_distances(), self.DATA_PATH, name)
+        save_to_json(self.all_distances(), self.DATA_PATH, name)
 
     def save_distances_clusters(self, name):
         clusters_distances = {}
@@ -178,10 +179,10 @@ class CompoundTarget:
             all_ds = self.all_clusters_distances(i)
             for j, d in enumerate(all_ds):
                 clusters_distances[j].append(d)
-        utils.save_to_json(clusters_distances, self.DATA_PATH, name)
+        save_to_json(clusters_distances, self.DATA_PATH, name)
 
     def save_start_vertices(self, name):
-        utils.save_to_json([int(vi) for vi in self.all_target_vkeys], self.DATA_PATH, name)
+        save_to_json([int(vi) for vi in self.all_target_vkeys], self.DATA_PATH, name)
 
 
 ####################
