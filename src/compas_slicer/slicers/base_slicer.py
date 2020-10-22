@@ -14,14 +14,14 @@ __all__ = ['BaseSlicer']
 
 class BaseSlicer(object):
     """
-    Slicer class is an organizational class that holds all the information for the slice process
+    The BaseSlicer class is an organizational class that holds all the information for the slice process
     This class is meant to be extended for the implementation of the various slicers.
-    See PlanarSlicer and Curved slicer as examples
+    See PlanarSlicer and CurvedSlicer as examples.
 
     Attributes
     ----------
     mesh : compas.datastructures.Mesh
-        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
+        Input mesh, has to be a triangular mesh (i.e. no quads or n-gons allowed)
     """
 
     def __init__(self, mesh):

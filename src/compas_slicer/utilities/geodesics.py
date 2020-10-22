@@ -14,6 +14,17 @@ __all__ = ['get_igl_EXACT_geodesic_distances',
 
 
 def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+    
     if 'igl' not in packages:
         raise PluginNotInstalledError("--------ATTENTION! ----------- \
                         Libigl library is missing! \

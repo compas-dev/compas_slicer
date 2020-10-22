@@ -13,6 +13,11 @@ class Layer(object):
     """
     A Layer stores a group of ordered print_paths.
 
+    A Layer is generated when a geometry is sliced into layers and can therefore be 
+    seen as a 'slice' of a geometry. Layers are typically organized horizontally, 
+    but can also be organized vertically. A Layer consists out of one, or multiple
+    Paths (depending on the geometry). 
+
     Attributes
     ----------
     paths : list

@@ -29,6 +29,17 @@ __all__ = ['save_to_json',
 
 
 def get_average_point(points):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     x_mean = statistics.mean([p[0] for p in points])
     y_mean = statistics.mean([p[1] for p in points])
     z_mean = statistics.mean([p[2] for p in points])
@@ -36,6 +47,17 @@ def get_average_point(points):
 
 
 def get_closest_pt_index(pt, pts):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
     # distances = [distance_point_point_sqrd(p, pt) for p in pts]
     # ci = distances.index(min(distances))
@@ -43,11 +65,33 @@ def get_closest_pt_index(pt, pts):
 
 
 def get_closest_pt(pt, pts):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
     return pts[ci]
 
 
 def smooth_vectors(vectors, strength, iterations):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     for _ in range(iterations):
         for i, n in enumerate(vectors):
             if 0 < i < len(vectors) - 1:
@@ -62,6 +106,17 @@ def smooth_vectors(vectors, strength, iterations):
 #  json
 
 def save_to_json(data, filepath, name):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     filename = os.path.join(filepath, name)
     logger.info("Saving to json: " + filename)
     with open(filename, 'w') as f:
@@ -69,6 +124,17 @@ def save_to_json(data, filepath, name):
 
 
 def load_from_json(filepath, name):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     filename = os.path.join(filepath, name)
     with open(filename, 'r') as f:
         data = json.load(f)
@@ -80,6 +146,17 @@ def load_from_json(filepath, name):
 #  mesh utils
 
 def check_triangular_mesh(mesh):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     for f_key in mesh.faces():
         vs = mesh.face_vertices(f_key)
         if len(vs) != 3:
@@ -88,6 +165,17 @@ def check_triangular_mesh(mesh):
 
 
 def get_closest_mesh_normal(mesh, pt):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
     vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(pt, v_tupple[1]))
     closest_vkey = vertex_tupples[0][0]
@@ -96,6 +184,17 @@ def get_closest_mesh_normal(mesh, pt):
 
 
 def get_mesh_vertex_coords_with_attribute(mesh, attr, value):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+    
     pts = []
     for vkey, data in mesh.vertices(data=True):
         if data[attr] == value:
@@ -104,6 +203,17 @@ def get_mesh_vertex_coords_with_attribute(mesh, attr, value):
 
 
 def get_closest_mesh_normal_to_pt(pt, mesh):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     vertices = np.array(mesh.vertices_attributes('xyz'))
     key_index_dict = mesh.key_index()
     closest_index = closest_point_in_cloud(point=pt, cloud=vertices)[2]
@@ -114,6 +224,17 @@ def get_closest_mesh_normal_to_pt(pt, mesh):
 
 
 def get_normal_of_path_on_xy_plane(k, point, path, mesh):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+    
     # find mesh normal is not really needed in the 2D case of planar slicer
     # instead we only need the normal of the curve based on the neighboring pts
     if (0 < k < len(path.points) - 1) or path.is_closed:
@@ -148,6 +269,17 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
 #  networkx graph
 
 def plot_networkx_graph(G):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     plt.subplot(121)
     nx.draw(G, with_labels=True, font_weight='bold', node_color=range(len(list(G.nodes()))))
     plt.show()
@@ -157,6 +289,17 @@ def plot_networkx_graph(G):
 #  dict utils
 
 def point_list_to_dict(pts_list):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+    
     data = {}
     for i in range(len(pts_list)):
         data[i] = list(pts_list[i])
@@ -165,6 +308,17 @@ def point_list_to_dict(pts_list):
 
 #  --- Length of dictionary
 def total_length_of_dictionary(dictionary):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+    
     total_length = 0
     for key in dictionary:
         total_length += len(dictionary[key])
@@ -173,6 +327,17 @@ def total_length_of_dictionary(dictionary):
 
 #  --- Flattened list of dictionary
 def flattened_list_of_dictionary(dictionary):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     flattened_list = []
     for key in dictionary:
         [flattened_list.append(item) for item in dictionary[key]]
@@ -180,6 +345,17 @@ def flattened_list_of_dictionary(dictionary):
 
 
 def get_dict_key_from_value(dictionary, val):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
     for key in dictionary:
         value = dictionary[key]
         if val == value:
@@ -191,6 +367,17 @@ def get_dict_key_from_value(dictionary, val):
 #  control flow
 
 def interrupt():
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+    
     value = input("Press enter to continue, Press 1 to abort ")
     print("")
     if isinstance(value, str):
