@@ -42,15 +42,17 @@ class CurvedSlicer(BaseSlicer):
                 data['boundary'] = 2
 
     def generate_paths(self):
-        # compute targets
-        target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH, is_smooth=False)
-        target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH, is_smooth=False)
+        # compute_distance_speed_scalar targets
+        is_smooth, r = self.parameters['target_LOW_smooth'][0], self.parameters['target_LOW_smooth'][1]
+        target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH, is_smooth=is_smooth, r=r)
+        is_smooth, r = self.parameters['target_HIGH_smooth'][0], self.parameters['target_HIGH_smooth'][1]
+        target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH, is_smooth=is_smooth, r=r)
         target_HIGH.compute_uneven_boundaries_t_ends(target_LOW)
 
         #  --- scalar field evaluation
         if self.parameters['evaluate_scalar_field']:
             s = ScalarFieldEvaluation(self.mesh, target_LOW, target_HIGH)
-            s.compute()
+            s.compute_distance_speed_scalar()
             minima, maxima, saddles = s.find_critical_points()
             if self.parameters['create_intermediary_outputs']:
                 save_to_json(s.vertex_scalars_flattened, self.DATA_PATH, 'vertex_scalar_field_evaluation.json')

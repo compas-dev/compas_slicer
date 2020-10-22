@@ -23,6 +23,8 @@ if __name__ == "__main__":
     high_boundary_vs = load_from_json(DATA_PATH, 'boundaryHIGH.json')
 
     parameters = {
+        'target_LOW_smooth': [False, 20],  # boolean, blend_radius
+        'target_HIGH_smooth': [False, 20],  # boolean, blend_radius
         'create_intermediary_outputs': True,
         'evaluate_scalar_field': True,
         'avg_layer_height': 5.0
@@ -30,7 +32,8 @@ if __name__ == "__main__":
 
     ### --- slicing
     slicer = CurvedSlicer(mesh, low_boundary_vs, high_boundary_vs, DATA_PATH, parameters)
-    slicer.slice_model()  # compute contours
+    slicer.slice_model()  # compute_distance_speed_scalar contours
+
     simplify_paths_rdp(slicer, threshold=1.0)
     slicer.printout_info()
     save_to_json(slicer.to_data(), DATA_PATH, 'curved_slicer.json')

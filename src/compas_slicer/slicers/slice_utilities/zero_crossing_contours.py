@@ -18,7 +18,7 @@ class ZeroCrossingContours(object):
         self.sorted_point_clusters = {}
         self.sorted_edge_clusters = {}
         self.closed_paths_booleans = {}
-        # self.compute()
+        # self.compute_distance_speed_scalar()
 
     def compute(self):
         G = create_graph_from_mesh_edges(self.mesh, self.intersected_edges,
