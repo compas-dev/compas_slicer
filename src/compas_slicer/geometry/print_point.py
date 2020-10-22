@@ -12,7 +12,7 @@ def get_default_print_frame(pt, desired_axis):
 class PrintPoint(object):
     """
     A PrintPoint consists out of a single compas.geometry.Point,
-    with additional post_processing added for the printing process.
+    with additional functionality added for the printing process.
 
     Attributes
     ----------
@@ -20,8 +20,18 @@ class PrintPoint(object):
         A compas Point consisting out of x, y, z coordinates
     layer_height : float
         The vertical distance between the point on this layer and the next layer
-    mesh_normal:
-    up_vector:
+    mesh_normal : compas.geometry.Vector
+        Normal of the mesh at this PrintPoint.
+    up_vector: compas.geometry.Vector
+        xxx
+    frame : compas.geometry.Frame
+        xxx
+    extruder_toggle : bool
+        True if extruder should be on (when printing), False if it should be off (when travelling)
+    velocity : float
+        Velocity to use for printing (print speed), in mm/s.
+    wait_time : float
+        Time in seconds to wait at this PrintPoint.
 
     """
 

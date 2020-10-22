@@ -1,7 +1,10 @@
 """
 ********************************************************************************
-compas_slicer.print_organization
+print_organization
 ********************************************************************************
+
+.. currentmodule:: compas_slicer.print_organization
+
 
 Classes
 =======
@@ -11,7 +14,6 @@ Classes
     :nosignatures:
 
     PrintOrganizer
-    MachineModel
 
 
 PrintOrganizer
@@ -21,18 +23,7 @@ PrintOrganizer
     :toctree: generated/
     :nosignatures:
 
-    RoboticPrintOrganizer
-    CurvedRoboticPrintOrganizer
-
-MachineModel
---------------
-
-.. autosummary::
-    :toctree: generated/
-    :nosignatures:
-
-    RobotPrinter
-    FDMPrinter
+    CurvedPrintOrganizer
 
 """
 

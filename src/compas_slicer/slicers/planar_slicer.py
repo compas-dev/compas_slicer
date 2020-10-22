@@ -10,14 +10,16 @@ __all__ = ['PlanarSlicer']
 
 class PlanarSlicer(BaseSlicer):
     """
-    PlanarSlicer is....
+    PlanarSlicer implements generation of planar contours from a mesh.
 
     Attributes
     ----------
     mesh : compas.datastructures.Mesh
-        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
-    slicer_type :
-    layer_height :
+        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).
+    slicer_type : string
+        String representing which slicing method to use.
+    layer_height : float
+        Number representing the distance between layers (slices).
     """
     def __init__(self, mesh, slicer_type="default", layer_height=2.0):
         BaseSlicer.__init__(self, mesh)

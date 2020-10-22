@@ -9,11 +9,10 @@ compas_slicer
 .. toctree::
     :maxdepth: 1
 
-    compas_slicer.geometry
-    compas_slicer.slicers
-    compas_slicer.print_organization
-    compas_slicer.post_processing
-    compas_slicer.utilities
+    geometry
+    print_organization
+    slicers
+    utilities
 
 """
 

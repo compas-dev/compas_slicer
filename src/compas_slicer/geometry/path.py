@@ -9,16 +9,16 @@ __all__ = ['Path']
 
 class Path(object):
     """
-    The Path class is the base class for all print paths.
-    It consists out of a list of compas Points.
+    A Path is a contour within a Layer. A Path consists out of a list of
+    compas.Points, plus some additional attributes.
 
     Attributes
     ----------
     points : list
         compas.geometry.Point
     is_closed : bool
-        ...
-    type : string
+        True if the Path is a closed curve, False if the Path is open.
+    type : str
         Stores whether the Path is a contour, infill or support.
         Currently only contour is available.
     """

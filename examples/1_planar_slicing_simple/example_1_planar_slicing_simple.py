@@ -15,7 +15,7 @@ import time
 import logging
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
-######################## 
+########################
 
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 MODEL = 'simple_vase.obj'
