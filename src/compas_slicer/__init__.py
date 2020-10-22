@@ -10,8 +10,10 @@ compas_slicer
     :maxdepth: 1
 
     geometry
-    print_organization
     slicers
+    print_organization
+    pre_processing
+    post_processing
     utilities
 
 """

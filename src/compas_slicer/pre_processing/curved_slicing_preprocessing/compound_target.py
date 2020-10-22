@@ -1,11 +1,13 @@
 import numpy as np
 import math
+from compas.datastructures import Mesh
 from compas_slicer.utilities import TerminalCommand
 from compas_slicer.utilities import save_to_json
 import logging
 import networkx as nx
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
-from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances, get_custom_HEAT_geodesic_distances
+from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances, \
+    get_custom_HEAT_geodesic_distances
 
 packages = TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
@@ -96,7 +98,7 @@ class CompoundTarget:
             self.t_end_per_cluster = [d / max(ds_avg_HIGH) for d in ds_avg_HIGH]
             logger.info('t_end_per_cluster : ' + str(self.t_end_per_cluster))
         else:
-            logger.info("Did not compute_distance_speed_scalar uneven boundaries, target consists of single component")
+            logger.info("Did not compute_norm_of_gradient uneven boundaries, target consists of single component")
 
     def use_uneven_weights(self):
         return len(self.t_end_per_cluster) > 0
@@ -183,6 +185,14 @@ class CompoundTarget:
 
     def save_start_vertices(self, name):
         save_to_json([int(vi) for vi in self.all_target_vkeys], self.DATA_PATH, name)
+
+    #############################
+    #  ------ assign new Mesh
+    def assign_new_mesh(self, mesh):
+        mesh.to_json(self.DATA_PATH + "/temp.obj")
+        mesh = Mesh.from_json(self.DATA_PATH + "/temp.obj")
+        self.mesh = mesh
+        self.VN = len(list(self.mesh.vertices()))
 
 
 ####################

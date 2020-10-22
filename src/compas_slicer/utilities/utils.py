@@ -265,6 +265,15 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     return normal
 
 
+# def get_existing_values_of_vertex_attribute(mesh, attribute):
+#     values = []
+#     for vkey, data in mesh.vertices(data=True):
+#         if data[attribute] not in values:
+#             values.append(data[attribute])
+#     values = sorted(values)
+#     return values
+
+
 #######################################
 #  networkx graph
 

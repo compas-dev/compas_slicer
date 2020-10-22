@@ -1,6 +1,7 @@
 import numpy as np
 import logging
 from compas_slicer.slicers.curved_slicing import get_weighted_distance
+from compas_slicer.slicers.curved_slicing import assign_distance_to_mesh_vertices
 
 logger = logging.getLogger('logger')
 __all__ = ['ScalarFieldEvaluation']
@@ -13,27 +14,16 @@ class ScalarFieldEvaluation:
         self.target_LOW = target_LOW
         self.target_HIGH = target_HIGH
 
+        self.minima, self.maxima, self.saddles = [], [], []
         self.face_scalars_flattened = []
         self.vertex_scalars_flattened = []
-        self.add_exemplary_distance_attribute_on_vertices(t=0.5)
 
-    #####################################
-    # --- Prepare vertex distance attributes
-
-    def add_exemplary_distance_attribute_on_vertices(self, t=0.5):
-        for i, vkey in enumerate(self.mesh.vertices()):
-            if self.target_LOW and self.target_HIGH:
-                d = get_weighted_distance(vkey, t, self.target_LOW, self.target_HIGH)
-            elif self.target_LOW:
-                d = self.target_LOW.distance(vkey)
-            else:
-                raise ValueError('You need to provide at least one target')
-            self.mesh.vertex[vkey]["distance"] = d
+        assign_distance_to_mesh_vertices(mesh, 0.5, target_LOW, target_HIGH)
 
     #####################################
     # --- Distance speed scalar evaluation
 
-    def compute_distance_speed_scalar(self):
+    def compute_norm_of_gradient(self):
         u_v = [self.mesh.vertex[vkey]["distance"] for vkey in self.mesh.vertices()]
         face_gradient = compute_face_gradient(self.mesh, u_v)
         vertex_gradient = compute_vertex_gradient(self.mesh, face_gradient)
@@ -47,7 +37,6 @@ class ScalarFieldEvaluation:
     # --- Critical Points
 
     def find_critical_points(self):
-        minima, maxima, saddles = [], [], []
 
         for vkey, data in self.mesh.vertices(data=True):
             current_v = data['distance']
@@ -62,15 +51,13 @@ class ScalarFieldEvaluation:
 
             if sgc == 0:  # extreme point
                 if current_v > self.mesh.vertex_attributes(neighbors[0])['distance']:
-                    maxima.append(vkey)
+                    self.maxima.append(vkey)
                 else:
-                    minima.append(vkey)
+                    self.minima.append(vkey)
             if sgc == 2:  # regular point
                 pass
             if sgc > 2 and sgc % 2 == 0:
-                saddles.append(vkey)
-
-        return minima, maxima, saddles
+                self.saddles.append(vkey)
 
 
 #####################################
