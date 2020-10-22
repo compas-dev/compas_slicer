@@ -4,7 +4,7 @@ from compas.geometry import closest_point_on_polyline, distance_point_point, Pol
 import logging
 from compas_slicer.geometry import Path, PrintPoint
 import compas_slicer.utilities as utils
-from progress.bar import Bar
+import progressbar
 
 logger = logging.getLogger('logger')
 __all__ = ['SegmentConnectivity']
@@ -61,27 +61,25 @@ class SegmentConnectivity:
                                    for p in path.points]
 
     def fill_in_printpoints_information(self):
-        progress_bar = Bar(' PrintPoints generation', max=len(self.paths),
-                           suffix='Path %(index)i/%(max)i - %(percent)d%%')
         crv_to_check = Path(self.base_boundary.points, True)  # Fake path for the lower boundary
-        for i, path in enumerate(self.paths):
-            for j, p in enumerate(path.points):
-                cp = closest_point_on_polyline(p, Polyline(crv_to_check.points))
-                d = distance_point_point(cp, p)
+        with progressbar.ProgressBar(max_value=len(self.paths)) as bar:
+            for i, path in enumerate(self.paths):
+                for j, p in enumerate(path.points):
+                    cp = closest_point_on_polyline(p, Polyline(crv_to_check.points))
+                    d = distance_point_point(cp, p)
 
-                self.printpoints[i][j].closest_support_pt = Point(*cp)
-                self.printpoints[i][j].distance_to_support = d
-                self.printpoints[i][j].layer_height = max(min(d, self.parameters['max_layer_height']),
-                                                          self.parameters['min_layer_height'])
-                self.printpoints[i][j].support_path = crv_to_check
-                self.printpoints[i][j].up_vector = Vector(*normalize_vector(Vector.from_start_end(cp, p)))
-                self.printpoints[i][j].frame = self.printpoints[i][j].get_frame()
+                    self.printpoints[i][j].closest_support_pt = Point(*cp)
+                    self.printpoints[i][j].distance_to_support = d
+                    self.printpoints[i][j].layer_height = max(min(d, self.parameters['max_layer_height']),
+                                                              self.parameters['min_layer_height'])
+                    self.printpoints[i][j].support_path = crv_to_check
+                    self.printpoints[i][j].up_vector = Vector(*normalize_vector(Vector.from_start_end(cp, p)))
+                    self.printpoints[i][j].frame = self.printpoints[i][j].get_frame()
 
-                if d < self.parameters['min_layer_height'] or d > self.parameters['max_layer_height']:
-                    self.printpoints[i][j].is_feasible = False
-            crv_to_check = path
-            progress_bar.next()
-        progress_bar.finish()
+                    if d < self.parameters['min_layer_height'] or d > self.parameters['max_layer_height']:
+                        self.printpoints[i][j].is_feasible = False
+                bar.update(i)
+                crv_to_check = path
 
     def smooth_printpoints_heights(self):
         iterations = self.parameters['layer_heights_smoothing'][2]

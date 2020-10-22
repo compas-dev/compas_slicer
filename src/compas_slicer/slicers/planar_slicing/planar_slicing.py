@@ -1,8 +1,8 @@
 from compas_slicer.geometry import Path
 from compas_slicer.geometry import Layer
 import logging
+import progressbar
 from compas.geometry import intersection_segment_plane
-from progress.bar import Bar
 from compas_slicer.slicers.slice_utilities import ZeroCrossingContours
 
 __all__ = ['create_planar_paths']
@@ -10,7 +10,7 @@ __all__ = ['create_planar_paths']
 
 ###################################
 #  Intersection function
-
+###################################
 
 def create_planar_paths(mesh, planes):
     """
@@ -24,28 +24,25 @@ def create_planar_paths(mesh, planes):
     planes: list, compas.geometry.Plane
     """
 
-    # initializes progress_bar for measuring progress
-    progress_bar = Bar('Slicing', max=len(planes), suffix='Layer %(index)i/%(max)i - %(percent)d%%')
-
     layers = []
-    for i, plane in enumerate(planes):
 
-        i = IntersectionCurveMeshPlane(mesh, plane)
-        i.compute()
+    with progressbar.ProgressBar(max_value=len(planes)) as bar:
+        for i, plane in enumerate(planes):
 
-        paths = []
-        if len(i.sorted_point_clusters) > 0:
-            for key in i.sorted_point_clusters:
-                is_closed = i.closed_paths_booleans[key]
-                path = Path(points=i.sorted_point_clusters[key], is_closed=is_closed)
-                paths.append(path)
+            int = IntersectionCurveMeshPlane(mesh, plane)
+            int.compute()
 
-            layers.append(Layer(paths))
-        # advance progress bar
-        progress_bar.next()
+            paths = []
+            if len(int.sorted_point_clusters) > 0:
+                for key in int.sorted_point_clusters:
+                    is_closed = int.closed_paths_booleans[key]
+                    path = Path(points=int.sorted_point_clusters[key], is_closed=is_closed)
+                    paths.append(path)
 
-    # finish progress bar
-    progress_bar.finish()
+                layers.append(Layer(paths))
+
+            bar.update(i)
+
     return layers
 
 
