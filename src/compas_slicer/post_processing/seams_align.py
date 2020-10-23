@@ -33,13 +33,20 @@ def seams_align(slicer, align_with="next_path"):
 
             if align_seams_for_current_path:
                 #  get the points of the current layer and path
-                path_to_change = slicer.layers[i].paths[j].points
+                path_to_change = layer.paths[j].points
+
+                # check if start- and end-points are the same point
+                if path_to_change[0] == path_to_change[-1]:
+                    first_last_point_the_same = True
+                    # if they are, remove the last point
+                    path_to_change.pop(-1)
+                else:
+                    first_last_point_the_same = False
 
                 if align_with == "next_path":
                     pt_to_align_with = None  # make sure aligning point is cleared
 
                     #  determines the correct point to align the current layer with
-
                     if len(layer.paths) == 1 and i == 0:
                         #  if ONE PATH and FIRST LAYER
                         #  >>> align with second layer
@@ -79,8 +86,12 @@ def seams_align(slicer, align_with="next_path"):
                 #  shifts the list by the distance determined
                 shift_list = path_to_change[new_start_index:] + path_to_change[:new_start_index]
                 #  shifts the list by the distance determined
-                layer.paths[j].points = shift_list + [shift_list[0]]
+                # layer.paths[j].points = shift_list
 
+                if first_last_point_the_same:
+                    shift_list = shift_list + [shift_list[0]]
+
+                layer.paths[j].points = shift_list
 
 if __name__ == "__main__":
     pass
