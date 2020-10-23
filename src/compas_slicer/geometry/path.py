@@ -35,15 +35,15 @@ class Path(object):
 
     @classmethod
     def from_data(cls, data):
-        pts = [Point(p[0], p[1], p[2])for p in data['points']]
+        points_data = data['points']
+        pts = [Point(points_data[key][0], points_data[key][1], points_data[key][2])
+               for key in points_data]
         path = cls(points=pts, is_closed=data['is_closed'])
         return path
 
     def to_data(self):
-        data = {'points': {},
+        data = {'points': {i: point.to_data() for i, point in enumerate(self.points)},
                 'is_closed': self.is_closed}
-        for i, point in enumerate(self.points):
-            data['points'][i] = [point[0], point[1], point[2]]
         return data
 
 

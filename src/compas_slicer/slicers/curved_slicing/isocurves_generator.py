@@ -23,9 +23,9 @@ class IsocurvesGenerator:
     target_HIGH : compas_slicer.slicing.curved_slicing.CompoundTarget
     number_of_curves : int
     """
-    def __init__(self, mesh_, target_LOW, target_HIGH, number_of_curves):
+    def __init__(self, mesh, target_LOW, target_HIGH, number_of_curves):
         logging.info("Isocurves Generator...")
-        self.mesh = mesh_  # compas mesh
+        self.mesh = mesh  # compas mesh
         self.target_LOW = target_LOW
         self.target_HIGH = target_HIGH
 

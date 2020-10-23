@@ -1,5 +1,6 @@
 import compas
 import compas_slicer
+from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
 from compas_slicer.geometry import Layer, VerticalLayer
@@ -130,10 +131,13 @@ class BaseSlicer(object):
 
     @classmethod
     def from_data(cls, data):
-        mesh = compas.datastructures.Mesh.from_data(data['mesh'])
+        mesh = Mesh.from_data(data['mesh'])
         slicer = cls(mesh)
         layers_data = data['layers']
-        slicer.layers = [Layer.from_data(layers_data[key]) for key in layers_data]
+        if layers_data['0']['layer_type'] == 'horizontal_layer':
+            slicer.layers = [Layer.from_data(layers_data[key]) for key in layers_data]
+        else:  # 'vertical_layer'
+            slicer.layers = [VerticalLayer.from_data(layers_data[key]) for key in layers_data]
         slicer.layer_height = data['layer_height']
         return slicer
 
