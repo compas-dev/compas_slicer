@@ -21,7 +21,17 @@ def add_safety_printpoints(printpoints_dict, z_hop=20):
         for path_key in printpoints_dict[layer_key]:
             print_points_copy_dict[layer_key][path_key] = []
 
+            # get length of path to determine last point
+            path_len = len(printpoints_dict[layer_key][path_key])
+
             for i, printpoint in enumerate(printpoints_dict[layer_key][path_key]):
+                # add a safety point before the first point
+                # if not the first point of the entire print
+                if printpoint is not printpoints_dict['layer_0']['path_0'][0]:
+                    if i == 0 and not printpoints_dict[layer_key][path_key][path_len-1].extruder_toggle:
+                        safety_printpoint = safety_printpoint = create_safety_printpoint(printpoint, z_hop, False)
+                        print_points_copy_dict[layer_key][path_key].append(safety_printpoint)
+
                 #  regular printing points
                 print_points_copy_dict[layer_key][path_key].append(printpoint)
 
