@@ -1,6 +1,7 @@
 import compas_slicer
 
-__all__ = ['set_extruder_toggle']
+__all__ = ['set_extruder_toggle',
+           'override_extruder_toggle']
 
 
 def set_extruder_toggle(printpoints_dict, slicer):
@@ -44,3 +45,15 @@ def set_extruder_toggle(printpoints_dict, slicer):
         last_layer_key = 'layer_%d' % (len(printpoints_dict) - 1)
         last_path_key = 'path_%d' % (len(printpoints_dict[last_layer_key]) - 1)
         printpoints_dict[last_layer_key][last_path_key][-1].extruder_toggle = False
+
+
+def override_extruder_toggle(printpoints_dict, override_value):
+    if isinstance(override_value, bool):
+        for layer_key in printpoints_dict:
+            for path_key in printpoints_dict[layer_key]:
+                path_printpoints = printpoints_dict[layer_key][path_key]
+                for printpoint in path_printpoints:
+                    printpoint.extruder_toggle = override_value
+                
+    else:
+        raise NameError("Override value must be of type bool")
