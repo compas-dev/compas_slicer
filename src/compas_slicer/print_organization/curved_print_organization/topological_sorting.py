@@ -3,6 +3,7 @@ from compas.geometry import distance_point_point_sqrd
 import compas_slicer.utilities as utils
 import logging
 import copy
+from compas_slicer.pre_processing.curved_slicing_preprocessing import get_existing_cut_indices, get_existing_boundary_indices
 
 logger = logging.getLogger('logger')
 
@@ -41,8 +42,7 @@ class DirectedGraph(object):
     def __repr__(self):
         return "<DirectedGraph with %i nodes>" % len(list(self.G.nodes()))
 
-    #################################
-    # Methods to be implemented by inheriting classes
+    # ------------------------------------ Methods to be implemented by inheriting classes
     def find_roots(self):
         """Roots are segments that lie on the build platform, i.e. they can be print first"""
         raise NotImplementedError
@@ -55,8 +55,7 @@ class DirectedGraph(object):
         """Find all the segments that lie on the current root segment"""
         raise NotImplementedError
 
-    #################################
-    # Creation of graph connectivity between different nodes
+    # ------------------------------------ Creation of graph connectivity between different nodes
     def create_directed_graph_edges(self, root_indices):
         passed_nodes = []
         queue = root_indices
@@ -78,8 +77,7 @@ class DirectedGraph(object):
         assert len(good_nodes) == self.N, 'There are floating segments on directed graph. Investigate the process of \
                                           the creation of the graph. '
 
-    #################################
-    # Find all topological orders
+    # ------------------------------------ Find all topological orders
     def get_adjacency_list(self):
         adj_list = [[] for _ in range(self.N)]  # adjacency list , size = len(Nodes), stores nodes' neighbors
         for i, adjacent_to_node in self.G.adjacency():
@@ -136,68 +134,53 @@ class DirectedGraph(object):
 
 
 #################################
-#  Meshes DirectedGraph
+#  --- Meshes DirectedGraph
 
 class MeshDirectedGraph(DirectedGraph):
     """ The MeshDirectedGraph is used for topological sorting of multiple meshes that have been
     generated as a result of region split over the saddle points of the mesh scalar function """
 
     def __init__(self, all_meshes):
-        raise NotImplementedError
+        self.all_meshes = all_meshes
+        DirectedGraph.__init__(self)
 
-        # self.all_meshes = all_meshes
-        # DirectedGraph.__init__(self)
+    def find_roots(self):
+        roots = []
+        for i, mesh in enumerate(self.all_meshes):
+            for vkey, data in mesh.vertices(data=True):
+                if i not in roots:
+                    if data['boundary'] == 1:
+                        roots.append(i)
+        return roots
 
-    # def find_roots(self):
-    #     roots = []
-    #     for i, mesh in enumerate(self.all_meshes):
-    #         for vkey, data in mesh.vertices(data=True):
-    #             if i not in roots:
-    #                 if data['boundary'] == 1:
-    #                     roots.append(i)
-    #     return roots
-    #
-    # def create_graph_nodes(self):
-    #     # initialize graph Meshes as nodes. Cuts and boundaries as attributes
-    #     for i, m in enumerate(self.all_meshes):
-    #         self.G.add_node(i, cuts=region_split_utils.get_existing_cut_indices(m),
-    #                         boundaries=region_split_utils.get_existing_boundary_indices(m))
-    #
-    # def get_children_of_node(self, root):
-    #     children = []
-    #     cut_ids = []
-    #     parent_data = self.G.nodes(data=True)[root]
-    #
-    #     for key, data in self.G.nodes(data=True):
-    #         common_cuts = list(set(parent_data['cuts']).intersection(data['cuts']))
-    #
-    # if key != root \ and (key, root) not in self.G.edges() \ and (root, key) not in self.G.edges() \ and len(
-    # common_cuts) > 0: if self.true_mesh_adjacency(key, root): try: assert len(common_cuts) == 1 except: print('More
-    # than one common cuts between two pieces in the following split meshes') print('root  : ', root) print('child :
-    # ', key) print('common_cuts : ', common_cuts) # TODO: improve this. Two meshes COULD have more common cuts,
-    #  resulting for example from one-vertex connections raise ValueError
-    #
-    #                 children.append(key)
-    #                 cut_ids.append(common_cuts[0])
-    #     return children, cut_ids
-    #
-    # def true_mesh_adjacency(self, key1, key2):
-    #     count = 0
-    #     mesh1 = self.all_meshes[key1]
-    #     mesh2 = self.all_meshes[key2]
-    #     pts_mesh2 = [mesh2.vertex_coordinates(vkey) for vkey, data in mesh2.vertices(data=True)
-    #                  if (data['cut'] > 0 or data['boundary'] > 0)]
-    #     for vkey, data in mesh1.vertices(data=True):
-    #         if data['cut'] > 0 or data['boundary'] > 0:
-    #             pt = mesh1.vertex_coordinates(vkey)
-    #             ci = utils.get_closest_pt_index(pt, pts_mesh2)
-    #             if distance_point_point_sqrd(pt, pts_mesh2[ci]) < 0.00001:
-    #                 count += 1
-    #                 if count == 3:
-    #                     TODO: improve this. Two meshes could have 3 one-vertex-connections for example.
-    #                             Also two meshes could have only two vertex connection and depend on each other.
-    #                     return True
-    #     return False
+    def create_graph_nodes(self):
+        # initialize graph Meshes as nodes. Cuts and boundaries as attributes
+        for i, m in enumerate(self.all_meshes):
+            self.G.add_node(i, cuts=get_existing_cut_indices(m),
+                            boundaries=get_existing_boundary_indices(m))
+
+    def get_children_of_node(self, root):
+        children = []
+        cut_ids = []
+        parent_data = self.G.nodes(data=True)[root]
+
+        for key, data in self.G.nodes(data=True):
+            common_cuts = list(set(parent_data['cuts']).intersection(data['cuts']))
+
+            if key != root and len(common_cuts) > 0 \
+                    and (key, root) not in self.G.edges() \
+                    and (root, key) not in self.G.edges():
+                if is_true_mesh_adjacency(self.all_meshes, key, root):
+                    # try:
+                    assert len(common_cuts) == 1
+                    # except: logger.error('More than one common cuts between two pieces in the following split
+                    # meshes. ' 'Root : %d, child : %d' % (root, key) + ' . Common cuts : ' + str(common_cuts)) #
+                    # TODO: improve this. Two meshes COULD have more common cuts, resulting for example from
+                    #  one-vertex connections raise ValueError
+
+                    children.append(key)
+                    cut_ids.append(common_cuts[0])
+        return children, cut_ids
 
 
 #################################
@@ -247,6 +230,9 @@ class SegmentsDirectedGraph(DirectedGraph):
         return children, [None for _ in children]  # this graph doesn't have cut ids
 
 
+#################################
+# --- helpers
+
 def are_neighboring_point_clouds(pts1, pts2, threshold):
     count = 0
     for pt in pts1:
@@ -254,6 +240,25 @@ def are_neighboring_point_clouds(pts1, pts2, threshold):
             count += 1
             if count > 3:
                 return True
+    return False
+
+
+def is_true_mesh_adjacency(all_meshes, key1, key2):
+    count = 0
+    mesh1 = all_meshes[key1]
+    mesh2 = all_meshes[key2]
+    pts_mesh2 = [mesh2.vertex_coordinates(vkey) for vkey, data in mesh2.vertices(data=True)
+                 if (data['cut'] > 0 or data['boundary'] > 0)]
+    for vkey, data in mesh1.vertices(data=True):
+        if data['cut'] > 0 or data['boundary'] > 0:
+            pt = mesh1.vertex_coordinates(vkey)
+            ci = utils.get_closest_pt_index(pt, pts_mesh2)
+            if distance_point_point_sqrd(pt, pts_mesh2[ci]) < 0.00001:
+                count += 1
+                if count == 3:
+                    # TODO: improve this. Two meshes could have 3 one-vertex-connections for example.
+                    #        Also two meshes could have only two vertex connection and depend on each other.
+                    return True
     return False
 
 

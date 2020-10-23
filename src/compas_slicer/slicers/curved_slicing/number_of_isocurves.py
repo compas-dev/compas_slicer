@@ -13,7 +13,7 @@ def find_desired_number_of_isocurves(target_0, target_1, avg_layer_height=1.1):
     number_of_curves = max(max(extreme_ds0), max(extreme_ds1)) / avg_layer_height
     number_of_curves = int(number_of_curves)
 
-    logger.info("Number_of_curves : " + str(number_of_curves))
+    logger.info("Number_of_curves to be created: " + str(number_of_curves))
     return max(1, number_of_curves)
 
 

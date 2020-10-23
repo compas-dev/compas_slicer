@@ -36,14 +36,16 @@ class Layer(object):
 
     @classmethod
     def from_data(cls, data):
-        paths = [Path.from_data(data[key]) for key in data]
+        paths_data = data['paths']
+        paths = [Path.from_data(paths_data[key]) for key in paths_data]
         layer = cls(paths=paths)
         return layer
 
     def to_data(self):
-        data = {}
+        data = {'paths': {i: [] for i in range(len(self.paths))},
+                'layer_type': 'horizontal_layer'}
         for i, path in enumerate(self.paths):
-            data[i] = path.to_data()
+            data['paths'][i] = path.to_data()
         return data
 
 
@@ -74,3 +76,18 @@ class VerticalLayer(Layer):
     def printout_details(self):
         logger.info("VerticalLayer id : %d" % self.id)
         logger.info("Total number of paths : %d" % len(self.paths))
+
+    def to_data(self):
+        data = {'paths': {i: [] for i in range(len(self.paths))},
+                'layer_type': 'vertical_layer'}
+        for i, path in enumerate(self.paths):
+            data['paths'][i] = path.to_data()
+        return data
+
+    @classmethod
+    def from_data(cls, data):
+        paths_data = data['paths']
+        paths = [Path.from_data(paths_data[key]) for key in paths_data]
+        layer = cls(id=None)
+        layer.paths = paths
+        return layer

@@ -2,7 +2,20 @@ import logging
 
 logger = logging.getLogger('logger')
 
-__all__ = ['get_weighted_distance']
+__all__ = ['assign_distance_to_mesh_vertices',
+           'get_weighted_distance']
+
+
+def assign_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
+    for i, vkey in enumerate(mesh.vertices()):
+        if target_LOW and target_HIGH:
+            d = get_weighted_distance(vkey, weight, target_LOW, target_HIGH)
+        elif target_LOW:
+            offset = weight * max(target_LOW.all_distances())
+            d = target_LOW.distance(vkey) - offset
+        else:
+            raise ValueError('You need to provide at least one target')
+        mesh.vertex[vkey]["distance"] = d
 
 
 def get_weighted_distance(vkey, t, target_LOW, target_HIGH):

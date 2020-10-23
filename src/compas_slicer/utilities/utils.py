@@ -25,7 +25,8 @@ __all__ = ['save_to_json',
            'get_dict_key_from_value',
            'get_closest_mesh_normal_to_pt',
            'smooth_vectors',
-           'get_normal_of_path_on_xy_plane']
+           'get_normal_of_path_on_xy_plane',
+           'get_files_with_name']
 
 
 def get_average_point(points):
@@ -265,6 +266,15 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     return normal
 
 
+# def get_existing_values_of_vertex_attribute(mesh, attribute):
+#     values = []
+#     for vkey, data in mesh.vertices(data=True):
+#         if data[attribute] not in values:
+#             values.append(data[attribute])
+#     values = sorted(values)
+#     return values
+
+
 #######################################
 #  networkx graph
 
@@ -383,6 +393,19 @@ def interrupt():
     if isinstance(value, str):
         if value == '1':
             raise ValueError("Aborted")
+
+
+#######################################
+#  load all files with name
+
+def get_files_with_name(startswith, endswith, DATA_PATH):
+    files = []
+    for file in os.listdir(DATA_PATH):
+        if file.startswith(startswith) and file.endswith(endswith):
+            files.append(file)
+    print('')
+    logger.info('Reloading : ' + str(files))
+    return files
 
 
 if __name__ == "__main__":

@@ -1,10 +1,14 @@
 import numpy as np
 import math
+from compas.datastructures import Mesh
 from compas_slicer.utilities import TerminalCommand
-import compas_slicer.utilities as utils
+from compas_slicer.utilities import save_to_json
 import logging
 import networkx as nx
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
+from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances, \
+    get_custom_HEAT_geodesic_distances
+
 packages = TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
     import igl
@@ -22,6 +26,7 @@ class CompoundTarget:
     ----------
     params : Fill things in!
     """
+
     def __init__(self, mesh, v_attr, value, DATA_PATH, is_smooth=False, r=15.0,
                  geodesics_method='exact', anisotropic_scaling=False):
 
@@ -43,6 +48,8 @@ class CompoundTarget:
         self.number_of_boundaries = None
 
         self.t_end_per_cluster = []
+
+        self.OVERWRITE_all_distances = []  # stores Laplacian smoothing distances if used
 
         self.find_targets_connected_components()
         self.compute_geodesic_distances()
@@ -67,12 +74,12 @@ class CompoundTarget:
     #  --- Geodesic distances
     def compute_geodesic_distances(self):
         if self.geodesics_method == 'exact':
-            distances_lists = [utils.get_igl_EXACT_geodesic_distances(self.mesh, vstarts) for vstarts in
+            distances_lists = [get_igl_EXACT_geodesic_distances(self.mesh, vstarts) for vstarts in
                                self.clustered_vkeys]
 
         elif self.geodesics_method == 'heat':
-            distances_lists = [utils.get_custom_HEAT_geodesic_distances(self.mesh, vstarts, self.DATA_PATH,
-                                                                        anisotropic_scaling=self.anisotropic_scaling)
+            distances_lists = [get_custom_HEAT_geodesic_distances(self.mesh, vstarts, self.DATA_PATH,
+                                                                  anisotropic_scaling=self.anisotropic_scaling)
                                for vstarts in self.clustered_vkeys]
         else:
             raise ValueError('Unknown geodesics method : ' + self.geodesics_method)
@@ -91,7 +98,7 @@ class CompoundTarget:
             self.t_end_per_cluster = [d / max(ds_avg_HIGH) for d in ds_avg_HIGH]
             logger.info('t_end_per_cluster : ' + str(self.t_end_per_cluster))
         else:
-            logger.info("Did not compute uneven boundaries, target consists of single component")
+            logger.info("Did not compute_norm_of_gradient uneven boundaries, target consists of single component")
 
     def use_uneven_weights(self):
         return len(self.t_end_per_cluster) > 0
@@ -121,10 +128,13 @@ class CompoundTarget:
         return [self.distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
 
     def distance(self, i):
-        if self.is_smooth:
-            return self.smooth_union(i)
+        if len(self.OVERWRITE_all_distances) == 0:
+            if self.is_smooth:
+                return self.smooth_union(i)
+            else:
+                return self.union(i)
         else:
-            return self.union(i)
+            return self.OVERWRITE_all_distances[i]
 
     def union(self, i):
         d = self.distances_lists[0][i]
@@ -146,7 +156,7 @@ class CompoundTarget:
         else:
             return [self.union(i) for i in range(self.VN)]
 
-    def laplacian_smoothing_of_all_distances(self, iterations, lamda):  # ATTENTION! Only works
+    def laplacian_smoothing_of_all_distances(self, iterations, lamda):
         v, f = self.mesh.to_vertices_and_faces()
         L = igl.cotmatrix(np.array(v), np.array(f))
 
@@ -155,12 +165,12 @@ class CompoundTarget:
             a_prime = a + lamda * L * a
             a = a_prime
         # could fix boundaries by putting the corresponding columns of the sparse matrix to 0
-        return a
+        self.OVERWRITE_all_distances = a
 
     #############################
     #  ------ output
     def save_distances(self, name):
-        utils.save_to_json(self.all_distances(), self.DATA_PATH, name)
+        save_to_json(self.all_distances(), self.DATA_PATH, name)
 
     def save_distances_clusters(self, name):
         clusters_distances = {}
@@ -171,10 +181,18 @@ class CompoundTarget:
             all_ds = self.all_clusters_distances(i)
             for j, d in enumerate(all_ds):
                 clusters_distances[j].append(d)
-        utils.save_to_json(clusters_distances, self.DATA_PATH, name)
+        save_to_json(clusters_distances, self.DATA_PATH, name)
 
     def save_start_vertices(self, name):
-        utils.save_to_json([int(vi) for vi in self.all_target_vkeys], self.DATA_PATH, name)
+        save_to_json([int(vi) for vi in self.all_target_vkeys], self.DATA_PATH, name)
+
+    #############################
+    #  ------ assign new Mesh
+    def assign_new_mesh(self, mesh):
+        mesh.to_json(self.DATA_PATH + "/temp.obj")
+        mesh = Mesh.from_json(self.DATA_PATH + "/temp.obj")
+        self.mesh = mesh
+        self.VN = len(list(self.mesh.vertices()))
 
 
 ####################

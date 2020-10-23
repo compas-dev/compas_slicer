@@ -10,8 +10,10 @@ compas_slicer
     :maxdepth: 1
 
     geometry
-    print_organization
     slicers
+    print_organization
+    pre_processing
+    post_processing
     utilities
 
 """
@@ -62,6 +64,7 @@ from .geometry import *  # noqa: F401 E402 F403
 from .slicers import *  # noqa: F401 E402 F403
 from .print_organization import *  # noqa: F401 E402 F403
 from .utilities import *  # noqa: F401 E402 F403
-
+from .post_processing import *  # noqa: F401 E402 F403
+from .pre_processing import *  # noqa: F401 E402 F403
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]

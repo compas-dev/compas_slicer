@@ -1,11 +1,13 @@
 import compas
 import compas_slicer
+from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
 from compas_slicer.geometry import Layer, VerticalLayer
-from compas_slicer.slicers.post_processing import seams_align, unify_paths_orientation
+from compas_slicer.post_processing import seams_align, unify_paths_orientation
 import time
 import logging
+import copy
 
 logger = logging.getLogger('logger')
 
@@ -113,10 +115,10 @@ class BaseSlicer(object):
         if visualize_paths:
             for i, layer in enumerate(self.layers):
                 for j, path in enumerate(layer.paths):
-                    pts = path.points
+                    pts = copy.deepcopy(path.points)
                     if path.is_closed:
                         pts.append(pts[0])
-                    polyline = Polyline(path.points)
+                    polyline = Polyline(pts)
                     if isinstance(layer, compas_slicer.geometry.VerticalLayer):
                         viewer.add(polyline, name="VerticalSegment %d, Path %d" % (i, j),
                                    settings={'color': '#ffffff'})
@@ -129,10 +131,13 @@ class BaseSlicer(object):
 
     @classmethod
     def from_data(cls, data):
-        mesh = compas.datastructures.Mesh.from_data(data['mesh'])
+        mesh = Mesh.from_data(data['mesh'])
         slicer = cls(mesh)
         layers_data = data['layers']
-        slicer.layers = [Layer.from_data(layers_data[key]) for key in layers_data]
+        if layers_data['0']['layer_type'] == 'horizontal_layer':
+            slicer.layers = [Layer.from_data(layers_data[key]) for key in layers_data]
+        else:  # 'vertical_layer'
+            slicer.layers = [VerticalLayer.from_data(layers_data[key]) for key in layers_data]
         slicer.layer_height = data['layer_height']
         return slicer
 

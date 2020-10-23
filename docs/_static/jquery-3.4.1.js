@@ -2832,7 +2832,7 @@ var rsingleTag = ( /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|
 
 
 
-// Implement the identical post_processing for filter and not
+// Implement the identical functionality for filter and not
 function winnow( elements, qualifier, not ) {
 	if ( isFunction( qualifier ) ) {
 		return jQuery.grep( elements, function( elem, i ) {
@@ -4404,7 +4404,7 @@ jQuery.extend( {
 		}
 	},
 
-	// Not public - compute a queueHooks object, or return the current one
+	// Not public - compute_distance_speed_scalar a queueHooks object, or return the current one
 	_queueHooks: function( elem, type ) {
 		var key = type + "queueHooks";
 		return dataPriv.get( elem, key ) || dataPriv.access( elem, key, {

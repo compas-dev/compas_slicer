@@ -1,12 +1,10 @@
 import numpy as np
-from compas.geometry import Vector, add_vectors, scale_vector
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import VerticalLayer, Path
 import logging
-from compas_slicer.slicers.curved_slicing.get_weighted_distance import get_weighted_distance
-from compas_slicer.slicers.slice_utilities import ZeroCrossingContours
-
+import compas_slicer
 import progressbar
+from compas_slicer.slicers.curved_slicing import assign_distance_to_mesh_vertices
 
 logger = logging.getLogger('logger')
 
@@ -25,9 +23,9 @@ class IsocurvesGenerator:
     target_HIGH : compas_slicer.slicing.curved_slicing.CompoundTarget
     number_of_curves : int
     """
-    def __init__(self, mesh_, target_LOW, target_HIGH, number_of_curves):
+    def __init__(self, mesh, target_LOW, target_HIGH, number_of_curves):
         logging.info("Isocurves Generator...")
-        self.mesh = mesh_  # compas mesh
+        self.mesh = mesh  # compas mesh
         self.target_LOW = target_LOW
         self.target_HIGH = target_HIGH
 
@@ -42,8 +40,8 @@ class IsocurvesGenerator:
     def create_isocurves(self, t_list):
         with progressbar.ProgressBar(max_value=len(t_list)) as bar:
             for i, t in enumerate(t_list):
-                self.assign_distance_attribute_to_mesh_vertices(t)
-                zero_contours = GeodesicsZeroCrossingContour(self.mesh)
+                assign_distance_to_mesh_vertices(self.mesh, t, self.target_LOW, self.target_HIGH)
+                zero_contours = compas_slicer.slicers.GeodesicsZeroCrossingContours(self.mesh)
                 zero_contours.compute()
 
                 for j, key in enumerate(zero_contours.sorted_point_clusters):
@@ -71,17 +69,6 @@ class IsocurvesGenerator:
                 # advance progress bar
                 bar.update(i)
 
-    def assign_distance_attribute_to_mesh_vertices(self, weight):
-        if self.target_LOW and self.target_HIGH:
-            for vkey in self.mesh.vertices():
-                d = get_weighted_distance(vkey, weight, self.target_LOW, self.target_HIGH)
-                self.mesh.vertex[vkey]["distance"] = d
-        else:
-            assert self.target_LOW, 'You need to provide one target at least.'
-            offset = weight * max(self.target_LOW.all_distances())
-            for vkey in self.mesh.vertices():
-                self.mesh.vertex[vkey]["distance"] = self.target_LOW.distance(vkey) - offset
-
     def get_segments_centroids_list(self):
         head_centroids = []
         for segment in self.segments:
@@ -90,29 +77,7 @@ class IsocurvesGenerator:
 
 
 #################################
-#  Additional post_processing
-
-class GeodesicsZeroCrossingContour(ZeroCrossingContours):
-    def __init__(self, mesh):
-        ZeroCrossingContours.__init__(self, mesh)  # initialize from parent class
-
-    def edge_is_intersected(self, u, v):
-        d1 = self.mesh.vertex[u]['distance']
-        d2 = self.mesh.vertex[v]['distance']
-        if (d1 > 0 and d2 > 0) or (d1 < 0 and d2 < 0):
-            return False
-        else:
-            return True
-
-    def find_zero_crossing_point(self, u, v):
-        dist_a, dist_b = self.mesh.vertex[u]['distance'], self.mesh.vertex[v]['distance']
-        if abs(dist_a) + abs(dist_b) > 0:
-            v_coords_a, v_coords_b = self.mesh.vertex_coordinates(u), self.mesh.vertex_coordinates(v)
-            vec = Vector.from_start_end(v_coords_a, v_coords_b)
-            vec = scale_vector(vec, abs(dist_a) / (abs(dist_a) + abs(dist_b)))
-            pt = add_vectors(v_coords_a, vec)
-            return pt
-
+#  Additional functionality
 
 def get_t_list(number_of_curves):
     t_list = [0.001]  # [0.001]

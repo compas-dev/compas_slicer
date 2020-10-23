@@ -15,7 +15,7 @@ __all__ = ['CurvedPrintOrganizer']
 
 class CurvedPrintOrganizer(PrintOrganizer):
 
-    def __init__(self, slicer, parameters, DATA_PATH=None, intermediary_outputs=True):
+    def __init__(self, slicer, parameters, DATA_PATH=None):
         assert isinstance(slicer.layers[0], VerticalLayer)  # curved printing only works with vertical layers
         PrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
@@ -29,7 +29,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
 
         self.segments = {}  # one segment per vertical layer
         self.create_segments_dict()
-        self.base_boundaries_creation(intermediary_outputs)  # creation of one base boundary per vertical_layer
+        self.base_boundaries_creation()  # creation of one base boundary per vertical_layer
         self.create_segment_connectivity()
 
     def __repr__(self):
@@ -49,7 +49,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
             self.segments[i] = {'boundary': None,
                                 'path_collection': None}
 
-    def base_boundaries_creation(self, intermediary_outputs):
+    def base_boundaries_creation(self):
         """ Creates one BaseBoundary per vertical_layer  """
         root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
@@ -69,7 +69,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
         else:
             self.segments[0]['boundary'] = root_boundary
 
-        if intermediary_outputs:
+        if self.parameters['create_intermediary_outputs']:
             b_data = {}
             for i in self.segments:
                 b_data[i] = self.segments[i]['boundary'].to_data()
