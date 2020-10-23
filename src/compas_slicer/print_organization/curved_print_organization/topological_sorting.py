@@ -171,13 +171,12 @@ class MeshDirectedGraph(DirectedGraph):
                     and (key, root) not in self.G.edges() \
                     and (root, key) not in self.G.edges():
                 if is_true_mesh_adjacency(self.all_meshes, key, root):
-                    try:
-                        assert len(common_cuts) == 1
-                    except:
-                        logger.error('More than one common cuts between two pieces in the following split meshes. '
-                                     'Root : %d, child : %d' % (root, key) + ' . Common cuts : ' + str(common_cuts))
-                        # TODO: improve this. Two meshes COULD have more common cuts, resulting for example from one-vertex connections
-                        raise ValueError
+                    # try:
+                    assert len(common_cuts) == 1
+                    # except: logger.error('More than one common cuts between two pieces in the following split
+                    # meshes. ' 'Root : %d, child : %d' % (root, key) + ' . Common cuts : ' + str(common_cuts)) #
+                    # TODO: improve this. Two meshes COULD have more common cuts, resulting for example from
+                    #  one-vertex connections raise ValueError
 
                     children.append(key)
                     cut_ids.append(common_cuts[0])

@@ -1,6 +1,5 @@
 import numpy as np
 import logging
-from compas_slicer.slicers.curved_slicing import get_weighted_distance
 from compas_slicer.slicers.curved_slicing import assign_distance_to_mesh_vertices
 
 logger = logging.getLogger('logger')

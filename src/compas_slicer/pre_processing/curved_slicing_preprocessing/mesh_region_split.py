@@ -60,7 +60,7 @@ class MeshSplitter:
             split_params = self.identify_positions_to_split(self.saddles)
             print('split_params : ', split_params)
 
-            ## merge params that are too close together
+            #  merge params that are too close together
             merged_param_index_to_prev = []
             for i, param in enumerate(split_params):
                 if i not in merged_param_index_to_prev:
@@ -165,19 +165,19 @@ class MeshSplitter:
 
         self.mesh.cull_vertices()  # remove all unused vertices
 
-        try:
-            self.mesh.unify_cycles()
-            assert self.mesh.is_valid()
-        except:
-            logger.error("COULD NOT UNIFY MESH CYCLES!. Welding mesh and retrying")
-            v_attributes_dict = save_vertex_attributes(self.mesh)
-            self.mesh = weld_mesh(self.mesh, self.DATA_PATH)
-            restore_mesh_attributes(self.mesh, v_attributes_dict)
-            try:
-                self.mesh.unify_cycles()
-                logger.info("Unified mesh cycles")
-            except:
-                logger.error("COULD NOT UNIFY MESH CYCLES!")
+        # try:
+        self.mesh.unify_cycles()
+        assert self.mesh.is_valid()
+        # except:
+        #     logger.error("COULD NOT UNIFY MESH CYCLES!. Welding mesh and retrying")
+        #     v_attributes_dict = save_vertex_attributes(self.mesh)
+        #     self.mesh = weld_mesh(self.mesh, self.DATA_PATH)
+        #     restore_mesh_attributes(self.mesh, v_attributes_dict)
+        #     try:
+        #         self.mesh.unify_cycles()
+        #         logger.info("Unified mesh cycles")
+        #     except:
+        #         logger.error("COULD NOT UNIFY MESH CYCLES!")
 
     # --------------------------- Identify split positions
     def identify_positions_to_split(self, saddles):
@@ -310,11 +310,11 @@ def weld_mesh(mesh, DATA_PATH, precision='2f'):
     welded_mesh.to_obj(os.path.join(DATA_PATH, 'temp.obj'))  # make sure there's no empty fkeys
     welded_mesh = Mesh.from_obj(os.path.join(DATA_PATH, 'temp.obj'))  # TODO: find a better way to do this
 
-    try:
-        welded_mesh.unify_cycles()
-        logger.info("Unified cycles of welded_mesh")
-    except:
-        logger.error("Attention! Could NOT unify cycles of welded_mesh")
+    # try:
+    welded_mesh.unify_cycles()
+    logger.info("Unified cycles of welded_mesh")
+    # except:
+    #     logger.error("Attention! Could NOT unify cycles of welded_mesh")
 
     if not welded_mesh.is_valid():  # and iteration < 3:
         logger.error("Attention! Welded mesh is INVALID")

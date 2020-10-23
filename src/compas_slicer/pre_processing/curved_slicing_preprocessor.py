@@ -1,4 +1,3 @@
-import numpy as np
 from compas_slicer.pre_processing import CompoundTarget
 from compas_slicer.pre_processing import ScalarFieldEvaluation
 import logging
