@@ -4,7 +4,7 @@ from compas_slicer.geometry import VerticalLayer, Path
 import logging
 import compas_slicer
 import progressbar
-from compas_slicer.slicers import assign_distance_to_mesh_vertices
+from compas_slicer.slicers.curved_slicing import assign_distance_to_mesh_vertices
 
 logger = logging.getLogger('logger')
 
