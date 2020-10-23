@@ -3,22 +3,26 @@ import logging
 import numpy as np
 import copy
 import compas
-from compas.geometry import Point, distance_point_point_sqrd
+import compas_slicer.utilities as utils
+from compas_slicer.pre_processing.curved_slicing_preprocessing import restore_mesh_attributes, save_vertex_attributes
 from compas.datastructures import Mesh
 from compas_slicer.slicers.curved_slicing import get_weighted_distance
-from compas_slicer.utilities import save_to_json, load_from_json, get_closest_pt_index, interrupt
 from compas_slicer.slicers import GeodesicsZeroCrossingContours
 from compas_slicer.slicers import assign_distance_to_mesh_vertices
+
+packages = utils.TerminalCommand('conda list').get_split_output_strings()
+if 'igl' in packages:
+    import igl
 
 logger = logging.getLogger('logger')
 
 __all__ = ['MeshSplitter',
-           'save_vertex_attributes',
-           'restore_mesh_attributes']
+           'separate_disconnected_components']
 
 RECOMPUTE_T_PARAMETERS = True
 T_SEARCH_RESOLUTION = 9000
 HIT_THRESHOLD = 0.001
+
 
 class MeshSplitter:
     """
@@ -48,7 +52,7 @@ class MeshSplitter:
         self.saddles = saddles
         self.cut_indices = []
 
-    ### --- main
+    # --------------------------- main
     def run(self):
 
         if RECOMPUTE_T_PARAMETERS:
@@ -69,13 +73,14 @@ class MeshSplitter:
                             merged_param_index_to_prev.append(j)
                             params_dict[i]['param'] = (params_dict[i]['param'] + other_param) * 0.5
                             params_dict[i]['saddle_vkeys'].append(self.saddles[j])
+            utils.save_to_json(params_dict, self.DATA_PATH, "split_params_dict.json")
 
-            save_to_json(params_dict, self.DATA_PATH, "split_params_dict.json")
-
-        params_dict = load_from_json(self.DATA_PATH, "split_params_dict.json")
+        # --- reload t_params
+        params_dict = utils.load_from_json(self.DATA_PATH, "split_params_dict.json")
         logger.info("%d Split params : " % len(params_dict))
         logger.info(params_dict)
 
+        # --- split mesh at params
         print('')
         logger.info('Splitting mesh at split params')
         current_cut_index = 1
@@ -115,9 +120,9 @@ class MeshSplitter:
                 logger.info('Updating targets, recomputing geodesic distances')
                 self.update_targets()  # does not need to happen at the end
 
-                # utils.interrupt()
+    # --------------------------- utils
 
-    def update_targets(self):  # This only works if the target vertices have not been touched
+    def update_targets(self):  # Note: This only works if the target vertices have not been touched
         self.target_LOW.assign_new_mesh(self.mesh)
         self.target_HIGH.assign_new_mesh(self.mesh)
         self.target_LOW.find_targets_connected_components()
@@ -156,7 +161,6 @@ class MeshSplitter:
                 self.mesh.add_face([v_other_b, v_other_a, v_new])
                 # except:
                 #     logger.info('Did not need to remove face.')
-
                 v0 = v_new
 
         self.mesh.cull_vertices()  # remove all unused vertices
@@ -174,10 +178,8 @@ class MeshSplitter:
                 logger.info("Unified mesh cycles")
             except:
                 logger.error("COULD NOT UNIFY MESH CYCLES!")
-            # assert self.mesh.is_valid()
 
-    #####################################
-    # --- Identify split positions
+    # --------------------------- Identify split positions
     def identify_positions_to_split(self, saddles):
         split_params = []
         resolution = T_SEARCH_RESOLUTION
@@ -202,10 +204,62 @@ class MeshSplitter:
 # --- helpers
 ###############################################
 
-
 def get_t_list(n, start=0.03, end=1.0):
     return list(np.arange(start=start, stop=end, step=(end - start) / n))
 
+
+###############################################
+# --- Separate disconnected components
+
+def separate_disconnected_components(mesh, attr, values, DATA_PATH):
+    v_attributes_dict = save_vertex_attributes(mesh)
+
+    v, f = mesh.to_vertices_and_faces()
+    v, f = np.array(v), np.array(f)
+
+    # --- create cut flags for igl
+    cut_flags = []
+    for fkey in mesh.faces():
+        edges = mesh.face_halfedges(fkey)
+        current_face_flags = []
+        for fu, fv in edges:
+            fu_attr, fv_attr = mesh.vertex_attribute(fu, attr), mesh.vertex_attribute(fv, attr)
+            if fu_attr == fv_attr and fu_attr in values:
+                current_face_flags.append(1)
+            else:
+                current_face_flags.append(0)
+        cut_flags.append(current_face_flags)
+    cut_flags = np.array(cut_flags)
+    assert cut_flags.shape == f.shape
+
+    # --- cut mesh
+    v_cut, f_cut = igl.cut_mesh(v, f, cut_flags)
+    connected_components = igl.face_components(f_cut)
+
+    f_dict = {}
+    for i in range(max(connected_components) + 1):
+        f_dict[i] = []
+    for f_index, f in enumerate(f_cut):
+        component = connected_components[f_index]
+        f_dict[component].append(f)
+
+    cut_meshes = []
+    for component in f_dict:
+        cut_mesh = Mesh.from_vertices_and_faces(v_cut, f_dict[component])
+        cut_mesh.cull_vertices()
+        if len(list(cut_mesh.faces())) > 2:
+            cut_mesh.to_obj(os.path.join(DATA_PATH, 'temp.obj'))
+            cut_mesh = Mesh.from_obj(os.path.join(DATA_PATH, 'temp.obj'))  # get rid of too many empty keys
+            cut_meshes.append(cut_mesh)
+
+    for mesh in cut_meshes:
+        restore_mesh_attributes(mesh, v_attributes_dict)
+
+    return cut_meshes
+
+
+###############################################
+# --- saddle points merging
 
 def merge_clusters_saddle_point(zero_contours, saddle_vkeys):
     keys_of_clusters_to_keep = []
@@ -242,38 +296,8 @@ def cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs):
         return zero_contours
 
 
-################################
-### Mesh Attributes
-################################
-def save_vertex_attributes(mesh):
-    """ Saves attributes : boundary=1, boundary=2, cut=1,2,... """
-    v_attributes_dict = {'boundary_1': [], 'boundary_2': [], 'cut': {}}
-
-    cut_indices = []
-    for vkey, data in mesh.vertices(data=True):
-        cut_index = data['cut']
-        if cut_index not in cut_indices:
-            cut_indices.append(cut_index)
-    cut_indices = sorted(cut_indices)
-
-    for cut_index in cut_indices:
-        v_attributes_dict['cut'][cut_index] = []
-
-    for vkey, data in mesh.vertices(data=True):
-        if data['boundary'] == 1:
-            v_coords = mesh.vertex_coordinates(vkey)
-            pt = Point(x=v_coords[0], y=v_coords[1], z=v_coords[2])
-            v_attributes_dict['boundary_1'].append(pt)
-        elif data['boundary'] == 2:
-            v_coords = mesh.vertex_coordinates(vkey)
-            pt = Point(x=v_coords[0], y=v_coords[1], z=v_coords[2])
-            v_attributes_dict['boundary_2'].append(pt)
-        if data['cut'] > 0:
-            cut_index = data['cut']
-            v_coords = mesh.vertex_coordinates(vkey)
-            pt = Point(x=v_coords[0], y=v_coords[1], z=v_coords[2])
-            v_attributes_dict['cut'][cut_index].append(pt)
-    return v_attributes_dict
+########################################################
+# --- Mesh welding and sanitizing
 
 
 def weld_mesh(mesh, DATA_PATH, precision='2f'):
@@ -298,39 +322,3 @@ def weld_mesh(mesh, DATA_PATH, precision='2f'):
         logger.error("Attention! Welded mesh is NON-MANIFOLD")
 
     return welded_mesh
-
-
-def restore_mesh_attributes(mesh, v_attributes_dict):
-    logger.info(
-        "Restoring mesh attributes. Vertices : %d, Faces : %d" % (len(list(mesh.vertices())), len(list(mesh.faces()))))
-    mesh.update_default_vertex_attributes({'boundary': 0})
-    mesh.update_default_vertex_attributes({'cut': 0})
-
-    D_THRESHOLD = 0.01
-
-    welded_mesh_vertices = []
-    indices_to_vkeys = {}
-    for i, vkey in enumerate(mesh.vertices()):
-        v_coords = mesh.vertex_coordinates(vkey)
-        pt = Point(x=v_coords[0], y=v_coords[1], z=v_coords[2])
-        welded_mesh_vertices.append(pt)
-        indices_to_vkeys[i] = vkey
-
-    for v_coords in v_attributes_dict['boundary_1']:
-        closest_index = get_closest_pt_index(pt=v_coords, pts=welded_mesh_vertices)
-        c_vkey = indices_to_vkeys[closest_index]
-        if distance_point_point_sqrd(v_coords, mesh.vertex_coordinates(c_vkey)) < D_THRESHOLD:
-            mesh.vertex_attribute(c_vkey, 'boundary', value=1)
-
-    for v_coords in v_attributes_dict['boundary_2']:
-        closest_index = get_closest_pt_index(pt=v_coords, pts=welded_mesh_vertices)
-        c_vkey = indices_to_vkeys[closest_index]
-        if distance_point_point_sqrd(v_coords, mesh.vertex_coordinates(c_vkey)) < D_THRESHOLD:
-            mesh.vertex_attribute(c_vkey, 'boundary', value=2)
-
-    for cut_index in v_attributes_dict['cut']:
-        for v_coords in v_attributes_dict['cut'][cut_index]:
-            closest_index = get_closest_pt_index(pt=v_coords, pts=welded_mesh_vertices)
-            c_vkey = indices_to_vkeys[closest_index]
-            if distance_point_point_sqrd(v_coords, mesh.vertex_coordinates(c_vkey)) < D_THRESHOLD:
-                mesh.vertex_attribute(c_vkey, 'cut', value=int(cut_index))

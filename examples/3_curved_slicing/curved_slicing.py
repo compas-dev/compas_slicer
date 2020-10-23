@@ -43,13 +43,13 @@ if __name__ == "__main__":
     preprocessor.find_critical_points()
     preprocessor.region_split()
 
-    ### --- slicing
-    # slicer = CurvedSlicer(mesh, preprocessor, parameters, DATA_PATH)
-    # slicer.slice_model()  # compute_norm_of_gradient contours
-    #
-    # simplify_paths_rdp(slicer, threshold=1.0)
-    # slicer.printout_info()
-    # save_to_json(slicer.to_data(), DATA_PATH, 'curved_slicer.json')
+    ## --- slicing
+    slicer = CurvedSlicer(mesh, preprocessor, parameters, DATA_PATH)
+    slicer.slice_model()  # compute_norm_of_gradient contours
+
+    simplify_paths_rdp(slicer, threshold=1.0)
+    slicer.printout_info()
+    save_to_json(slicer.to_data(), DATA_PATH, 'curved_slicer.json')
 
     # # ### --- Print organizer
     # print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)

@@ -9,6 +9,7 @@ __all__ = ['ScalarFieldEvaluation']
 
 class ScalarFieldEvaluation:
     def __init__(self, mesh, target_LOW=None, target_HIGH=None):
+        print('')
         logger.info('Scalar field evaluation')
         self.mesh = mesh
         self.target_LOW = target_LOW
