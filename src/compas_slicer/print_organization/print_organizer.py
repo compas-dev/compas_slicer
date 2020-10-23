@@ -6,7 +6,7 @@ from compas_slicer.print_organization import add_safety_printpoints
 import compas_slicer.utilities as utils
 import progressbar
 import numpy as np
-from compas_slicer.print_organization import get_blend_radius, set_extruder_toggle, set_linear_velocity
+from compas_slicer.print_organization import get_blend_radius, set_extruder_toggle, override_extruder_toggle, set_linear_velocity
 
 logger = logging.getLogger('logger')
 
@@ -64,6 +64,12 @@ class PrintOrganizer(object):
         logger.info("Setting extruder toggle")
         set_extruder_toggle(self.printpoints_dict, self.slicer)
 
+    def override_extruder_toggle(self, override_value):
+        """Overrides extruder toggle to a user defined value.
+        """
+        logger.info("Overriding extruder toggle to: ", override_value)
+        override_extruder_toggle(self.printpoints_dict, override_value)
+
     def add_safety_printpoints(self, z_hop):
         """General description.
         Parameters
@@ -86,6 +92,16 @@ class PrintOrganizer(object):
         """
         logger.info("Setting linear velocity with type : " + str(velocity_type))
         set_linear_velocity(self.printpoints_dict, velocity_type, v=v, per_layer_velocities=per_layer_velocities)
+
+    def set_wait_time(self):
+        """General description.
+
+        Parameters
+        ----------
+        param : type
+
+
+        """
 
     def check_feasibility(self):
         """General description.
@@ -133,18 +149,22 @@ class PrintOrganizer(object):
         return data
 
     def remove_duplicate_points_in_path(self, layer_key, path_key):
+        dup_index = []
         # find duplicates
         duplicate_ppts = []
         for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
-            prev = self.printpoints_dict[layer_key][path_key][i - 1]
-            if np.linalg.norm(np.array(printpoint.pt) - np.array(prev.pt)) < 0.0001:
-                duplicate_ppts.append(printpoint)
+            if i < len(self.printpoints_dict[layer_key][path_key])-1:
+                next = self.printpoints_dict[layer_key][path_key][i + 1]
+                # prev = self.printpoints_dict[layer_key][path_key][i - 1]
+                if np.linalg.norm(np.array(printpoint.pt) - np.array(next.pt)) < 0.0001:
+                    dup_index.append(i)
+                    duplicate_ppts.append(printpoint)
 
         # warn user
         if len(duplicate_ppts) > 0:
             logger.warning(
-                'Attention! It looks like you had %d printpoint(s) on the same position.' % len(duplicate_ppts)
-                + ' on ' + layer_key + ' , ' + path_key + ' .They will be removed.')
+                'Attention! %d Duplicate printpoint(s) ' % len(duplicate_ppts)
+                + 'on ' + layer_key + ', ' + path_key + ', indices: ' + str(dup_index) + '. They will be removed.')
 
         # remove duplicates
         if len(duplicate_ppts) > 0:
