@@ -4,11 +4,6 @@ import compas
 __all__ = ['PrintPoint']
 
 
-def get_default_print_frame(pt, desired_axis):
-    desired_second_axis = Vector(1, 0, 0)
-    return Frame(pt, desired_axis, desired_second_axis)
-
-
 class PrintPoint(object):
     """
     A PrintPoint consists out of a single compas.geometry.Point,
@@ -51,11 +46,11 @@ class PrintPoint(object):
         self.extruder_toggle = None
         self.velocity = None
         self.wait_time = None
+        self.blend_radius = None
 
         #  --- advanced printpoint
         self.closest_support_pt = None  # <compas.geometry.Point>
         self.distance_to_support = None  # float
-        self.support_path = None  # <compas_slicer.geometry.Path>
 
         self.visualization_geometry = None
         self.is_feasible = True
@@ -79,15 +74,22 @@ class PrintPoint(object):
 
         """
         point = {
-            "point": [self.pt[0], self.pt[1], self.pt[2]],
-            "up_vector": self.up_vector.to_data(),
-            "layer_height": self.layer_height,
-            "frame": self.frame.to_data(),
-            "mesh_normal": self.mesh_normal.to_data(),
+            'point': [self.pt[0], self.pt[1], self.pt[2]],
+            'layer_height': self.layer_height,
 
-            "closest_support_pt": self.closest_support_pt.to_data() if self.closest_support_pt else None,
-            "distance_to_support": self.distance_to_support.to_data() if self.distance_to_support else None,
-            "closest_upper_point": self.closest_upper_point.to_data() if self.closest_upper_point else None,
+            'mesh_normal': self.mesh_normal.to_data(),
+            'up_vector': self.up_vector.to_data(),
+            'frame': self.frame.to_data(),
+
+            'extruder_toggle': self.extruder_toggle,
+            'velocity': self.velocity,
+            'wait_time': self.wait_time,
+            'blend_radius': self.blend_radius,
+
+            'closest_support_pt': self.closest_support_pt.to_data() if self.closest_support_pt else None,
+            'distance_to_support': self.distance_to_support,
+
+            'is_feasible': self.is_feasible
         }
         return point
 
@@ -106,15 +108,20 @@ class PrintPoint(object):
             The constructed PrintPoint.
 
         """
+        pp = cls(pt=Point.from_data(data['point']),
+                 layer_height=data['layer_height'],
+                 mesh_normal=Vector.from_data(data['mesh_normal']))
 
-        pp = cls(pt=Point(data['point'][0], data['point'][1], data['point'][2]),
-                 layer_height=data['layer_height'], mesh_normal=data['mesh_normal'].from_data(),
-                 up_vector=Vector.from_data(data['up_vector']))
-
+        pp.up_vector = Vector.from_data(data['up_vector'])
         pp.frame = Frame.from_data(data['frame'])
+
+        pp.extruder_toggle = data['extruder_toggle']
+        pp.velocity = data['velocity']
+        pp.wait_time = data['wait_time']
+        pp.blend_radius = data['blend_radius']
 
         pp.closest_support_pt = Point.from_data(data['closest_support_pt'])
         pp.distance_to_support = data['distance_to_support']
-        pp.closest_upper_point = Point.from_data(data['closest_upper_point'])
 
+        pp.is_feasible = data['is_feasible']
         return pp

@@ -17,6 +17,7 @@ __all__ = ['save_to_json',
            'flattened_list_of_dictionary',
            'interrupt',
            'point_list_to_dict',
+           'get_closest_mesh_vkey',
            'get_closest_mesh_normal',
            'get_closest_pt_index',
            'get_closest_pt',
@@ -165,7 +166,7 @@ def check_triangular_mesh(mesh):
                 len(vs)) + ". \nOnly triangular meshes supported.")
 
 
-def get_closest_mesh_normal(mesh, pt):
+def get_closest_mesh_vkey(mesh, pt):
     """
     Docstring to be added.
 
@@ -180,6 +181,22 @@ def get_closest_mesh_normal(mesh, pt):
     vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
     vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(pt, v_tupple[1]))
     closest_vkey = vertex_tupples[0][0]
+    return closest_vkey
+
+
+def get_closest_mesh_normal(mesh, pt):
+    """
+    Docstring to be added.
+
+    Attributes
+    ----------
+    xx : xx
+        xx
+    xx : xx
+        xx
+    """
+
+    closest_vkey = get_closest_mesh_vkey(mesh, pt)
     v = mesh.vertex_normal(closest_vkey)
     return Vector(v[0], v[1], v[2])
 

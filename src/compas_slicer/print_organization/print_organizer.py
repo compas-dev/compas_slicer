@@ -132,25 +132,9 @@ class PrintOrganizer(object):
 
                 for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
                     neighboring_items = self.get_printpoint_neighboring_items(layer_key, path_key, i)
+                    printpoint.blend_radius = get_blend_radius(printpoint, neighboring_items)
 
-                    data[count] = {
-                        #  geometry related data
-                        "point": printpoint.pt.to_data(),
-                        "frame": printpoint.frame.to_data(),
-                        "layer_height": printpoint.layer_height,
-                        "up_vector": printpoint.up_vector.to_data(),
-                        "mesh_normal": printpoint.mesh_normal.to_data(),
-
-                        #  print_organization related data
-                        "velocity": printpoint.velocity,
-                        "wait_time": printpoint.wait_time,
-                        "blend_radius": get_blend_radius(printpoint, neighboring_items),
-                        "extruder_toggle": printpoint.extruder_toggle,
-
-                        "closest_support_pt": printpoint.closest_support_pt.to_data() if printpoint.closest_support_pt
-                        else None,
-                        "is_feasible": printpoint.is_feasible
-                    }
+                    data[count] = printpoint.to_data()
 
                     count += 1
         logger.info("Generated %d print points" % count)
