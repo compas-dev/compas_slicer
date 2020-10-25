@@ -60,7 +60,7 @@ class CurvedSlicingPreprocessor:
     ###########################
     # --- Region Split
 
-    def region_split(self):
+    def region_split(self, save_split_meshes):
         print("")
         logging.info("--- Mesh region splitting")
         if len(self.sf_evaluation.saddles) == 0:
@@ -105,15 +105,19 @@ class CurvedSlicingPreprocessor:
             logger.info('selected_order : ' + str(selected_order))
             self.cleanup_mesh_attributes_based_on_selected_order(selected_order, graph)
 
+            #reorder split_meshes based on selected order
+            self.split_meshes = [self.split_meshes[i] for i in selected_order]
+
         # --- save split meshes
-        print("")
-        logger.info("--- Saving resulting split meshes")
-        for i, m in enumerate(self.split_meshes):
-            m.to_obj(os.path.join(self.DATA_PATH, 'split_mesh_' + str(i) + '.obj'))
-            m.to_json(os.path.join(self.DATA_PATH, 'split_mesh_' + str(i) + '.json'))
-        logger.info('Saving to Obj and Json: ' + os.path.join(self.DATA_PATH, 'split_mesh_%.obj'))
-        logger.info("Saved %d split_meshes" % len(self.split_meshes))
-        print('')
+        if save_split_meshes:
+            print("")
+            logger.info("--- Saving resulting split meshes")
+            for i, m in enumerate(self.split_meshes):
+                m.to_obj(os.path.join(self.DATA_PATH, 'split_mesh_' + str(i) + '.obj'))
+                m.to_json(os.path.join(self.DATA_PATH, 'split_mesh_' + str(i) + '.json'))
+            logger.info('Saving to Obj and Json: ' + os.path.join(self.DATA_PATH, 'split_mesh_%.obj'))
+            logger.info("Saved %d split_meshes" % len(self.split_meshes))
+            print('')
 
     def cleanup_mesh_attributes_based_on_selected_order(self, selected_order, graph):
         for index in selected_order:
