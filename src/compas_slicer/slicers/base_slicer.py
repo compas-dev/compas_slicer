@@ -8,6 +8,7 @@ from compas_slicer.post_processing import seams_align, unify_paths_orientation
 import time
 import logging
 import copy
+from abc import abstractmethod
 
 logger = logging.getLogger('logger')
 
@@ -70,9 +71,10 @@ class BaseSlicer(object):
         logger.info("Slicing operation took: %.2f seconds" % (end_time - start_time))
         self.post_processing()
 
+    @abstractmethod
     def generate_paths(self):
         # To be implemented by the inheriting classes
-        raise NotImplementedError
+        pass
 
     def post_processing(self):
         #  --- Align the seams between layers and unify orientation

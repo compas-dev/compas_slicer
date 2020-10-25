@@ -4,6 +4,7 @@ import compas_slicer.utilities as utils
 import logging
 import copy
 from compas_slicer.pre_processing.curved_slicing_preprocessing import get_existing_cut_indices, get_existing_boundary_indices
+from abc import abstractmethod
 
 logger = logging.getLogger('logger')
 
@@ -43,17 +44,20 @@ class DirectedGraph(object):
         return "<DirectedGraph with %i nodes>" % len(list(self.G.nodes()))
 
     # ------------------------------------ Methods to be implemented by inheriting classes
+    @abstractmethod
     def find_roots(self):
         """Roots are segments that lie on the build platform, i.e. they can be print first"""
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def create_graph_nodes(self):
         """Add the nodes to the graph with their attributes"""
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def get_children_of_node(self, root):
         """Find all the segments that lie on the current root segment"""
-        raise NotImplementedError
+        pass
 
     # ------------------------------------ Creation of graph connectivity between different nodes
     def create_directed_graph_edges(self, root_indices):

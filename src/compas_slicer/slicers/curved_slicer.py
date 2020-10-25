@@ -29,13 +29,14 @@ class CurvedSlicer(BaseSlicer):
         self.DATA_PATH = DATA_PATH
         self.parameters = parameters
         self.preprocessor = preprocessor
+        self.n_multiplier = 1.0
 
     def generate_paths(self):
         # --- generate paths
         n = find_desired_number_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH,
                                              self.parameters['avg_layer_height'])
         isocurves_generator = IsocurvesGenerator(self.mesh, self.preprocessor.target_LOW,
-                                                 self.preprocessor.target_HIGH, n)
+                                                 self.preprocessor.target_HIGH, n * self.n_multiplier)
         self.layers = isocurves_generator.segments
 
 

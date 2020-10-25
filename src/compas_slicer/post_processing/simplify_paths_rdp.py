@@ -11,13 +11,13 @@ __all__ = ['simplify_paths_rdp']
 
 
 def simplify_paths_rdp(slicer, threshold):
-    """Simplifies a path using the Ramer–Douglas–Peucker algorithm.
+    """Simplifies a path using the Ramer–Douglas–Peucker algorithm, implemented in the rdp python library.
     https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm
 
     Parameters
     ----------
-    slicer : compas_slicer.slicers
-        An instance of one of the compas_slicer.slicers classes.
+    slicer : compas_slicer.slicers.BaseSlicer
+        An instance of one of the compas_slicer.slicers.BaseSlicer class.
     threshold : float
         Controls the degree of polyline simplification.
         Low threshold removes few points, high threshold removes many points.
