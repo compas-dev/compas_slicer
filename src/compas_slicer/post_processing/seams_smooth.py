@@ -13,10 +13,14 @@ def seams_smooth(slicer, smooth_distance):
 
     Parameters
     ----------
-    slicer : compas_slicer.slicers
-        A compas_slicer.slicers instance
-    smooth_distance : float
+    slicer: :class:`compas_slicer.slicers.BaseSlicer`
+        An instance of one of the compas_slicer.slicers classes.
+    smooth_distance: float
         Distance (in mm) to perform smoothing
+
+    Returns
+    -------
+    None
     """
 
     logger.info("Smoothing seams with a distance of %i mm" % smooth_distance)

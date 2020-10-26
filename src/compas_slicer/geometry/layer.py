@@ -36,12 +36,33 @@ class Layer(object):
 
     @classmethod
     def from_data(cls, data):
+        """Construct a layer from its data representation.
+
+        Parameters
+        ----------
+        data: dict
+            The data dictionary.
+
+        Returns
+        -------
+        layer
+            The constructed layer.
+
+        """
         paths_data = data['paths']
         paths = [Path.from_data(paths_data[key]) for key in paths_data]
         layer = cls(paths=paths)
         return layer
 
     def to_data(self):
+        """Returns a dictionary of structured data representing the data structure.
+
+        Returns
+        -------
+        dict
+            The layers's data.
+
+        """
         data = {'paths': {i: [] for i in range(len(self.paths))},
                 'layer_type': 'horizontal_layer'}
         for i, path in enumerate(self.paths):

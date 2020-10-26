@@ -16,8 +16,11 @@ def add_safety_printpoints(printpoints_dict, z_hop=20):
     """
     print_points_copy_dict = {}  # should not be altering the dict that we are iterating through > copy
 
+    # get last layer key and path
     last_layer_key = 'layer_%d' % (len(printpoints_dict) - 1)
     last_path_key = 'path_%d' % (len(printpoints_dict[last_layer_key]) - 1)
+    # check if there are multiple paths in the last layer
+    multiple_paths_in_last_layer = False if len(printpoints_dict[last_layer_key]) == 1 else True
 
     for layer_key in printpoints_dict:
         print_points_copy_dict[layer_key] = {}
@@ -30,8 +33,8 @@ def add_safety_printpoints(printpoints_dict, z_hop=20):
 
                 # if not the first point of the entire print
                 if printpoint is not printpoints_dict['layer_0']['path_0'][0]:
-                    # or the first point of last layer
-                    if printpoint is not printpoints_dict[last_layer_key][last_path_key][0]:
+                    # or the first point of last layer (except when there are multiple paths in last layer)
+                    if printpoint is not printpoints_dict[last_layer_key][last_path_key][0] or multiple_paths_in_last_layer:
                         # check if the last point of a path is set to False
                         if i == 0 and not printpoints_dict[layer_key][path_key][-1].extruder_toggle:
                             # if False, add safety point

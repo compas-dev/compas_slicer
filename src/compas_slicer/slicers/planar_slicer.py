@@ -14,11 +14,11 @@ class PlanarSlicer(BaseSlicer):
 
     Attributes
     ----------
-    mesh : compas.datastructures.Mesh
+    mesh: compas.datastructures.Mesh
         Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).
-    slicer_type : string
+    slicer_type: string
         String representing which slicing method to use.
-    layer_height : float
+    layer_height: float
         Number representing the distance between layers (slices).
     """
     def __init__(self, mesh, slicer_type="default", layer_height=2.0):
@@ -32,6 +32,7 @@ class PlanarSlicer(BaseSlicer):
                (len(self.layers), self.layer_height)
 
     def generate_paths(self):
+        """Generates the planar slicing paths."""
         z = [self.mesh.vertex_attribute(key, 'z') for key in self.mesh.vertices()]
         min_z, max_z = min(z), max(z)
         d = abs(min_z - max_z)

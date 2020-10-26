@@ -15,14 +15,18 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
 
     Parameters
     ----------
-    layers : list
-        An instance of the compas_slicer.slicing.printpath.Layer class.
-    d_threshold : float
+    slicer: :class:`compas_slicer.slicers.BaseSlicer`
+        An instance of one of the compas_slicer.slicers classes.
+    d_threshold: float
         The maximum distance that the centroids of two successive paths can have to belong in the same group
         Recommended value, slightly bigger than the layer height
-    max_layers_per_segment : int
+    max_layers_per_segment: int
         Maximum number of layers that a segment can consist of
         If None, then the segment has unlimited number of layers
+    
+    Returns
+    -------
+    None
     """
     logger.info("Sorting per segment")
 

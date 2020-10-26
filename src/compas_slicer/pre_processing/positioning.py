@@ -16,9 +16,9 @@ def move_mesh_to_point(mesh, target_point):
 
     Parameters
     ----------
-    mesh : compas.datastructures.Mesh
+    mesh: :class:`compas.datastructures.Mesh`
         A compas mesh.
-    target_point : compas.geometry.Point
+    target_point: :class:`compas.geometry.Point`
         The point to move the mesh to.
     """
 

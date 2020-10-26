@@ -13,15 +13,19 @@ def seams_align(slicer, align_with="next_path"):
 
     Parameters
     ----------
-    slicer : compas_slicer.slicers
-        A compas_slicer.slicers instance
-    align_with : str or compas.geometry.Point
+    slicer: :class:`compas_slicer.slicers.BaseSlicer`
+        An instance of one of the compas_slicer.slicers classes.
+    align_with: str or :class:`compas.geometry.Point`
         Direction to orient the seams in.
         next_path    = orients the seam to the next path
         origin       = orients the seam to the origin (0,0,0)
         x_axis       = orients the seam to the x_axis
         y_axis       = orients the seam to the y_axis
         Point(x,y,z) = orients the seam according to the given point
+
+    Returns
+    -------
+    None
     """
     #  TODO: Implement random seams
     logger.info("Aligning seams to: %s" % align_with)

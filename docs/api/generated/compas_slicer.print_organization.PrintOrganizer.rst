@@ -20,9 +20,11 @@
       ~PrintOrganizer.get_printpoint_neighboring_items
       ~PrintOrganizer.number_of_paths_on_layer
       ~PrintOrganizer.output_printpoints_dict
+      ~PrintOrganizer.override_extruder_toggle
       ~PrintOrganizer.remove_duplicate_points_in_path
       ~PrintOrganizer.set_extruder_toggle
       ~PrintOrganizer.set_linear_velocity
+      ~PrintOrganizer.set_wait_time
       ~PrintOrganizer.visualize_on_viewer
    
    
