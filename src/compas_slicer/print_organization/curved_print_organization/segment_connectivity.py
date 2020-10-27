@@ -57,7 +57,7 @@ class SegmentConnectivity:
     def initialize_printpoints(self):
         for i, path in enumerate(self.paths):
             self.printpoints[i] = [PrintPoint(pt=p, layer_height=None,
-                                              mesh_normal=utils.get_closest_mesh_normal(self.mesh, p))
+                                              mesh_normal=utils.get_closest_mesh_normal_to_pt(self.mesh, p))
                                    for p in path.points]
 
     def fill_in_printpoints_information(self):

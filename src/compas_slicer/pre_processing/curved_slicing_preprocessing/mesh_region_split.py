@@ -47,6 +47,7 @@ class MeshSplitter:
     def __init__(self, mesh, target_LOW, target_HIGH, saddles, parameters, DATA_PATH):
         self.mesh = mesh  # compas mesh
         self.DATA_PATH = DATA_PATH
+        self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.parameters = parameters
         self.target_LOW, self.target_HIGH = target_LOW, target_HIGH
         self.saddles = saddles
@@ -73,10 +74,10 @@ class MeshSplitter:
                             merged_param_index_to_prev.append(j)
                             params_dict[i]['param'] = (params_dict[i]['param'] + other_param) * 0.5
                             params_dict[i]['saddle_vkeys'].append(self.saddles[j])
-            utils.save_to_json(params_dict, self.DATA_PATH, "split_params_dict.json")
+            utils.save_to_json(params_dict, self.OUTPUT_PATH, "split_params_dict.json")
 
         # --- reload t_params
-        params_dict = utils.load_from_json(self.DATA_PATH, "split_params_dict.json")
+        params_dict = utils.load_from_json(self.OUTPUT_PATH, "split_params_dict.json")
         logger.info("%d Split params : " % len(params_dict))
         logger.info(params_dict)
 
@@ -98,11 +99,11 @@ class MeshSplitter:
             keys_of_matched_pairs = merge_clusters_saddle_point(zero_contours, saddle_vkeys=vkeys)
             zero_contours = cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs)
 
-            zero_contours.save_point_clusters_to_json(self.DATA_PATH, 'current_point_clusters.json')
+            zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'current_point_clusters.json')
 
             if zero_contours:
                 if self.parameters['create_intermediary_outputs']:
-                    zero_contours.save_point_clusters_to_json(self.DATA_PATH, 'point_clusters_%d.json' % int(i))
+                    zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters_%d.json' % int(i))
 
                 #  --- Create cut
                 logger.info("Creating cut on mesh")
@@ -113,7 +114,7 @@ class MeshSplitter:
                 #  --- Clean up
                 logger.info('Cleaning up the mesh. Welding and restoring attributes')
                 v_attributes_dict = save_vertex_attributes(self.mesh)
-                self.mesh = weld_mesh(self.mesh, self.DATA_PATH)
+                self.mesh = weld_mesh(self.mesh, self.OUTPUT_PATH)
                 restore_mesh_attributes(self.mesh, v_attributes_dict)
 
                 #  --- Update targets
@@ -172,7 +173,7 @@ class MeshSplitter:
         # except:
         #     logger.error("COULD NOT UNIFY MESH CYCLES!. Welding mesh and retrying")
         #     v_attributes_dict = save_vertex_attributes(self.mesh)
-        #     self.mesh = weld_mesh(self.mesh, self.DATA_PATH)
+        #     self.mesh = weld_mesh(self.mesh, self.OUTPUT_PATH)
         #     restore_mesh_attributes(self.mesh, v_attributes_dict)
         #     try:
         #         self.mesh.unify_cycles()
@@ -212,7 +213,7 @@ def get_t_list(n, start=0.03, end=1.0):
 ###############################################
 # --- Separate disconnected components
 
-def separate_disconnected_components(mesh, attr, values, DATA_PATH):
+def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
     v_attributes_dict = save_vertex_attributes(mesh)
 
     v, f = mesh.to_vertices_and_faces()
@@ -249,8 +250,8 @@ def separate_disconnected_components(mesh, attr, values, DATA_PATH):
         cut_mesh = Mesh.from_vertices_and_faces(v_cut, f_dict[component])
         cut_mesh.cull_vertices()
         if len(list(cut_mesh.faces())) > 2:
-            cut_mesh.to_obj(os.path.join(DATA_PATH, 'temp.obj'))
-            cut_mesh = Mesh.from_obj(os.path.join(DATA_PATH, 'temp.obj'))  # get rid of too many empty keys
+            cut_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))
+            cut_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # get rid of too many empty keys
             cut_meshes.append(cut_mesh)
 
     for mesh in cut_meshes:
@@ -301,15 +302,15 @@ def cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs):
 # --- Mesh welding and sanitizing
 
 
-def weld_mesh(mesh, DATA_PATH, precision='2f'):
+def weld_mesh(mesh, OUTPUT_PATH, precision='2f'):
     for f_key in mesh.faces():
         if len(mesh.face_vertices(f_key)) < 3:
             mesh.delete_face(f_key)
 
     welded_mesh = compas.datastructures.mesh_weld(mesh, precision=precision)
 
-    welded_mesh.to_obj(os.path.join(DATA_PATH, 'temp.obj'))  # make sure there's no empty fkeys
-    welded_mesh = Mesh.from_obj(os.path.join(DATA_PATH, 'temp.obj'))  # TODO: find a better way to do this
+    welded_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # make sure there's no empty fkeys
+    welded_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # TODO: find a better way to do this
 
     # try:
     welded_mesh.unify_cycles()

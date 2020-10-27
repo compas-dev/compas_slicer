@@ -12,11 +12,13 @@ from compas_slicer.print_organization import CurvedPrintOrganizer
 from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.pre_processing import move_mesh_to_point
 from compas_slicer.print_organization.print_organization_utilities import analysis
+import time
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_advanced_example')
+OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection.obj')
 # OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection_HIGH_RES.obj')
 
@@ -24,7 +26,9 @@ REGION_SPLIT = True
 SLICER = True
 PRINT_ORGANIZER = True
 
-if __name__ == "__main__":
+
+def main():
+    start_time = time.time()
 
     parameters = {
         'target_LOW_smooth': [True, 5],  # boolean, blend_radius
@@ -62,27 +66,27 @@ if __name__ == "__main__":
     # --- slicing
     if SLICER:
         slicers = []
-        filenames = utils.get_files_with_name('split_mesh_', '.json', DATA_PATH)
-        split_meshes = [Mesh.from_json(os.path.join(DATA_PATH, filename)) for filename in filenames]
+        filenames = utils.get_all_files_with_name('split_mesh_', '.json', OUTPUT_PATH)
+        split_meshes = [Mesh.from_json(os.path.join(OUTPUT_PATH, filename)) for filename in filenames]
         for i, split_mesh in enumerate(split_meshes):
             preprocessor_split = CurvedSlicingPreprocessor(split_mesh, parameters, DATA_PATH)
             preprocessor_split.create_compound_targets()
             preprocessor_split.scalar_field_evaluation(output_filename='gradient_norm_%d.json' % i)
 
-            slicer = CurvedSlicer(split_mesh, preprocessor_split, parameters, DATA_PATH)
+            slicer = CurvedSlicer(split_mesh, preprocessor_split, parameters)
             if i == 3:
                 slicer.n_multiplier = 0.85
             slicer.slice_model()
             simplify_paths_rdp(slicer, threshold=1.0)
-            utils.save_to_json(slicer.to_data(), DATA_PATH, 'curved_slicer_%d.json' % i)
+            utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer_%d.json' % i)
             slicers.append(slicer)
         # utils.interrupt()
 
     #########################################
     # --- print organization
     if PRINT_ORGANIZER:
-        filenames = utils.get_files_with_name('curved_slicer_', '.json', DATA_PATH)
-        slicers = [BaseSlicer.from_data(utils.load_from_json(DATA_PATH, filename)) for filename in filenames]
+        filenames = utils.get_all_files_with_name('curved_slicer_', '.json', OUTPUT_PATH)
+        slicers = [BaseSlicer.from_data(utils.load_from_json(OUTPUT_PATH, filename)) for filename in filenames]
         for i, slicer in enumerate(slicers):
             print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
             print_organizer.create_printpoints(mesh)
@@ -92,4 +96,11 @@ if __name__ == "__main__":
 
             ### --- Save printpoints dictionary to json file
             printpoints_data = print_organizer.output_printpoints_dict()
-            utils.save_to_json(printpoints_data, DATA_PATH, 'out_printpoints_%d.json' % i)
+            utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints_%d.json' % i)
+
+    end_time = time.time()
+    print("Total elapsed time", round(end_time - start_time, 2), "seconds")
+
+
+if __name__ == "__main__":
+    main()

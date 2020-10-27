@@ -1,15 +1,14 @@
 import numpy as np
 import math
 from compas.datastructures import Mesh
-from compas_slicer.utilities import TerminalCommand
-from compas_slicer.utilities import save_to_json
+import compas_slicer.utilities as utils
 import logging
 import networkx as nx
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
 from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances, \
     get_custom_HEAT_geodesic_distances
 
-packages = TerminalCommand('conda list').get_split_output_strings()
+packages = utils.TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
     import igl
 
@@ -34,6 +33,7 @@ class CompoundTarget:
         self.v_attr = v_attr
         self.value = value
         self.DATA_PATH = DATA_PATH
+        self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.is_smooth = is_smooth
         self.r = r
 
@@ -78,7 +78,7 @@ class CompoundTarget:
                                self.clustered_vkeys]
 
         elif self.geodesics_method == 'heat':
-            distances_lists = [get_custom_HEAT_geodesic_distances(self.mesh, vstarts, self.DATA_PATH,
+            distances_lists = [get_custom_HEAT_geodesic_distances(self.mesh, vstarts, self.OUTPUT_PATH,
                                                                   anisotropic_scaling=self.anisotropic_scaling)
                                for vstarts in self.clustered_vkeys]
         else:
@@ -170,7 +170,7 @@ class CompoundTarget:
     #############################
     #  ------ output
     def save_distances(self, name):
-        save_to_json(self.all_distances(), self.DATA_PATH, name)
+        utils.save_to_json(self.all_distances(), self.OUTPUT_PATH, name)
 
     def save_distances_clusters(self, name):
         clusters_distances = {}
@@ -181,16 +181,16 @@ class CompoundTarget:
             all_ds = self.all_clusters_distances(i)
             for j, d in enumerate(all_ds):
                 clusters_distances[j].append(d)
-        save_to_json(clusters_distances, self.DATA_PATH, name)
+        utils.save_to_json(clusters_distances, self.OUTPUT_PATH, name)
 
     def save_start_vertices(self, name):
-        save_to_json([int(vi) for vi in self.all_target_vkeys], self.DATA_PATH, name)
+        utils.save_to_json([int(vi) for vi in self.all_target_vkeys], self.OUTPUT_PATH, name)
 
     #############################
     #  ------ assign new Mesh
     def assign_new_mesh(self, mesh):
-        mesh.to_json(self.DATA_PATH + "/temp.obj")
-        mesh = Mesh.from_json(self.DATA_PATH + "/temp.obj")
+        mesh.to_json(self.OUTPUT_PATH + "/temp.obj")
+        mesh = Mesh.from_json(self.OUTPUT_PATH + "/temp.obj")
         self.mesh = mesh
         self.VN = len(list(self.mesh.vertices()))
 

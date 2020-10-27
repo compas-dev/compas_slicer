@@ -1,6 +1,6 @@
 from compas.geometry import distance_point_point
 from compas_slicer.geometry import VerticalLayer
-import compas_slicer.utilities as utils
+import numpy as np
 
 import logging
 
@@ -35,7 +35,7 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
             if len(segments[0].paths) == 0:  # first contour
                 current_segment = segments[0]
             else:  # find the candidate segment for new isocurve
-                contour_centroid = utils.get_average_point(path.points)
+                contour_centroid = list(np.average(np.array(path.points), axis=0))
                 other_centroids = get_segments_centroids_list(segments)
                 candidate_segment = segments[get_closest_pt_index(contour_centroid, other_centroids)]
                 if distance_point_point(candidate_segment.head_centroid, contour_centroid) < threshold:

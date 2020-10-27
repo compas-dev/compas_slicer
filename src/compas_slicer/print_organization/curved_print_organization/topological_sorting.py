@@ -199,6 +199,7 @@ class SegmentsDirectedGraph(DirectedGraph):
         self.segments = segments
         self.max_d_threshold = max_d_threshold
         self.DATA_PATH = DATA_PATH
+        self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         DirectedGraph.__init__(self)
 
     def find_roots(self):
@@ -221,11 +222,11 @@ class SegmentsDirectedGraph(DirectedGraph):
         root_segment = self.segments[root]
         root_last_crv_pts = root_segment.paths[-1].points
 
-        # utils.save_to_json(utils.point_list_to_dict(root_last_crv_pts), self.DATA_PATH, 'root_last_crv_pts.json')
+        # utils.save_to_json(utils.point_list_to_dict(root_last_crv_pts), self.OUTPUT_PATH, 'root_last_crv_pts.json')
         for i, segment in enumerate(self.segments):
             if i != root:
                 segment_first_curve_pts = segment.paths[0].points
-                # utils.save_to_json(utils.point_list_to_dict(segment_first_curve_pts), self.DATA_PATH,
+                # utils.save_to_json(utils.point_list_to_dict(segment_first_curve_pts), self.OUTPUT_PATH,
                 #                    'segment_first_curve_pts.json')
                 # utils.interrupt()
 

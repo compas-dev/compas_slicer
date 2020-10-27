@@ -10,15 +10,15 @@ import numpy as np
 
 logger = logging.getLogger('logger')
 
-__all__ = ['save_to_json',
+__all__ = ['get_output_directory',
+           'save_to_json',
            'load_from_json',
-           'get_average_point',
            'total_length_of_dictionary',
            'flattened_list_of_dictionary',
            'interrupt',
            'point_list_to_dict',
            'get_closest_mesh_vkey',
-           'get_closest_mesh_normal',
+           'get_closest_mesh_normal_to_pt',
            'get_closest_pt_index',
            'get_closest_pt',
            'plot_networkx_graph',
@@ -27,25 +27,27 @@ __all__ = ['save_to_json',
            'get_closest_mesh_normal_to_pt',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
-           'get_files_with_name']
+           'get_all_files_with_name']
 
 
-def get_average_point(points):
+def get_output_directory(path):
     """
-    Docstring to be added.
+    Checks if a directory with the name 'output' exists in the path. If not it creates it.
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
-    """
+    path : string
+        The path where the 'output' directory will be created
 
-    x_mean = statistics.mean([p[0] for p in points])
-    y_mean = statistics.mean([p[1] for p in points])
-    z_mean = statistics.mean([p[2] for p in points])
-    return [x_mean, y_mean, z_mean]
+    Returns
+    ----------
+    path : string
+        The path to the new (or already existing) 'output' directory
+    """
+    output_dir = os.path.join(path, 'output')
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+    return output_dir
 
 
 def get_closest_pt_index(pt, pts):
@@ -165,7 +167,7 @@ def check_triangular_mesh(mesh):
             raise TypeError("Found a quad at face key: " + str(f_key) + " ,number of face vertices:" + str(
                 len(vs)) + ". \nOnly triangular meshes supported.")
 
-import compas
+
 def get_closest_mesh_vkey(mesh, pt):
     """
     Docstring to be added.
@@ -179,7 +181,6 @@ def get_closest_mesh_vkey(mesh, pt):
     """
     # cloud = [Point(data['x'], data['y'], data['z']) for v_key, data in mesh.vertices(data=True)]
     # closest_index = compas.geometry.closest_point_in_cloud(pt, cloud)[2]
-
     vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
     vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(pt, v_tupple[1]))
     closest_vkey = vertex_tupples[0][0]
@@ -187,7 +188,7 @@ def get_closest_mesh_vkey(mesh, pt):
     return closest_vkey
 
 
-def get_closest_mesh_normal(mesh, pt):
+def get_closest_mesh_normal_to_pt(mesh, pt):
     """
     Docstring to be added.
 
@@ -221,27 +222,6 @@ def get_mesh_vertex_coords_with_attribute(mesh, attr, value):
         if data[attr] == value:
             pts.append(mesh.vertex_coordinates(vkey))
     return pts
-
-
-def get_closest_mesh_normal_to_pt(pt, mesh):
-    """
-    Docstring to be added.
-
-    Attributes
-    ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
-    """
-
-    vertices = np.array(mesh.vertices_attributes('xyz'))
-    key_index_dict = mesh.key_index()
-    closest_index = closest_point_in_cloud(point=pt, cloud=vertices)[2]
-    closest_vkey = get_dict_key_from_value(dictionary=key_index_dict,
-                                           val=closest_index)  # because key_index_dict[closest_vkey] = closest_index
-    n = mesh.vertex_normal(closest_vkey)
-    return Vector(n[0], n[1], n[2])
 
 
 def get_normal_of_path_on_xy_plane(k, point, path, mesh):
@@ -286,15 +266,6 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     return normal
 
 
-# def get_existing_values_of_vertex_attribute(mesh, attribute):
-#     values = []
-#     for vkey, data in mesh.vertices(data=True):
-#         if data[attribute] not in values:
-#             values.append(data[attribute])
-#     values = sorted(values)
-#     return values
-
-
 #######################################
 #  networkx graph
 
@@ -320,14 +291,11 @@ def plot_networkx_graph(G):
 
 def point_list_to_dict(pts_list):
     """
-    Docstring to be added.
+    Turns a list of compas.geometry.Point into a dictionary, so that it can be saved to Json.
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    pts_list : list, compas.geometry.Point
     """
 
     data = {}
@@ -339,14 +307,16 @@ def point_list_to_dict(pts_list):
 #  --- Length of dictionary
 def total_length_of_dictionary(dictionary):
     """
-    Docstring to be added.
+    Measures the total length of all the components of a dictionary
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    dictionary : dict
+
+    Returns
+    ----------
+    float, total length of dictionary
+
     """
 
     total_length = 0
@@ -418,7 +388,7 @@ def interrupt():
 #######################################
 #  load all files with name
 
-def get_files_with_name(startswith, endswith, DATA_PATH):
+def get_all_files_with_name(startswith, endswith, DATA_PATH):
     files = []
     for file in os.listdir(DATA_PATH):
         if file.startswith(startswith) and file.endswith(endswith):

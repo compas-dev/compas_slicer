@@ -22,11 +22,10 @@ class CurvedSlicer(BaseSlicer):
     parameters :
     """
 
-    def __init__(self, mesh, preprocessor, parameters, DATA_PATH):
+    def __init__(self, mesh, preprocessor, parameters):
         BaseSlicer.__init__(self, mesh)
         assert len(list(mesh.vertices())) == len(list(preprocessor.mesh.vertices()))
 
-        self.DATA_PATH = DATA_PATH
         self.parameters = parameters
         self.preprocessor = preprocessor
         self.n_multiplier = 1.0
