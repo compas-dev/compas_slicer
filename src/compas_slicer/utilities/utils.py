@@ -165,7 +165,7 @@ def check_triangular_mesh(mesh):
             raise TypeError("Found a quad at face key: " + str(f_key) + " ,number of face vertices:" + str(
                 len(vs)) + ". \nOnly triangular meshes supported.")
 
-
+import compas
 def get_closest_mesh_vkey(mesh, pt):
     """
     Docstring to be added.
@@ -177,10 +177,13 @@ def get_closest_mesh_vkey(mesh, pt):
     xx : xx
         xx
     """
+    # cloud = [Point(data['x'], data['y'], data['z']) for v_key, data in mesh.vertices(data=True)]
+    # closest_index = compas.geometry.closest_point_in_cloud(pt, cloud)[2]
 
     vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
     vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(pt, v_tupple[1]))
     closest_vkey = vertex_tupples[0][0]
+
     return closest_vkey
 
 
