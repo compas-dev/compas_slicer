@@ -15,7 +15,7 @@ def get_closest_vkeys(ppts, mesh):
     closest_vkeys = []
     with progressbar.ProgressBar(max_value=len(ppts)) as bar:
         for i, ppt in enumerate(ppts):
-            closest_vkeys.append(utils.get_closest_mesh_vkey(mesh, ppt.pt))
+            closest_vkeys.append(utils.get_closest_mesh_vkey_to_pt(mesh, ppt.pt))
             bar.update(i)
     return closest_vkeys
 
@@ -26,7 +26,7 @@ def get_closest_vkeys(ppts, mesh):
 #     mesh = target.mesh
 #     with progressbar.ProgressBar(max_value=len(ppts)) as bar:
 #         for i, ppt in enumerate(ppts):
-#             closest_vkey = utils.get_closest_mesh_vkey(mesh, ppt.pt)
+#             closest_vkey = utils.get_closest_mesh_vkey_to_pt(mesh, ppt.pt)
 #             ppts_tupples.append((ppt, closest_vkey, target.distance(closest_vkey)))
 #             bar.update(i)
 #

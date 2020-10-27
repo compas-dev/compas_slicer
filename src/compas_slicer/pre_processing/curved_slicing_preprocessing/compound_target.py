@@ -151,12 +151,10 @@ class CompoundTarget:
         return d
 
     def all_distances(self):
-        if self.is_smooth:
-            return [self.smooth_union(i) for i in range(self.VN)]
-        else:
-            return [self.union(i) for i in range(self.VN)]
+        return [self.distance(i) for i in range(self.VN)]
 
     def laplacian_smoothing_of_all_distances(self, iterations, lamda):
+        logger.info('Laplacian smoothing of all distances')
         v, f = self.mesh.to_vertices_and_faces()
         L = igl.cotmatrix(np.array(v), np.array(f))
 
