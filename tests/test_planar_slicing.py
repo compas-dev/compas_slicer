@@ -5,7 +5,7 @@ from compas.datastructures import Mesh
 from compas_slicer.slicers import PlanarSlicer
 
 DATA = os.path.join(os.path.dirname(__file__), '..', 'data/test_geometries')
-FILE = os.path.abspath(os.path.join(DATA, 'cylinder.obj'))
+FILE = os.path.abspath(os.path.join(DATA, 'simple_cylinder_closed_mid_res.obj'))
 
 compas_mesh = Mesh.from_obj(os.path.join(DATA, FILE))
 layer_height = 15.0
