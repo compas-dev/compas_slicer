@@ -18,11 +18,11 @@ class BaseSlicer(object):
     """
     The BaseSlicer class is an organizational class that holds all the information for the slice process
     This class is meant to be extended for the implementation of the various slicers.
-    See PlanarSlicer and CurvedSlicer as examples.
+    See :class:`compas.slicer.slicers.PlanarSlicer` and :class:`compas.slicer.slicers.CurvedSlicer` as examples.
 
     Attributes
     ----------
-    mesh : compas.datastructures.Mesh
+    mesh: :class:`compas.datastructures.Mesh`
         Input mesh, has to be a triangular mesh (i.e. no quads or n-gons allowed)
     """
 
@@ -43,6 +43,7 @@ class BaseSlicer(object):
 
     @property
     def total_number_of_points(self):
+        """int: Total number of points in the slicer."""
         total_number_of_pts = 0
         for layer in self.layers:
             for path in layer.paths:
@@ -63,6 +64,8 @@ class BaseSlicer(object):
     #  --- Functions
 
     def slice_model(self, *args, **kwargs):
+        """Slices the model and applies standard post-processing (seams_align and unify_paths)."""
+
         start_time = time.time()  # time measurement
         self.generate_paths()
         end_time = time.time()
@@ -75,6 +78,8 @@ class BaseSlicer(object):
         raise NotImplementedError
 
     def post_processing(self):
+        """Applies standard post-processing operations: seams_align and unify_paths."""
+
         #  --- Align the seams between layers and unify orientation
         seams_align(self, align_with='x_axis')
         unify_paths_orientation(self)
@@ -86,6 +91,8 @@ class BaseSlicer(object):
     #  --- Output
 
     def printout_info(self):
+        """Prints out information from the slicing process."""
+
         open_paths = 0
         closed_paths = 0
         total_number_of_pts = 0
@@ -108,6 +115,25 @@ class BaseSlicer(object):
         print("")
 
     def visualize_on_viewer(self, viewer, visualize_mesh=False, visualize_paths=True):
+        """Visualizes slicing result using compas.viewers.
+
+         Parameters
+        ----------
+        viewer: :class:`compas_viewers.objectviewer.Objectviewer`
+            An instance of the Objectviewer class.
+        visualize_mesh: bool, optional
+            True to visualize mesh, False to not.
+        visualize_paths: bool, optional
+            True to visualize paths, False to not.
+
+        Examples
+        --------
+        >>> from compas_viewers.objectviewer import ObjectViewer
+        >>> viewer = ObjectViewer()
+        >>> viewer.view.use_shaders = False
+        >>> slicer.visualize_on_viewer(viewer)
+        """
+
         if visualize_mesh:
             viewer.add(self.mesh, settings={'color': '#ff0000',
                                             'opacity': 0.4, })
@@ -131,6 +157,19 @@ class BaseSlicer(object):
 
     @classmethod
     def from_data(cls, data):
+        """Construct a slicer from its data representation.
+
+        Parameters
+        ----------
+        data: dict
+            The data dictionary.
+
+        Returns
+        -------
+        layer
+            The constructed slicer.
+
+        """
         mesh = Mesh.from_data(data['mesh'])
         slicer = cls(mesh)
         layers_data = data['layers']
@@ -142,9 +181,18 @@ class BaseSlicer(object):
         return slicer
 
     def to_json(self, filepath, name):
+        """Writes the slicer to a JSON file."""
         utils.save_to_json(self.to_data(), filepath, name)
 
     def to_data(self):
+        """Returns a dictionary of structured data representing the data structure.
+
+        Returns
+        -------
+        dict
+            The slicers's data.
+
+        """
         data = {'layers': self.get_layers_dict(),
                 'mesh': self.mesh.to_data(),
                 'layer_height': self.layer_height}

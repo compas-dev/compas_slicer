@@ -16,11 +16,12 @@ def simplify_paths_rdp(slicer, threshold):
 
     Parameters
     ----------
-    slicer : compas_slicer.slicers
+    slicer: :class:`compas_slicer.slicers.BaseSlicer`
         An instance of one of the compas_slicer.slicers classes.
-    threshold : float
+    threshold: float
         Controls the degree of polyline simplification.
         Low threshold removes few points, high threshold removes many points.
+
     """
 
     logger.info("Paths simplification rdp")

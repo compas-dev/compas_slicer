@@ -18,16 +18,17 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
 
     Parameters
     ----------
-    slicer : compas_slicer.slicers.PlanarSlicer
+    slicer: :class:`compas_slicer.slicers.PlanarSlicer`
         An instance of the compas_slicer.slicers.PlanarSlicer class
-    layer_width : float
+    layer_width: float
         A number representing the distance between brim contours
         (typically the width of a layer)
-    number_of_brim_paths : int
+    number_of_brim_paths: int
         Number of brim paths to add.
 
     Returns
-    ---------
+    -------
+    None
 
     """
     logger.info(
@@ -67,9 +68,6 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
                 z = path.points[0][2]
 
                 clipper_points_per_brim_path.append(Point(x, y, z))
-
-            #  adds first point again to form a closed polygon since clipper removes this point
-            clipper_points_per_brim_path = clipper_points_per_brim_path + [clipper_points_per_brim_path[0]]
 
             #  create a path per brim contour
             new_path = Path(points=clipper_points_per_brim_path, is_closed=True)

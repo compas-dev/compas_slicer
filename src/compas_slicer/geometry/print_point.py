@@ -70,6 +70,14 @@ class PrintPoint(object):
     #################################
     #  --- To data , from data
     def to_data(self):
+        """Returns a dictionary of structured data representing the data structure.
+
+        Returns
+        -------
+        dict
+            The PrintPoints's data.
+
+        """
         point = {
             "point": [self.pt[0], self.pt[1], self.pt[2]],
             "up_vector": self.up_vector.to_data(),
@@ -85,6 +93,20 @@ class PrintPoint(object):
 
     @classmethod
     def from_data(cls, data):
+        """Construct a PrintPoint from its data representation.
+
+        Parameters
+        ----------
+        data: dict
+            The data dictionary.
+
+        Returns
+        -------
+        layer
+            The constructed PrintPoint.
+
+        """
+
         pp = cls(pt=Point(data['point'][0], data['point'][1], data['point'][2]),
                  layer_height=data['layer_height'], mesh_normal=data['mesh_normal'].from_data(),
                  up_vector=Vector.from_data(data['up_vector']))

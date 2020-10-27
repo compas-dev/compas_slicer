@@ -23,9 +23,11 @@
       ~CurvedPrintOrganizer.get_printpoint_neighboring_items
       ~CurvedPrintOrganizer.number_of_paths_on_layer
       ~CurvedPrintOrganizer.output_printpoints_dict
+      ~CurvedPrintOrganizer.override_extruder_toggle
       ~CurvedPrintOrganizer.remove_duplicate_points_in_path
       ~CurvedPrintOrganizer.set_extruder_toggle
       ~CurvedPrintOrganizer.set_linear_velocity
+      ~CurvedPrintOrganizer.set_wait_time
       ~CurvedPrintOrganizer.topological_sorting
       ~CurvedPrintOrganizer.visualize_on_viewer
    

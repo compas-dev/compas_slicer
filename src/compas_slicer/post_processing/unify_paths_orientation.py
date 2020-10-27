@@ -13,8 +13,8 @@ def unify_paths_orientation(slicer):
 
     Parameters
     ----------
-    slicer : compas_slicer.slicers.BaseSlicer
-        An instance of the compas_slicer.slicers.PlanarSlicer class.
+    slicer: :class:`compas_slicer.slicers.BaseSlicer`
+        An instance of one of the compas_slicer.slicers classes.
     """
 
     for i, layer in enumerate(slicer.layers):

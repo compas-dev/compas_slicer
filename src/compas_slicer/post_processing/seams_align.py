@@ -13,15 +13,19 @@ def seams_align(slicer, align_with="next_path"):
 
     Parameters
     ----------
-    slicer : compas_slicer.slicers
-        A compas_slicer.slicers instance
-    align_with : str or compas.geometry.Point
+    slicer: :class:`compas_slicer.slicers.BaseSlicer`
+        An instance of one of the compas_slicer.slicers classes.
+    align_with: str or :class:`compas.geometry.Point`
         Direction to orient the seams in.
         next_path    = orients the seam to the next path
         origin       = orients the seam to the origin (0,0,0)
         x_axis       = orients the seam to the x_axis
         y_axis       = orients the seam to the y_axis
         Point(x,y,z) = orients the seam according to the given point
+
+    Returns
+    -------
+    None
     """
     #  TODO: Implement random seams
     logger.info("Aligning seams to: %s" % align_with)
@@ -33,13 +37,20 @@ def seams_align(slicer, align_with="next_path"):
 
             if align_seams_for_current_path:
                 #  get the points of the current layer and path
-                path_to_change = slicer.layers[i].paths[j].points
+                path_to_change = layer.paths[j].points
+
+                # check if start- and end-points are the same point
+                if path_to_change[0] == path_to_change[-1]:
+                    first_last_point_the_same = True
+                    # if they are, remove the last point
+                    path_to_change.pop(-1)
+                else:
+                    first_last_point_the_same = False
 
                 if align_with == "next_path":
                     pt_to_align_with = None  # make sure aligning point is cleared
 
                     #  determines the correct point to align the current layer with
-
                     if len(layer.paths) == 1 and i == 0:
                         #  if ONE PATH and FIRST LAYER
                         #  >>> align with second layer
@@ -79,7 +90,12 @@ def seams_align(slicer, align_with="next_path"):
                 #  shifts the list by the distance determined
                 shift_list = path_to_change[new_start_index:] + path_to_change[:new_start_index]
                 #  shifts the list by the distance determined
-                layer.paths[j].points = shift_list + [shift_list[0]]
+                # layer.paths[j].points = shift_list
+
+                if first_last_point_the_same:
+                    shift_list = shift_list + [shift_list[0]]
+
+                layer.paths[j].points = shift_list
 
 
 if __name__ == "__main__":
