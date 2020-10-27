@@ -21,7 +21,7 @@ __all__ = ['MeshSplitter',
 
 RECOMPUTE_T_PARAMETERS = True
 T_SEARCH_RESOLUTION = 9000
-HIT_THRESHOLD = 0.001
+HIT_THRESHOLD = 0.01
 
 
 class MeshSplitter:
@@ -154,11 +154,11 @@ class MeshSplitter:
                 v_new = self.mesh.add_vertex(x=p[0], y=p[1], z=p[2], attr_dict={'cut': cut_index})
 
                 # remove and add faces
-                # try:
-                self.mesh.delete_face(fkey_common)
-                self.mesh.add_face([vkey_common, v_new, v0])
-                self.mesh.add_face([v_new, v_other_a, v0])
-                self.mesh.add_face([v_other_b, v_other_a, v_new])
+                if fkey_common in list(self.mesh.faces()):
+                    self.mesh.delete_face(fkey_common)
+                    self.mesh.add_face([vkey_common, v_new, v0])
+                    self.mesh.add_face([v_new, v_other_a, v0])
+                    self.mesh.add_face([v_other_b, v_other_a, v_new])
                 # except:
                 #     logger.info('Did not need to remove face.')
                 v0 = v_new
@@ -167,7 +167,8 @@ class MeshSplitter:
 
         # try:
         self.mesh.unify_cycles()
-        assert self.mesh.is_valid()
+        if not self.mesh.is_valid():
+            logger.warning('Attention! Mesh is NOT valid!')
         # except:
         #     logger.error("COULD NOT UNIFY MESH CYCLES!. Welding mesh and retrying")
         #     v_attributes_dict = save_vertex_attributes(self.mesh)
