@@ -1,8 +1,7 @@
 import os
 from compas.datastructures import Mesh
 from compas.geometry import Point
-
-from compas_slicer.utilities import save_to_json
+import compas_slicer.utilities as utils
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import PrintOrganizer
@@ -13,18 +12,22 @@ import time
 
 ######################## Logging
 import logging
+
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ########################
 
 DATA = os.path.join(os.path.dirname(__file__), 'data')
+OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
 MODEL = 'simple_vase.obj'
-# MODEL = 'cylinder_uneven.obj'
 
-start_time = time.time()
+
+# MODEL = 'cylinder_uneven.obj'
 
 
 def main():
+    start_time = time.time()
+
     ### --- Load stl
     compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
 
@@ -51,15 +54,11 @@ def main():
     ### --- Prints out the info of the slicer
     slicer.printout_info()
 
-    end_time = time.time()
-    print("Total elapsed time", round(end_time - start_time, 2), "seconds")
-
     viewer = ObjectViewer()
     viewer.view.use_shaders = False
     slicer.visualize_on_viewer(viewer)
 
-    save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
-
+    utils.save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
 
     ### --- Fabrication - related information
     print_organizer = PrintOrganizer(slicer)
@@ -70,11 +69,14 @@ def main():
 
     ### --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()
-    save_to_json(printpoints_data, DATA, 'out_printpoints.json')
+    utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints.json')
 
     print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
     viewer.update()
     viewer.show()
+
+    end_time = time.time()
+    print("Total elapsed time", round(end_time - start_time, 2), "seconds")
 
 
 if __name__ == "__main__":

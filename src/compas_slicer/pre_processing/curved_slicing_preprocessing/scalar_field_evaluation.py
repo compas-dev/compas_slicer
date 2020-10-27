@@ -28,10 +28,11 @@ class ScalarFieldEvaluation:
         face_gradient = compute_face_gradient(self.mesh, u_v)
         vertex_gradient = compute_vertex_gradient(self.mesh, face_gradient)
 
-        self.face_scalars_flattened = [np.linalg.norm(face_gradient[i])
-                                       for i, fkey in enumerate(self.mesh.faces())]
-        self.vertex_scalars_flattened = [np.linalg.norm(vertex_gradient[i])
-                                         for i, vkey in enumerate(self.mesh.vertices())]
+        logger.info('Computing norm of gradient')
+        f_g = np.array([face_gradient[i] for i, fkey in enumerate(self.mesh.faces())])
+        v_g = np.array([vertex_gradient[i] for i, vkey in enumerate(self.mesh.vertices())])
+        self.face_scalars_flattened = list(np.linalg.norm(f_g, axis=1))
+        self.vertex_scalars_flattened = list(np.linalg.norm(v_g, axis=1))
 
     #####################################
     # --- Critical Points
@@ -77,6 +78,7 @@ def count_sign_changes(values):
 
 
 def compute_vertex_gradient(mesh, face_gradient):
+    logger.info('Computing per vertex gradient')
     vertex_gradient = []
     for v_key in mesh.vertices():
         faces_total_area = 0
@@ -100,6 +102,7 @@ def compute_edge_gradient(mesh, vertex_gradient):
 
 def compute_face_gradient(mesh, u):
     """ u is given per vertex """
+    logger.info('Computing per face gradient')
     grad = []
     for fkey in mesh.faces():
         A = mesh.face_area(fkey)

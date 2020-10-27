@@ -22,6 +22,7 @@ class CurvedSlicingPreprocessor:
         self.mesh = mesh
         self.parameters = parameters
         self.DATA_PATH = DATA_PATH
+        self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.target_LOW = None
         self.target_HIGH = None
         self.sf_evaluation = None
@@ -42,20 +43,25 @@ class CurvedSlicingPreprocessor:
             self.target_LOW.save_distances("distances_LOW.json")
             self.target_HIGH.save_distances("distances_HIGH.json")
             self.target_HIGH.save_distances_clusters("distances_clusters_HIGH.json")
-            utils.save_to_json(self.target_HIGH.t_end_per_cluster, self.DATA_PATH, "t_end_per_cluster_HIGH.json")
+            utils.save_to_json(self.target_HIGH.t_end_per_cluster, self.OUTPUT_PATH, "t_end_per_cluster_HIGH.json")
 
     def scalar_field_evaluation(self, output_filename):
+        """
+        Creates a ScalarFieldEvaluation that is saved in self.sf_evaluation
+        Computes the gradient norm
+        Saves it to Json on the output_filename
+        """
         self.sf_evaluation = ScalarFieldEvaluation(self.mesh, self.target_LOW, self.target_HIGH)
         self.sf_evaluation.compute_norm_of_gradient()
         if self.parameters['create_intermediary_outputs']:
-            utils.save_to_json(self.sf_evaluation.vertex_scalars_flattened, self.DATA_PATH, output_filename)
+            utils.save_to_json(self.sf_evaluation.vertex_scalars_flattened, self.OUTPUT_PATH, output_filename)
 
     def find_critical_points(self, output_filenames):
         self.sf_evaluation.find_critical_points()
         if self.parameters['create_intermediary_outputs']:
-            utils.save_to_json(self.sf_evaluation.minima, self.DATA_PATH, output_filenames[0])
-            utils.save_to_json(self.sf_evaluation.maxima, self.DATA_PATH, output_filenames[1])
-            utils.save_to_json(self.sf_evaluation.saddles, self.DATA_PATH, output_filenames[2])
+            utils.save_to_json(self.sf_evaluation.minima, self.OUTPUT_PATH, output_filenames[0])
+            utils.save_to_json(self.sf_evaluation.maxima, self.OUTPUT_PATH, output_filenames[1])
+            utils.save_to_json(self.sf_evaluation.saddles, self.OUTPUT_PATH, output_filenames[2])
 
     ###########################
     # --- Region Split
@@ -77,23 +83,23 @@ class CurvedSlicingPreprocessor:
             logger.info('Completed Region splitting')
             logger.info("Region split cut indices: " + str(mesh_splitter.cut_indices))
             if self.parameters['create_intermediary_outputs']:
-                self.mesh.to_obj(os.path.join(self.DATA_PATH, 'mesh_with_cuts.obj'))
-                self.mesh.to_json(os.path.join(self.DATA_PATH, 'mesh_with_cuts.json'))
-                logger.info("Saving to Obj and Json: " + os.path.join(self.DATA_PATH, 'mesh_with_cuts.json'))
+                self.mesh.to_obj(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.obj'))
+                self.mesh.to_json(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
+                logger.info("Saving to Obj and Json: " + os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
 
         if SEPARATE_NEIGHBORHOODS:
             print("")
             logger.info("--- Separating mesh disconnected components")
-            self.mesh = Mesh.from_json(os.path.join(self.DATA_PATH, 'mesh_with_cuts.json'))
+            self.mesh = Mesh.from_json(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
             region_split_cut_indices = get_existing_cut_indices(self.mesh)
 
             if self.parameters['create_intermediary_outputs']:
                 utils.save_to_json(get_vertices_that_belong_to_cuts(self.mesh, region_split_cut_indices),
-                                   self.DATA_PATH, "vertices_on_cuts.json")
+                                   self.OUTPUT_PATH, "vertices_on_cuts.json")
 
             self.split_meshes = rs.separate_disconnected_components(self.mesh, attr='cut',
                                                                     values=region_split_cut_indices,
-                                                                    DATA_PATH=self.DATA_PATH)
+                                                                    OUTPUT_PATH=self.OUTPUT_PATH)
             logger.info('Created %d split meshes.' % len(self.split_meshes))
 
         if TOPOLOGICAL_SORTING:
@@ -113,9 +119,9 @@ class CurvedSlicingPreprocessor:
             print("")
             logger.info("--- Saving resulting split meshes")
             for i, m in enumerate(self.split_meshes):
-                m.to_obj(os.path.join(self.DATA_PATH, 'split_mesh_' + str(i) + '.obj'))
-                m.to_json(os.path.join(self.DATA_PATH, 'split_mesh_' + str(i) + '.json'))
-            logger.info('Saving to Obj and Json: ' + os.path.join(self.DATA_PATH, 'split_mesh_%.obj'))
+                m.to_obj(os.path.join(self.OUTPUT_PATH, 'split_mesh_' + str(i) + '.obj'))
+                m.to_json(os.path.join(self.OUTPUT_PATH, 'split_mesh_' + str(i) + '.json'))
+            logger.info('Saving to Obj and Json: ' + os.path.join(self.OUTPUT_PATH, 'split_mesh_%.obj'))
             logger.info("Saved %d split_meshes" % len(self.split_meshes))
             print('')
 
@@ -132,7 +138,7 @@ class CurvedSlicingPreprocessor:
             if self.parameters['create_intermediary_outputs']:
                 pts_boundary_LOW = utils.get_mesh_vertex_coords_with_attribute(mesh, 'boundary', 1)
                 pts_boundary_HIGH = utils.get_mesh_vertex_coords_with_attribute(mesh, 'boundary', 2)
-                utils.save_to_json(utils.point_list_to_dict(pts_boundary_LOW), self.DATA_PATH,
+                utils.save_to_json(utils.point_list_to_dict(pts_boundary_LOW), self.OUTPUT_PATH,
                                    'pts_boundary_LOW_%d.json' % index)
-                utils.save_to_json(utils.point_list_to_dict(pts_boundary_HIGH), self.DATA_PATH,
+                utils.save_to_json(utils.point_list_to_dict(pts_boundary_HIGH), self.OUTPUT_PATH,
                                    'pts_boundary_HIGH_%d.json' % index)

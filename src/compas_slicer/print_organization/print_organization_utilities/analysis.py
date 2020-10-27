@@ -8,7 +8,7 @@ import progressbar
 logger = logging.getLogger('logger')
 __all__ = ['plot_layer_heights_variance',
            'compare_values_in_plot',
-           'save_sorted_ppts_based_on_distance_from_target']
+           'get_closest_vkeys']
 
 
 def get_closest_vkeys(ppts, mesh):
@@ -20,25 +20,25 @@ def get_closest_vkeys(ppts, mesh):
     return closest_vkeys
 
 
-def save_sorted_ppts_based_on_distance_from_target(ppts, target, path, filename):
-    logger.info('Sorting printpoints according to geodesic distance from target')
-    ppts_tupples = []
-    mesh = target.mesh
-    with progressbar.ProgressBar(max_value=len(ppts)) as bar:
-        for i, ppt in enumerate(ppts):
-            closest_vkey = utils.get_closest_mesh_vkey(mesh, ppt.pt)
-            ppts_tupples.append((ppt, closest_vkey, target.distance(closest_vkey)))
-            bar.update(i)
-
-    ppts_tupples = sorted(ppts_tupples, key=lambda v_tupple: v_tupple[2])
-    ppts = [t[0] for t in ppts_tupples]
-    closest_vkeys = [t[1] for t in ppts_tupples]
-
-    data = {
-        'ppts': {i: pp.to_data() for i, pp in enumerate(ppts)},
-        'closest_vkeys': {i: vkey for i, vkey in enumerate(closest_vkeys)}
-    }
-    utils.save_to_json(data, path, filename)
+# def save_sorted_ppts_based_on_distance_from_target(ppts, target, path, filename):
+#     logger.info('Sorting printpoints according to geodesic distance from target')
+#     ppts_tupples = []
+#     mesh = target.mesh
+#     with progressbar.ProgressBar(max_value=len(ppts)) as bar:
+#         for i, ppt in enumerate(ppts):
+#             closest_vkey = utils.get_closest_mesh_vkey(mesh, ppt.pt)
+#             ppts_tupples.append((ppt, closest_vkey, target.distance(closest_vkey)))
+#             bar.update(i)
+#
+#     ppts_tupples = sorted(ppts_tupples, key=lambda v_tupple: v_tupple[2])
+#     ppts = [t[0] for t in ppts_tupples]
+#     closest_vkeys = [t[1] for t in ppts_tupples]
+#
+#     data = {
+#         'ppts': {i: pp.to_data() for i, pp in enumerate(ppts)},
+#         'closest_vkeys': {i: vkey for i, vkey in enumerate(closest_vkeys)}
+#     }
+#     utils.save_to_json(data, path, filename)
 
 
 def plot_layer_heights_variance(ppts_layer_heights, label):

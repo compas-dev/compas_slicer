@@ -1,4 +1,3 @@
-*.json
 *.psd
 *.gcode
 .gcode
@@ -142,3 +141,4 @@ dmypy.json
 .idea/
 
 private/
+output/
