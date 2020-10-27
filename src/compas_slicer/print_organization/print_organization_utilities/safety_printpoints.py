@@ -9,10 +9,10 @@ def add_safety_printpoints(printpoints_dict, z_hop=20):
 
     Parameters
     ----------
-    printpoints_dict : dictionary
-        The PrintPoints as a dictionary.
-    z_hop : float
-        The value (in mm) to use for the height of the safety command.
+    printpoints_dict: dictionary of :class:`compas.slicer.geometry.PrintPoint`
+        Dictionary of PrintPoints.
+    slicer: :class:`compas_slicer.slicers.BaseSlicer`
+        An instance of one of the compas_slicer.slicers classes.
     """
     print_points_copy_dict = {}  # should not be altering the dict that we are iterating through > copy
 

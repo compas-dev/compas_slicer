@@ -23,10 +23,7 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
     max_layers_per_segment: int
         Maximum number of layers that a segment can consist of
         If None, then the segment has unlimited number of layers
-    
-    Returns
-    -------
-    None
+
     """
     logger.info("Sorting per segment")
 

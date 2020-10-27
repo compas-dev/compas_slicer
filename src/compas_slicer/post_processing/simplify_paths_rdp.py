@@ -22,9 +22,6 @@ def simplify_paths_rdp(slicer, threshold):
         Controls the degree of polyline simplification.
         Low threshold removes few points, high threshold removes many points.
 
-    Returns
-    -------
-    None
     """
 
     logger.info("Paths simplification rdp")

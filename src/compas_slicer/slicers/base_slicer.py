@@ -157,6 +157,19 @@ class BaseSlicer(object):
 
     @classmethod
     def from_data(cls, data):
+        """Construct a slicer from its data representation.
+
+        Parameters
+        ----------
+        data: dict
+            The data dictionary.
+
+        Returns
+        -------
+        layer
+            The constructed slicer.
+
+        """
         mesh = Mesh.from_data(data['mesh'])
         slicer = cls(mesh)
         layers_data = data['layers']
@@ -172,6 +185,14 @@ class BaseSlicer(object):
         utils.save_to_json(self.to_data(), filepath, name)
 
     def to_data(self):
+        """Returns a dictionary of structured data representing the data structure.
+
+        Returns
+        -------
+        dict
+            The slicers's data.
+
+        """
         data = {'layers': self.get_layers_dict(),
                 'mesh': self.mesh.to_data(),
                 'layer_height': self.layer_height}

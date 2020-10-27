@@ -30,17 +30,6 @@ utils
     smooth_vectors
     get_normal_of_path_on_xy_plane
 
-
-geodesics
-=========
-
-.. autosummary::
-    :toctree: generated/
-    :nosignatures:
-
-    get_igl_EXACT_geodesic_distances
-    get_custom_HEAT_geodesic_distances
-
 """
 
 from __future__ import absolute_import

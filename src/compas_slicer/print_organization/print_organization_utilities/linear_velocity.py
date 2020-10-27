@@ -7,11 +7,23 @@ __all__ = ['set_linear_velocity']
 
 
 def set_linear_velocity(printpoints_dict, velocity_type, v=25, per_layer_velocities=None):
-    """ Sets the linear velocity parameter of the printpoints depending on the selected type .
+    """ Sets the linear velocity parameter of the printpoints depending on the selected type.
+
     Parameters
     ----------
-    param : type
-        Explanation sentence.
+    printpoints_dict: dictionary of :class:`compas.slicer.geometry.PrintPoint`
+        Dictionary of PrintPoints
+    v: float
+        Velocity value to set for printpoints.
+    velocity_type: str
+        Determines how to add linear velocity to the printpoints.
+
+        constant:              one value used for all printpoints
+        per_layer:             different values used for every layer
+        matching_layer_height: set velocity in accordance to layer height
+        matching_overhang:     set velocity in accordance to the overhang
+    per_layer_velocities: list of floats
+        If setting velocity per layer, provide a list of floats with equal length to the number of layers.
 
     """
     if not (velocity_type == "constant"

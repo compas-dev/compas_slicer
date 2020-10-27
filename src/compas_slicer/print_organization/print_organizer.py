@@ -6,7 +6,7 @@ from compas_slicer.print_organization import add_safety_printpoints
 import compas_slicer.utilities as utils
 import progressbar
 import numpy as np
-from compas_slicer.print_organization import get_blend_radius, set_extruder_toggle, override_extruder_toggle, set_linear_velocity
+from compas_slicer.print_organization import get_blend_radius, set_extruder_toggle, override_extruder_toggle, set_linear_velocity, set_wait_time
 
 logger = logging.getLogger('logger')
 
@@ -65,8 +65,14 @@ class PrintOrganizer(object):
         set_extruder_toggle(self.printpoints_dict, self.slicer)
 
     def override_extruder_toggle(self, override_value):
-        """Overrides extruder toggle to a user defined value.
+        """Overrides extruder toggle of all printpoints to a user defined value.
+
+        Parameters
+        ----------
+        override_value : bool
+            The value to set for the extruder_toggle of all printpoints.
         """
+
         logger.info("Overriding extruder toggle to: ", override_value)
         override_extruder_toggle(self.printpoints_dict, override_value)
 
@@ -93,7 +99,7 @@ class PrintOrganizer(object):
         logger.info("Setting linear velocity with type : " + str(velocity_type))
         set_linear_velocity(self.printpoints_dict, velocity_type, v=v, per_layer_velocities=per_layer_velocities)
 
-    def set_wait_time(self):
+    def set_wait_time(self, wait_time_value):
         """General description.
 
         Parameters
@@ -102,6 +108,8 @@ class PrintOrganizer(object):
 
 
         """
+        logger.info("Setting wait_time to : " + str(wait_time_value))
+        set_wait_time(self.printpoints_dict, wait_time_value)
 
     def check_feasibility(self):
         """General description.
@@ -149,6 +157,7 @@ class PrintOrganizer(object):
         return data
 
     def remove_duplicate_points_in_path(self, layer_key, path_key):
+        """Remove subsequent points that are within a certain tolerance."""
         dup_index = []
         # find duplicates
         duplicate_ppts = []
@@ -186,6 +195,7 @@ class PrintOrganizer(object):
     ##################################
     #  --- Visualization on viewer
     def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
+        """Visualize printpoints on the viewer."""
         all_pts = []
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:

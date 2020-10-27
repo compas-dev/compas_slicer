@@ -7,8 +7,7 @@ import logging
 logger = logging.getLogger('logger')
 
 __all__ = ['move_mesh_to_point',
-           'get_mid_pt_base',
-           'center_mesh_on_build_platform']
+           'get_mid_pt_base']
 
 
 def move_mesh_to_point(mesh, target_point):
@@ -43,39 +42,20 @@ def move_mesh_to_point(mesh, target_point):
 
     return mesh
 
-
 def get_mid_pt_base(mesh):
-    # get center bottom point of mesh model
-    bbox = mesh_bounding_box(mesh)
-    corner_pts = [bbox[0], bbox[2]]
+    """Gets the middle point of the base (bottom) of the mesh.
 
-    x = [p[0] for p in corner_pts]
-    y = [p[1] for p in corner_pts]
-    z = [p[2] for p in corner_pts]
-
-    mesh_center_pt = Point((sum(x) / 2), (sum(y) / 2), (sum(z) / 2))
-    print(mesh_center_pt)
-
-    return mesh_center_pt
-
-
-def center_mesh_on_build_platform(mesh, machine_data):
-    """General description.
     Parameters
     ----------
-    mesh : type
-        Explanation sentence.
-    machine_data :
+    mesh: :class:`compas.datastructures.Mesh`
+        A compas mesh.
 
     Returns
     -------
-    what it returns
-        Explanation sentence.
-    """
-    # get center point of build platform
-    max_x, max_y = machine_data[0], machine_data[1]
-    build_platform_center_pt = Point(max_x / 2, max_y / 2, 0)
+    mesh_mid_pt: :class:`compas.geometry.Point`
+        Middle point of the base of the mesh.
 
+    """
     # get center bottom point of mesh model
     bbox = mesh_bounding_box(mesh)
     corner_pts = [bbox[0], bbox[2]]
@@ -84,15 +64,6 @@ def center_mesh_on_build_platform(mesh, machine_data):
     y = [p[1] for p in corner_pts]
     z = [p[2] for p in corner_pts]
 
-    mesh_center_pt = (sum(x) / 2, sum(y) / 2, sum(z) / 2)
+    mesh_mid_pt = Point((sum(x) / 2), (sum(y) / 2), (sum(z) / 2))
 
-    # transform mesh
-    mesh_frame = Frame(mesh_center_pt, (1, 0, 0), (0, 1, 0))
-    build_frame = Frame(build_platform_center_pt, (1, 0, 0), (0, 1, 0))
-
-    T = Transformation.from_frame_to_frame(mesh_frame, build_frame)
-    mesh.transform(T)
-
-    logger.info("Mesh moved to center of build platform : " + str(build_platform_center_pt))
-
-    return mesh
+    return mesh_mid_pt
