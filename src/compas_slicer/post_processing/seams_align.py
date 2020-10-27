@@ -97,5 +97,6 @@ def seams_align(slicer, align_with="next_path"):
 
                 layer.paths[j].points = shift_list
 
+
 if __name__ == "__main__":
     pass

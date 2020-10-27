@@ -42,6 +42,7 @@ def move_mesh_to_point(mesh, target_point):
 
     return mesh
 
+
 def get_mid_pt_base(mesh):
     """Gets the middle point of the base (bottom) of the mesh.
 
