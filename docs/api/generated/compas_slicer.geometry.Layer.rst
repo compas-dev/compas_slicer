@@ -16,6 +16,7 @@
       ~Layer.__init__
       ~Layer.from_data
       ~Layer.to_data
+      ~Layer.total_number_of_points
    
    
 
