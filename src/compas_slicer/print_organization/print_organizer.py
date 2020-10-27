@@ -16,6 +16,8 @@ __all__ = ['PrintOrganizer']
 class PrintOrganizer(object):
     """
     Base class for organizing the printing process.
+
+    slicer: compas_slicer.slicers.BaseSlicer
     """
 
     def __init__(self, slicer):
