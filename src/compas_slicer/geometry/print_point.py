@@ -108,6 +108,7 @@ class PrintPoint(object):
             The constructed PrintPoint.
 
         """
+
         pp = cls(pt=Point.from_data(data['point']),
                  layer_height=data['layer_height'],
                  mesh_normal=Vector.from_data(data['mesh_normal']))
