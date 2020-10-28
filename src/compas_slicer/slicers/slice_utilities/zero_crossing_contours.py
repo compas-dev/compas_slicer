@@ -21,7 +21,6 @@ class ZeroCrossingContours(object):
         self.sorted_edge_clusters = {}
 
         self.closed_paths_booleans = {}
-        # self.compute_norm_of_gradient()
 
     def compute(self):
         G = create_graph_from_mesh_edges(self.mesh, self.intersected_edges,

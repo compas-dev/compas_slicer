@@ -32,6 +32,7 @@ class BaseSlicer(object):
         assert isinstance(mesh, compas.datastructures.Mesh), \
             "Input mesh must be of type <compas.datastructures.Mesh>, not " + str(type(mesh))
         utils.check_triangular_mesh(mesh)
+        mesh = compas.datastructures.mesh_weld(mesh, precision='2f')  # make sure the mesh is welded
 
         #  input
         self.mesh = mesh

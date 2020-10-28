@@ -19,8 +19,8 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
-MODEL = 'simple_vase.obj'
-
+# MODEL = 'simple_vase.obj
+MODEL = 'simple_cylinder_closed_mid_res.obj'
 
 # MODEL = 'cylinder_uneven.obj'
 
@@ -37,7 +37,7 @@ def main():
     ### --- Slicer
     # try out different slicers by changing the slicer_type
     # options: 'default', 'meshcut', 'cgal'
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=1.5)
     slicer.slice_model()
 
     ### --- Generate brim

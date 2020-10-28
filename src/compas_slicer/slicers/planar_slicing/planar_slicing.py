@@ -29,14 +29,14 @@ def create_planar_paths(mesh, planes):
     with progressbar.ProgressBar(max_value=len(planes)) as bar:
         for i, plane in enumerate(planes):
 
-            int = IntersectionCurveMeshPlane(mesh, plane)
-            int.compute()
+            intersection = IntersectionCurveMeshPlane(mesh, plane)
+            intersection.compute()
 
             paths = []
-            if len(int.sorted_point_clusters) > 0:
-                for key in int.sorted_point_clusters:
-                    is_closed = int.closed_paths_booleans[key]
-                    path = Path(points=int.sorted_point_clusters[key], is_closed=is_closed)
+            if len(intersection.sorted_point_clusters) > 0:
+                for key in intersection.sorted_point_clusters:
+                    is_closed = intersection.closed_paths_booleans[key]
+                    path = Path(points=intersection.sorted_point_clusters[key], is_closed=is_closed)
                     paths.append(path)
 
                 layers.append(Layer(paths))
@@ -61,7 +61,7 @@ class IntersectionCurveMeshPlane(ZeroCrossingContours):
         a = self.mesh.vertex_attributes(u, 'xyz')
         b = self.mesh.vertex_attributes(v, 'xyz')
         z = [a[2], b[2]]  # check if the plane.z is withing the range of [a.z, b.z]
-        return min(z) <= self.plane.point[2] <= max(z)
+        return min(z) <= self.plane.point[2] < max(z)
 
     def find_zero_crossing_point(self, u, v):
         a = self.mesh.vertex_attributes(u, 'xyz')
