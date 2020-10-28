@@ -1,6 +1,6 @@
 import logging
 import compas
-from compas.geometry import Point
+from compas.geometry import Point, distance_point_point_sqrd
 
 logger = logging.getLogger('logger')
 
@@ -18,20 +18,22 @@ class Path(object):
         compas.geometry.Point
     is_closed : bool
         True if the Path is a closed curve, False if the Path is open.
-    type : str
-        Stores whether the Path is a contour, infill or support.
-        Currently only contour is available.
     """
 
     def __init__(self, points, is_closed):
-        #  check input
+        # check input
         assert isinstance(points[0], compas.geometry.Point)
-        self.points = points  # class compas.geometry.Point
-        self.is_closed = is_closed
+        if is_closed:  # if the path is closed, first and last point should be the same.
+            if distance_point_point_sqrd(points[0], points[-1]) > 0.001:
+                points.append(points[0])
+                print('closed path')
+
+        self.points = points  # :class: compas.geometry.Point
+        self.is_closed = is_closed  # bool
 
     def __repr__(self):
         no_of_points = len(self.points) if self.points else 0
-        return "<Path object with %i points>" % (no_of_points)
+        return "<Path object with %i points>" % no_of_points
 
     @classmethod
     def from_data(cls, data):

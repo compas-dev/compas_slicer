@@ -11,15 +11,14 @@ __all__ = ['CurvedSlicer']
 
 class CurvedSlicer(BaseSlicer):
     """
-    CurvedSlicer is....
+    CurvedSlicer is a class that generates non-planar slices that interpolate user-defined boundaries
 
     Attributes
     ----------
     mesh : compas.datastructures.Mesh
         Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
-    preprocessor :
-    DATA_PATH :
-    parameters :
+    preprocessor : compas_slicer.pre_processing.CurvedSlicingPreprocessor
+    parameters : dict
     """
 
     def __init__(self, mesh, preprocessor, parameters):
