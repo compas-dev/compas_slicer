@@ -1,5 +1,6 @@
 from compas.geometry import Point, Frame, Vector
 import compas
+
 __all__ = ['PrintPoint']
 
 
@@ -19,20 +20,31 @@ class PrintPoint(object):
         A compas Point consisting out of x, y, z coordinates
     layer_height : float
         The vertical distance between the point on this layer and the next layer
-    mesh:
-    up_vector:
+    mesh_normal : compas.geometry.Vector
+        Normal of the mesh at this PrintPoint.
+    up_vector: compas.geometry.Vector
+        xxx
+    frame : compas.geometry.Frame
+        xxx
+    extruder_toggle : bool
+        True if extruder should be on (when printing), False if it should be off (when travelling)
+    velocity : float
+        Velocity to use for printing (print speed), in mm/s.
+    wait_time : float
+        Time in seconds to wait at this PrintPoint.
 
     """
 
-    def __init__(self, pt, layer_height, mesh_normal, up_vector):
+    def __init__(self, pt, layer_height, mesh_normal):
+        assert isinstance(pt, compas.geometry.Point)
+        assert isinstance(mesh_normal, compas.geometry.Vector)
+
         #  --- basic printpoint
         self.pt = pt
         self.layer_height = layer_height
 
-        assert isinstance(mesh_normal, compas.geometry.Vector)
-
-        self.up_vector = up_vector  # compas.geometry.Vector
         self.mesh_normal = mesh_normal  # compas.geometry.Vector
+        self.up_vector = Vector(0, 0, 1)  # default value that can be updated
         self.frame = self.get_frame()  # compas.geometry.Frame
 
         #  --- print_organization related attributes
@@ -41,11 +53,12 @@ class PrintPoint(object):
         self.wait_time = None
 
         #  --- advanced printpoint
-        self.closest_support_pt = None  # class compas.geometry.point
-        self.closest_upper_point = None
-        self.distance_to_support = None
+        self.closest_support_pt = None  # <compas.geometry.Point>
+        self.distance_to_support = None  # float
+        self.support_path = None  # <compas_slicer.geometry.Path>
 
         self.visualization_geometry = None
+        self.is_feasible = True
 
     def __repr__(self):
         x, y, z = self.pt[0], self.pt[1], self.pt[2]
@@ -57,6 +70,14 @@ class PrintPoint(object):
     #################################
     #  --- To data , from data
     def to_data(self):
+        """Returns a dictionary of structured data representing the data structure.
+
+        Returns
+        -------
+        dict
+            The PrintPoints's data.
+
+        """
         point = {
             "point": [self.pt[0], self.pt[1], self.pt[2]],
             "up_vector": self.up_vector.to_data(),
@@ -72,6 +93,20 @@ class PrintPoint(object):
 
     @classmethod
     def from_data(cls, data):
+        """Construct a PrintPoint from its data representation.
+
+        Parameters
+        ----------
+        data: dict
+            The data dictionary.
+
+        Returns
+        -------
+        layer
+            The constructed PrintPoint.
+
+        """
+
         pp = cls(pt=Point(data['point'][0], data['point'][1], data['point'][2]),
                  layer_height=data['layer_height'], mesh_normal=data['mesh_normal'].from_data(),
                  up_vector=Vector.from_data(data['up_vector']))

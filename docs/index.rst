@@ -19,7 +19,7 @@ Table of Contents
    Introduction <self>
    installation
    gettingstarted
-   tutorial
+   examples
    api
    devguide
    license

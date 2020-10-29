@@ -1,7 +1,10 @@
 """
 ********************************************************************************
-compas_slicer.print_organization
+print_organization
 ********************************************************************************
+
+.. currentmodule:: compas_slicer.print_organization
+
 
 Classes
 =======
@@ -11,7 +14,6 @@ Classes
     :nosignatures:
 
     PrintOrganizer
-    MachineModel
 
 
 PrintOrganizer
@@ -21,18 +23,7 @@ PrintOrganizer
     :toctree: generated/
     :nosignatures:
 
-    RoboticPrintOrganizer
-    CurvedRoboticPrintOrganizer
-
-MachineModel
---------------
-
-.. autosummary::
-    :toctree: generated/
-    :nosignatures:
-
-    RobotPrinter
-    FDMPrinter
+    CurvedPrintOrganizer
 
 """
 
@@ -40,7 +31,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .print_process_utilities import *  # noqa: F401 E402 F403
-from .print_organizers import *  # noqa: F401 E402 F403
+from .print_organization_utilities import *  # noqa: F401 E402 F403
+from .print_organizer import *  # noqa: F401 E402 F403
+from .curved_print_organizer import *  # noqa: F401 E402 F403
+from .curved_print_organization import *  # noqa: F401 E402 F403
 
 __all__ = [name for name in dir() if not name.startswith('_')]

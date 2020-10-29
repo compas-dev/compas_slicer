@@ -13,6 +13,11 @@ class Layer(object):
     """
     A Layer stores a group of ordered print_paths.
 
+    A Layer is generated when a geometry is sliced into layers and can therefore be
+    seen as a 'slice' of a geometry. Layers are typically organized horizontally,
+    but can also be organized vertically. A Layer consists out of one, or multiple
+    Paths (depending on the geometry).
+
     Attributes
     ----------
     paths : list
@@ -31,15 +36,45 @@ class Layer(object):
 
     @classmethod
     def from_data(cls, data):
-        paths = [Path.from_data(data[key]) for key in data]
+        """Construct a layer from its data representation.
+
+        Parameters
+        ----------
+        data: dict
+            The data dictionary.
+
+        Returns
+        -------
+        layer
+            The constructed layer.
+
+        """
+        paths_data = data['paths']
+        paths = [Path.from_data(paths_data[key]) for key in paths_data]
         layer = cls(paths=paths)
         return layer
 
     def to_data(self):
-        data = {}
+        """Returns a dictionary of structured data representing the data structure.
+
+        Returns
+        -------
+        dict
+            The layers's data.
+
+        """
+        data = {'paths': {i: [] for i in range(len(self.paths))},
+                'layer_type': 'horizontal_layer'}
         for i, path in enumerate(self.paths):
-            data[i] = path.to_data()
+            data['paths'][i] = path.to_data()
         return data
+
+    def total_number_of_points(self):
+        """Returns the total number of points within a layer."""
+        num = 0
+        for path in self.paths:
+            num += len(path.printpoints)
+        return num
 
 
 class VerticalLayer(Layer):
@@ -69,3 +104,39 @@ class VerticalLayer(Layer):
     def printout_details(self):
         logger.info("VerticalLayer id : %d" % self.id)
         logger.info("Total number of paths : %d" % len(self.paths))
+
+    def to_data(self):
+        """Returns a dictionary of structured data representing the data structure.
+
+        Returns
+        -------
+        dict
+            The vertical layers's data.
+
+        """
+        data = {'paths': {i: [] for i in range(len(self.paths))},
+                'layer_type': 'vertical_layer'}
+        for i, path in enumerate(self.paths):
+            data['paths'][i] = path.to_data()
+        return data
+
+    @classmethod
+    def from_data(cls, data):
+        """Construct a vertical layer from its data representation.
+
+        Parameters
+        ----------
+        data: dict
+            The data dictionary.
+
+        Returns
+        -------
+        layer
+            The constructed vertical layer.
+
+        """
+        paths_data = data['paths']
+        paths = [Path.from_data(paths_data[key]) for key in paths_data]
+        layer = cls(id=None)
+        layer.paths = paths
+        return layer

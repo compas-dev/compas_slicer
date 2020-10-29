@@ -1,0 +1,1 @@
+.. automodule:: compas_slicer

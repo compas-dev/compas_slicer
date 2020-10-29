@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .graph_sorting import *  # noqa: F401 E402 F403
+from .mesh_connectivity_graph import *  # noqa: F401 E402 F403
 from .zero_crossing_contours import *  # noqa: F401 E402 F403
 
 
