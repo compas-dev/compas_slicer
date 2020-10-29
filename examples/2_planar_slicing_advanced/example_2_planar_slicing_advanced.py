@@ -9,6 +9,7 @@ from compas_slicer.print_organization import PrintOrganizer
 from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.pre_processing import move_mesh_to_point
+from compas_slicer.print_organization import set_extruder_toggle, add_safety_printpoints, set_linear_velocity
 
 ######################## Logging
 import logging
@@ -34,7 +35,7 @@ def main():
     ### --- Slicer
     # try out different slicers by changing the slicer_type
     # options: 'default', 'meshcut', 'cgal'
-    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=16.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=1.5)
     slicer.slice_model()
 
     ### --- Generate brim
@@ -56,9 +57,10 @@ def main():
     ### --- Fabrication - related information
     print_organizer = PrintOrganizer(slicer)
     print_organizer.create_printpoints(compas_mesh)
-    print_organizer.set_extruder_toggle()
-    print_organizer.add_safety_printpoints(z_hop=20)
-    print_organizer.set_linear_velocity("constant", v=25)
+
+    set_extruder_toggle(print_organizer, slicer)
+    add_safety_printpoints(print_organizer, z_hop=20.0)
+    set_linear_velocity(print_organizer, "constant", v=25.0)
 
     ### --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()
@@ -70,6 +72,7 @@ def main():
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
+
 
 if __name__ == "__main__":
     main()

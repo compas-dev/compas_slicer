@@ -8,6 +8,7 @@ from compas_slicer.print_organization import PrintOrganizer
 from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.post_processing import simplify_paths_rdp, generate_brim
 from compas_slicer.pre_processing import move_mesh_to_point
+from compas_slicer.print_organization import set_extruder_toggle, add_safety_printpoints, set_linear_velocity
 import time
 
 ######################## Logging
@@ -20,8 +21,6 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
 MODEL = 'simple_vase.obj'
-
-# MODEL = 'cylinder_uneven.obj'
 
 
 def main():
@@ -44,7 +43,7 @@ def main():
 
     ### --- Simplify the paths by removing points with a certain threshold
     # change the threshold value to remove more or less points
-    simplify_paths_rdp(slicer, threshold=0.9)
+    simplify_paths_rdp(slicer, threshold=0.7)
 
     ### --- Smooth the seams between layers
     # change the smooth_distance value to achieve smoother, or more abrupt seams
@@ -62,8 +61,10 @@ def main():
     ### --- Fabrication - related information
     print_organizer = PrintOrganizer(slicer)
     print_organizer.create_printpoints(compas_mesh)
-    print_organizer.set_extruder_toggle()
-    print_organizer.add_safety_printpoints(z_hop=20)
+
+    set_extruder_toggle(print_organizer, slicer)
+    add_safety_printpoints(print_organizer, z_hop=20.0)
+    set_linear_velocity(print_organizer, "constant", v=25.0)
 
     ### --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()

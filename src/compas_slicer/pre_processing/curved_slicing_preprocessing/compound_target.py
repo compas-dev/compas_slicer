@@ -1,6 +1,5 @@
 import numpy as np
 import scipy
-import math
 from compas.datastructures import Mesh
 import compas_slicer.utilities as utils
 import logging
@@ -188,7 +187,7 @@ class CompoundTarget:
         logger.info('Laplacian smoothing of all distances')
         for i, a in enumerate(self.distances_lists):
             a = np.array(a)  # a: numpy array containing the attribute to be smoothed
-            for _ in range(iterations): # iterative smoothing
+            for _ in range(iterations):  # iterative smoothing
                 a_prime = a + lamda * self.L * a
                 a = a_prime
             new_distances_lists.append(list(a))
@@ -220,7 +219,6 @@ class CompoundTarget:
         mesh = Mesh.from_json(self.OUTPUT_PATH + "/temp.obj")
         self.mesh = mesh
         self.VN = len(list(self.mesh.vertices()))
-
 
 
 if __name__ == "__main__":
