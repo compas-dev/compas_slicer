@@ -69,6 +69,9 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
 
                 clipper_points_per_brim_path.append(Point(x, y, z))
 
+            # adds the first point as the last point to form a closed contour
+            clipper_points_per_brim_path = clipper_points_per_brim_path + [clipper_points_per_brim_path[0]]
+
             #  create a path per brim contour
             new_path = Path(points=clipper_points_per_brim_path, is_closed=True)
             paths_per_layer.append(new_path)
