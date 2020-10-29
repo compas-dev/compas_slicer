@@ -69,6 +69,13 @@ class Layer(object):
             data['paths'][i] = path.to_data()
         return data
 
+    def total_number_of_points(self):
+        """Returns the total number of points within a layer."""
+        num = 0
+        for path in self.paths:
+            num += len(path.printpoints)
+        return num
+
 
 class VerticalLayer(Layer):
     """
