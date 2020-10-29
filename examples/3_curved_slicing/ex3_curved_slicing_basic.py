@@ -54,9 +54,6 @@ def main():
     # ### --- Print organizer
     print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
     print_organizer.create_printpoints(mesh)
-    print_organizer.set_extruder_toggle()
-    print_organizer.add_safety_printpoints(z_hop=20)
-    print_organizer.set_linear_velocity()
 
     ### --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()

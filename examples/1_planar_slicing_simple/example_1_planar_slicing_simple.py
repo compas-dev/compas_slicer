@@ -76,7 +76,7 @@ def main():
     # ==========================================================================
     # Save slicer data to JSON
     # ==========================================================================
-    save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
+    save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
 
     # ==========================================================================
     # Initializes the PrintOrganizer and creates PrintPoints
