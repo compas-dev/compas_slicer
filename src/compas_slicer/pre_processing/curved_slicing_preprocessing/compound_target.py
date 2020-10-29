@@ -6,8 +6,7 @@ import compas_slicer.utilities as utils
 import logging
 import networkx as nx
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
-from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances, \
-    get_custom_HEAT_geodesic_distances
+from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
@@ -33,15 +32,13 @@ class CompoundTarget:
         The value of the attribute dict with key=v_attr. If in a vertex data[v_attr]==value then the vertex is part of
         this target.
     DATA_PATH : str
-    is_smooth : bool
-    r : float
     geodesics_method : str
         'exact' is the only method currently implemented
     anisotropic_scaling : bool
         This is not yet implemented
     """
 
-    def __init__(self, mesh, v_attr, value, DATA_PATH, is_smooth=False, r=15.0,
+    def __init__(self, mesh, v_attr, value, DATA_PATH,
                  geodesics_method='exact', anisotropic_scaling=False):
 
         self.mesh = mesh
@@ -49,8 +46,6 @@ class CompoundTarget:
         self.value = value
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
-        self.is_smooth = is_smooth
-        self.r = r
 
         self.geodesics_method = geodesics_method
         self.anisotropic_scaling = anisotropic_scaling  # Anisotropic scaling not yet implemented
@@ -66,7 +61,7 @@ class CompoundTarget:
         self.number_of_boundaries = None  # int
 
         # geodesic distances
-        # SHOULD NOT BE WRITTEN DIRECTLY! ONLY THROUGH THE METHOD 'update_distances_lists'
+        # These parameters SHOULD NOT BE WRITTEN DIRECTLY! ONLY THROUGH THE METHOD 'update_distances_lists'
         self.distances_lists = []  # nested list. Shape: number_of_boundaries x number_of_vertices
         self.distances_lists_flipped = []  # nested list. Shape: number_of_vertices x number_of_boundaries
         self.np_distances_lists_flipped = np.array([])  # numpy array of self.distances_lists_flipped
@@ -130,7 +125,8 @@ class CompoundTarget:
         else:
             logger.info("Did not compute_norm_of_gradient uneven boundaries, target consists of single component")
 
-    def use_uneven_weights(self):
+    @property
+    def has_uneven_weights(self):
         return len(self.t_end_per_cluster) > 0
 
     #############################
@@ -158,16 +154,10 @@ class CompoundTarget:
         return [self.distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
 
     def distance(self, i):
-        return self.smooth_union(i) if self.is_smooth else self.union(i)
+        return self.union(i)
 
     def union(self, i):
         return np.min(self.np_distances_lists_flipped[i])
-
-    def smooth_union(self, i):
-        d = None
-        for other_d in self.np_distances_lists_flipped[i]:
-            d = smooth_union(d, other_d, self.r) if d else other_d
-        return d
 
     def all_distances(self):
         return [self.distance(i) for i in range(self.VN)]
@@ -181,32 +171,27 @@ class CompoundTarget:
         L = igl.cotmatrix(np.array(v), np.array(f))
 
         if fix_boundaries:
-            # fix boundaries by putting the corresponding columns of the sparse matrix to 0, diagonal stays to 1
+            # fix boundaries by putting the corresponding columns of the sparse matrix to 0
             L_dense = L.toarray()
             for i, (vkey, data) in enumerate(self.mesh.vertices(data=True)):
                 if data['boundary'] > 0:
-                    a = np.zeros(self.VN)
-                    a[i] = 1  # set the diagonal to 1
-                    L_dense[i][:] = a
+                    L_dense[i][:] = np.zeros(self.VN)
             L = scipy.sparse.csr_matrix(L_dense)
+
         return L
 
-    def laplacian_smoothing_of_all_distances(self, iterations, lamda):
+    def laplacian_smoothing(self, iterations, lamda):
         if not self.L:
             self.L = self.get_laplacian()
-
         new_distances_lists = []
 
         logger.info('Laplacian smoothing of all distances')
         for i, a in enumerate(self.distances_lists):
-            print('Smoothing list of distances with index %d' % i)  # iterative smoothing
             a = np.array(a)  # a: numpy array containing the attribute to be smoothed
-            for _ in range(iterations):
+            for _ in range(iterations): # iterative smoothing
                 a_prime = a + lamda * self.L * a
                 a = a_prime
-
             new_distances_lists.append(list(a))
-
         self.update_distances_lists(new_distances_lists)
 
     #############################
@@ -236,22 +221,6 @@ class CompoundTarget:
         self.mesh = mesh
         self.VN = len(list(self.mesh.vertices()))
 
-
-####################
-#  utils
-
-def smooth_union(da, db, r):
-    #  smooth union
-    e = max(r - abs(da - db), 0)
-    return min(da, db) - e * e * 0.25 / r
-
-
-def champfer_union(da, db, r):
-    # champfer
-    m = min(da, db)
-    if m > (da ** 2 + db ** 2 - r ** 2) * math.sqrt(0.5):
-        print('here')
-    return min(m, (da ** 2 + db ** 2 - r ** 2) * math.sqrt(0.5))
 
 
 if __name__ == "__main__":

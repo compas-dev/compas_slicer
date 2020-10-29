@@ -1,7 +1,6 @@
 import os
 import json
 import logging
-import statistics
 from compas.geometry import Point, distance_point_point_sqrd, normalize_vector
 from compas.geometry import Vector, closest_point_in_cloud, length_vector
 import matplotlib.pyplot as plt

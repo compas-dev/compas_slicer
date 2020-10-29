@@ -26,7 +26,6 @@ class Path(object):
         if is_closed:  # if the path is closed, first and last point should be the same.
             if distance_point_point_sqrd(points[0], points[-1]) > 0.001:
                 points.append(points[0])
-                print('closed path')
 
         self.points = points  # :class: compas.geometry.Point
         self.is_closed = is_closed  # bool

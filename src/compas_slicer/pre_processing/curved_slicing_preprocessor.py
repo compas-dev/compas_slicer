@@ -4,7 +4,8 @@ import logging
 import os
 from compas.datastructures import Mesh
 from compas_slicer.pre_processing.curved_slicing_preprocessing import mesh_region_split as rs
-from compas_slicer.pre_processing import get_existing_cut_indices, get_vertices_that_belong_to_cuts, replace_mesh_vertex_attribute
+from compas_slicer.pre_processing import get_existing_cut_indices, get_vertices_that_belong_to_cuts, \
+    replace_mesh_vertex_attribute
 import compas_slicer.utilities as utils
 from compas_slicer.print_organization.curved_print_organization import topological_sorting as topo_sort
 
@@ -33,10 +34,8 @@ class CurvedSlicingPreprocessor:
     # --- General functionality
 
     def create_compound_targets(self):
-        is_smooth, r = self.parameters['target_LOW_smooth'][0], self.parameters['target_LOW_smooth'][1]
-        self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH, is_smooth=is_smooth, r=r)
-        is_smooth, r = self.parameters['target_HIGH_smooth'][0], self.parameters['target_HIGH_smooth'][1]
-        self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH, is_smooth=is_smooth, r=r)
+        self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH)
+        self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH)
         self.target_HIGH.compute_uneven_boundaries_t_ends(self.target_LOW)
         #  --- save intermediary distance outputs
         if self.parameters['create_intermediary_outputs']:
@@ -111,7 +110,7 @@ class CurvedSlicingPreprocessor:
             logger.info('selected_order : ' + str(selected_order))
             self.cleanup_mesh_attributes_based_on_selected_order(selected_order, graph)
 
-            #reorder split_meshes based on selected order
+            # reorder split_meshes based on selected order
             self.split_meshes = [self.split_meshes[i] for i in selected_order]
 
         # --- save split meshes

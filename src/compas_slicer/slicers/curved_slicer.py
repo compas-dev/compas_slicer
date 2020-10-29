@@ -33,6 +33,8 @@ class CurvedSlicer(BaseSlicer):
         # --- generate paths
         n = find_desired_number_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH,
                                              self.parameters['avg_layer_height'])
+        logger.info('%d paths will be generated' % n)
+
         isocurves_generator = IsocurvesGenerator(self.mesh, self.preprocessor.target_LOW,
                                                  self.preprocessor.target_HIGH, n * self.n_multiplier)
         self.layers = isocurves_generator.segments

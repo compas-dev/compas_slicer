@@ -19,8 +19,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
-# MODEL = 'simple_vase.obj
-MODEL = 'simple_cylinder_closed_mid_res.obj'
+MODEL = 'simple_vase.obj'
 
 # MODEL = 'cylinder_uneven.obj'
 
@@ -65,7 +64,6 @@ def main():
     print_organizer.create_printpoints(compas_mesh)
     print_organizer.set_extruder_toggle()
     print_organizer.add_safety_printpoints(z_hop=20)
-    print_organizer.set_linear_velocity("constant", v=25)
 
     ### --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()

@@ -7,6 +7,10 @@ __all__ = ['assign_distance_to_mesh_vertices',
 
 
 def assign_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
+    """
+    Fills in the 'distance' attribute of every vertex with the weighted average of the
+    geodesic distance from the two targets.
+    """
     for i, vkey in enumerate(mesh.vertices()):
         if target_LOW and target_HIGH:
             d = get_weighted_distance(vkey, weight, target_LOW, target_HIGH)
@@ -18,12 +22,11 @@ def assign_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
         mesh.vertex[vkey]["distance"] = d
 
 
-
 def get_weighted_distance(vkey, t, target_LOW, target_HIGH):
     # calculation with uneven weights
-    if target_HIGH.use_uneven_weights():
+    if target_HIGH.has_uneven_weights:
         d_low = target_LOW.distance(vkey)  # float
-        ds_high = target_HIGH.all_clusters_distances(vkey)  # list of floats
+        ds_high = target_HIGH.all_clusters_distances(vkey)  # list of floats (# number_of_boundaries)
 
         if target_HIGH.number_of_boundaries > 1:
             weights_remapped = [remap_unbound(t, 0, t_end, 0, 1) for t_end in target_HIGH.t_end_per_cluster]
@@ -36,14 +39,7 @@ def get_weighted_distance(vkey, t, target_LOW, target_HIGH):
             d = (w - 1) * d_low + w * d_high
             distances.append(d)
 
-        if target_HIGH.is_smooth:
-            current_d = distances[0]
-            for d in distances[1:]:
-                e = max(target_HIGH.r - abs(current_d - d), 0)
-                current_d = min(current_d, d) - e * e * 0.25 / target_HIGH.r
-            return current_d
-        else:
-            return min(distances)
+        return min(distances)
 
     # simple calculation
     else:
