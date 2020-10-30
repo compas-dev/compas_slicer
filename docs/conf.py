@@ -58,8 +58,8 @@ autodoc_member_order = 'alphabetical'
 # autosummary options
 autosummary_generate = True
 
-# on_rtd is whether we are on readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+# # on_rtd is whether we are on readthedocs.org
+# on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 html_theme = 'compaspkg'
 html_theme_path = sphinx_compas_theme.get_html_theme_path()
 html_theme_options = {
