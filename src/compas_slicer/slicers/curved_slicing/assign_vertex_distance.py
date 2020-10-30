@@ -3,24 +3,34 @@ import logging
 logger = logging.getLogger('logger')
 
 __all__ = ['assign_distance_to_mesh_vertices',
-           'get_weighted_distance']
+           'assign_distance_to_mesh_vertex']
 
 
 def assign_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
     """
-    Fills in the 'distance' attribute of every vertex with the weighted average of the
-    geodesic distance from the two targets.
+    Fills in the 'distance' attribute of every vertex of the mesh.
     """
     for i, vkey in enumerate(mesh.vertices()):
-        if target_LOW and target_HIGH:
-            d = get_weighted_distance(vkey, weight, target_LOW, target_HIGH)
-        elif target_LOW:
-            offset = weight * target_LOW.max_dist
-            d = target_LOW.distance(vkey) - offset
-        else:
-            raise ValueError('You need to provide at least one target')
+        d = assign_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH)
         mesh.vertex[vkey]["distance"] = d
 
+
+def assign_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH):
+    """
+    Finds the distance for a single vertex with vkey.
+    """
+    if target_LOW and target_HIGH:  # then interpolate targets
+        d = get_weighted_distance(vkey, weight, target_LOW, target_HIGH)
+    elif target_LOW:  # then offset target
+        offset = weight * target_LOW.max_dist
+        d = target_LOW.distance(vkey) - offset
+    else:
+        raise ValueError('You need to provide at least one target')
+    return d
+
+
+#####################################
+# --- utils
 
 def get_weighted_distance(vkey, t, target_LOW, target_HIGH):
     # calculation with uneven weights
@@ -34,11 +44,7 @@ def get_weighted_distance(vkey, t, target_LOW, target_HIGH):
         else:
             weights = [t]
 
-        distances = []
-        for d_high, w in zip(ds_high, weights):
-            d = (w - 1) * d_low + w * d_high
-            distances.append(d)
-
+        distances = [(t - 1) * d_low + t * d_high for d_high, t in zip(ds_high, weights)]
         return min(distances)
 
     # simple calculation

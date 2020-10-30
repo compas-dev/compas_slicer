@@ -6,6 +6,7 @@ import logging
 import networkx as nx
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
 from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances
+import statistics
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
@@ -51,7 +52,7 @@ class CompoundTarget:
 
         self.L = None
 
-        self.offset = 0
+        self.offset = 20
         self.VN = len(list(self.mesh.vertices()))
 
         # targets connected components
@@ -113,7 +114,7 @@ class CompoundTarget:
     # ---- Uneven boundaries
     def compute_uneven_boundaries_t_ends(self, other_target):
         if self.number_of_boundaries > 1:
-            ds_avg_HIGH = self.get_boundaries_avg_dist_from_other_target(other_target)
+            ds_avg_HIGH = self.get_boundaries_rel_dist_from_other_target(other_target)
 
             for i, d in enumerate(ds_avg_HIGH):  # offset all distances except the maximum one
                 if abs(d - max(ds_avg_HIGH)) > 0.01:  # if it isn't the max value
@@ -130,15 +131,16 @@ class CompoundTarget:
 
     #############################
     #  --- Relation to other target
-    def get_boundaries_avg_dist_from_other_target(self, other_target):
-        """ Returns a list, one avg distance value per connected boundary"""
-        ds_avg = []
+    def get_boundaries_rel_dist_from_other_target(self, other_target, type='median'):
+        """ Returns a list, one relative distance value per connected boundary"""
+        distances = []
         for vi_starts in self.clustered_vkeys:
-            d_avg = 0
-            for vi in vi_starts:
-                d_avg += other_target.distance(vi)
-            ds_avg.append(d_avg / len(vi_starts))
-        return ds_avg
+            ds = [other_target.distance(vi) for vi in vi_starts]
+            if type == 'mean':
+                distances.append(statistics.mean(ds))
+            else:  # 'median'
+                distances.append(statistics.median(ds))
+        return distances
 
     def get_extreme_distances_from_other_target(self, other_target):
         extreme_distances = []

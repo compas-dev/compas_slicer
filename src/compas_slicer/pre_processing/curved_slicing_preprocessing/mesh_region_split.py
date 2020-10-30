@@ -6,7 +6,7 @@ import compas
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.curved_slicing_preprocessing import restore_mesh_attributes, save_vertex_attributes
 from compas.datastructures import Mesh
-from compas_slicer.slicers.curved_slicing import get_weighted_distance
+from compas_slicer.slicers.curved_slicing import assign_distance_to_mesh_vertex
 from compas_slicer.slicers import GeodesicsZeroCrossingContours
 from compas_slicer.slicers import assign_distance_to_mesh_vertices
 
@@ -16,8 +16,7 @@ if 'igl' in packages:
 
 logger = logging.getLogger('logger')
 
-__all__ = ['MeshSplitter',
-           'separate_disconnected_components']
+__all__ = ['MeshSplitter']
 
 RECOMPUTE_T_PARAMETERS = True
 T_SEARCH_RESOLUTION = 9000
@@ -125,11 +124,12 @@ class MeshSplitter:
 
     def update_targets(self):  # Note: This only works if the target vertices have not been touched
         self.target_LOW.assign_new_mesh(self.mesh)
-        self.target_HIGH.assign_new_mesh(self.mesh)
         self.target_LOW.find_targets_connected_components()
-        self.target_HIGH.find_targets_connected_components()
         self.target_LOW.compute_geodesic_distances()
-        self.target_HIGH.compute_geodesic_distances()
+        if self.target_HIGH:
+            self.target_HIGH.assign_new_mesh(self.mesh)
+            self.target_HIGH.find_targets_connected_components()
+            self.target_HIGH.compute_geodesic_distances()
 
     def split_intersected_faces(self, zero_contours, cut_index):
         for key in zero_contours.sorted_point_clusters:  # cluster_pair
@@ -195,7 +195,7 @@ class MeshSplitter:
     def find_t_intersecting_vkey(self, vkey, threshold, resolution):
         t_list = get_t_list(n=resolution, start=0.001, end=0.999)
         for i, t in enumerate(t_list):
-            current_d = get_weighted_distance(vkey, t, self.target_LOW, self.target_HIGH)
+            current_d = assign_distance_to_mesh_vertex(vkey, t, self.target_LOW, self.target_HIGH)
             if abs(current_d) < threshold:
                 return t
 
