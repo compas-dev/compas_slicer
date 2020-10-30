@@ -1,14 +1,15 @@
 import os
 from compas.datastructures import Mesh
 from compas.geometry import Point
-
-from compas_slicer.utilities import save_to_json
+import time
+import compas_slicer.utilities as utils
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.post_processing import generate_brim
 from compas_slicer.print_organization import PrintOrganizer
 from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.pre_processing import move_mesh_to_point
+from compas_slicer.print_organization import set_extruder_toggle, add_safety_printpoints, set_linear_velocity
 
 ######################## Logging
 import logging
@@ -18,10 +19,13 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 ########################
 
 DATA = os.path.join(os.path.dirname(__file__), 'data')
+OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
 MODEL = 'facade.obj'
 
 
 def main():
+    start_time = time.time()
+
     ### --- Load stl
     compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
 
@@ -31,7 +35,7 @@ def main():
     ### --- Slicer
     # try out different slicers by changing the slicer_type
     # options: 'default', 'meshcut', 'cgal'
-    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=16.0)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=1.5)
     slicer.slice_model()
 
     ### --- Generate brim
@@ -48,22 +52,26 @@ def main():
     viewer.view.use_shaders = False
     slicer.visualize_on_viewer(viewer)
 
-    save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
+    utils.save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
 
     ### --- Fabrication - related information
     print_organizer = PrintOrganizer(slicer)
     print_organizer.create_printpoints(compas_mesh)
-    print_organizer.set_extruder_toggle()
-    print_organizer.add_safety_printpoints(z_hop=20)
-    print_organizer.set_linear_velocity("constant", v=25)
+
+    set_extruder_toggle(print_organizer, slicer)
+    add_safety_printpoints(print_organizer, z_hop=20.0)
+    set_linear_velocity(print_organizer, "constant", v=25.0)
 
     ### --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()
-    save_to_json(printpoints_data, DATA, 'out_printpoints.json')
-    #
+    utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints.json')
+
     # # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
-    # viewer.update()
-    # viewer.show()
+    viewer.update()
+    viewer.show()
+
+    end_time = time.time()
+    print("Total elapsed time", round(end_time - start_time, 2), "seconds")
 
 
 if __name__ == "__main__":

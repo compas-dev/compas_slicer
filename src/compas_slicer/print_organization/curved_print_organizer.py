@@ -15,10 +15,11 @@ __all__ = ['CurvedPrintOrganizer']
 
 class CurvedPrintOrganizer(PrintOrganizer):
 
-    def __init__(self, slicer, parameters, DATA_PATH=None):
+    def __init__(self, slicer, parameters, DATA_PATH):
         assert isinstance(slicer.layers[0], VerticalLayer)  # curved printing only works with vertical layers
         PrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
+        self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.parameters = parameters
 
         # topological sorting of vertical layers depending on their connectivity
@@ -73,7 +74,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
             b_data = {}
             for i in self.segments:
                 b_data[i] = self.segments[i]['boundary'].to_data()
-            utils.save_to_json(b_data, self.DATA_PATH, 'boundaries.json')
+            utils.save_to_json(b_data, self.OUTPUT_PATH, 'boundaries.json')
 
     def create_segment_connectivity(self):
         """ A SegmentConnectivity finds vertical relation between paths. Creates and fills in printpoints """

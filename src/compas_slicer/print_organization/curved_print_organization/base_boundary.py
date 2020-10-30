@@ -32,7 +32,7 @@ class BaseBoundary:
 
         self.printpoints = [PrintPoint(pt=pt,  # Create fake print points
                                        layer_height=1.0,
-                                       mesh_normal=utils.get_closest_mesh_normal(self.mesh, pt)) \
+                                       mesh_normal=utils.get_closest_mesh_normal_to_pt(self.mesh, pt)) \
                             for pt in self.points]
 
         for i, pp in enumerate(self.printpoints):
@@ -45,7 +45,7 @@ class BaseBoundary:
         up_vectors = []
         for i, p in enumerate(self.points):
             v1 = Vector.from_start_end(p, self.points[(i + 1) % len(self.points)])
-            cross = v1.cross(utils.get_closest_mesh_normal_to_pt(p, self.mesh))
+            cross = v1.cross(utils.get_closest_mesh_normal_to_pt(self.mesh, p))
             v = normalize_vector(cross)
             v = Vector(v[0], v[1], v[2])
             if v[2] < 0:

@@ -1,7 +1,6 @@
 import os
 import json
 import logging
-import statistics
 from compas.geometry import Point, distance_point_point_sqrd, normalize_vector
 from compas.geometry import Vector, closest_point_in_cloud, length_vector
 import matplotlib.pyplot as plt
@@ -10,14 +9,15 @@ import numpy as np
 
 logger = logging.getLogger('logger')
 
-__all__ = ['save_to_json',
+__all__ = ['get_output_directory',
+           'save_to_json',
            'load_from_json',
-           'get_average_point',
            'total_length_of_dictionary',
            'flattened_list_of_dictionary',
            'interrupt',
            'point_list_to_dict',
-           'get_closest_mesh_normal',
+           'get_closest_mesh_vkey_to_pt',
+           'get_closest_mesh_normal_to_pt',
            'get_closest_pt_index',
            'get_closest_pt',
            'plot_networkx_graph',
@@ -26,37 +26,42 @@ __all__ = ['save_to_json',
            'get_closest_mesh_normal_to_pt',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
-           'get_files_with_name']
+           'get_all_files_with_name']
 
 
-def get_average_point(points):
+def get_output_directory(path):
     """
-    Docstring to be added.
+    Checks if a directory with the name 'output' exists in the path. If not it creates it.
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
-    """
+    path : string
+        The path where the 'output' directory will be created
 
-    x_mean = statistics.mean([p[0] for p in points])
-    y_mean = statistics.mean([p[1] for p in points])
-    z_mean = statistics.mean([p[2] for p in points])
-    return [x_mean, y_mean, z_mean]
+    Returns
+    ----------
+    path : string
+        The path to the new (or already existing) 'output' directory
+    """
+    output_dir = os.path.join(path, 'output')
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+    return output_dir
 
 
 def get_closest_pt_index(pt, pts):
     """
-    Docstring to be added.
+    Finds the index of the closest point of 'pt' in the point cloud 'pts'.
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    pt : compas.geometry.Point3d
+    pts : list, compas.geometry.Point3d
+
+    Returns
+    ----------
+    int
+        The index of the closest point
     """
 
     ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
@@ -67,14 +72,17 @@ def get_closest_pt_index(pt, pts):
 
 def get_closest_pt(pt, pts):
     """
-    Docstring to be added.
+     Finds the closest point of 'pt' in the point cloud 'pts'.
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    pt : compas.geometry.Point3d
+    pts : list, compas.geometry.Point3d
+
+    Returns
+    ----------
+    compas.geometry.Point3d
+        The closest point
     """
 
     ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
@@ -83,14 +91,18 @@ def get_closest_pt(pt, pts):
 
 def smooth_vectors(vectors, strength, iterations):
     """
-    Docstring to be added.
+    Smooths the vector iteratively, with the given number of iterations and strength per iteration
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    vectors : list, compas.geometry.Vector
+    strength : float
+    iterations : int
+
+    Returns
+    ----------
+    list, compas.geometry.Vector3d
+        The smoothened vectors
     """
 
     for _ in range(iterations):
@@ -108,14 +120,13 @@ def smooth_vectors(vectors, strength, iterations):
 
 def save_to_json(data, filepath, name):
     """
-    Docstring to be added.
+    Save the provided data to json on the filepath, with the given name
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    data : dict
+    filepath : string
+    name : string
     """
 
     filename = os.path.join(filepath, name)
@@ -126,14 +137,12 @@ def save_to_json(data, filepath, name):
 
 def load_from_json(filepath, name):
     """
-    Docstring to be added.
+    Loads json from the filepath
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    filepath : string
+    name : string
     """
 
     filename = os.path.join(filepath, name)
@@ -148,14 +157,11 @@ def load_from_json(filepath, name):
 
 def check_triangular_mesh(mesh):
     """
-    Docstring to be added.
+    Checks if the mesh is triangular. If not, then it raises an error
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    mesh : compas.datastructures.Mesh
     """
 
     for f_key in mesh.faces():
@@ -165,75 +171,86 @@ def check_triangular_mesh(mesh):
                 len(vs)) + ". \nOnly triangular meshes supported.")
 
 
-def get_closest_mesh_normal(mesh, pt):
+def get_closest_mesh_vkey_to_pt(mesh, pt):
     """
-    Docstring to be added.
+    Finds the vertex key that is the closest to the point.
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
-    """
+    mesh : compas.datastructures.Mesh
+    pt : compas.geometry.Point
 
+    Returns
+    ----------
+    int
+        the closest vertex key
+    """
+    # cloud = [Point(data['x'], data['y'], data['z']) for v_key, data in mesh.vertices(data=True)]
+    # closest_index = compas.geometry.closest_point_in_cloud(pt, cloud)[2]
     vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
     vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(pt, v_tupple[1]))
     closest_vkey = vertex_tupples[0][0]
+    return closest_vkey
+
+
+def get_closest_mesh_normal_to_pt(mesh, pt):
+    """
+    Finds the closest vertex normal t to the point.
+
+    Attributes
+    ----------
+    mesh : compas.datastructures.Mesh
+    pt : compas.geometry.Point
+
+    Returns
+    ----------
+    compas.geometry.Vector
+        The closest normal of the mesh.
+
+    """
+
+    closest_vkey = get_closest_mesh_vkey_to_pt(mesh, pt)
     v = mesh.vertex_normal(closest_vkey)
     return Vector(v[0], v[1], v[2])
 
 
 def get_mesh_vertex_coords_with_attribute(mesh, attr, value):
     """
-    Docstring to be added.
+    Finds the coordinates of all the vertices that have an attribute with key=attr that equals the value.
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    mesh : compas.datastructures.Mesh
+    attr : str
+    value : anything that can be stored into a dictionary
+
+    Returns
+    ----------
+    list, compas.geometry.Point
+        the closest vertex key
     """
 
     pts = []
     for vkey, data in mesh.vertices(data=True):
         if data[attr] == value:
-            pts.append(mesh.vertex_coordinates(vkey))
+            pts.append(Point(*mesh.vertex_coordinates(vkey)))
     return pts
-
-
-def get_closest_mesh_normal_to_pt(pt, mesh):
-    """
-    Docstring to be added.
-
-    Attributes
-    ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
-    """
-
-    vertices = np.array(mesh.vertices_attributes('xyz'))
-    key_index_dict = mesh.key_index()
-    closest_index = closest_point_in_cloud(point=pt, cloud=vertices)[2]
-    closest_vkey = get_dict_key_from_value(dictionary=key_index_dict,
-                                           val=closest_index)  # because key_index_dict[closest_vkey] = closest_index
-    n = mesh.vertex_normal(closest_vkey)
-    return Vector(n[0], n[1], n[2])
 
 
 def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     """
-    Docstring to be added.
+    Finds the normal of the curve that lies on the xy plane at the point with index k
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    k : int, index of the point
+    point : compas.geometry.Point
+    path : compas_slicer.geometry.Path
+    mesh : compas.datastructures.Mesh
+
+    Returns
+    ----------
+    compas.geometry.Vector
     """
 
     # find mesh normal is not really needed in the 2D case of planar slicer
@@ -259,20 +276,11 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     # TODO: Attention! This is just a workaround! find the source of the problem and imrpove this!
     if length_vector(normal) == 0:
         # logger.error('Attention! It looks like you might have some duplicated points')
-        normal = get_closest_mesh_normal_to_pt(point, mesh)
+        normal = get_closest_mesh_normal_to_pt(mesh, point)
 
     normal = normalize_vector(normal)
     normal = Vector(*list(normal))
     return normal
-
-
-# def get_existing_values_of_vertex_attribute(mesh, attribute):
-#     values = []
-#     for vkey, data in mesh.vertices(data=True):
-#         if data[attribute] not in values:
-#             values.append(data[attribute])
-#     values = sorted(values)
-#     return values
 
 
 #######################################
@@ -280,14 +288,11 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
 
 def plot_networkx_graph(G):
     """
-    Docstring to be added.
+    Plots the graph G
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    G : networkx.Graph
     """
 
     plt.subplot(121)
@@ -300,14 +305,15 @@ def plot_networkx_graph(G):
 
 def point_list_to_dict(pts_list):
     """
-    Docstring to be added.
+    Turns a list of compas.geometry.Point into a dictionary, so that it can be saved to Json.
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    pts_list : list, compas.geometry.Point
+
+    Returns
+    ----------
+    dict
     """
 
     data = {}
@@ -319,14 +325,16 @@ def point_list_to_dict(pts_list):
 #  --- Length of dictionary
 def total_length_of_dictionary(dictionary):
     """
-    Docstring to be added.
+    Measures the total length of all the components of a dictionary
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    dictionary : dict
+
+    Returns
+    ----------
+    float, total length of dictionary
+
     """
 
     total_length = 0
@@ -338,14 +346,15 @@ def total_length_of_dictionary(dictionary):
 #  --- Flattened list of dictionary
 def flattened_list_of_dictionary(dictionary):
     """
-    Docstring to be added.
+    Turns the dictionary into a flat list
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    dictionary : dict
+
+    Returns
+    ----------
+    list
     """
 
     flattened_list = []
@@ -356,14 +365,12 @@ def flattened_list_of_dictionary(dictionary):
 
 def get_dict_key_from_value(dictionary, val):
     """
-    Docstring to be added.
+    Return the key of a dictionary that stores the val
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    dictionary : dict
+    val : anything that can be stored in a dictionary
     """
 
     for key in dictionary:
@@ -378,14 +385,8 @@ def get_dict_key_from_value(dictionary, val):
 
 def interrupt():
     """
-    Docstring to be added.
-
-    Attributes
-    ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    Interrupts the flow of the code while it is running.
+    It asks for the user to press a enter to continue or abort.
     """
 
     value = input("Press enter to continue, Press 1 to abort ")
@@ -398,7 +399,22 @@ def interrupt():
 #######################################
 #  load all files with name
 
-def get_files_with_name(startswith, endswith, DATA_PATH):
+def get_all_files_with_name(startswith, endswith, DATA_PATH):
+    """
+    Finds all the filenames in the DATA_PATH that start and end with the provided strings
+
+    Attributes
+    ----------
+    startswith : string
+    endswith : string
+    DATA_PATH : string
+
+    Returns
+    ----------
+    list, string
+        All the filenames
+    """
+
     files = []
     for file in os.listdir(DATA_PATH):
         if file.startswith(startswith) and file.endswith(endswith):

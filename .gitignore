@@ -1,4 +1,3 @@
-*.json
 *.psd
 *.gcode
 .gcode
@@ -156,4 +155,11 @@ dmypy.json
 
 .idea/
 
+
+.idea/
+
+private/
+output/
+
 docs/api/generated
+

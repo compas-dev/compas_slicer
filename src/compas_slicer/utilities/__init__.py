@@ -20,7 +20,7 @@ utils
     flattened_list_of_dictionary
     interrupt
     point_list_to_dict
-    get_closest_mesh_normal
+    get_closest_mesh_normal_to_pt
     get_closest_pt_index
     get_closest_pt
     plot_networkx_graph

@@ -57,7 +57,7 @@ class SegmentConnectivity:
     def initialize_printpoints(self):
         for i, path in enumerate(self.paths):
             self.printpoints[i] = [PrintPoint(pt=p, layer_height=None,
-                                              mesh_normal=utils.get_closest_mesh_normal(self.mesh, p))
+                                              mesh_normal=utils.get_closest_mesh_normal_to_pt(self.mesh, p))
                                    for p in path.points]
 
     def fill_in_printpoints_information(self):
@@ -72,7 +72,6 @@ class SegmentConnectivity:
                     self.printpoints[i][j].distance_to_support = d
                     self.printpoints[i][j].layer_height = max(min(d, self.parameters['max_layer_height']),
                                                               self.parameters['min_layer_height'])
-                    self.printpoints[i][j].support_path = crv_to_check
                     self.printpoints[i][j].up_vector = Vector(*normalize_vector(Vector.from_start_end(cp, p)))
                     self.printpoints[i][j].frame = self.printpoints[i][j].get_frame()
 

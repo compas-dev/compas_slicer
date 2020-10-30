@@ -6,7 +6,7 @@ import compas
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.curved_slicing_preprocessing import restore_mesh_attributes, save_vertex_attributes
 from compas.datastructures import Mesh
-from compas_slicer.slicers.curved_slicing import get_weighted_distance
+from compas_slicer.slicers.curved_slicing import assign_distance_to_mesh_vertex
 from compas_slicer.slicers import GeodesicsZeroCrossingContours
 from compas_slicer.slicers import assign_distance_to_mesh_vertices
 
@@ -16,12 +16,11 @@ if 'igl' in packages:
 
 logger = logging.getLogger('logger')
 
-__all__ = ['MeshSplitter',
-           'separate_disconnected_components']
+__all__ = ['MeshSplitter']
 
 RECOMPUTE_T_PARAMETERS = True
 T_SEARCH_RESOLUTION = 9000
-HIT_THRESHOLD = 0.001
+HIT_THRESHOLD = 0.01
 
 
 class MeshSplitter:
@@ -47,6 +46,7 @@ class MeshSplitter:
     def __init__(self, mesh, target_LOW, target_HIGH, saddles, parameters, DATA_PATH):
         self.mesh = mesh  # compas mesh
         self.DATA_PATH = DATA_PATH
+        self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.parameters = parameters
         self.target_LOW, self.target_HIGH = target_LOW, target_HIGH
         self.saddles = saddles
@@ -73,10 +73,10 @@ class MeshSplitter:
                             merged_param_index_to_prev.append(j)
                             params_dict[i]['param'] = (params_dict[i]['param'] + other_param) * 0.5
                             params_dict[i]['saddle_vkeys'].append(self.saddles[j])
-            utils.save_to_json(params_dict, self.DATA_PATH, "split_params_dict.json")
+            utils.save_to_json(params_dict, self.OUTPUT_PATH, "split_params_dict.json")
 
         # --- reload t_params
-        params_dict = utils.load_from_json(self.DATA_PATH, "split_params_dict.json")
+        params_dict = utils.load_from_json(self.OUTPUT_PATH, "split_params_dict.json")
         logger.info("%d Split params : " % len(params_dict))
         logger.info(params_dict)
 
@@ -98,11 +98,11 @@ class MeshSplitter:
             keys_of_matched_pairs = merge_clusters_saddle_point(zero_contours, saddle_vkeys=vkeys)
             zero_contours = cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs)
 
-            zero_contours.save_point_clusters_to_json(self.DATA_PATH, 'current_point_clusters.json')
+            zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'current_point_clusters.json')
 
             if zero_contours:
                 if self.parameters['create_intermediary_outputs']:
-                    zero_contours.save_point_clusters_to_json(self.DATA_PATH, 'point_clusters_%d.json' % int(i))
+                    zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters_%d.json' % int(i))
 
                 #  --- Create cut
                 logger.info("Creating cut on mesh")
@@ -113,7 +113,7 @@ class MeshSplitter:
                 #  --- Clean up
                 logger.info('Cleaning up the mesh. Welding and restoring attributes')
                 v_attributes_dict = save_vertex_attributes(self.mesh)
-                self.mesh = weld_mesh(self.mesh, self.DATA_PATH)
+                self.mesh = weld_mesh(self.mesh, self.OUTPUT_PATH)
                 restore_mesh_attributes(self.mesh, v_attributes_dict)
 
                 #  --- Update targets
@@ -124,11 +124,12 @@ class MeshSplitter:
 
     def update_targets(self):  # Note: This only works if the target vertices have not been touched
         self.target_LOW.assign_new_mesh(self.mesh)
-        self.target_HIGH.assign_new_mesh(self.mesh)
         self.target_LOW.find_targets_connected_components()
-        self.target_HIGH.find_targets_connected_components()
         self.target_LOW.compute_geodesic_distances()
-        self.target_HIGH.compute_geodesic_distances()
+        if self.target_HIGH:
+            self.target_HIGH.assign_new_mesh(self.mesh)
+            self.target_HIGH.find_targets_connected_components()
+            self.target_HIGH.compute_geodesic_distances()
 
     def split_intersected_faces(self, zero_contours, cut_index):
         for key in zero_contours.sorted_point_clusters:  # cluster_pair
@@ -154,11 +155,11 @@ class MeshSplitter:
                 v_new = self.mesh.add_vertex(x=p[0], y=p[1], z=p[2], attr_dict={'cut': cut_index})
 
                 # remove and add faces
-                # try:
-                self.mesh.delete_face(fkey_common)
-                self.mesh.add_face([vkey_common, v_new, v0])
-                self.mesh.add_face([v_new, v_other_a, v0])
-                self.mesh.add_face([v_other_b, v_other_a, v_new])
+                if fkey_common in list(self.mesh.faces()):
+                    self.mesh.delete_face(fkey_common)
+                    self.mesh.add_face([vkey_common, v_new, v0])
+                    self.mesh.add_face([v_new, v_other_a, v0])
+                    self.mesh.add_face([v_other_b, v_other_a, v_new])
                 # except:
                 #     logger.info('Did not need to remove face.')
                 v0 = v_new
@@ -167,11 +168,12 @@ class MeshSplitter:
 
         # try:
         self.mesh.unify_cycles()
-        assert self.mesh.is_valid()
+        if not self.mesh.is_valid():
+            logger.warning('Attention! Mesh is NOT valid!')
         # except:
         #     logger.error("COULD NOT UNIFY MESH CYCLES!. Welding mesh and retrying")
         #     v_attributes_dict = save_vertex_attributes(self.mesh)
-        #     self.mesh = weld_mesh(self.mesh, self.DATA_PATH)
+        #     self.mesh = weld_mesh(self.mesh, self.OUTPUT_PATH)
         #     restore_mesh_attributes(self.mesh, v_attributes_dict)
         #     try:
         #         self.mesh.unify_cycles()
@@ -193,7 +195,7 @@ class MeshSplitter:
     def find_t_intersecting_vkey(self, vkey, threshold, resolution):
         t_list = get_t_list(n=resolution, start=0.001, end=0.999)
         for i, t in enumerate(t_list):
-            current_d = get_weighted_distance(vkey, t, self.target_LOW, self.target_HIGH)
+            current_d = assign_distance_to_mesh_vertex(vkey, t, self.target_LOW, self.target_HIGH)
             if abs(current_d) < threshold:
                 return t
 
@@ -211,7 +213,7 @@ def get_t_list(n, start=0.03, end=1.0):
 ###############################################
 # --- Separate disconnected components
 
-def separate_disconnected_components(mesh, attr, values, DATA_PATH):
+def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
     v_attributes_dict = save_vertex_attributes(mesh)
 
     v, f = mesh.to_vertices_and_faces()
@@ -248,8 +250,8 @@ def separate_disconnected_components(mesh, attr, values, DATA_PATH):
         cut_mesh = Mesh.from_vertices_and_faces(v_cut, f_dict[component])
         cut_mesh.cull_vertices()
         if len(list(cut_mesh.faces())) > 2:
-            cut_mesh.to_obj(os.path.join(DATA_PATH, 'temp.obj'))
-            cut_mesh = Mesh.from_obj(os.path.join(DATA_PATH, 'temp.obj'))  # get rid of too many empty keys
+            cut_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))
+            cut_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # get rid of too many empty keys
             cut_meshes.append(cut_mesh)
 
     for mesh in cut_meshes:
@@ -300,15 +302,15 @@ def cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs):
 # --- Mesh welding and sanitizing
 
 
-def weld_mesh(mesh, DATA_PATH, precision='2f'):
+def weld_mesh(mesh, OUTPUT_PATH, precision='2f'):
     for f_key in mesh.faces():
         if len(mesh.face_vertices(f_key)) < 3:
             mesh.delete_face(f_key)
 
     welded_mesh = compas.datastructures.mesh_weld(mesh, precision=precision)
 
-    welded_mesh.to_obj(os.path.join(DATA_PATH, 'temp.obj'))  # make sure there's no empty fkeys
-    welded_mesh = Mesh.from_obj(os.path.join(DATA_PATH, 'temp.obj'))  # TODO: find a better way to do this
+    welded_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # make sure there's no empty fkeys
+    welded_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # TODO: find a better way to do this
 
     # try:
     welded_mesh.unify_cycles()

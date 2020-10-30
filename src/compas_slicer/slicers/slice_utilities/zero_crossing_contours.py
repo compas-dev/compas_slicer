@@ -2,6 +2,7 @@ from compas.geometry import Point
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_edges, sort_graph_connected_components
 import compas_slicer.utilities as utils
 import logging
+from abc import abstractmethod
 
 logger = logging.getLogger('logger')
 
@@ -20,7 +21,6 @@ class ZeroCrossingContours(object):
         self.sorted_edge_clusters = {}
 
         self.closed_paths_booleans = {}
-        # self.compute_norm_of_gradient()
 
     def compute(self):
         G = create_graph_from_mesh_edges(self.mesh, self.intersected_edges,
@@ -57,10 +57,14 @@ class ZeroCrossingContours(object):
             all_points[i] = utils.point_list_to_dict(self.sorted_point_clusters[key])
         utils.save_to_json(all_points, DATA_PATH, name)
 
+    # --- Abstract methods
+
+    @abstractmethod
     def edge_is_intersected(self, u, v):
         # to be implemented by the inheriting classes
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def find_zero_crossing_point(self, u, v):
         # to be implemented by the inheriting classes
-        raise NotImplementedError
+        pass
