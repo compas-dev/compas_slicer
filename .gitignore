@@ -156,4 +156,4 @@ dmypy.json
 
 .idea/
 
-docs/api/generated/**
+docs/api/generated
