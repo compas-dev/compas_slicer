@@ -125,18 +125,35 @@ venv.bak/
 # mkdocs documentation
 /site
 
-# mypy
+# ==============================================================================
+# COMPAS CGAL
+# ==============================================================================
+
+*.objbak
+*.stlbak
+*.3dmbak
+*.rhl
+*.rui_bak
+
+temp/**
+
+.DS_Store
+
+.vscode
+.idea
+
+dist
+
+scripts/.idea/**
+
 .mypy_cache/
 .dmypy.json
 dmypy.json
 
-# Pyre type checker
 .pyre/
 
 *.code-workspace
 
-# 3d model backup files
-.objbak
-.stlbak
-
 .idea/
+
+docs/api/generated
