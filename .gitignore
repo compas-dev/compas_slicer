@@ -139,10 +139,10 @@ temp/**
 
 .DS_Store
 
-.vscode/**
-.idea/**
+.vscode
+.idea
 
-dist/**
+dist
 
 scripts/.idea/**
 
