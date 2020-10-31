@@ -1,5 +1,6 @@
 import numpy as np
 import scipy
+import math
 from compas.datastructures import Mesh
 import compas_slicer.utilities as utils
 import logging
@@ -14,7 +15,8 @@ if 'igl' in packages:
 
 logger = logging.getLogger('logger')
 
-__all__ = ['CompoundTarget']
+__all__ = ['CompoundTarget',
+           'smooth_union_list']
 
 
 class CompoundTarget:
@@ -32,20 +34,27 @@ class CompoundTarget:
         The value of the attribute dict with key=v_attr. If in a vertex data[v_attr]==value then the vertex is part of
         this target.
     DATA_PATH : str
+    has_smooth_union: bool
+    r : float
     geodesics_method : str
         'exact' is the only method currently implemented
     anisotropic_scaling : bool
         This is not yet implemented
     """
 
-    def __init__(self, mesh, v_attr, value, DATA_PATH,
+    def __init__(self, mesh, v_attr, value, DATA_PATH, has_smooth_union=False, r=15.0,
                  geodesics_method='exact', anisotropic_scaling=False):
 
+        logger.info('Creating target with attribute : ' + v_attr + '=%d' % value)
+        logger.info('has_smooth_union : ' + str(has_smooth_union) + ', r =  %.4f' % r)
         self.mesh = mesh
         self.v_attr = v_attr
         self.value = value
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
+
+        self.has_smooth_union = has_smooth_union
+        self.r = r
 
         self.geodesics_method = geodesics_method
         self.anisotropic_scaling = anisotropic_scaling  # Anisotropic scaling not yet implemented
@@ -152,16 +161,27 @@ class CompoundTarget:
     #  --- get distances
 
     def all_clusters_distances(self, i):
+        """ Returns distances from each cluster separately per vertex. Smooth union doesn't play any role. """
         return [self.distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
 
+    def all_distances(self):
+        """ Returns the resulting distances per every vertex. """
+        return [self.distance(i) for i in range(self.VN)]
+
     def distance(self, i):
-        return self.union(i)
+        """ Return distance for vertex with index i"""
+        if self.has_smooth_union:
+            return self.smooth_union(i)
+        else:
+            return self.union(i)
 
     def union(self, i):
+        """ Union of distances for vertex with index i"""
         return np.min(self.np_distances_lists_flipped[i])
 
-    def all_distances(self):
-        return [self.distance(i) for i in range(self.VN)]
+    def smooth_union(self, i):
+        """ Smooth union of distances for vertex with index i"""
+        return smooth_union_list(values=self.np_distances_lists_flipped[i], r=self.r)
 
     #############################
     #  --- distance smoothing
@@ -221,6 +241,29 @@ class CompoundTarget:
         mesh = Mesh.from_json(self.OUTPUT_PATH + "/temp.obj")
         self.mesh = mesh
         self.VN = len(list(self.mesh.vertices()))
+
+
+####################
+#  utils
+
+def smooth_union_list(values, r):
+    """ Returns a smooth union of the elements of the list, with blend radius r. """
+    d_result = 9999999  # very big number
+    for d in values:
+        d_result = smooth_union(d_result, d, r)
+    return d_result
+
+
+def smooth_union(da, db, r):
+    e = max(r - abs(da - db), 0)
+    return min(da, db) - e * e * 0.25 / r
+
+
+def champfer_union(da, db, r):
+    m = min(da, db)
+    if m > (da ** 2 + db ** 2 - r ** 2) * math.sqrt(0.5):
+        print('here')
+    return min(m, (da ** 2 + db ** 2 - r ** 2) * math.sqrt(0.5))
 
 
 if __name__ == "__main__":

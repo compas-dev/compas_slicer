@@ -8,6 +8,8 @@ from .geodesics import *  # noqa: F401 E402 F403
 from .assign_vertex_distance import *  # noqa: F401 E402 F403
 from .geodesics_zero_crossing_contours import *  # noqa: F401 E402 F403
 from .region_split import *  # noqa: F401 E402 F403
-from .scalar_field_evaluation import *  # noqa: F401 E402 F403
+from .gradient import *  # noqa: F401 E402 F403
+from .gradient_evaluation import *  # noqa: F401 E402 F403
+
 
 __all__ = [name for name in dir() if not name.startswith('_')]

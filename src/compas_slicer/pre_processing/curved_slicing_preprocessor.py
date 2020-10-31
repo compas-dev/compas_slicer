@@ -1,5 +1,5 @@
 from compas_slicer.pre_processing import CompoundTarget
-from compas_slicer.pre_processing import ScalarFieldEvaluation
+from compas_slicer.pre_processing import GradientEvaluation
 import logging
 import os
 from compas.datastructures import Mesh
@@ -26,17 +26,30 @@ class CurvedSlicingPreprocessor:
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.target_LOW = None
         self.target_HIGH = None
-        self.sf_evaluation = None
+        self.g_evaluation = None
 
         self.split_meshes = []
 
     ###########################
-    # --- General functionality
+    # --- compound targets
 
     def create_compound_targets(self):
-        self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH)
-        self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH)
+        """ Creates the target_LOW and the target_HIGH. """
+        # -- low target
+        if 'target_LOW_smooth_union' in self.parameters:
+            smooth, r = self.parameters['target_LOW_smooth_union'][0], self.parameters['target_LOW_smooth_union'][1]
+        else:
+            smooth, r = False, 0
+        self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH, has_smooth_union=smooth, r=r)
+
+        # -- high target
+        if 'target_HIGH_smooth_union' in self.parameters:
+            smooth, r = self.parameters['target_HIGH_smooth_union'][0], self.parameters['target_HIGH_smooth_union'][1]
+        else:
+            smooth, r = False, 0
+        self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH, has_smooth_union=smooth, r=r)
         self.target_HIGH.compute_uneven_boundaries_t_ends(self.target_LOW)
+
         #  --- save intermediary distance outputs
         if self.parameters['create_intermediary_outputs']:
             self.target_LOW.save_distances("distances_LOW.json")
@@ -44,23 +57,33 @@ class CurvedSlicingPreprocessor:
             self.target_HIGH.save_distances_clusters("distances_clusters_HIGH.json")
             utils.save_to_json(self.target_HIGH.t_end_per_cluster, self.OUTPUT_PATH, "t_end_per_cluster_HIGH.json")
 
-    def scalar_field_evaluation(self, output_filename):
+    def targets_laplacian_smoothing(self, iterations, lamda):
+        self.target_LOW.laplacian_smoothing(iterations=iterations, lamda=lamda)
+        self.target_HIGH.laplacian_smoothing(iterations=iterations, lamda=lamda)
+        self.target_LOW.save_distances("distances_LOW.json")
+        self.target_HIGH.save_distances("distances_HIGH.json")
+        self.target_HIGH.save_distances_clusters("distances_clusters_HIGH.json")
+
+    ###########################
+    # --- scalar field evaluation
+
+    def gradient_evaluation(self, output_filename, target_1, target_2=None):
         """
-        Creates a ScalarFieldEvaluation that is saved in self.sf_evaluation
+        Creates a GradientEvaluation that is saved in self.g_evaluation
         Computes the gradient norm
         Saves it to Json on the output_filename
         """
-        self.sf_evaluation = ScalarFieldEvaluation(self.mesh, self.target_LOW, self.target_HIGH)
-        self.sf_evaluation.compute_norm_of_gradient()
+        self.g_evaluation = GradientEvaluation(self.mesh, target_1, target_2)
+        self.g_evaluation.compute_norm_of_gradient()
         if self.parameters['create_intermediary_outputs']:
-            utils.save_to_json(self.sf_evaluation.vertex_scalars_flattened, self.OUTPUT_PATH, output_filename)
+            utils.save_to_json(self.g_evaluation.vertex_gradient_norm, self.OUTPUT_PATH, output_filename)
 
     def find_critical_points(self, output_filenames):
-        self.sf_evaluation.find_critical_points()
+        self.g_evaluation.find_critical_points()
         if self.parameters['create_intermediary_outputs']:
-            utils.save_to_json(self.sf_evaluation.minima, self.OUTPUT_PATH, output_filenames[0])
-            utils.save_to_json(self.sf_evaluation.maxima, self.OUTPUT_PATH, output_filenames[1])
-            utils.save_to_json(self.sf_evaluation.saddles, self.OUTPUT_PATH, output_filenames[2])
+            utils.save_to_json(self.g_evaluation.minima, self.OUTPUT_PATH, output_filenames[0])
+            utils.save_to_json(self.g_evaluation.maxima, self.OUTPUT_PATH, output_filenames[1])
+            utils.save_to_json(self.g_evaluation.saddles, self.OUTPUT_PATH, output_filenames[2])
 
     ###########################
     # --- Region Split
@@ -68,13 +91,13 @@ class CurvedSlicingPreprocessor:
     def region_split(self, save_split_meshes):
         print("")
         logging.info("--- Mesh region splitting")
-        if len(self.sf_evaluation.saddles) == 0:
+        if len(self.g_evaluation.saddles) == 0:
             logger.warning('There are no saddle points on the scalar field of the mesh.')
             return
 
         if CUT_MESH:
             self.mesh.update_default_vertex_attributes({'cut': 0})
-            mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH, self.sf_evaluation.saddles,
+            mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH, self.g_evaluation.saddles,
                                             self.parameters, self.DATA_PATH)
             mesh_splitter.run()
 

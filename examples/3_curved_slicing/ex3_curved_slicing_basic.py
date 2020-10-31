@@ -40,7 +40,8 @@ def main():
 
     preprocessor = CurvedSlicingPreprocessor(mesh, parameters, DATA_PATH)
     preprocessor.create_compound_targets()
-    preprocessor.scalar_field_evaluation(output_filename='gradient_norm.json')
+    preprocessor.gradient_evaluation(output_filename='gradient_norm.json', target_1=preprocessor.target_LOW,
+                                     target_2=preprocessor.target_HIGH)
     preprocessor.find_critical_points(output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
 
     ## --- slicing

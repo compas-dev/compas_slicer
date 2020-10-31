@@ -19,7 +19,7 @@ logger = logging.getLogger('logger')
 __all__ = ['MeshSplitter']
 
 RECOMPUTE_T_PARAMETERS = True
-T_SEARCH_RESOLUTION = 9000
+T_SEARCH_RESOLUTION = 13000
 HIT_THRESHOLD = 0.01
 
 
@@ -184,10 +184,8 @@ class MeshSplitter:
     # --------------------------- Identify split positions
     def identify_positions_to_split(self, saddles):
         split_params = []
-        resolution = T_SEARCH_RESOLUTION
-
         for vkey in saddles:
-            param = self.find_t_intersecting_vkey(vkey, threshold=0.02, resolution=resolution)
+            param = self.find_t_intersecting_vkey(vkey, threshold=HIT_THRESHOLD, resolution=T_SEARCH_RESOLUTION)
             if param:
                 split_params.append(param)
         return split_params
