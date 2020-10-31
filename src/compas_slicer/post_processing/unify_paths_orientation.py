@@ -46,3 +46,7 @@ def make_pts_have_same_direction_as_pts_reference(pts, reference_points):
         items.rotate(1)  # bring last point again in the front
         pts = list(items)
     return pts
+
+
+if __name__ == "__main__":
+    pass

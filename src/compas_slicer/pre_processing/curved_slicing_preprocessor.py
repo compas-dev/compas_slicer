@@ -3,11 +3,11 @@ from compas_slicer.pre_processing import ScalarFieldEvaluation
 import logging
 import os
 from compas.datastructures import Mesh
-from compas_slicer.pre_processing.curved_slicing_preprocessing import mesh_region_split as rs
+from compas_slicer.pre_processing.curved_slicing_preprocessing import region_split as rs, \
+    topological_sorting as topo_sort
 from compas_slicer.pre_processing import get_existing_cut_indices, get_vertices_that_belong_to_cuts, \
     replace_mesh_vertex_attribute
 import compas_slicer.utilities as utils
-from compas_slicer.print_organization.curved_print_organization import topological_sorting as topo_sort
 
 logger = logging.getLogger('logger')
 
@@ -141,3 +141,7 @@ class CurvedSlicingPreprocessor:
                                    'pts_boundary_LOW_%d.json' % index)
                 utils.save_to_json(utils.point_list_to_dict(pts_boundary_HIGH), self.OUTPUT_PATH,
                                    'pts_boundary_HIGH_%d.json' % index)
+
+
+if __name__ == "__main__":
+    pass

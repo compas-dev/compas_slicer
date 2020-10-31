@@ -8,6 +8,7 @@ def set_blend_radius(print_organizer, dfillet=10, buffer=0.3):
 
     Parameters
     ----------
+    print_organizer: :class:`compas_slicer.slicers.PrintOrganizer`
     d_fillet: float
         Value to attempt to fillet with. Defaults to 10 mm.
     buffer:
@@ -15,6 +16,7 @@ def set_blend_radius(print_organizer, dfillet=10, buffer=0.3):
         Defaults to 0.3.
 
     """
+
     pp_dict = print_organizer.printpoints_dict
 
     for layer_key in pp_dict:
@@ -35,3 +37,7 @@ def set_blend_radius(print_organizer, dfillet=10, buffer=0.3):
                 radius = round(radius, 5)
 
                 printpoint.blend_radius = radius
+
+
+if __name__ == "__main__":
+    pass

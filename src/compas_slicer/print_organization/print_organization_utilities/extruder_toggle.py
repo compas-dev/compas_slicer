@@ -82,3 +82,7 @@ def override_extruder_toggle(print_organizer, override_value):
 
     else:
         raise NameError("Override value must be of type bool")
+
+
+if __name__ == "__main__":
+    pass

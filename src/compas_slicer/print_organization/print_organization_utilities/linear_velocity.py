@@ -116,3 +116,7 @@ def calculate_linear_velocity(printpoint):  # path_area * robot_linear_speed = f
     path_area = layer_width * printpoint.layer_height
     linear_speed = (filament_area * motor_linear_speed) / path_area
     return linear_speed * multiplier
+
+
+if __name__ == "__main__":
+    pass

@@ -76,3 +76,7 @@ def get_differences_values(in_values):
     values = np.mean(values.reshape(-1, subsample_n), axis=1)
     x = np.linspace(0, 1, len(values))
     return x, values
+
+
+if __name__ == "__main__":
+    pass

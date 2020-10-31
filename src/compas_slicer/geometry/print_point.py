@@ -128,3 +128,7 @@ class PrintPoint(object):
 
         pp.is_feasible = data['is_feasible']
         return pp
+
+
+if __name__ == "__main__":
+    pass

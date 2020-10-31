@@ -1,6 +1,6 @@
 import numpy as np
 import logging
-from compas_slicer.slicers.curved_slicing import assign_distance_to_mesh_vertices
+from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertices
 
 logger = logging.getLogger('logger')
 __all__ = ['ScalarFieldEvaluation']
@@ -125,3 +125,7 @@ def get_face_edge_vectors(mesh, fkey):
     edge_1 = np.array(mesh.vertex_coordinates(e1[0])) - np.array(mesh.vertex_coordinates(e1[1]))
     edge_2 = np.array(mesh.vertex_coordinates(e2[0])) - np.array(mesh.vertex_coordinates(e2[1]))
     return edge_0, edge_1, edge_2
+
+
+if __name__ == "__main__":
+    pass

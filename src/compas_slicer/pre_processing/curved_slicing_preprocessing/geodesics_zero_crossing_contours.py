@@ -24,3 +24,7 @@ class GeodesicsZeroCrossingContours(ZeroCrossingContours):
             vec = scale_vector(vec, abs(dist_a) / (abs(dist_a) + abs(dist_b)))
             pt = add_vectors(v_coords_a, vec)
             return pt
+
+
+if __name__ == "__main__":
+    pass

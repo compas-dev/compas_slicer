@@ -182,7 +182,7 @@ class CompoundTarget:
         return L
 
     def laplacian_smoothing(self, iterations, lamda):
-        if not self.L:
+        if self.L is None:
             self.L = self.get_laplacian()
         new_distances_lists = []
 
