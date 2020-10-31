@@ -135,3 +135,7 @@ def set_printpoint_up_vec(pp, v):
 
 def set_printpoint_height(pp, h):
     pp.height = h
+
+
+if __name__ == "__main__":
+    pass

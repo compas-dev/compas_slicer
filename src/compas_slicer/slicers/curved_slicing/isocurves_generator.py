@@ -2,9 +2,9 @@ import numpy as np
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import VerticalLayer, Path
 import logging
-import compas_slicer
 import progressbar
-from compas_slicer.slicers.curved_slicing import assign_distance_to_mesh_vertices
+from compas_slicer.pre_processing import assign_distance_to_mesh_vertices
+from compas_slicer.pre_processing import GeodesicsZeroCrossingContours
 
 logger = logging.getLogger('logger')
 
@@ -41,7 +41,7 @@ class IsocurvesGenerator:
         with progressbar.ProgressBar(max_value=len(t_list)) as bar:
             for i, t in enumerate(t_list):
                 assign_distance_to_mesh_vertices(self.mesh, t, self.target_LOW, self.target_HIGH)
-                zero_contours = compas_slicer.slicers.GeodesicsZeroCrossingContours(self.mesh)
+                zero_contours = GeodesicsZeroCrossingContours(self.mesh)
                 zero_contours.compute()
 
                 for j, key in enumerate(zero_contours.sorted_point_clusters):
@@ -86,3 +86,7 @@ def get_t_list(number_of_curves):
     t_list.extend(a)
     t_list.append(0.997)
     return t_list
+
+
+if __name__ == "__main__":
+    pass

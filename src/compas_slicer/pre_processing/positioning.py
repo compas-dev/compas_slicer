@@ -68,3 +68,7 @@ def get_mid_pt_base(mesh):
     mesh_mid_pt = Point((sum(x) / 2), (sum(y) / 2), (sum(z) / 2))
 
     return mesh_mid_pt
+
+
+if __name__ == "__main__":
+    pass

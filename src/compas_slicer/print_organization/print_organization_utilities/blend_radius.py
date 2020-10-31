@@ -28,3 +28,7 @@ def get_blend_radius(printpoint, neighboring_items):
 
     radius = round(radius, 5)
     return radius
+
+
+if __name__ == "__main__":
+    pass

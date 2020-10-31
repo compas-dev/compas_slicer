@@ -2,7 +2,7 @@ import logging
 from compas.geometry import Point
 from compas_slicer.print_organization.print_organizer import PrintOrganizer
 from compas_slicer.geometry import VerticalLayer
-from compas_slicer.print_organization.curved_print_organization import topological_sorting as topo_sort
+from compas_slicer.pre_processing.curved_slicing_preprocessing import topological_sorting as topo_sort
 import compas_slicer.utilities as utils
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
 from compas_slicer.print_organization.curved_print_organization import SegmentConnectivity
@@ -114,3 +114,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
             logger.warning("For non-planar slicing, print velocity should match layer_height")
         logger.info("Setting linear velocity to match layer_height")
         set_linear_velocity(self.printpoints_dict, velocity_type, v=v, per_layer_velocities=per_layer_velocities)
+
+
+if __name__ == "__main__":
+    pass

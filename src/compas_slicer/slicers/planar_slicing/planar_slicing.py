@@ -67,3 +67,7 @@ class IntersectionCurveMeshPlane(ZeroCrossingContours):
         a = self.mesh.vertex_attributes(u, 'xyz')
         b = self.mesh.vertex_attributes(v, 'xyz')
         return intersection_segment_plane((a, b), self.plane)
+
+
+if __name__ == "__main__":
+    pass

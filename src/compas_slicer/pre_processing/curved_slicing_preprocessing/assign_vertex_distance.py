@@ -61,3 +61,7 @@ def remap_unbound(input_val, in_from, in_to, out_from, out_to):
     val = (float(in_val) / in_range) * out_range
     out_val = out_from + val
     return out_val
+
+
+if __name__ == "__main__":
+    pass

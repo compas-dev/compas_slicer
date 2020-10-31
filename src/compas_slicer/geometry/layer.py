@@ -140,3 +140,7 @@ class VerticalLayer(Layer):
         layer = cls(id=None)
         layer.paths = paths
         return layer
+
+
+if __name__ == "__main__":
+    pass

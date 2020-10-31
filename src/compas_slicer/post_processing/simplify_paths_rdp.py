@@ -3,6 +3,7 @@ import numpy as np
 import logging
 
 from compas.geometry import Point
+
 # from compas_slicer.geometry import PrintPoint, Contour
 
 logger = logging.getLogger('logger')
@@ -32,3 +33,7 @@ def simplify_paths_rdp(slicer, threshold):
             path.points = [Point(pt[0], pt[1], pt[2]) for pt in pts_rdp]
             remaining_pts_num += len(path.points)
     logger.info('%d Points remaining after rdp simplification' % remaining_pts_num)
+
+
+if __name__ == "__main__":
+    pass

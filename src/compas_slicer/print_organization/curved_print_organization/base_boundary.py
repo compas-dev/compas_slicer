@@ -64,3 +64,7 @@ class BaseBoundary:
     def to_data(self):
         return {"points": utils.point_list_to_dict(self.points),
                 "up_vectors": utils.point_list_to_dict(self.up_vectors)}
+
+
+if __name__ == "__main__":
+    pass

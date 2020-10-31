@@ -6,9 +6,9 @@ import compas
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.curved_slicing_preprocessing import restore_mesh_attributes, save_vertex_attributes
 from compas.datastructures import Mesh
-from compas_slicer.slicers.curved_slicing import assign_distance_to_mesh_vertex
-from compas_slicer.slicers import GeodesicsZeroCrossingContours
-from compas_slicer.slicers import assign_distance_to_mesh_vertices
+from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertex
+from compas_slicer.pre_processing.curved_slicing_preprocessing import GeodesicsZeroCrossingContours
+from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertices
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
@@ -98,9 +98,9 @@ class MeshSplitter:
             keys_of_matched_pairs = merge_clusters_saddle_point(zero_contours, saddle_vkeys=vkeys)
             zero_contours = cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs)
 
-            zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'current_point_clusters.json')
-
             if zero_contours:
+                zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'current_point_clusters.json')
+
                 if self.parameters['create_intermediary_outputs']:
                     zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters_%d.json' % int(i))
 
@@ -324,3 +324,7 @@ def weld_mesh(mesh, OUTPUT_PATH, precision='2f'):
         logger.error("Attention! Welded mesh is NON-MANIFOLD")
 
     return welded_mesh
+
+
+if __name__ == "__main__":
+    pass

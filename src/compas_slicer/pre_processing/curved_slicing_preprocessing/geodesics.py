@@ -41,3 +41,7 @@ def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
 def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH,
                                        anisotropic_scaling, equalized_v_indices=None):
     raise NotImplementedError
+
+
+if __name__ == "__main__":
+    pass

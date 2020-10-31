@@ -129,3 +129,7 @@ def replace_mesh_vertex_attribute(mesh, old_attr, old_val, new_attr, new_val):
         if data[old_attr] == old_val:
             mesh.vertex_attribute(vkey, old_attr, 0)
             mesh.vertex_attribute(vkey, new_attr, new_val)
+
+
+if __name__ == "__main__":
+    pass
