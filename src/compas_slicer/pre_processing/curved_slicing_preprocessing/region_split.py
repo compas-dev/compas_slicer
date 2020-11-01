@@ -19,8 +19,8 @@ logger = logging.getLogger('logger')
 __all__ = ['MeshSplitter']
 
 RECOMPUTE_T_PARAMETERS = True
-T_SEARCH_RESOLUTION = 13000
-HIT_THRESHOLD = 0.01
+T_SEARCH_RESOLUTION = 30000
+HIT_THRESHOLD = 0.002
 
 
 class MeshSplitter:
@@ -95,8 +95,14 @@ class MeshSplitter:
             zero_contours = GeodesicsZeroCrossingContours(self.mesh)
             zero_contours.compute()
 
+            zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters.json')
+            utils.interrupt()
+
             keys_of_matched_pairs = merge_clusters_saddle_point(zero_contours, saddle_vkeys=vkeys)
             zero_contours = cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs)
+
+            zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters.json')
+            utils.interrupt()
 
             if zero_contours:
                 zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'current_point_clusters.json')
@@ -160,26 +166,15 @@ class MeshSplitter:
                     self.mesh.add_face([vkey_common, v_new, v0])
                     self.mesh.add_face([v_new, v_other_a, v0])
                     self.mesh.add_face([v_other_b, v_other_a, v_new])
-                # except:
-                #     logger.info('Did not need to remove face.')
+                else:
+                    logger.warning('Did not need to modify faces.')
                 v0 = v_new
 
         self.mesh.cull_vertices()  # remove all unused vertices
 
-        # try:
         self.mesh.unify_cycles()
         if not self.mesh.is_valid():
             logger.warning('Attention! Mesh is NOT valid!')
-        # except:
-        #     logger.error("COULD NOT UNIFY MESH CYCLES!. Welding mesh and retrying")
-        #     v_attributes_dict = save_vertex_attributes(self.mesh)
-        #     self.mesh = weld_mesh(self.mesh, self.OUTPUT_PATH)
-        #     restore_mesh_attributes(self.mesh, v_attributes_dict)
-        #     try:
-        #         self.mesh.unify_cycles()
-        #         logger.info("Unified mesh cycles")
-        #     except:
-        #         logger.error("COULD NOT UNIFY MESH CYCLES!")
 
     # --------------------------- Identify split positions
     def identify_positions_to_split(self, saddles):
@@ -192,9 +187,14 @@ class MeshSplitter:
 
     def find_t_intersecting_vkey(self, vkey, threshold, resolution):
         t_list = get_t_list(n=resolution, start=0.001, end=0.999)
-        for i, t in enumerate(t_list):
+        # TODO: save next d to avoid re-evaluating
+        for i, t in enumerate(t_list[:-1]):
             current_d = assign_distance_to_mesh_vertex(vkey, t, self.target_LOW, self.target_HIGH)
-            if abs(current_d) < threshold:
+            next_d = assign_distance_to_mesh_vertex(vkey, t_list[i+1], self.target_LOW, self.target_HIGH)
+            # if abs(current_d) < threshold:
+            if abs(current_d) < abs(next_d):
+                if abs(current_d) > threshold:
+                    logger.warning('Cut position is not close enough to the saddle point.')
                 return t
 
         logger.error('Could NOT find param for saddle vkey %d!' % vkey)
