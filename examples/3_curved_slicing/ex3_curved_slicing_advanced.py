@@ -31,8 +31,8 @@ def main():
     start_time = time.time()
 
     parameters = {
-        'target_LOW_smooth_union': [True, 5],  # boolean, blend_radius
-        'target_HIGH_smooth_union': [True, 5],  # boolean, blend_radius
+        'target_LOW_smooth_union': [True, 6],  # boolean, blend_radius
+        'target_HIGH_smooth_union': [True, 6],  # boolean, blend_radius
         'create_intermediary_outputs': True,
         'avg_layer_height': 5.0,  # controls number of curves that will be generated
         'min_layer_height': 0.1,
@@ -53,7 +53,7 @@ def main():
     # --- Create pre-processor
     preprocessor = CurvedSlicingPreprocessor(mesh, parameters, DATA_PATH)
     preprocessor.create_compound_targets()
-    preprocessor.targets_laplacian_smoothing(iterations=10, lamda=0.05)
+    # preprocessor.targets_laplacian_smoothing(iterations=4, lamda=0.05)
 
 
     #########################################
