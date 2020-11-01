@@ -10,7 +10,7 @@ __all__ = ['GradientEvaluation']
 class GradientEvaluation:
     def __init__(self, mesh, target_LOW=None, target_HIGH=None):
         print('')
-        logger.info('Scalar field evaluation')
+        logger.info('Gradient evaluation')
         self.mesh = mesh
         self.target_LOW = target_LOW
         self.target_HIGH = target_HIGH
