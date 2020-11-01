@@ -19,7 +19,7 @@ logger = logging.getLogger('logger')
 __all__ = ['MeshSplitter']
 
 RECOMPUTE_T_PARAMETERS = True
-T_SEARCH_RESOLUTION = 30000
+T_SEARCH_RESOLUTION = 60000
 HIT_THRESHOLD = 0.002
 
 
@@ -95,14 +95,15 @@ class MeshSplitter:
             zero_contours = GeodesicsZeroCrossingContours(self.mesh)
             zero_contours.compute()
 
-            zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters.json')
-            utils.interrupt()
+            # zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters.json')
+            # utils.interrupt()
 
             keys_of_matched_pairs = merge_clusters_saddle_point(zero_contours, saddle_vkeys=vkeys)
             zero_contours = cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs)
+            zero_contours = smoothen_cut(zero_contours, self.mesh, saddle_vkeys=vkeys, iterations=25, strength=0.1)
 
             zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters.json')
-            utils.interrupt()
+            # utils.interrupt()
 
             if zero_contours:
                 zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'current_point_clusters.json')
@@ -190,7 +191,7 @@ class MeshSplitter:
         # TODO: save next d to avoid re-evaluating
         for i, t in enumerate(t_list[:-1]):
             current_d = assign_distance_to_mesh_vertex(vkey, t, self.target_LOW, self.target_HIGH)
-            next_d = assign_distance_to_mesh_vertex(vkey, t_list[i+1], self.target_LOW, self.target_HIGH)
+            next_d = assign_distance_to_mesh_vertex(vkey, t_list[i + 1], self.target_LOW, self.target_HIGH)
             # if abs(current_d) < threshold:
             if abs(current_d) < abs(next_d):
                 if abs(current_d) > threshold:
@@ -260,6 +261,26 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
 
 ###############################################
 # --- saddle points merging
+
+def smoothen_cut(zero_contours, mesh, saddle_vkeys, iterations, strength):
+    for cluster_key in zero_contours.sorted_point_clusters:
+        pts = zero_contours.sorted_point_clusters[cluster_key]
+        edges = zero_contours.sorted_edge_clusters[cluster_key]
+        saddles = [mesh.vertex_coordinates(key) for key in saddle_vkeys]
+
+        for _ in range(iterations):
+            for i, pt in enumerate(pts):
+                if 0.01 < min([compas.geometry.distance_point_point_sqrd(pt, s) for s in saddles]) < 15:
+                    edge = edges[i]
+                    prev = pts[i - 1]
+                    next_p = pts[(i + 1) % len(pts)]
+                    avg = [(prev[0] + next_p[0])*0.5, (prev[1] + next_p[1])*0.5, (prev[2] + next_p[2])*0.5]
+                    point = np.array(avg) * strength + np.array(pt) * (1 - strength)
+                    line = compas.geometry.Line(mesh.vertex_coordinates(edge[0]), mesh.vertex_coordinates(edge[1]))
+                    zero_contours.sorted_point_clusters[cluster_key][i] = compas.geometry.project_point_line(point, line)
+
+    return zero_contours
+
 
 def merge_clusters_saddle_point(zero_contours, saddle_vkeys):
     keys_of_clusters_to_keep = []
