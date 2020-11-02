@@ -3,26 +3,40 @@ import logging
 logger = logging.getLogger('logger')
 
 __all__ = ['assign_distance_to_mesh_vertices',
-           'get_weighted_distance']
+           'assign_distance_to_mesh_vertex']
 
 
 def assign_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
+    """
+    Fills in the 'distance' attribute of every vertex of the mesh.
+    """
     for i, vkey in enumerate(mesh.vertices()):
-        if target_LOW and target_HIGH:
-            d = get_weighted_distance(vkey, weight, target_LOW, target_HIGH)
-        elif target_LOW:
-            offset = weight * max(target_LOW.all_distances())
-            d = target_LOW.distance(vkey) - offset
-        else:
-            raise ValueError('You need to provide at least one target')
+        d = assign_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH)
         mesh.vertex[vkey]["distance"] = d
 
 
+def assign_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH):
+    """
+    Finds the distance for a single vertex with vkey.
+    """
+    if target_LOW and target_HIGH:  # then interpolate targets
+        d = get_weighted_distance(vkey, weight, target_LOW, target_HIGH)
+    elif target_LOW:  # then offset target
+        offset = weight * target_LOW.max_dist
+        d = target_LOW.distance(vkey) - offset
+    else:
+        raise ValueError('You need to provide at least one target')
+    return d
+
+
+#####################################
+# --- utils
+
 def get_weighted_distance(vkey, t, target_LOW, target_HIGH):
     # calculation with uneven weights
-    if target_HIGH.use_uneven_weights():
+    if target_HIGH.has_uneven_weights:
         d_low = target_LOW.distance(vkey)  # float
-        ds_high = target_HIGH.all_clusters_distances(vkey)  # list of floats
+        ds_high = target_HIGH.all_clusters_distances(vkey)  # list of floats (# number_of_boundaries)
 
         if target_HIGH.number_of_boundaries > 1:
             weights_remapped = [remap_unbound(t, 0, t_end, 0, 1) for t_end in target_HIGH.t_end_per_cluster]
@@ -30,19 +44,8 @@ def get_weighted_distance(vkey, t, target_LOW, target_HIGH):
         else:
             weights = [t]
 
-        distances = []
-        for d_high, w in zip(ds_high, weights):
-            d = (w - 1) * d_low + w * d_high
-            distances.append(d)
-
-        if target_HIGH.is_smooth:
-            current_d = distances[0]
-            for d in distances[1:]:
-                e = max(target_HIGH.r - abs(current_d - d), 0)
-                current_d = min(current_d, d) - e * e * 0.25 / target_HIGH.r
-            return current_d
-        else:
-            return min(distances)
+        distances = [(t - 1) * d_low + t * d_high for d_high, t in zip(ds_high, weights)]
+        return min(distances)
 
     # simple calculation
     else:

@@ -33,6 +33,7 @@ def create_graph_from_mesh_edges(mesh, intersected_edges,
             # add edges to the graph (only if the edge doesn't exist already)
             if not G.has_edge(node_index, other_node_index) and not G.has_edge(other_node_index, node_index):
                 G.add_edge(node_index, other_node_index)
+
     return G
 
 
