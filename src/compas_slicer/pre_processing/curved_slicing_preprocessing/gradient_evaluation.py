@@ -1,5 +1,6 @@
 import numpy as np
 import logging
+import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertices, \
     compute_face_gradient, compute_vertex_gradient, normalize_gradient
 
@@ -8,10 +9,12 @@ __all__ = ['GradientEvaluation']
 
 
 class GradientEvaluation:
-    def __init__(self, mesh, target_LOW=None, target_HIGH=None):
+    def __init__(self, mesh, DATA_PATH, t=0.5, target_LOW=None, target_HIGH=None):
         print('')
         logger.info('Gradient evaluation')
         self.mesh = mesh
+        self.DATA_PATH = DATA_PATH
+        self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.target_LOW = target_LOW
         self.target_HIGH = target_HIGH
 
@@ -22,14 +25,17 @@ class GradientEvaluation:
         self.face_gradient_norm = []
         self.vertex_gradient_norm = []
 
-        assign_distance_to_mesh_vertices(mesh, 0.5, target_LOW, target_HIGH)
+        assign_distance_to_mesh_vertices(mesh, t, target_LOW, target_HIGH)
 
+    @property
+    def assigned_distances(self):
+        return [data['distance'] for vkey, data in self.mesh.vertices(data=True)]
+    
     #####################################
     # --- Gradient manipulation
     # def manipulate_gradient(self):
     #     X = normalize_gradient(self.face_gradient)
     #     u = get_scalar_field_from_gradient()
-
 
     #####################################
     # --- Distance speed scalar evaluation
@@ -54,22 +60,23 @@ class GradientEvaluation:
             current_v = data['distance']
             neighbors = self.mesh.vertex_neighbors(vkey, ordered=True)
             values = []
-            neighbors.append(neighbors[0])
-            for n in neighbors:
-                v = self.mesh.vertex_attributes(n)['distance']
-                if abs(v - current_v) > 0.0:
-                    values.append(current_v - v)
-            sgc = count_sign_changes(values)
+            if len(neighbors) > 0:
+                neighbors.append(neighbors[0])
+                for n in neighbors:
+                    v = self.mesh.vertex_attributes(n)['distance']
+                    if abs(v - current_v) > 0.0:
+                        values.append(current_v - v)
+                sgc = count_sign_changes(values)
 
-            if sgc == 0:  # extreme point
-                if current_v > self.mesh.vertex_attributes(neighbors[0])['distance']:
-                    self.maxima.append(vkey)
-                else:
-                    self.minima.append(vkey)
-            if sgc == 2:  # regular point
-                pass
-            if sgc > 2 and sgc % 2 == 0:
-                self.saddles.append(vkey)
+                if sgc == 0:  # extreme point
+                    if current_v > self.mesh.vertex_attributes(neighbors[0])['distance']:
+                        self.maxima.append(vkey)
+                    else:
+                        self.minima.append(vkey)
+                if sgc == 2:  # regular point
+                    pass
+                if sgc > 2 and sgc % 2 == 0:
+                    self.saddles.append(vkey)
 
 
 #####################################
@@ -86,9 +93,6 @@ def count_sign_changes(values):
                 count += 1
             prev_v = v
     return count
-
-
-
 
 
 if __name__ == "__main__":

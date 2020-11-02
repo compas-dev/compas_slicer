@@ -61,7 +61,7 @@ class CompoundTarget:
 
         self.L = None
 
-        self.offset = 20
+        self.offset = 0  # 16
         self.VN = len(list(self.mesh.vertices()))
 
         # targets connected components

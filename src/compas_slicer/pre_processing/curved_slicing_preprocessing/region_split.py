@@ -9,6 +9,8 @@ from compas.datastructures import Mesh
 from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertex
 from compas_slicer.pre_processing.curved_slicing_preprocessing import GeodesicsZeroCrossingContours
 from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertices
+from compas_slicer.pre_processing.curved_slicing_preprocessing import GradientEvaluation
+from compas.geometry import Line, distance_point_point_sqrd, project_point_line
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
@@ -20,7 +22,7 @@ __all__ = ['MeshSplitter']
 
 RECOMPUTE_T_PARAMETERS = True
 T_SEARCH_RESOLUTION = 60000
-HIT_THRESHOLD = 0.002
+HIT_THRESHOLD = 0.02
 
 
 class MeshSplitter:
@@ -43,70 +45,56 @@ class MeshSplitter:
     this pre-processing step, and in the curved_print_organizer.
     """
 
-    def __init__(self, mesh, target_LOW, target_HIGH, saddles, parameters, DATA_PATH):
+    def __init__(self, mesh, target_LOW, target_HIGH, parameters, DATA_PATH):
         self.mesh = mesh  # compas mesh
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.parameters = parameters
         self.target_LOW, self.target_HIGH = target_LOW, target_HIGH
-        self.saddles = saddles
+
+        g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, 0.5, self.target_LOW, self.target_HIGH)
+        g_evaluation.find_critical_points()
+        self.saddles = g_evaluation.saddles
         self.cut_indices = []
 
     # --------------------------- main
     def run(self):
 
-        if RECOMPUTE_T_PARAMETERS:
-            params_dict = {}
-            split_params = self.identify_positions_to_split(self.saddles)
-            print('split_params : ', split_params)
-
-            #  merge params that are too close together
-            merged_param_index_to_prev = []
-            for i, param in enumerate(split_params):
-                if i not in merged_param_index_to_prev:
-                    params_dict[i] = {}
-                    params_dict[i]['param'] = param
-                    params_dict[i]['saddle_vkeys'] = [self.saddles[i]]
-
-                    for j, other_param in enumerate(split_params):
-                        if i != j and abs(param - other_param) < HIT_THRESHOLD:
-                            merged_param_index_to_prev.append(j)
-                            params_dict[i]['param'] = (params_dict[i]['param'] + other_param) * 0.5
-                            params_dict[i]['saddle_vkeys'].append(self.saddles[j])
-            utils.save_to_json(params_dict, self.OUTPUT_PATH, "split_params_dict.json")
-
-        # --- reload t_params
-        params_dict = utils.load_from_json(self.OUTPUT_PATH, "split_params_dict.json")
-        logger.info("%d Split params : " % len(params_dict))
-        logger.info(params_dict)
+        # --- first rough estimation of split params
+        split_params = self.identify_positions_to_split(self.saddles)  # TODO: merge params that are too close together
+        logger.info("%d Split params. First rough estimation :  " % len(split_params) + str(split_params))
 
         # --- split mesh at params
-        print('')
         logger.info('Splitting mesh at split params')
         current_cut_index = 1
 
-        for i in params_dict:
+        for i, param_first_estimation in enumerate(split_params):
             print('')
-            t = float(params_dict[i]['param'])
-            vkeys = params_dict[i]['saddle_vkeys']
-            logger.info('cut number : %d, cut_index : %d, parameter (t) : %.6f' % (int(i), current_cut_index, t))
+            logger.info('cut_index : %d, param_first_estimation : %.6f' % (current_cut_index, param_first_estimation))
 
+            # --- recompute gradient evaluation. Find exact vkey and t
+            g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, param_first_estimation, self.target_LOW,
+                                              self.target_HIGH)
+            g_evaluation.find_critical_points()
+            saddles_ds_tupples = [(vkey, abs(g_evaluation.mesh.vertex_attribute(vkey, 'distance'))) for vkey in
+                                  g_evaluation.saddles]
+            saddles_ds_tupples = sorted(saddles_ds_tupples, key=lambda saddle_tupple: saddle_tupple[1])
+            vkey = saddles_ds_tupples[0][0]
+            t = self.identify_positions_to_split([vkey])[0]
+            logger.info('vkey_exact : %d , t_exact : %.6f' % (vkey, t))
+
+            # --- find cut vertices
             assign_distance_to_mesh_vertices(self.mesh, t, self.target_LOW, self.target_HIGH)
             zero_contours = GeodesicsZeroCrossingContours(self.mesh)
             zero_contours.compute()
-
-            # zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters.json')
-            # utils.interrupt()
-
-            keys_of_matched_pairs = merge_clusters_saddle_point(zero_contours, saddle_vkeys=vkeys)
+            keys_of_matched_pairs = merge_clusters_saddle_point(zero_contours, saddle_vkeys=[vkey])
             zero_contours = cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs)
-            zero_contours = smoothen_cut(zero_contours, self.mesh, saddle_vkeys=vkeys, iterations=25, strength=0.1)
 
-            zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters.json')
-            # utils.interrupt()
-
-            if zero_contours:
-                zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'current_point_clusters.json')
+            if zero_contours:  # if there are point clusters close to the saddle point
+                zero_contours = smoothen_cut(zero_contours, self.mesh, saddle_vkeys=[vkey], iterations=5,
+                                             strength=0.5)
+                # zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters.json')
+                # utils.interrupt()
 
                 if self.parameters['create_intermediary_outputs']:
                     zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters_%d.json' % int(i))
@@ -124,8 +112,9 @@ class MeshSplitter:
                 restore_mesh_attributes(self.mesh, v_attributes_dict)
 
                 #  --- Update targets
-                logger.info('Updating targets, recomputing geodesic distances')
-                self.update_targets()  # does not need to happen at the end
+                if i < len(split_params) - 1:  # does not need to happen at the end
+                    logger.info('Updating targets, recomputing geodesic distances')
+                    self.update_targets()
 
     # --------------------------- utils
 
@@ -172,8 +161,10 @@ class MeshSplitter:
                 v0 = v_new
 
         self.mesh.cull_vertices()  # remove all unused vertices
-
-        self.mesh.unify_cycles()
+        try:
+            self.mesh.unify_cycles()
+        except:
+            print('ATTENTION: Could not unify cycles')
         if not self.mesh.is_valid():
             logger.warning('Attention! Mesh is NOT valid!')
 
@@ -182,8 +173,7 @@ class MeshSplitter:
         split_params = []
         for vkey in saddles:
             param = self.find_t_intersecting_vkey(vkey, threshold=HIT_THRESHOLD, resolution=T_SEARCH_RESOLUTION)
-            if param:
-                split_params.append(param)
+            split_params.append(param)
         return split_params
 
     def find_t_intersecting_vkey(self, vkey, threshold, resolution):
@@ -192,13 +182,9 @@ class MeshSplitter:
         for i, t in enumerate(t_list[:-1]):
             current_d = assign_distance_to_mesh_vertex(vkey, t, self.target_LOW, self.target_HIGH)
             next_d = assign_distance_to_mesh_vertex(vkey, t_list[i + 1], self.target_LOW, self.target_HIGH)
-            # if abs(current_d) < threshold:
-            if abs(current_d) < abs(next_d):
-                if abs(current_d) > threshold:
-                    logger.warning('Cut position is not close enough to the saddle point.')
+            if abs(current_d) < abs(next_d) and current_d < threshold:
                 return t
-
-        logger.error('Could NOT find param for saddle vkey %d!' % vkey)
+        raise ValueError('Could NOT find param for saddle vkey %d!' % vkey)
 
 
 ###############################################
@@ -262,22 +248,27 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
 ###############################################
 # --- saddle points merging
 
-def smoothen_cut(zero_contours, mesh, saddle_vkeys, iterations, strength):
-    for cluster_key in zero_contours.sorted_point_clusters:
-        pts = zero_contours.sorted_point_clusters[cluster_key]
-        edges = zero_contours.sorted_edge_clusters[cluster_key]
-        saddles = [mesh.vertex_coordinates(key) for key in saddle_vkeys]
 
-        for _ in range(iterations):
+def smoothen_cut(zero_contours, mesh, saddle_vkeys, iterations, strength):
+    for _ in range(iterations):
+        saddles = [mesh.vertex_coordinates(key) for key in saddle_vkeys]
+        count = 0
+
+        for cluster_key in zero_contours.sorted_point_clusters:
+            pts = zero_contours.sorted_point_clusters[cluster_key]
+            edges = zero_contours.sorted_edge_clusters[cluster_key]
             for i, pt in enumerate(pts):
-                if 0.01 < min([compas.geometry.distance_point_point_sqrd(pt, s) for s in saddles]) < 15:
+                if 0.01 < min([distance_point_point_sqrd(pt, s) for s in saddles]) < 40.0:
+                    count += 1
                     edge = edges[i]
                     prev = pts[i - 1]
                     next_p = pts[(i + 1) % len(pts)]
-                    avg = [(prev[0] + next_p[0])*0.5, (prev[1] + next_p[1])*0.5, (prev[2] + next_p[2])*0.5]
+                    avg = [(prev[0] + next_p[0]) * 0.5, (prev[1] + next_p[1]) * 0.5, (prev[2] + next_p[2]) * 0.5]
                     point = np.array(avg) * strength + np.array(pt) * (1 - strength)
-                    line = compas.geometry.Line(mesh.vertex_coordinates(edge[0]), mesh.vertex_coordinates(edge[1]))
-                    zero_contours.sorted_point_clusters[cluster_key][i] = compas.geometry.project_point_line(point, line)
+                    line = Line(mesh.vertex_coordinates(edge[0]), mesh.vertex_coordinates(edge[1]))
+                    projected_pt = project_point_line(point, line)
+                    pts[i] = projected_pt
+                    zero_contours.sorted_point_clusters[cluster_key][i] = projected_pt
 
     return zero_contours
 
@@ -320,7 +311,6 @@ def cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs):
 ########################################################
 # --- Mesh welding and sanitizing
 
-
 def weld_mesh(mesh, OUTPUT_PATH, precision='2f'):
     for f_key in mesh.faces():
         if len(mesh.face_vertices(f_key)) < 3:
@@ -331,11 +321,11 @@ def weld_mesh(mesh, OUTPUT_PATH, precision='2f'):
     welded_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # make sure there's no empty fkeys
     welded_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # TODO: find a better way to do this
 
-    # try:
-    welded_mesh.unify_cycles()
-    logger.info("Unified cycles of welded_mesh")
-    # except:
-    #     logger.error("Attention! Could NOT unify cycles of welded_mesh")
+    try:
+        welded_mesh.unify_cycles()
+        logger.info("Unified cycles of welded_mesh")
+    except:
+        logger.error("Attention! Could NOT unify cycles of welded_mesh")
 
     if not welded_mesh.is_valid():  # and iteration < 3:
         logger.error("Attention! Welded mesh is INVALID")

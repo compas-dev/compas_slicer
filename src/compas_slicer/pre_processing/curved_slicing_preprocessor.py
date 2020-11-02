@@ -73,7 +73,7 @@ class CurvedSlicingPreprocessor:
         Computes the gradient norm
         Saves it to Json on the output_filename
         """
-        self.g_evaluation = GradientEvaluation(self.mesh, target_1, target_2)
+        self.g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, 0.5, target_1, target_2)
         self.g_evaluation.compute_norm_of_gradient()
         if self.parameters['create_intermediary_outputs']:
             utils.save_to_json(self.g_evaluation.vertex_gradient_norm, self.OUTPUT_PATH, output_filename)
@@ -91,13 +91,10 @@ class CurvedSlicingPreprocessor:
     def region_split(self, save_split_meshes):
         print("")
         logging.info("--- Mesh region splitting")
-        if len(self.g_evaluation.saddles) == 0:
-            logger.warning('There are no saddle points on the scalar field of the mesh.')
-            return
 
         if CUT_MESH:
             self.mesh.update_default_vertex_attributes({'cut': 0})
-            mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH, self.g_evaluation.saddles,
+            mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH,
                                             self.parameters, self.DATA_PATH)
             mesh_splitter.run()
 
