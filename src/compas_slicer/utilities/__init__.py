@@ -15,7 +15,6 @@ utils
 
     save_to_json
     load_from_json
-    get_average_point
     total_length_of_dictionary
     flattened_list_of_dictionary
     interrupt

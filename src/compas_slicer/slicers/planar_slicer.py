@@ -14,7 +14,7 @@ class PlanarSlicer(BaseSlicer):
 
     Attributes
     ----------
-    mesh: compas.datastructures.Mesh
+    mesh: :class:`compas.datastructures.Mesh`
         Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).
     slicer_type: string
         String representing which slicing method to use.

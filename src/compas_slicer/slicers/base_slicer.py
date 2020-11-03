@@ -120,7 +120,7 @@ class BaseSlicer(object):
     def visualize_on_viewer(self, viewer, visualize_mesh=False, visualize_paths=True):
         """Visualizes slicing result using compas.viewers.
 
-         Parameters
+        Parameters
         ----------
         viewer: :class:`compas_viewers.objectviewer.Objectviewer`
             An instance of the Objectviewer class.
@@ -202,6 +202,8 @@ class BaseSlicer(object):
         return data
 
     def get_layers_dict(self):
+        """Returns a dictionary consisting of the layers.
+        """
         data = {}
         for i, layer in enumerate(self.layers):
             data[i] = layer.to_data()

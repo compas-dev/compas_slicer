@@ -3,14 +3,18 @@ import os
 import logging
 
 import compas_slicer.utilities as utils
+from compas_slicer.pre_processing import move_mesh_to_point
 from compas_slicer.slicers import PlanarSlicer
+from compas_slicer.post_processing import generate_brim
+from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import PrintOrganizer
+from compas_slicer.print_organization import set_extruder_toggle
+from compas_slicer.print_organization import add_safety_printpoints
+from compas_slicer.print_organization import set_linear_velocity
 from compas_slicer.utilities import save_to_json
 from compas_viewers.objectviewer import ObjectViewer
-from compas_slicer.post_processing import simplify_paths_rdp, generate_brim
-from compas_slicer.pre_processing import move_mesh_to_point
-from compas_slicer.print_organization import set_extruder_toggle, add_safety_printpoints, set_linear_velocity
+
 from compas.datastructures import Mesh
 from compas.geometry import Point
 
@@ -89,7 +93,7 @@ def main():
     # ==========================================================================
 
     set_extruder_toggle(print_organizer, slicer)
-    add_safety_printpoints(print_organizer, z_hop=20.0)
+    add_safety_printpoints(print_organizer, z_hop=10.0)
     set_linear_velocity(print_organizer, "constant", v=25.0)
 
     # ==========================================================================
