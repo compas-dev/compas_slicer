@@ -13,7 +13,9 @@ def add_safety_printpoints(print_organizer, z_hop=20.0):
     Parameters
     ----------
     print_organizer: :class:`compas.print_organization.PrintOrganizer`
+        An instance of the PrintOrganizer class.
     z_hop: float
+        Vertical distance (in millimeters) of the safety point above the PrintPoint.
     """
     for layer_key in print_organizer.printpoints_dict:
         for path_key in print_organizer.printpoints_dict[layer_key]:

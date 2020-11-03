@@ -12,6 +12,7 @@ from compas_slicer.print_organization import PrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.print_organization import set_linear_velocity
+from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.utilities import save_to_json
 from compas_viewers.objectviewer import ObjectViewer
 
@@ -95,6 +96,7 @@ def main():
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
     set_linear_velocity(print_organizer, "constant", v=25.0)
+    set_blend_radius(print_organizer, dfillet=10)
 
     # ==========================================================================
     # Converts the PrintPoints to data and saves to JSON

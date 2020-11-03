@@ -5,7 +5,7 @@ from compas.geometry import Polyline
 import compas_slicer.utilities as utils
 import progressbar
 import numpy as np
-from compas_slicer.print_organization import get_blend_radius
+from compas_slicer.print_organization import set_blend_radius
 
 logger = logging.getLogger('logger')
 
@@ -82,11 +82,7 @@ class PrintOrganizer(object):
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
                 self.remove_duplicate_points_in_path(layer_key, path_key)
-
-                for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
-                    neighboring_items = self.get_printpoint_neighboring_items(layer_key, path_key, i)
-                    printpoint.blend_radius = get_blend_radius(printpoint, neighboring_items)
-
+                for printpoint in self.printpoints_dict[layer_key][path_key]:
                     data[count] = printpoint.to_data()
 
                     count += 1
