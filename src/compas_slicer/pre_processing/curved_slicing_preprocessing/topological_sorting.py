@@ -3,7 +3,8 @@ from compas.geometry import distance_point_point_sqrd
 import compas_slicer.utilities as utils
 import logging
 import copy
-from compas_slicer.pre_processing.curved_slicing_preprocessing import get_existing_cut_indices, get_existing_boundary_indices
+from compas_slicer.pre_processing.curved_slicing_preprocessing import get_existing_cut_indices, \
+    get_existing_boundary_indices
 from abc import abstractmethod
 
 logger = logging.getLogger('logger')
@@ -69,7 +70,7 @@ class DirectedGraph(object):
             queue.remove(current_node)
             passed_nodes.append(current_node)
             children, cut_ids = self.get_children_of_node(current_node)
-            [self.G.add_edge(current_node, child_key, cut=cut_id) for child_key, cut_id in zip(children, cut_ids)]
+            [self.G.add_edge(current_node, child_key, cut=common_cuts) for child_key, common_cuts in zip(children, cut_ids)]
             for child_key in children:
                 assert child_key not in passed_nodes, 'Error, cyclic directed graph.'
             [queue.append(child_key) for child_key in children if child_key not in queue]
@@ -144,8 +145,10 @@ class MeshDirectedGraph(DirectedGraph):
     """ The MeshDirectedGraph is used for topological sorting of multiple meshes that have been
     generated as a result of region split over the saddle points of the mesh scalar function """
 
-    def __init__(self, all_meshes):
+    def __init__(self, all_meshes, DATA_PATH):
         self.all_meshes = all_meshes
+        self.DATA_PATH = DATA_PATH
+        self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         DirectedGraph.__init__(self)
 
     def find_roots(self):
@@ -174,17 +177,31 @@ class MeshDirectedGraph(DirectedGraph):
             if key != root and len(common_cuts) > 0 \
                     and (key, root) not in self.G.edges() \
                     and (root, key) not in self.G.edges():
-                if is_true_mesh_adjacency(self.all_meshes, key, root):
-                    # try:
-                    assert len(common_cuts) == 1
-                    # except: logger.error('More than one common cuts between two pieces in the following split
-                    # meshes. ' 'Root : %d, child : %d' % (root, key) + ' . Common cuts : ' + str(common_cuts)) #
-                    # TODO: improve this. Two meshes COULD have more common cuts, resulting for example from
-                    #  one-vertex connections raise ValueError
 
+                if is_true_mesh_adjacency(self.all_meshes, key, root):
+                    print('')
+                    print('common_cuts = ', common_cuts)
+                    if not len(common_cuts) == 1: # if all cuts worked, this should be 1. But life is not perfect.
+                        logger.error('More than one common cuts between two pieces in the following split \
+                        meshes. ' 'Root : %d, child : %d' % (root, key) + ' . Common cuts : ' + str(common_cuts) +
+                                     'Probably some cut did not separate components')
                     children.append(key)
-                    cut_ids.append(common_cuts[0])
-        return children, cut_ids
+                    cut_ids.append(common_cuts)
+
+        # debugging output
+        self.all_meshes[root].to_obj(self.OUTPUT_PATH + '/root.obj')
+        for child in children:
+            self.all_meshes[child].to_obj(self.OUTPUT_PATH + '/child_%d.obj' % child)
+        for cuts_id in cut_ids:
+            for common_cut in cuts_id:
+                pts = utils.get_mesh_vertex_coords_with_attribute(self.all_meshes[root], 'cut', common_cut)
+                utils.save_to_json(utils.point_list_to_dict(pts), self.OUTPUT_PATH, 'cut_%d.json' % common_cut)
+        print('root : ', root)
+        print('children : ', children)
+        print('cut_ids : ', cut_ids)
+
+        utils.interrupt()
+        return children, cut_ids  # format: [child1, child2, ...], [[common cuts 1], [common cuts 2] ...]
 
 
 #################################

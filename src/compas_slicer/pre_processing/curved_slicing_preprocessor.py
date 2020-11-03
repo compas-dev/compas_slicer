@@ -92,19 +92,19 @@ class CurvedSlicingPreprocessor:
         print("")
         logging.info("--- Mesh region splitting")
 
-        if CUT_MESH:
-            self.mesh.update_default_vertex_attributes({'cut': 0})
-            mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH,
-                                            self.parameters, self.DATA_PATH)
-            mesh_splitter.run()
-
-            self.mesh = mesh_splitter.mesh
-            logger.info('Completed Region splitting')
-            logger.info("Region split cut indices: " + str(mesh_splitter.cut_indices))
-            if self.parameters['create_intermediary_outputs']:
-                self.mesh.to_obj(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.obj'))
-                self.mesh.to_json(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
-                logger.info("Saving to Obj and Json: " + os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
+        # if CUT_MESH:
+        #     self.mesh.update_default_vertex_attributes({'cut': 0})
+        #     mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH,
+        #                                     self.parameters, self.DATA_PATH)
+        #     mesh_splitter.run()
+        #
+        #     self.mesh = mesh_splitter.mesh
+        #     logger.info('Completed Region splitting')
+        #     logger.info("Region split cut indices: " + str(mesh_splitter.cut_indices))
+        #     if self.parameters['create_intermediary_outputs']:
+        #         self.mesh.to_obj(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.obj'))
+        #         self.mesh.to_json(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
+        #         logger.info("Saving to Obj and Json: " + os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
 
         if SEPARATE_NEIGHBORHOODS:
             print("")
@@ -124,7 +124,7 @@ class CurvedSlicingPreprocessor:
         if TOPOLOGICAL_SORTING:
             print("")
             logger.info("--- Topological sort of meshes directed graph to determine print order")
-            graph = topo_sort.MeshDirectedGraph(self.split_meshes)
+            graph = topo_sort.MeshDirectedGraph(self.split_meshes, self.DATA_PATH)
             all_orders = graph.get_all_topological_orders()
             selected_order = all_orders[0]
             logger.info('selected_order : ' + str(selected_order))
@@ -150,9 +150,10 @@ class CurvedSlicingPreprocessor:
             for child_node in graph.adj_list[index]:
                 child_mesh = self.split_meshes[child_node]
                 edge = graph.G.edges[index, child_node]
-                cut_id = edge['cut']
-                replace_mesh_vertex_attribute(mesh, 'cut', cut_id, 'boundary', 2)
-                replace_mesh_vertex_attribute(child_mesh, 'cut', cut_id, 'boundary', 1)
+                common_cuts = edge['cut']
+                for cut_id in common_cuts:
+                    replace_mesh_vertex_attribute(mesh, 'cut', cut_id, 'boundary', 2)
+                    replace_mesh_vertex_attribute(child_mesh, 'cut', cut_id, 'boundary', 1)
 
             if self.parameters['create_intermediary_outputs']:
                 pts_boundary_LOW = utils.get_mesh_vertex_coords_with_attribute(mesh, 'boundary', 1)
