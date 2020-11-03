@@ -79,6 +79,7 @@ html_show_sourcelink = False
 html_add_permalinks = ''
 html_experimental_html5_writer = True
 html_compact_lists = True
+html_extra_path = [".nojekyll"]
 
 # napoleon options
 napoleon_google_docstring = True
