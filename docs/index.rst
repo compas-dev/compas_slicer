@@ -30,6 +30,7 @@ Table of Contents
 
    Overview <self>
    installation
+   tutorials
    examples
    api
    devguide
