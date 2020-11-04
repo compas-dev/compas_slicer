@@ -69,7 +69,7 @@ def override_extruder_toggle(print_organizer, override_value):
     print_organizer: :class:`compas.print_organization.PrintOrganizer`
         ...
     override_value: bool
-        Value to override the extruder_toggle values with. 
+        Value to override the extruder_toggle values with.
 
     """
     pp_dict = print_organizer.printpoints_dict
