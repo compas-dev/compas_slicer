@@ -125,9 +125,9 @@ SOFTWARE.
         
           <div id="compas-navigation" class="collapse compas-navigation">
           <ul class="nav flex-column active">
-<li class="nav-item"><a class="nav-link reference internal" href="index.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="index.html">Overview</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="installation.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="gettingstarted.html">Getting started</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="examples.html">Examples</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="api.html">API Reference</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="devguide.html">Developer Guide</a></li>
@@ -222,6 +222,20 @@ SOFTWARE.
     }).addClass("active");
 
   });
+
+
+  var url = $("#doc_versions").data("url");
+  var docs_site = $("#doc_versions").data("docs");
+
+  if (url) {
+    $.get(url, res=>{
+      var lines = res.match(/[^\r\n]+/g);
+      lines.forEach(version => {
+        $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
+      });
+    })
+  }
+
   </script>
   
   

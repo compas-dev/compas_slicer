@@ -197,7 +197,7 @@
 <div class="viewcode-block" id="BaseSlicer.visualize_on_viewer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.visualize_on_viewer.html#compas_slicer.slicers.BaseSlicer.visualize_on_viewer">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_on_viewer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_mesh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">visualize_paths</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Visualizes slicing result using compas.viewers.</span>
 
-<span class="sd">         Parameters</span>
+<span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        viewer: :class:`compas_viewers.objectviewer.Objectviewer`</span>
 <span class="sd">            An instance of the Objectviewer class.</span>
@@ -279,6 +279,8 @@
         <span class="k">return</span> <span class="n">data</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.get_layers_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.get_layers_dict.html#compas_slicer.slicers.BaseSlicer.get_layers_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_layers_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a dictionary consisting of the layers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
             <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
@@ -305,9 +307,9 @@
         
           <div id="compas-navigation" class="collapse compas-navigation">
           <ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="../../../index.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../index.html">Overview</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../installation.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../../gettingstarted.html">Getting started</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../tutorials.html">Tutorials</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../examples.html">Examples</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../api.html">API Reference</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../devguide.html">Developer Guide</a></li>
@@ -399,6 +401,20 @@
     }).addClass("active");
 
   });
+
+
+  var url = $("#doc_versions").data("url");
+  var docs_site = $("#doc_versions").data("docs");
+
+  if (url) {
+    $.get(url, res=>{
+      var lines = res.match(/[^\r\n]+/g);
+      lines.forEach(version => {
+        $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
+      });
+    })
+  }
+
   </script>
   
   

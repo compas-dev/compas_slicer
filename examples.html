@@ -17,11 +17,11 @@
   <link rel="stylesheet" type="text/css" href="_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="1. Simple planar slicing" href="examples/planar_slicing_simple.html" />
+    <link rel="next" title="1. Simple planar slicing" href="examples/01_planar_slicing_simple.html" />
   
   
   
-    <link rel="prev" title="Getting started" href="gettingstarted.html" />
+    <link rel="prev" title="3. Placeholder3" href="tutorials/03_placeholder.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -83,9 +83,9 @@
 <p>Here you can find some examples files for compas_slicer</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/planar_slicing_simple.html">1. Simple planar slicing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/planar_slicing_advanced.html">2. Advanced planar slicing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/curved_slicing.html">3. Curved slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/01_planar_slicing_simple.html">1. Simple planar slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/02_planar_slicing_advanced.html">2. Advanced planar slicing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/03_curved_slicing.html">3. Curved slicing</a></li>
 </ul>
 </div>
 </div>
@@ -107,13 +107,13 @@
         
           <div id="compas-navigation" class="collapse compas-navigation">
           <ul class="nav flex-column active">
-<li class="nav-item"><a class="nav-link reference internal" href="index.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="index.html">Overview</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="installation.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="gettingstarted.html">Getting started</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="nav-item active"><a class="nav-link active current reference internal" href="#">Examples</a><ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="examples/planar_slicing_simple.html">1. Simple planar slicing</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="examples/planar_slicing_advanced.html">2. Advanced planar slicing</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="examples/curved_slicing.html">3. Curved slicing</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="examples/01_planar_slicing_simple.html">1. Simple planar slicing</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="examples/02_planar_slicing_advanced.html">2. Advanced planar slicing</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="examples/03_curved_slicing.html">3. Curved slicing</a></li>
 </ul>
 </li>
 <li class="nav-item"><a class="nav-link reference internal" href="api.html">API Reference</a></li>
@@ -209,6 +209,20 @@
     }).addClass("active");
 
   });
+
+
+  var url = $("#doc_versions").data("url");
+  var docs_site = $("#doc_versions").data("docs");
+
+  if (url) {
+    $.get(url, res=>{
+      var lines = res.match(/[^\r\n]+/g);
+      lines.forEach(version => {
+        $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
+      });
+    })
+  }
+
   </script>
   
   

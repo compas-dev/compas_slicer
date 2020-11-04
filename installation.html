@@ -17,11 +17,11 @@
   <link rel="stylesheet" type="text/css" href="_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="Getting started" href="gettingstarted.html" />
+    <link rel="next" title="Tutorials" href="tutorials.html" />
   
   
   
-    <link rel="prev" title="COMPAS_SLICER Docs" href="index.html" />
+    <link rel="prev" title="Overview" href="index.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -148,9 +148,9 @@ conda install COMPAS compas_cgal
         
           <div id="compas-navigation" class="collapse compas-navigation">
           <ul class="nav flex-column active">
-<li class="nav-item"><a class="nav-link reference internal" href="index.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="index.html">Overview</a></li>
 <li class="nav-item active"><a class="nav-link active current reference internal" href="#">Installation</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="gettingstarted.html">Getting started</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="examples.html">Examples</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="api.html">API Reference</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="devguide.html">Developer Guide</a></li>
@@ -257,6 +257,20 @@ conda install COMPAS compas_cgal
     }).addClass("active");
 
   });
+
+
+  var url = $("#doc_versions").data("url");
+  var docs_site = $("#doc_versions").data("docs");
+
+  if (url) {
+    $.get(url, res=>{
+      var lines = res.match(/[^\r\n]+/g);
+      lines.forEach(version => {
+        $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
+      });
+    })
+  }
+
   </script>
   
   

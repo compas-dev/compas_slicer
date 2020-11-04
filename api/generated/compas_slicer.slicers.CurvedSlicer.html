@@ -144,7 +144,7 @@
 <td><p>Construct a slicer from its data representation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.slicers.CurvedSlicer.get_layers_dict.html#compas_slicer.slicers.CurvedSlicer.get_layers_dict" title="compas_slicer.slicers.CurvedSlicer.get_layers_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_layers_dict</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Returns a dictionary consisting of the layers.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.CurvedSlicer.post_processing.html#compas_slicer.slicers.CurvedSlicer.post_processing" title="compas_slicer.slicers.CurvedSlicer.post_processing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post_processing</span></code></a>()</p></td>
 <td><p>Applies standard post-processing operations: seams_align and unify_paths.</p></td>
@@ -187,9 +187,9 @@
         
           <div id="compas-navigation" class="collapse compas-navigation">
           <ul class="nav flex-column active">
-<li class="nav-item"><a class="nav-link reference internal" href="../../index.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../index.html">Overview</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../installation.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../gettingstarted.html">Getting started</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../tutorials.html">Tutorials</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../examples.html">Examples</a></li>
 <li class="nav-item active"><a class="nav-link reference internal" href="../../api.html">API Reference</a><ul class="nav flex-column active">
 <li class="nav-item active"><a class="nav-link reference internal" href="../compas_slicer.html">compas_slicer</a><ul class="nav flex-column active">
@@ -297,6 +297,20 @@
     }).addClass("active");
 
   });
+
+
+  var url = $("#doc_versions").data("url");
+  var docs_site = $("#doc_versions").data("docs");
+
+  if (url) {
+    $.get(url, res=>{
+      var lines = res.match(/[^\r\n]+/g);
+      lines.forEach(version => {
+        $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
+      });
+    })
+  }
+
   </script>
   
   
