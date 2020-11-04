@@ -5,7 +5,6 @@ from compas.geometry import Polyline
 import compas_slicer.utilities as utils
 import progressbar
 import numpy as np
-from compas_slicer.print_organization import set_blend_radius
 
 logger = logging.getLogger('logger')
 
@@ -35,8 +34,10 @@ class PrintOrganizer(object):
     ###############################
     #  --- Initialization
     def create_printpoints(self, mesh):
+        count = 0
         logger.info('Creating print points ...')
-        with progressbar.ProgressBar(max_value=len(self.slicer.layers)) as bar:
+        print("tot no of pts", self.slicer.total_number_of_points)
+        with progressbar.ProgressBar(max_value=self.slicer.total_number_of_points) as bar:
 
             for i, layer in enumerate(self.slicer.layers):
                 self.printpoints_dict['layer_%d' % i] = {}
@@ -51,7 +52,18 @@ class PrintOrganizer(object):
                                                 mesh_normal=normal)
 
                         self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
-                bar.update()
+                        bar.update(count)
+                        count += 1
+
+    @property
+    def total_number_of_points(self):
+        """int: Total number of points in the slicer."""
+        total_number_of_pts = 0
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                for printpoint in self.printpoints_dict[layer_key][path_key]:
+                    total_number_of_pts += 1
+        return total_number_of_pts
 
     @property
     def number_of_layers(self):
