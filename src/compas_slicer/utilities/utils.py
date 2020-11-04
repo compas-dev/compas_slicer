@@ -23,7 +23,6 @@ __all__ = ['get_output_directory',
            'plot_networkx_graph',
            'get_mesh_vertex_coords_with_attribute',
            'get_dict_key_from_value',
-           'get_closest_mesh_normal_to_pt',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
            'get_all_files_with_name']
@@ -195,7 +194,7 @@ def get_closest_mesh_vkey_to_pt(mesh, pt):
 
 def get_closest_mesh_normal_to_pt(mesh, pt):
     """
-    Finds the closest vertex normal t to the point.
+    Finds the closest vertex normal to the point.
 
     Attributes
     ----------

@@ -36,7 +36,6 @@ class PrintOrganizer(object):
     def create_printpoints(self, mesh):
         count = 0
         logger.info('Creating print points ...')
-        print("tot no of pts", self.slicer.total_number_of_points)
         with progressbar.ProgressBar(max_value=self.slicer.total_number_of_points) as bar:
 
             for i, layer in enumerate(self.slicer.layers):
