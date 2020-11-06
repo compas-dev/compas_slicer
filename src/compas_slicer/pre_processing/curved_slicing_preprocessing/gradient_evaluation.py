@@ -30,7 +30,7 @@ class GradientEvaluation:
     @property
     def assigned_distances(self):
         return [data['distance'] for vkey, data in self.mesh.vertices(data=True)]
-    
+
     #####################################
     # --- Gradient manipulation
     # def manipulate_gradient(self):
