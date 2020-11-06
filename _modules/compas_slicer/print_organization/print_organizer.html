@@ -82,7 +82,6 @@
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">import</span> <span class="nn">progressbar</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">get_blend_radius</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
@@ -93,7 +92,11 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for organizing the printing process.</span>
 
-<span class="sd">    slicer: compas_slicer.slicers.BaseSlicer</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    slicer: :class:`compas_slicer.slicers.PlanarSlicer`</span>
+<span class="sd">        An instance of the compas_slicer.slicers.PlanarSlicer.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PrintOrganizer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.PrintOrganizer.__init__.html#compas_slicer.print_organization.PrintOrganizer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slicer</span><span class="p">):</span>
@@ -108,8 +111,9 @@
     <span class="c1">###############################</span>
     <span class="c1">#  --- Initialization</span>
 <div class="viewcode-block" id="PrintOrganizer.create_printpoints"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.PrintOrganizer.create_printpoints.html#compas_slicer.print_organization.PrintOrganizer.create_printpoints">[docs]</a>    <span class="k">def</span> <span class="nf">create_printpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">):</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating print points ...&#39;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">max_value</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">))</span> <span class="k">as</span> <span class="n">bar</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">max_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">total_number_of_points</span><span class="p">)</span> <span class="k">as</span> <span class="n">bar</span><span class="p">:</span>
 
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -124,20 +128,34 @@
                                                 <span class="n">mesh_normal</span><span class="o">=</span><span class="n">normal</span><span class="p">)</span>
 
                         <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">][</span><span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">printpoint</span><span class="p">)</span>
-                <span class="n">bar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+                        <span class="n">bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+                        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">total_number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;int: Total number of points in the slicer.&quot;&quot;&quot;</span>
+        <span class="n">total_number_of_pts</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
+                    <span class="n">total_number_of_pts</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">total_number_of_pts</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">number_of_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;int: Number of layers in the PrintOrganizer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PrintOrganizer.number_of_paths_on_layer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.PrintOrganizer.number_of_paths_on_layer.html#compas_slicer.print_organization.PrintOrganizer.number_of_paths_on_layer">[docs]</a>    <span class="k">def</span> <span class="nf">number_of_paths_on_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_index</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">layer_index</span><span class="p">])</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_of_paths_on_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;int: Number of paths within a Layer of the PrintOrganizer.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">layer_index</span><span class="p">])</span>
 
     <span class="c1">###############################</span>
     <span class="c1">#  ---  TODO</span>
 
 <div class="viewcode-block" id="PrintOrganizer.check_feasibility"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.PrintOrganizer.check_feasibility.html#compas_slicer.print_organization.PrintOrganizer.check_feasibility">[docs]</a>    <span class="k">def</span> <span class="nf">check_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;General description.</span>
+        <span class="sd">&quot;&quot;&quot;...</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
@@ -145,32 +163,40 @@
     <span class="c1">###############################</span>
     <span class="c1">#  ---  output printpoints data</span>
 <div class="viewcode-block" id="PrintOrganizer.output_printpoints_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.PrintOrganizer.output_printpoints_dict.html#compas_slicer.print_organization.PrintOrganizer.output_printpoints_dict">[docs]</a>    <span class="k">def</span> <span class="nf">output_printpoints_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the PrintPoints as a dictionary.&quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">remove_duplicate_points_in_path</span><span class="p">(</span><span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">)</span>
-
-                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]):</span>
-                    <span class="n">neighboring_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_printpoint_neighboring_items</span><span class="p">(</span><span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-                    <span class="n">printpoint</span><span class="o">.</span><span class="n">blend_radius</span> <span class="o">=</span> <span class="n">get_blend_radius</span><span class="p">(</span><span class="n">printpoint</span><span class="p">,</span> <span class="n">neighboring_items</span><span class="p">)</span>
-
+                <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
                     <span class="n">data</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="n">printpoint</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
 
                     <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generated </span><span class="si">%d</span><span class="s2"> print points&quot;</span> <span class="o">%</span> <span class="n">count</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="PrintOrganizer.remove_duplicate_points_in_path"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.PrintOrganizer.remove_duplicate_points_in_path.html#compas_slicer.print_organization.PrintOrganizer.remove_duplicate_points_in_path">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate_points_in_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove subsequent points that are within a certain tolerance.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PrintOrganizer.remove_duplicate_points_in_path"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.PrintOrganizer.remove_duplicate_points_in_path.html#compas_slicer.print_organization.PrintOrganizer.remove_duplicate_points_in_path">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate_points_in_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove subsequent points that are within a certain tolerance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        layer_key: str</span>
+<span class="sd">            String containing the key of the layer to remove points from.</span>
+<span class="sd">        path_key: str</span>
+<span class="sd">            String containing the key of the path to remove points from.</span>
+<span class="sd">        tolerance: float, optional</span>
+<span class="sd">            Optional value for the distance between points to remove. Defaults to 0.0001.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">dup_index</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># find duplicates</span>
         <span class="n">duplicate_ppts</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]):</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="nb">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">][</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">printpoint</span><span class="o">.</span><span class="n">pt</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">next</span><span class="o">.</span><span class="n">pt</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">0.0001</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">printpoint</span><span class="o">.</span><span class="n">pt</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">next</span><span class="o">.</span><span class="n">pt</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tolerance</span><span class="p">:</span>
                     <span class="n">dup_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                     <span class="n">duplicate_ppts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">printpoint</span><span class="p">)</span>
 
@@ -235,9 +261,9 @@
         
           <div id="compas-navigation" class="collapse compas-navigation">
           <ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="../../../index.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../index.html">Overview</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../installation.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../../gettingstarted.html">Getting started</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../tutorials.html">Tutorials</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../examples.html">Examples</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../api.html">API Reference</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../devguide.html">Developer Guide</a></li>

@@ -82,7 +82,7 @@
 <h1 class="display-4 p-0 mb-5">set_linear_velocity</h1>
 <dl class="py function">
 <dt id="compas_slicer.print_organization.set_linear_velocity">
-<code class="sig-prename descclassname">compas_slicer.print_organization.</code><code class="sig-name descname">set_linear_velocity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_organizer</span></em>, <em class="sig-param"><span class="n">velocity_type</span></em>, <em class="sig-param"><span class="n">v</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">per_layer_velocities</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mesh</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">angle_range</span><span class="o">=</span><span class="default_value">(None, None)</span></em>, <em class="sig-param"><span class="n">speed_range</span><span class="o">=</span><span class="default_value">(None, None)</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/print_organization_utilities/linear_velocity.html#set_linear_velocity"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">compas_slicer.print_organization.</code><code class="sig-name descname">set_linear_velocity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_organizer</span></em>, <em class="sig-param"><span class="n">velocity_type</span></em>, <em class="sig-param"><span class="n">v</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">per_layer_velocities</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">angle_range</span><span class="o">=</span><span class="default_value">(None, None)</span></em>, <em class="sig-param"><span class="n">speed_range</span><span class="o">=</span><span class="default_value">(None, None)</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/print_organization_utilities/linear_velocity.html#set_linear_velocity"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Sets the linear velocity parameter of the printpoints depending on the selected type.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -96,10 +96,10 @@ by_layer_height:       set velocity in accordance to layer height
 by_overhang:           set velocity in accordance to the overhang</p>
 </li>
 <li><p><strong>per_layer_velocities</strong> (<em>list of floats</em>) – If setting velocity per layer, provide a list of floats with equal length to the number of layers.</p></li>
-<li><p><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">compas.datastructures.Mesh</span></code>) – If ‘by_overhang’, provide the input Mesh</p></li>
 <li><p><strong>angle_range</strong> (<em>tuple</em>) – Two angles (in degrees) that give the minimum and maximum value to map the speed_range to.
 For example, (10, 50) will assign the maximum speed to overhang angles of 10 degrees
 or less, and the minimum speed to points with an overhang angle of 50 degrees and above.</p></li>
+<li><p><strong>speed_range</strong> (<em>tuple</em>) – xxx</p></li>
 </ul>
 </dd>
 </dl>
