@@ -78,6 +78,7 @@
 <span></span><span class="kn">import</span> <span class="nn">rdp</span> <span class="k">as</span> <span class="nn">rdp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">progressbar</span>
 
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
 <span class="c1"># from compas_slicer.geometry import PrintPoint, Contour</span>
@@ -103,12 +104,14 @@
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Paths simplification rdp&quot;</span><span class="p">)</span>
     <span class="n">remaining_pts_num</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
-            <span class="n">pts_rdp</span> <span class="o">=</span> <span class="n">rdp</span><span class="o">.</span><span class="n">rdp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
-            <span class="n">path</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">pts_rdp</span><span class="p">]</span>
-            <span class="n">remaining_pts_num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> Points remaining after rdp simplification&#39;</span> <span class="o">%</span> <span class="n">remaining_pts_num</span><span class="p">)</span></div>
+    <span class="k">with</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">max_value</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">))</span> <span class="k">as</span> <span class="n">bar</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+                <span class="n">pts_rdp</span> <span class="o">=</span> <span class="n">rdp</span><span class="o">.</span><span class="n">rdp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">pts_rdp</span><span class="p">]</span>
+                <span class="n">remaining_pts_num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+                <span class="n">bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> Points remaining after rdp simplification&#39;</span> <span class="o">%</span> <span class="n">remaining_pts_num</span><span class="p">)</span></div>
 </code></pre></div>
         
       </main>
@@ -127,9 +130,9 @@
         
           <div id="compas-navigation" class="collapse compas-navigation">
           <ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="../../../index.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../index.html">Overview</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../installation.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../../gettingstarted.html">Getting started</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../tutorials.html">Tutorials</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../examples.html">Examples</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../api.html">API Reference</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../../devguide.html">Developer Guide</a></li>
