@@ -15,7 +15,6 @@ def set_linear_velocity(print_organizer,
                         velocity_type,
                         v=25,
                         per_layer_velocities=None,
-                        mesh=None,
                         angle_range=(None, None),
                         speed_range=(None, None)):
     """ Sets the linear velocity parameter of the printpoints depending on the selected type.
@@ -34,12 +33,12 @@ def set_linear_velocity(print_organizer,
         by_overhang:           set velocity in accordance to the overhang
     per_layer_velocities: list of floats
         If setting velocity per layer, provide a list of floats with equal length to the number of layers.
-    mesh: :class:`compas.datastructures.Mesh`
-        If 'by_overhang', provide the input Mesh
     angle_range: tuple
         Two angles (in degrees) that give the minimum and maximum value to map the speed_range to.
         For example, (10, 50) will assign the maximum speed to overhang angles of 10 degrees
         or less, and the minimum speed to points with an overhang angle of 50 degrees and above.
+    speed_range: tuple
+        xxx
     """
     logger.info("Setting linear velocity with type : " + str(velocity_type))
 
@@ -72,6 +71,7 @@ def set_linear_velocity(print_organizer,
                         printpoint.velocity = calculate_linear_velocity(printpoint)
 
                     elif velocity_type == "by_overhang":
+                        mesh = print_organizer.slicer.mesh
                         # get mesh normal and calculate overhang angle
                         mesh_normal = get_closest_mesh_normal_to_pt(mesh, printpoint.pt)
                         vect_angle = angle_vectors(mesh_normal, Vector(0.0, 0.0, 1.0), deg=True)
