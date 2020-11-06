@@ -24,9 +24,9 @@ def create_planar_paths_cgal(mesh, planes):
 
     Parameters
     ----------
-    mesh : compas.datastructures.Mesh
+    mesh: :class: 'compas.datastructures.Mesh'
         A compas mesh.
-    planes: list, compas.geometry.Plane
+    planes: list, :class: 'compas.geometry.Plane'
     """
     if 'compas-cgal' not in packages and 'compas_cgal' not in packages:
         raise PluginNotInstalledError("--------ATTENTION! ----------- \

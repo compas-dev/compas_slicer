@@ -53,7 +53,7 @@ def main():
     # options: 'default' : Both for open and closed paths. But slow
     #          'cgal' : Very fast. Only for closed paths. Requires additional installation (compas_cgal).
 
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=1.5)
     slicer.slice_model()
 
     # ==========================================================================

@@ -12,7 +12,6 @@ logger = logging.getLogger('logger')
 __all__ = ['get_output_directory',
            'save_to_json',
            'load_from_json',
-           'total_length_of_dictionary',
            'flattened_list_of_dictionary',
            'interrupt',
            'point_list_to_dict',
@@ -32,14 +31,14 @@ def get_output_directory(path):
     """
     Checks if a directory with the name 'output' exists in the path. If not it creates it.
 
-    Attributes
+    Parameters
     ----------
     path : string
         The path where the 'output' directory will be created
 
     Returns
     ----------
-    path : string
+    string
         The path to the new (or already existing) 'output' directory
     """
     output_dir = os.path.join(path, 'output')
@@ -52,7 +51,7 @@ def get_closest_pt_index(pt, pts):
     """
     Finds the index of the closest point of 'pt' in the point cloud 'pts'.
 
-    Attributes
+    Parameters
     ----------
     pt : compas.geometry.Point3d
     pts : list, compas.geometry.Point3d
@@ -62,7 +61,6 @@ def get_closest_pt_index(pt, pts):
     int
         The index of the closest point
     """
-
     ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
     # distances = [distance_point_point_sqrd(p, pt) for p in pts]
     # ci = distances.index(min(distances))
@@ -73,17 +71,16 @@ def get_closest_pt(pt, pts):
     """
      Finds the closest point of 'pt' in the point cloud 'pts'.
 
-    Attributes
+    Parameters
     ----------
-    pt : compas.geometry.Point3d
-    pts : list, compas.geometry.Point3d
+    pt : :class: 'compas.geometry.Point'
+    pts : list, :class: 'compas.geometry.Point3d'
 
     Returns
     ----------
     compas.geometry.Point3d
         The closest point
     """
-
     ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
     return pts[ci]
 
@@ -92,15 +89,15 @@ def smooth_vectors(vectors, strength, iterations):
     """
     Smooths the vector iteratively, with the given number of iterations and strength per iteration
 
-    Attributes
+    Parameters
     ----------
-    vectors : list, compas.geometry.Vector
+    vectors : list, :class: 'compas.geometry.Vector'
     strength : float
     iterations : int
 
     Returns
     ----------
-    list, compas.geometry.Vector3d
+    list, :class: 'compas.geometry.Vector3d'
         The smoothened vectors
     """
 
@@ -121,7 +118,7 @@ def save_to_json(data, filepath, name):
     """
     Save the provided data to json on the filepath, with the given name
 
-    Attributes
+    Parameters
     ----------
     data : dict
     filepath : string
@@ -138,7 +135,7 @@ def load_from_json(filepath, name):
     """
     Loads json from the filepath
 
-    Attributes
+    Parameters
     ----------
     filepath : string
     name : string
@@ -158,9 +155,9 @@ def check_triangular_mesh(mesh):
     """
     Checks if the mesh is triangular. If not, then it raises an error
 
-    Attributes
+    Parameters
     ----------
-    mesh : compas.datastructures.Mesh
+    mesh : :class: 'compas.datastructures.Mesh'
     """
 
     for f_key in mesh.faces():
@@ -174,10 +171,10 @@ def get_closest_mesh_vkey_to_pt(mesh, pt):
     """
     Finds the vertex key that is the closest to the point.
 
-    Attributes
+    Parameters
     ----------
-    mesh : compas.datastructures.Mesh
-    pt : compas.geometry.Point
+    mesh : :class: 'compas.datastructures.Mesh'
+    pt : :class: 'compas.geometry.Point'
 
     Returns
     ----------
@@ -196,14 +193,14 @@ def get_closest_mesh_normal_to_pt(mesh, pt):
     """
     Finds the closest vertex normal to the point.
 
-    Attributes
+    Parameters
     ----------
-    mesh : compas.datastructures.Mesh
-    pt : compas.geometry.Point
+    mesh : :class: 'compas.datastructures.Mesh'
+    pt : :class: 'compas.geometry.Point'
 
     Returns
     ----------
-    compas.geometry.Vector
+    :class: 'compas.geometry.Vector'
         The closest normal of the mesh.
 
     """
@@ -217,15 +214,15 @@ def get_mesh_vertex_coords_with_attribute(mesh, attr, value):
     """
     Finds the coordinates of all the vertices that have an attribute with key=attr that equals the value.
 
-    Attributes
+    Parameters
     ----------
-    mesh : compas.datastructures.Mesh
+    mesh : :class: 'compas.datastructures.Mesh'
     attr : str
     value : anything that can be stored into a dictionary
 
     Returns
     ----------
-    list, compas.geometry.Point
+    list, :class: 'compas.geometry.Point'
         the closest vertex key
     """
 
@@ -240,16 +237,16 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     """
     Finds the normal of the curve that lies on the xy plane at the point with index k
 
-    Attributes
+    Parameters
     ----------
     k : int, index of the point
-    point : compas.geometry.Point
-    path : compas_slicer.geometry.Path
-    mesh : compas.datastructures.Mesh
+    point : :class: 'compas.geometry.Point'
+    path : :class: 'compas_slicer.geometry.Path'
+    mesh : :class: 'compas.datastructures.Mesh'
 
     Returns
     ----------
-    compas.geometry.Vector
+    :class: 'compas.geometry.Vector'
     """
 
     # find mesh normal is not really needed in the 2D case of planar slicer
@@ -272,10 +269,11 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
             v = normalize_vector(Vector.from_start_end(point, prev_pt))
             normal = [v[1], -v[0], v[2]]  # rotate 90 degrees clockwise on the xy plane
 
-    # TODO: Attention! This is just a workaround! find the source of the problem and imrpove this!
     if length_vector(normal) == 0:
-        # logger.error('Attention! It looks like you might have some duplicated points')
+        # When the neighboring elements happen to cancel out, then search for the true normal,
+        # and project it on the xy plane for consistency
         normal = get_closest_mesh_normal_to_pt(mesh, point)
+        normal = [normal[0], normal[1], 0]
 
     normal = normalize_vector(normal)
     normal = Vector(*list(normal))
@@ -289,7 +287,7 @@ def plot_networkx_graph(G):
     """
     Plots the graph G
 
-    Attributes
+    Parameters
     ----------
     G : networkx.Graph
     """
@@ -306,9 +304,9 @@ def point_list_to_dict(pts_list):
     """
     Turns a list of compas.geometry.Point into a dictionary, so that it can be saved to Json.
 
-    Attributes
+    Parameters
     ----------
-    pts_list : list, compas.geometry.Point
+    pts_list : list, :class:`compas.geometry.Point`
 
     Returns
     ----------
@@ -321,33 +319,12 @@ def point_list_to_dict(pts_list):
     return data
 
 
-#  --- Length of dictionary
-def total_length_of_dictionary(dictionary):
-    """
-    Measures the total length of all the components of a dictionary
-
-    Attributes
-    ----------
-    dictionary : dict
-
-    Returns
-    ----------
-    float, total length of dictionary
-
-    """
-
-    total_length = 0
-    for key in dictionary:
-        total_length += len(dictionary[key])
-    return total_length
-
-
 #  --- Flattened list of dictionary
 def flattened_list_of_dictionary(dictionary):
     """
     Turns the dictionary into a flat list
 
-    Attributes
+    Parameters
     ----------
     dictionary : dict
 
@@ -366,7 +343,7 @@ def get_dict_key_from_value(dictionary, val):
     """
     Return the key of a dictionary that stores the val
 
-    Attributes
+    Parameters
     ----------
     dictionary : dict
     val : anything that can be stored in a dictionary
@@ -402,7 +379,7 @@ def get_all_files_with_name(startswith, endswith, DATA_PATH):
     """
     Finds all the filenames in the DATA_PATH that start and end with the provided strings
 
-    Attributes
+    Parameters
     ----------
     startswith : string
     endswith : string

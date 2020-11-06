@@ -13,16 +13,16 @@ __all__ = ['IsocurvesGenerator']
 
 class IsocurvesGenerator:
     """
-    IsocurvesGenerator is a class that generates isocurves that lie on the input
-    mesh and interpolate the targets (target_LOW, target_HIGH)
+    Generates isocurves that lie on the input mesh and interpolate the targets (target_LOW, target_HIGH)
 
     Attributes
     ----------
-    mesh_ : compas.datastructures.Mesh
-    target_LOW : compas_slicer.slicing.curved_slicing.CompoundTarget
-    target_HIGH : compas_slicer.slicing.curved_slicing.CompoundTarget
+    mesh: :class: 'compas.datastructures.Mesh'
+    target_LOW: :class: 'compas_slicer.slicing.curved_slicing.CompoundTarget'
+    target_HIGH: :class: 'compas_slicer.slicing.curved_slicing.CompoundTarget'
     number_of_curves : int
     """
+
     def __init__(self, mesh, target_LOW, target_HIGH, number_of_curves):
         logging.info("Isocurves Generator...")
         self.mesh = mesh  # compas mesh
@@ -34,8 +34,6 @@ class IsocurvesGenerator:
         t_list = get_t_list(number_of_curves)
         t_list.pop(0)  # remove first curves that is on 0 (lies on BaseBoundary)
         self.create_isocurves(t_list)
-
-    #  --- main
 
     def create_isocurves(self, t_list):
         with progressbar.ProgressBar(max_value=len(t_list)) as bar:
@@ -80,7 +78,7 @@ class IsocurvesGenerator:
 #  Additional functionality
 
 def get_t_list(number_of_curves):
-    t_list = [0.001]  # [0.001]
+    t_list = [0.001]
     a = list(np.arange(number_of_curves + 1) / (number_of_curves + 1))
     a.pop(0)
     t_list.extend(a)

@@ -1,12 +1,12 @@
-from compas_slicer.slicers.slice_utilities import ZeroCrossingContours
+from compas_slicer.slicers.slice_utilities import ZeroCrossingContoursBase
 from compas.geometry import Vector, add_vectors, scale_vector
 
 __all__ = ['GeodesicsZeroCrossingContours']
 
 
-class GeodesicsZeroCrossingContours(ZeroCrossingContours):
+class GeodesicsZeroCrossingContours(ZeroCrossingContoursBase):
     def __init__(self, mesh):
-        ZeroCrossingContours.__init__(self, mesh)  # initialize from parent class
+        ZeroCrossingContoursBase.__init__(self, mesh)  # initialize from parent class
 
     def edge_is_intersected(self, u, v):
         d1 = self.mesh.vertex[u]['distance']

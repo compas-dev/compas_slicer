@@ -19,7 +19,6 @@ class PrintOrganizer(object):
     ----------
     slicer: :class:`compas_slicer.slicers.PlanarSlicer`
         An instance of the compas_slicer.slicers.PlanarSlicer.
-
     """
 
     def __init__(self, slicer):

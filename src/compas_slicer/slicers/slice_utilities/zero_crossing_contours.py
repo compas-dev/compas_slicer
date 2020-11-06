@@ -6,23 +6,45 @@ from abc import abstractmethod
 
 logger = logging.getLogger('logger')
 
-__all__ = ['ZeroCrossingContours']
+__all__ = ['ZeroCrossingContoursBase']
 
 
-class ZeroCrossingContours(object):
+class ZeroCrossingContoursBase(object):
+    """
+    This is meant to be extended by all classes that generate isocontours of a scalar function on a mesh.
+    This class handles the two steps of iso-contouring of a triangular mesh consists of two steps;
+    1)find intersected edges and 2)sort intersections using a graph to generate coherent polylines.
+
+    The inheriting classes only have to implement the test that checks if an edge is intersected,
+    and the method to find the zero crossing of an intersection.
+
+    Attributes
+    ----------
+    mesh : :class: 'compas.datastructures.Mesh'
+
+    """
+
     def __init__(self, mesh):
         self.mesh = mesh
-        self.intersected_edges = []
-        self.intersection_points = {}
+        self.intersected_edges = []  # list of tupples (int, int)
+        self.intersection_points = {}  # dict
+        # key: tupple (int, int), The edge from which the intersection point originates.
+        # value: :class: 'compas.geometry.Point', The zero-crossing point.
         self.edge_point_index_relation = {}  # dict that stores node_index and edge relationship
-        self.find_intersected_edges()
-
-        self.sorted_point_clusters = {}
-        self.sorted_edge_clusters = {}
-
-        self.closed_paths_booleans = {}
+        # key: tupple (int, int) edge
+        # value: int, index of the intersection point
+        self.sorted_point_clusters = {}  # dict
+        # key: int, The index of the connected component
+        # value: list, :class: 'compas.geometry.Point', The sorted zero-crossing points.
+        self.sorted_edge_clusters = {}  # dict
+        # key: int, The index of the connected component.
+        # value: list, tupple (int, int), The sorted intersected edges.
+        self.closed_paths_booleans = {}  # dict
+        # key: int, The index of the connected component.
+        # value: bool, True if path is closed, False otherwise.
 
     def compute(self):
+        self.find_intersected_edges()
         G = create_graph_from_mesh_edges(self.mesh, self.intersected_edges,
                                          self.intersection_points,
                                          self.edge_point_index_relation)

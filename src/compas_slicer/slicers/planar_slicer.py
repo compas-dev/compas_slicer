@@ -10,7 +10,7 @@ __all__ = ['PlanarSlicer']
 
 class PlanarSlicer(BaseSlicer):
     """
-    PlanarSlicer implements generation of planar contours from a mesh.
+    Generates planar contours on a mesh.
 
     Attributes
     ----------
@@ -18,8 +18,9 @@ class PlanarSlicer(BaseSlicer):
         Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).
     slicer_type: string
         String representing which slicing method to use.
+        options: 'default', 'cgal', 'meshcut'
     layer_height: float
-        Number representing the distance between layers (slices).
+        Distance between layers (slices).
     """
     def __init__(self, mesh, slicer_type="default", layer_height=2.0):
         BaseSlicer.__init__(self, mesh)

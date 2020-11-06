@@ -11,13 +11,15 @@ __all__ = ['CurvedSlicer']
 
 class CurvedSlicer(BaseSlicer):
     """
-    CurvedSlicer is a class that generates non-planar slices that interpolate user-defined boundaries
+    Generates non-planar contours that interpolate user-defined boundaries.
 
     Attributes
     ----------
-    mesh : compas.datastructures.Mesh
+    mesh : :class: 'compas.datastructures.Mesh'
         Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
-    preprocessor : compas_slicer.pre_processing.CurvedSlicingPreprocessor
+        Note that the topology of the mesh matters, irregular tesselation can lead to undesired results.
+        WE recommend to 1)retopologize, 2) triangulate, and 3) weld your mesh in advance.
+    preprocessor : :class: 'compas_slicer.pre_processing.CurvedSlicingPreprocessor'
     parameters : dict
     """
 
@@ -30,7 +32,6 @@ class CurvedSlicer(BaseSlicer):
         self.n_multiplier = 1.0
 
     def generate_paths(self):
-        # --- generate paths
         n = find_desired_number_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH,
                                              self.parameters['avg_layer_height'])
         logger.info('%d paths will be generated' % n)
