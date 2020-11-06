@@ -70,7 +70,8 @@ class DirectedGraph(object):
             queue.remove(current_node)
             passed_nodes.append(current_node)
             children, cut_ids = self.get_children_of_node(current_node)
-            [self.G.add_edge(current_node, child_key, cut=common_cuts) for child_key, common_cuts in zip(children, cut_ids)]
+            [self.G.add_edge(current_node, child_key, cut=common_cuts) for child_key, common_cuts in
+             zip(children, cut_ids)]
             for child_key in children:
                 assert child_key not in passed_nodes, 'Error, cyclic directed graph.'
             [queue.append(child_key) for child_key in children if child_key not in queue]
@@ -179,28 +180,26 @@ class MeshDirectedGraph(DirectedGraph):
                     and (root, key) not in self.G.edges():
 
                 if is_true_mesh_adjacency(self.all_meshes, key, root):
-                    print('')
-                    print('common_cuts = ', common_cuts)
-                    if not len(common_cuts) == 1: # if all cuts worked, this should be 1. But life is not perfect.
+                    if not len(common_cuts) == 1:  # if all cuts worked, this should be 1. But life is not perfect.
                         logger.error('More than one common cuts between two pieces in the following split \
                         meshes. ' 'Root : %d, child : %d' % (root, key) + ' . Common cuts : ' + str(common_cuts) +
                                      'Probably some cut did not separate components')
                     children.append(key)
                     cut_ids.append(common_cuts)
 
-        # debugging output
-        self.all_meshes[root].to_obj(self.OUTPUT_PATH + '/root.obj')
-        for child in children:
-            self.all_meshes[child].to_obj(self.OUTPUT_PATH + '/child_%d.obj' % child)
-        for cuts_id in cut_ids:
-            for common_cut in cuts_id:
-                pts = utils.get_mesh_vertex_coords_with_attribute(self.all_meshes[root], 'cut', common_cut)
-                utils.save_to_json(utils.point_list_to_dict(pts), self.OUTPUT_PATH, 'cut_%d.json' % common_cut)
-        print('root : ', root)
-        print('children : ', children)
-        print('cut_ids : ', cut_ids)
+        # --- debugging output
+        # self.all_meshes[root].to_obj(self.OUTPUT_PATH + '/root.obj')
+        # for child in children:
+        #     self.all_meshes[child].to_obj(self.OUTPUT_PATH + '/child_%d.obj' % child)
+        # for cuts_id in cut_ids:
+        #     for common_cut in cuts_id:
+        #         pts = utils.get_mesh_vertex_coords_with_attribute(self.all_meshes[root], 'cut', common_cut)
+        #         utils.save_to_json(utils.point_list_to_dict(pts), self.OUTPUT_PATH, 'cut_%d.json' % common_cut)
+        # print('root : ', root)
+        # print('children : ', children)
+        # print('cut_ids : ', cut_ids)
+        # utils.interrupt()
 
-        utils.interrupt()
         return children, cut_ids  # format: [child1, child2, ...], [[common cuts 1], [common cuts 2] ...]
 
 

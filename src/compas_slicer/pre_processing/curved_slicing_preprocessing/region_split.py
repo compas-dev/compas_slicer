@@ -91,8 +91,8 @@ class MeshSplitter:
             zero_contours = cleanup_unmatched_clusters(zero_contours, keys_of_matched_pairs)
 
             if zero_contours:  # if there are point clusters close to the saddle point
-                zero_contours = smoothen_cut(zero_contours, self.mesh, saddle_vkeys=[vkey], iterations=5,
-                                             strength=0.5)
+                zero_contours = smoothen_cut(zero_contours, self.mesh, saddle_vkeys=[vkey], iterations=15,
+                                             strength=0.2)
                 # zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters.json')
                 # utils.interrupt()
 
@@ -258,7 +258,7 @@ def smoothen_cut(zero_contours, mesh, saddle_vkeys, iterations, strength):
             pts = zero_contours.sorted_point_clusters[cluster_key]
             edges = zero_contours.sorted_edge_clusters[cluster_key]
             for i, pt in enumerate(pts):
-                if 0.01 < min([distance_point_point_sqrd(pt, s) for s in saddles]) < 40.0:
+                if 0.01 < min([distance_point_point_sqrd(pt, s) for s in saddles]) < 20.0 * 20.0:
                     count += 1
                     edge = edges[i]
                     prev = pts[i - 1]

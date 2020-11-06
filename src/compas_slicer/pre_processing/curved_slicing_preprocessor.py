@@ -48,6 +48,8 @@ class CurvedSlicingPreprocessor:
         else:
             smooth, r = False, 0
         self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH, has_smooth_union=smooth, r=r)
+        if 'uneven_upper_targets_offset' in self.parameters:
+            self.target_HIGH.offset = self.parameters['uneven_upper_targets_offset']
         self.target_HIGH.compute_uneven_boundaries_t_ends(self.target_LOW)
 
         #  --- save intermediary distance outputs
@@ -67,7 +69,7 @@ class CurvedSlicingPreprocessor:
     ###########################
     # --- scalar field evaluation
 
-    def gradient_evaluation(self, output_filename, target_1, target_2=None):
+    def gradient_evaluation(self, norm_filename, g_filename, target_1, target_2=None):
         """
         Creates a GradientEvaluation that is saved in self.g_evaluation
         Computes the gradient norm
@@ -76,9 +78,11 @@ class CurvedSlicingPreprocessor:
         self.g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, 0.5, target_1, target_2)
         self.g_evaluation.compute_norm_of_gradient()
         if self.parameters['create_intermediary_outputs']:
-            utils.save_to_json(self.g_evaluation.vertex_gradient_norm, self.OUTPUT_PATH, output_filename)
+            utils.save_to_json(self.g_evaluation.vertex_gradient_norm, self.OUTPUT_PATH, norm_filename)
+            utils.save_to_json(utils.point_list_to_dict(self.g_evaluation.vertex_gradient), self.OUTPUT_PATH, g_filename)
 
     def find_critical_points(self, output_filenames):
+        assert self.g_evaluation, "You need to create a gradient evaluation first. Use function 'gradient_evaluation'."
         self.g_evaluation.find_critical_points()
         if self.parameters['create_intermediary_outputs']:
             utils.save_to_json(self.g_evaluation.minima, self.OUTPUT_PATH, output_filenames[0])
@@ -92,19 +96,19 @@ class CurvedSlicingPreprocessor:
         print("")
         logging.info("--- Mesh region splitting")
 
-        # if CUT_MESH:
-        #     self.mesh.update_default_vertex_attributes({'cut': 0})
-        #     mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH,
-        #                                     self.parameters, self.DATA_PATH)
-        #     mesh_splitter.run()
-        #
-        #     self.mesh = mesh_splitter.mesh
-        #     logger.info('Completed Region splitting')
-        #     logger.info("Region split cut indices: " + str(mesh_splitter.cut_indices))
-        #     if self.parameters['create_intermediary_outputs']:
-        #         self.mesh.to_obj(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.obj'))
-        #         self.mesh.to_json(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
-        #         logger.info("Saving to Obj and Json: " + os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
+        if CUT_MESH:
+            self.mesh.update_default_vertex_attributes({'cut': 0})
+            mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH,
+                                            self.parameters, self.DATA_PATH)
+            mesh_splitter.run()
+
+            self.mesh = mesh_splitter.mesh
+            logger.info('Completed Region splitting')
+            logger.info("Region split cut indices: " + str(mesh_splitter.cut_indices))
+            if self.parameters['create_intermediary_outputs']:
+                self.mesh.to_obj(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.obj'))
+                self.mesh.to_json(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
+                logger.info("Saving to Obj and Json: " + os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
 
         if SEPARATE_NEIGHBORHOODS:
             print("")
