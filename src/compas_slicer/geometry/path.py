@@ -15,7 +15,7 @@ class Path(object):
     Attributes
     ----------
     points : list
-        compas.geometry.Point
+        :class:`compas.geometry.Point`
     is_closed : bool
         True if the Path is a closed curve, False if the Path is open.
     """

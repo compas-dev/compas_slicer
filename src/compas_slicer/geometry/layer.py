@@ -21,7 +21,7 @@ class Layer(object):
     Attributes
     ----------
     paths : list
-        compas_slicer.geometry.Path
+        :class:`compas_slicer.geometry.Path`
     """
 
     def __init__(self, paths):

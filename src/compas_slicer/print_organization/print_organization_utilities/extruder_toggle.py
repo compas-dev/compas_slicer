@@ -7,7 +7,7 @@ __all__ = ['set_extruder_toggle',
 
 
 def set_extruder_toggle(print_organizer, slicer):
-    """ Sets the extruder toggle value for the printpoints.
+    """Sets the extruder_toggle value for the printpoints.
 
     Parameters
     ----------
@@ -62,6 +62,16 @@ def set_extruder_toggle(print_organizer, slicer):
 
 
 def override_extruder_toggle(print_organizer, override_value):
+    """Overrides the extruder_toggle value for the printpoints with a user-defined value.
+
+    Parameters
+    ----------
+    print_organizer: :class:`compas.print_organization.PrintOrganizer`
+        ...
+    override_value: bool
+        Value to override the extruder_toggle values with.
+
+    """
     pp_dict = print_organizer.printpoints_dict
     if isinstance(override_value, bool):
         for layer_key in pp_dict:

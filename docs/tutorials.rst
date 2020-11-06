@@ -1,14 +1,14 @@
 ********************************************************************************
-Examples
+Tutorials
 ********************************************************************************
 
-Here you can find some examples files for compas_slicer
+Here you can find some compas_slicer tutorials.
 
 .. toctree::
    :numbered:
    :maxdepth: 1
    :titlesonly:
 
-   examples/01_planar_slicing_simple
-   examples/02_planar_slicing_advanced
-   examples/03_curved_slicing
+   tutorials/01_placeholder
+   tutorials/02_placeholder
+   tutorials/03_placeholder

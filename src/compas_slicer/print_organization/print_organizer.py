@@ -5,7 +5,6 @@ from compas.geometry import Polyline
 import compas_slicer.utilities as utils
 import progressbar
 import numpy as np
-from compas_slicer.print_organization import get_blend_radius
 
 logger = logging.getLogger('logger')
 
@@ -16,7 +15,11 @@ class PrintOrganizer(object):
     """
     Base class for organizing the printing process.
 
-    slicer: compas_slicer.slicers.BaseSlicer
+    Attributes
+    ----------
+    slicer: :class:`compas_slicer.slicers.PlanarSlicer`
+        An instance of the compas_slicer.slicers.PlanarSlicer.
+
     """
 
     def __init__(self, slicer):
@@ -31,8 +34,9 @@ class PrintOrganizer(object):
     ###############################
     #  --- Initialization
     def create_printpoints(self, mesh):
+        count = 0
         logger.info('Creating print points ...')
-        with progressbar.ProgressBar(max_value=len(self.slicer.layers)) as bar:
+        with progressbar.ProgressBar(max_value=self.slicer.total_number_of_points) as bar:
 
             for i, layer in enumerate(self.slicer.layers):
                 self.printpoints_dict['layer_%d' % i] = {}
@@ -47,20 +51,34 @@ class PrintOrganizer(object):
                                                 mesh_normal=normal)
 
                         self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
-                bar.update()
+                        bar.update(count)
+                        count += 1
+
+    @property
+    def total_number_of_points(self):
+        """int: Total number of points in the slicer."""
+        total_number_of_pts = 0
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                for printpoint in self.printpoints_dict[layer_key][path_key]:
+                    total_number_of_pts += 1
+        return total_number_of_pts
 
     @property
     def number_of_layers(self):
+        """int: Number of layers in the PrintOrganizer."""
         return len(self.printpoints_dict)
 
+    @property
     def number_of_paths_on_layer(self, layer_index):
+        """int: Number of paths within a Layer of the PrintOrganizer."""
         return len(self.printpoints_dict['layer_%d' % layer_index])
 
     ###############################
     #  ---  TODO
 
     def check_feasibility(self):
-        """General description.
+        """...
         """
         # TODO
         raise NotImplementedError
@@ -68,32 +86,40 @@ class PrintOrganizer(object):
     ###############################
     #  ---  output printpoints data
     def output_printpoints_dict(self):
+        """Returns the PrintPoints as a dictionary."""
         data = {}
 
         count = 0
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
                 self.remove_duplicate_points_in_path(layer_key, path_key)
-
-                for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
-                    neighboring_items = self.get_printpoint_neighboring_items(layer_key, path_key, i)
-                    printpoint.blend_radius = get_blend_radius(printpoint, neighboring_items)
-
+                for printpoint in self.printpoints_dict[layer_key][path_key]:
                     data[count] = printpoint.to_data()
 
                     count += 1
         logger.info("Generated %d print points" % count)
         return data
 
-    def remove_duplicate_points_in_path(self, layer_key, path_key):
-        """Remove subsequent points that are within a certain tolerance."""
+    def remove_duplicate_points_in_path(self, layer_key, path_key, tolerance=0.0001):
+        """Remove subsequent points that are within a certain tolerance.
+
+        Parameters
+        ----------
+        layer_key: str
+            String containing the key of the layer to remove points from.
+        path_key: str
+            String containing the key of the path to remove points from.
+        tolerance: float, optional
+            Optional value for the distance between points to remove. Defaults to 0.0001.
+        """
+
         dup_index = []
         # find duplicates
         duplicate_ppts = []
         for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
             if i < len(self.printpoints_dict[layer_key][path_key]) - 1:
                 next = self.printpoints_dict[layer_key][path_key][i + 1]
-                if np.linalg.norm(np.array(printpoint.pt) - np.array(next.pt)) < 0.0001:
+                if np.linalg.norm(np.array(printpoint.pt) - np.array(next.pt)) < tolerance:
                     dup_index.append(i)
                     duplicate_ppts.append(printpoint)
 

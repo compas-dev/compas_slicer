@@ -25,6 +25,19 @@ PrintOrganizer
 
     CurvedPrintOrganizer
 
+
+Functions
+=========
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    set_extruder_toggle
+    override_extruder_toggle
+    set_linear_velocity
+    set_blend_radius
+
 """
 
 from __future__ import absolute_import

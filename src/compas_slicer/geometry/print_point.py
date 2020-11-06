@@ -11,21 +11,21 @@ class PrintPoint(object):
 
     Attributes
     ----------
-    pt : compas.geometry.Point
-        A compas Point consisting out of x, y, z coordinates
-    layer_height : float
-        The vertical distance between the point on this layer and the next layer
-    mesh_normal : compas.geometry.Vector
+    pt: :class:`compas.geometry.Point`
+        A compas Point consisting out of x, y, z coordinates.
+    layer_height: float
+        The vertical distance between the point on this layer and the next layer.
+    mesh_normal: :class:`compas.geometry.Vector`
         Normal of the mesh at this PrintPoint.
-    up_vector: compas.geometry.Vector
-        xxx
-    frame : compas.geometry.Frame
-        xxx
-    extruder_toggle : bool
-        True if extruder should be on (when printing), False if it should be off (when travelling)
-    velocity : float
+    up_vector: :class:`compas.geometry.Vector`
+        Vector in vertical (z) direction.
+    frame: :class:`compas.geometry.Frame`
+        Frame with x-axis pointing up, y-axis pointing towards the mesh normal.
+    extruder_toggle: bool
+        True if extruder should be on (when printing), False if it should be off (when travelling).
+    velocity: float
         Velocity to use for printing (print speed), in mm/s.
-    wait_time : float
+    wait_time: float
         Time in seconds to wait at this PrintPoint.
 
     """
@@ -60,6 +60,8 @@ class PrintPoint(object):
         return "<PrintPoint object at (%.2f, %.2f, %.2f)>" % (x, y, z)
 
     def get_frame(self):
+        """Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal.
+        """
         return Frame(self.pt, self.up_vector, self.mesh_normal)
 
     #################################
