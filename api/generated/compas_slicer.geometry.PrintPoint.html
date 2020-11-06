@@ -89,12 +89,12 @@ with additional functionality added for the printing process.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pt</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">compas.geometry.Point</span></code>) – A compas Point consisting out of x, y, z coordinates.</p></li>
-<li><p><strong>layer_height</strong> (<em>float</em>) – The vertical distance between the point on this layer and the next layer.</p></li>
-<li><p><strong>mesh_normal</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">compas.geometry.Vector</span></code>) – Normal of the mesh at this PrintPoint.</p></li>
-<li><p><strong>up_vector</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">compas.geometry.Vector</span></code>) – Vector in vertical (z) direction.</p></li>
-<li><p><strong>frame</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">compas.geometry.Frame</span></code>) – Frame with x-axis pointing up, y-axis pointing towards the mesh normal.</p></li>
-<li><p><strong>extruder_toggle</strong> (<em>bool</em>) – True if extruder should be on (when printing), False if it should be off (when travelling).</p></li>
+<li><p><strong>pt</strong> (<em>compas.geometry.Point</em>) – A compas Point consisting out of x, y, z coordinates</p></li>
+<li><p><strong>layer_height</strong> (<em>float</em>) – The vertical distance between the point on this layer and the next layer</p></li>
+<li><p><strong>mesh_normal</strong> (<em>compas.geometry.Vector</em>) – Normal of the mesh at this PrintPoint.</p></li>
+<li><p><strong>up_vector</strong> (<em>compas.geometry.Vector</em>) – xxx</p></li>
+<li><p><strong>frame</strong> (<em>compas.geometry.Frame</em>) – xxx</p></li>
+<li><p><strong>extruder_toggle</strong> (<em>bool</em>) – True if extruder should be on (when printing), False if it should be off (when travelling)</p></li>
 <li><p><strong>velocity</strong> (<em>float</em>) – Velocity to use for printing (print speed), in mm/s.</p></li>
 <li><p><strong>wait_time</strong> (<em>float</em>) – Time in seconds to wait at this PrintPoint.</p></li>
 </ul>
@@ -114,7 +114,7 @@ with additional functionality added for the printing process.</p>
 <td><p>Construct a PrintPoint from its data representation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.geometry.PrintPoint.get_frame.html#compas_slicer.geometry.PrintPoint.get_frame" title="compas_slicer.geometry.PrintPoint.get_frame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_frame</span></code></a>()</p></td>
-<td><p>Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal.</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.geometry.PrintPoint.to_data.html#compas_slicer.geometry.PrintPoint.to_data" title="compas_slicer.geometry.PrintPoint.to_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_data</span></code></a>()</p></td>
 <td><p>Returns a dictionary of structured data representing the data structure.</p></td>
@@ -151,9 +151,9 @@ with additional functionality added for the printing process.</p>
         
           <div id="compas-navigation" class="collapse compas-navigation">
           <ul class="nav flex-column active">
-<li class="nav-item"><a class="nav-link reference internal" href="../../index.html">Overview</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../index.html">Introduction</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../installation.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../gettingstarted.html">Getting started</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../../examples.html">Examples</a></li>
 <li class="nav-item active"><a class="nav-link reference internal" href="../../api.html">API Reference</a><ul class="nav flex-column active">
 <li class="nav-item active"><a class="nav-link reference internal" href="../compas_slicer.html">compas_slicer</a><ul class="nav flex-column active">
