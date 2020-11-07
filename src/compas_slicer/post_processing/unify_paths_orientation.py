@@ -33,7 +33,14 @@ def unify_paths_orientation(slicer):
 
 
 def make_pts_have_same_direction_as_pts_reference(pts, reference_points):
-    # check if new curve has same direction as prev curve, otherwise reverse
+    """
+    Check if new curve has same direction as prev curve, otherwise reverse.
+
+    Parameters
+    ----------
+    pts: list, :class: 'compas.geometry.Point'. The list of points whose direction we are fixing.
+    reference_points: list, :class: 'compas.geometry.Point'. [p1, p2] Two reference points.
+    """
     if len(pts) > 2 and len(reference_points) > 2:
         v1 = normalize_vector(subtract_vectors(pts[0], pts[2]))
         v2 = normalize_vector(subtract_vectors(reference_points[0], reference_points[2]))

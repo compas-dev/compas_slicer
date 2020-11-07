@@ -17,7 +17,7 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
     ----------
     slicer: :class:`compas_slicer.slicers.BaseSlicer`
         An instance of one of the compas_slicer.slicers classes.
-    d_threshold: float
+    threshold: float
         The maximum get_distance that the centroids of two successive paths can have to belong in the same group
         Recommended value, slightly bigger than the layer height
     max_layers_per_segment: int
