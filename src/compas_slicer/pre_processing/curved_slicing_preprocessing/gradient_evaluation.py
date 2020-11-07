@@ -9,7 +9,17 @@ __all__ = ['GradientEvaluation']
 
 
 class GradientEvaluation:
-    def __init__(self, mesh, DATA_PATH, t=0.5, target_LOW=None, target_HIGH=None):
+    """ Evaluation of the gradient of the scalar function of the mesh.
+
+    Attributes
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    DATA_PATH: string, path to the data folder
+    weight:
+    target_LOW: :class: 'compas_slicer.pre_processor.CompoundTarget'
+    target_HIGH: :class: 'compas_slicer.pre_processor.CompoundTarget'
+    """
+    def __init__(self, mesh, DATA_PATH, weight=0.5, target_LOW=None, target_HIGH=None):
         print('')
         logger.info('Gradient evaluation')
         self.mesh = mesh
@@ -25,26 +35,24 @@ class GradientEvaluation:
         self.face_gradient_norm = []
         self.vertex_gradient_norm = []
 
-        assign_distance_to_mesh_vertices(mesh, t, target_LOW, target_HIGH)
+        assign_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH)
 
     @property
     def assigned_distances(self):
-        return [data['distance'] for vkey, data in self.mesh.vertices(data=True)]
-
-    #####################################
-    # --- Gradient manipulation
-    # def manipulate_gradient(self):
-    #     X = normalize_gradient(self.face_gradient)
-    #     u = get_scalar_field_from_gradient()
+        """ Returns the distance values that have been assigned to the vertices for the evaluation. """
+        return [data['get_distance'] for vkey, data in self.mesh.vertices(data=True)]
 
     #####################################
     # --- Distance speed scalar evaluation
 
-    def compute_norm_of_gradient(self):
-        u_v = [self.mesh.vertex[vkey]["distance"] for vkey in self.mesh.vertices()]
+    def compute_gradient(self):
+        """ Computes the gradient on the faces and the vertices. """
+        u_v = [self.mesh.vertex[vkey]["get_distance"] for vkey in self.mesh.vertices()]
         self.face_gradient = compute_face_gradient(self.mesh, u_v)
         self.vertex_gradient = compute_vertex_gradient(self.mesh, self.face_gradient)
 
+    def compute_gradient_norm(self):
+        """ Computes the norm of the gradient. """
         logger.info('Computing norm of gradient')
         f_g = np.array([self.face_gradient[i] for i, fkey in enumerate(self.mesh.faces())])
         v_g = np.array([self.vertex_gradient[i] for i, vkey in enumerate(self.mesh.vertices())])
@@ -55,21 +63,21 @@ class GradientEvaluation:
     # --- Critical Points
 
     def find_critical_points(self):
-
+        """ Finds minima, maxima and saddle points of the scalar function on the mesh. """
         for vkey, data in self.mesh.vertices(data=True):
-            current_v = data['distance']
+            current_v = data['get_distance']
             neighbors = self.mesh.vertex_neighbors(vkey, ordered=True)
             values = []
             if len(neighbors) > 0:
                 neighbors.append(neighbors[0])
                 for n in neighbors:
-                    v = self.mesh.vertex_attributes(n)['distance']
+                    v = self.mesh.vertex_attributes(n)['get_distance']
                     if abs(v - current_v) > 0.0:
                         values.append(current_v - v)
                 sgc = count_sign_changes(values)
 
                 if sgc == 0:  # extreme point
-                    if current_v > self.mesh.vertex_attributes(neighbors[0])['distance']:
+                    if current_v > self.mesh.vertex_attributes(neighbors[0])['get_distance']:
                         self.maxima.append(vkey)
                     else:
                         self.minima.append(vkey)
@@ -83,6 +91,7 @@ class GradientEvaluation:
 # --- Helpers
 
 def count_sign_changes(values):
+    """ Returns the number of sign changes in a list of values. """
     count = 0
     prev_v = 0
     for i, v in enumerate(values):

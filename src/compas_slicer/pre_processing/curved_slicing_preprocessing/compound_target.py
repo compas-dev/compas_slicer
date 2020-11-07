@@ -21,9 +21,10 @@ __all__ = ['CompoundTarget',
 
 class CompoundTarget:
     """
-    CompoundTarget is represents a desired user-provided target. It acts as a key-frame that controls the print paths
+    Represents a desired user-provided target. It acts as a key-frame that controls the print paths
     orientations. After the curved slicing , the print paths will be aligned to the compound target close to
-    its area.
+    its area. The vertices that belong to the target are marked with their vertex attributes; they have
+    data['v_attr'] = value.
 
     Attributes
     ----------
@@ -59,31 +60,39 @@ class CompoundTarget:
         self.geodesics_method = geodesics_method
         self.anisotropic_scaling = anisotropic_scaling  # Anisotropic scaling not yet implemented
 
-        self.L = None
+        self.L = None  # 'scipy.sparse.csr_matrix', sparse matrix (dimensions: #V x #V), laplace operator.
+        # = igl.cotmatrix(v, f)
+        self.cotans = None  # F by 3 list of 1/2*cotangents corresponding angles
+        # = igl.cotmatrix_entries(v, f)
 
         self.offset = 0
         self.VN = len(list(self.mesh.vertices()))
 
-        # targets connected components
+        # filled in by function 'self.find_targets_connected_components()'
         self.all_target_vkeys = []  # flattened list with all vi_starts
         self.clustered_vkeys = []  # nested list with all vi_starts
         self.number_of_boundaries = None  # int
 
+        self.weight_max_per_cluster = []
+
         # geodesic distances
-        # These parameters SHOULD NOT BE WRITTEN DIRECTLY! ONLY THROUGH THE METHOD 'update_distances_lists'
-        self.distances_lists = []  # nested list. Shape: number_of_boundaries x number_of_vertices
-        self.distances_lists_flipped = []  # nested list. Shape: number_of_vertices x number_of_boundaries
-        self.np_distances_lists_flipped = np.array([])  # numpy array of self.distances_lists_flipped
-        self.max_dist = None  # maximum distance value from the target on any vertex of the mesh
+        # filled in by function 'self.update_distances_lists()'
+        self._distances_lists = []  # nested list. Shape: number_of_boundaries x number_of_vertices
+        self._distances_lists_flipped = []  # nested list. Shape: number_of_vertices x number_of_boundaries
+        self._np_distances_lists_flipped = np.array([])  # numpy array of self._distances_lists_flipped
+        self._max_dist = None  # maximum get_distance value from the target on any vertex of the mesh
 
-        self.t_end_per_cluster = []
-
+        # compute
         self.find_targets_connected_components()
         self.compute_geodesic_distances()
 
-    #############################
-    #  --- Clustering
+    #  --- Neighborhoods clustering
     def find_targets_connected_components(self):
+        """
+        Clusters all the vertices that belong to the target into neighborhoods using a graph.
+        Each target can have an arbitrary number of neighborhoods/clusters.
+        Fills in the attributes: self.all_target_vkeys, self.clustered_vkeys, self.number_of_boundaries
+        """
         self.all_target_vkeys = [vkey for vkey, data in self.mesh.vertices(data=True) if
                                  data[self.v_attr] == self.value]
         assert len(self.all_target_vkeys) > 0, "There are no vertices in the mesh with the attribute : " \
@@ -94,12 +103,15 @@ class CompoundTarget:
 
         for i, cp in enumerate(nx.connected_components(G)):
             self.clustered_vkeys.append(list(cp))
-        logger.info('Compound target with value : %d. Number of targets : %d' % (
+        logger.info("Compound target with 'boundary'=%d. Number of connected_components : %d" % (
             self.value, len(list(nx.connected_components(G)))))
 
-    #############################
     #  --- Geodesic distances
     def compute_geodesic_distances(self):
+        """
+        Computes the geodesic distances from each of the target's neighborhoods  to all the mesh vertices.
+        Fills in the distances attributes.
+        """
         if self.geodesics_method == 'exact':
             distances_lists = [get_igl_EXACT_geodesic_distances(self.mesh, vstarts) for vstarts in
                                self.clustered_vkeys]
@@ -112,105 +124,107 @@ class CompoundTarget:
         self.update_distances_lists(distances_lists)
 
     def update_distances_lists(self, distances_lists):
-        self.distances_lists = distances_lists
-        self.distances_lists_flipped = []  # empty
+        """
+        Fills in the distances attributes.
+        """
+        self._distances_lists = distances_lists
+        self._distances_lists_flipped = []  # empty
         for i in range(self.VN):
-            current_values = [self.distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
-            self.distances_lists_flipped.append(current_values)
-        self.np_distances_lists_flipped = np.array(self.distances_lists_flipped)
-        self.max_dist = np.max(self.np_distances_lists_flipped)
+            current_values = [self._distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
+            self._distances_lists_flipped.append(current_values)
+        self._np_distances_lists_flipped = np.array(self._distances_lists_flipped)
+        self._max_dist = np.max(self._np_distances_lists_flipped)
 
-    # ---- Uneven boundaries
-    def compute_uneven_boundaries_t_ends(self, other_target):
+    #  --- Uneven weights
+    @property
+    def has_uneven_weights(self):
+        """ Returns True if the target has uneven_weights calculated, False otherwise. """
+        return len(self.weight_max_per_cluster) > 0
+
+    def compute_uneven_boundaries_weight_max(self, other_target):
+        """
+        If the target has multiple neighborhoods/clusters of vertices, then it computes their maximum distance from
+        the other_target. Based on that it calculates their weight_max for the interpolation process
+        """
         if self.number_of_boundaries > 1:
             ds_avg_HIGH = self.get_boundaries_rel_dist_from_other_target(other_target)
 
             for i, d in enumerate(ds_avg_HIGH):  # offset all distances except the maximum one
-                if abs(d - max(ds_avg_HIGH)) > 0.01:  # if it isn't the max value
+                if abs(d - max(ds_avg_HIGH)) > 0.01:  # if it isn'weight the max value
                     ds_avg_HIGH[i] = d + self.offset
 
-            self.t_end_per_cluster = [d / max(ds_avg_HIGH) for d in ds_avg_HIGH]
-            logger.info('t_end_per_cluster : ' + str(self.t_end_per_cluster))
+            self.weight_max_per_cluster = [d / max(ds_avg_HIGH) for d in ds_avg_HIGH]
+            logger.info('weight_max_per_cluster : ' + str(self.weight_max_per_cluster))
         else:
             logger.info("Did not compute_norm_of_gradient uneven boundaries, target consists of single component")
 
-    @property
-    def has_uneven_weights(self):
-        return len(self.t_end_per_cluster) > 0
-
-    #############################
     #  --- Relation to other target
-    def get_boundaries_rel_dist_from_other_target(self, other_target, type='median'):
-        """ Returns a list, one relative distance value per connected boundary"""
+    def get_boundaries_rel_dist_from_other_target(self, other_target, avg_type='median'):
+        """
+        Returns a list, one relative distance value per connected boundary neighborhood.
+        That is the average of the distances of the vertices of that boundary neighborhood from the other_target.
+        """
         distances = []
         for vi_starts in self.clustered_vkeys:
-            ds = [other_target.distance(vi) for vi in vi_starts]
-            if type == 'mean':
+            ds = [other_target.get_distance(vi) for vi in vi_starts]
+            if avg_type == 'mean':
                 distances.append(statistics.mean(ds))
             else:  # 'median'
                 distances.append(statistics.median(ds))
         return distances
 
     def get_extreme_distances_from_other_target(self, other_target):
+        """
+        Returns the minimum and maximum distance of the vertices of this target from the other_target
+        """
         extreme_distances = []
         for v_index in other_target.all_target_vkeys:
-            extreme_distances.append(self.all_distances()[v_index])
+            extreme_distances.append(self.get_all_distances()[v_index])
         return min(extreme_distances), max(extreme_distances)
 
     #############################
     #  --- get distances
 
-    def all_clusters_distances(self, i):
-        """ Returns distances from each cluster separately per vertex. Smooth union doesn't play any role. """
-        return [self.distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
+    def get_all_clusters_distances(self, i):
+        """ Returns distances from each cluster separately per vertex. Smooth union doesn'weight play play any role! """
+        return [self._distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
 
-    def all_distances(self):
+    def get_all_distances(self):
         """ Returns the resulting distances per every vertex. """
-        return [self.distance(i) for i in range(self.VN)]
+        return [self.get_distance(i) for i in range(self.VN)]
 
-    def distance(self, i):
-        """ Return distance for vertex with index i"""
+    def get_distance(self, i):
+        """ Return get_distance for vertex with index i. """
         if self.has_smooth_union:
             return self.smooth_union(i)
         else:
             return self.union(i)
 
+    def get_max_dist(self):
+        """ Returns the maximum distance that the target has on a mesh vertex. """
+        return self._max_dist
+
     def union(self, i):
         """ Union of distances for vertex with index i"""
-        return np.min(self.np_distances_lists_flipped[i])
+        return np.min(self._np_distances_lists_flipped[i])
 
     def smooth_union(self, i):
         """ Smooth union of distances for vertex with index i"""
-        return smooth_union_list(values=self.np_distances_lists_flipped[i], r=self.r)
+        return smooth_union_list(values=self._np_distances_lists_flipped[i], r=self.r)
 
     #############################
-    #  --- distance smoothing
-
-    def get_laplacian(self, fix_boundaries=True):
-        logger.info('Getting laplacian matrix, fix boundaries : ' + str(fix_boundaries))
-        v, f = self.mesh.to_vertices_and_faces()
-        L = igl.cotmatrix(np.array(v), np.array(f))
-
-        if fix_boundaries:
-            # fix boundaries by putting the corresponding columns of the sparse matrix to 0
-            L_dense = L.toarray()
-            for i, (vkey, data) in enumerate(self.mesh.vertices(data=True)):
-                if data['boundary'] > 0:
-                    L_dense[i][:] = np.zeros(self.VN)
-            L = scipy.sparse.csr_matrix(L_dense)
-
-        return L
-
-    def laplacian_smoothing(self, iterations, lamda):
+    #  --- get_distance smoothing
+    def laplacian_smoothing(self, iterations, strength):
+        """ Smooth the distances on the mesh, using iterative laplacian smoothing."""
         if self.L is None:
-            self.L = self.get_laplacian()
+            self.L = utils.get_mesh_laplacian_matrix(self.mesh, fix_boundaries=True)
         new_distances_lists = []
 
         logger.info('Laplacian smoothing of all distances')
-        for i, a in enumerate(self.distances_lists):
+        for i, a in enumerate(self._distances_lists):
             a = np.array(a)  # a: numpy array containing the attribute to be smoothed
             for _ in range(iterations):  # iterative smoothing
-                a_prime = a + lamda * self.L * a
+                a_prime = a + strength * self.L * a
                 a = a_prime
             new_distances_lists.append(list(a))
         self.update_distances_lists(new_distances_lists)
@@ -218,25 +232,40 @@ class CompoundTarget:
     #############################
     #  ------ output
     def save_distances(self, name):
-        utils.save_to_json(self.all_distances(), self.OUTPUT_PATH, name)
+        """
+        Save distances to json.
+        Saves one list with distance values (one per vertex).
+
+        Parameters
+        ----------
+        name: string, name of json to be saved
+        """
+        utils.save_to_json(self.get_all_distances(), self.OUTPUT_PATH, name)
 
     def save_distances_clusters(self, name):
+        """
+        Save distances for each cluster separately to json.
+        Saves a dict with (number_of_boundaries x VN) distance values.
+            key: int, index of connected boundary neighborhood.
+            value: list, distance values (one per vertex).
+
+        Parameters
+        ----------
+        name: string, name of json to be saved
+        """
         clusters_distances = {}
         for list_index in range(self.number_of_boundaries):
             clusters_distances[list_index] = []
 
         for i in range(self.VN):
-            all_ds = self.all_clusters_distances(i)
+            all_ds = self.get_all_clusters_distances(i)
             for j, d in enumerate(all_ds):
                 clusters_distances[j].append(d)
         utils.save_to_json(clusters_distances, self.OUTPUT_PATH, name)
 
-    def save_start_vertices(self, name):
-        utils.save_to_json([int(vi) for vi in self.all_target_vkeys], self.OUTPUT_PATH, name)
-
-    #############################
     #  ------ assign new Mesh
     def assign_new_mesh(self, mesh):
+        """ When the base mesh changes, a new mesh needs to be assigned. """
         mesh.to_json(self.OUTPUT_PATH + "/temp.obj")
         mesh = Mesh.from_json(self.OUTPUT_PATH + "/temp.obj")
         self.mesh = mesh
@@ -255,11 +284,13 @@ def smooth_union_list(values, r):
 
 
 def smooth_union(da, db, r):
+    """ Returns a smooth union of the two elements da, db with blend radius r. """
     e = max(r - abs(da - db), 0)
     return min(da, db) - e * e * 0.25 / r
 
 
 def champfer_union(da, db, r):
+    """ Returns a champfer union of the two elements da, db with blend radius r. """
     m = min(da, db)
     if m > (da ** 2 + db ** 2 - r ** 2) * math.sqrt(0.5):
         print('here')

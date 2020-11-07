@@ -59,12 +59,14 @@ class IntersectionCurveMeshPlane(ZeroCrossingContoursBase):
         ZeroCrossingContoursBase.__init__(self, mesh)  # initialize from parent class
 
     def edge_is_intersected(self, u, v):
+        """ Returns True if the edge u,v has a zero-crossing, False otherwise. """
         a = self.mesh.vertex_attributes(u, 'xyz')
         b = self.mesh.vertex_attributes(v, 'xyz')
         z = [a[2], b[2]]  # check if the plane.z is withing the range of [a.z, b.z]
         return min(z) <= self.plane.point[2] < max(z)
 
     def find_zero_crossing_point(self, u, v):
+        """ Finds the position of the zero-crossing on the edge u,v. """
         a = self.mesh.vertex_attributes(u, 'xyz')
         b = self.mesh.vertex_attributes(v, 'xyz')
         return intersection_segment_plane((a, b), self.plane)

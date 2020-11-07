@@ -11,6 +11,18 @@ __all__ = ['compute_vertex_gradient',
 
 
 def compute_vertex_gradient(mesh, face_gradient):
+    """
+    Finds vertex gradient given an already calculated per face gradient.
+
+    Parameters
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    face_gradient: np.array with one vec3 per face of the mesh. (dimensions : #F x 3)
+
+    Returns
+    ----------
+    np.array (dimensions : #V x 3) one gradient vector per vertex.
+    """
     logger.info('Computing per vertex gradient')
     vertex_gradient = []
     for v_key in mesh.vertices():
@@ -26,6 +38,18 @@ def compute_vertex_gradient(mesh, face_gradient):
 
 
 def compute_edge_gradient(mesh, vertex_gradient):
+    """
+    Finds edge gradient given an already calculated per vertex gradient.
+
+    Parameters
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    vertex_gradient: np.array with one vec3 per vertex of the mesh. (dimensions : #V x 3)
+
+    Returns
+    ----------
+    np.array (dimensions : #E x 3) one gradient vector per edge.
+    """
     edge_gradient = []
     for u, v in mesh.edges():
         thisEdgeGradient = vertex_gradient[u] + vertex_gradient[v]
@@ -34,7 +58,19 @@ def compute_edge_gradient(mesh, vertex_gradient):
 
 
 def compute_face_gradient(mesh, u):
-    """ u is given per vertex """
+    """
+    Finds face gradient from scalar field u.
+    Scalar field u is given per vertex.
+
+    Parameters
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    u: list, float. (dimensions : #VN x 1)
+
+    Returns
+    ----------
+    np.array (dimensions : #F x 3) one gradient vector per face.
+    """
     logger.info('Computing per face gradient')
     grad = []
     for fkey in mesh.faces():
@@ -53,6 +89,7 @@ def compute_face_gradient(mesh, u):
 
 
 def get_face_edge_vectors(mesh, fkey):
+    """ Returns the edge vectors of the face with fkey. """
     e0, e1, e2 = mesh.face_halfedges(fkey)
     edge_0 = np.array(mesh.vertex_coordinates(e0[0])) - np.array(mesh.vertex_coordinates(e0[1]))
     edge_1 = np.array(mesh.vertex_coordinates(e1[0])) - np.array(mesh.vertex_coordinates(e1[1]))
@@ -61,6 +98,19 @@ def get_face_edge_vectors(mesh, fkey):
 
 
 def compute_per_face_divergence(mesh, X, cotans):
+    """
+    Computes the divergence of the gradient X for the mesh, using cotangent weights.
+
+    Parameters
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    X: np.array, (dimensions: #F x 3), per face gradient
+    cotans:  np.array, (dimensions: #F x 3), 1/2*cotangents corresponding angles
+
+    Returns
+    ----------
+    np.array (dimensions : #F x 1) one float (divergence value) per face.
+    """
     cotans = cotans.reshape(-1, 3)
     div_X = np.zeros(len(list(mesh.vertices())))
     for fi, fkey in enumerate(mesh.faces()):
@@ -74,15 +124,33 @@ def compute_per_face_divergence(mesh, X, cotans):
     return div_X
 
 
-def normalize_gradient(g):
-    return g / np.linalg.norm(g, axis=1)[..., np.newaxis]  # normalize
+def normalize_gradient(X):
+    """ Returns normalized gradient X. """
+    return X / np.linalg.norm(X, axis=1)[..., np.newaxis]  # normalize
 
 
-def get_scalar_field_from_gradient(g, mesh, L, cotans):
-    div_X = compute_per_face_divergence(mesh, g, cotans)
-    phi = scipy.sparse.linalg.spsolve(L, div_X)
-    phi = phi - np.amin(phi)  # make start value equal 0
-    return phi
+def get_scalar_field_from_gradient(mesh, X, L, cotans):
+    """
+    Find scalar field u that best explains gradient X.
+    Laplacian(u) = Divergence(X).
+    This defines a scalar field up to translation, then we subtract the min to make sure it starts from 0.
+
+    Parameters
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    X: np.array, (dimensions: #F x 3), per face gradient
+    L: 'scipy.sparse.csr_matrix',
+        sparse matrix (dimensions: #V x #V), laplace operator, each row i corresponding to v(i, :)
+    cotans: np.array, (dimensions: #F x 3), 1/2*cotangents corresponding angles
+
+    Returns
+    ----------
+    np.array (dimensions : #V x 1) one scalar value per vertex.
+    """
+    div_X = compute_per_face_divergence(mesh, X, cotans)
+    u = scipy.sparse.linalg.spsolve(L, div_X)
+    u = u - np.amin(u)  # make start value equal 0
+    return u
 
 
 if __name__ == "__main__":

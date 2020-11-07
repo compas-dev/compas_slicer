@@ -9,7 +9,7 @@ __all__ = ['seams_smooth']
 
 def seams_smooth(slicer, smooth_distance):
     """Smoothes the seams (transition between layers)
-    by removing points within a certain distance.
+    by removing points within a certain get_distance.
 
     Parameters
     ----------
@@ -23,7 +23,7 @@ def seams_smooth(slicer, smooth_distance):
     None
     """
 
-    logger.info("Smoothing seams with a distance of %i mm" % smooth_distance)
+    logger.info("Smoothing seams with a get_distance of %i mm" % smooth_distance)
 
     for i, layer in enumerate(slicer.layers):
         if len(layer.paths) == 1:
@@ -36,7 +36,7 @@ def seams_smooth(slicer, smooth_distance):
                         # remove points if within smooth_distance
                         path.points.pop(0)
                     else:
-                        # create new point at a distance of the
+                        # create new point at a get_distance of the
                         # 'smooth_distance' from the first point,
                         # so that all seams are of equal length
                         vect = Vector.from_start_end(pt0, point)

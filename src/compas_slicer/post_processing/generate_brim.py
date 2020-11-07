@@ -21,7 +21,7 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
     slicer: :class:`compas_slicer.slicers.PlanarSlicer`
         An instance of the compas_slicer.slicers.PlanarSlicer class
     layer_width: float
-        A number representing the distance between brim contours
+        A number representing the get_distance between brim contours
         (typically the width of a layer)
     number_of_brim_paths: int
         Number of brim paths to add.

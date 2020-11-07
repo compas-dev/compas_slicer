@@ -15,14 +15,12 @@ __all__ = ['get_igl_EXACT_geodesic_distances',
 
 def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
     """
-    Docstring to be added.
+    Calculate geodesic distances using libigl.
 
     Attributes
     ----------
-    xx : xx
-        xx
-    xx : xx
-        xx
+    mesh: :class: 'compas.datastructures.Mesh'
+    vertices_start: list, int
     """
 
     if 'igl' not in packages:
@@ -40,6 +38,7 @@ def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
 
 def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH,
                                        anisotropic_scaling, equalized_v_indices=None):
+    """ Calculate geodesic distances using the heat method. """
     raise NotImplementedError
 
 

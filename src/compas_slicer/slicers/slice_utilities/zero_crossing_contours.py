@@ -80,13 +80,14 @@ class ZeroCrossingContoursBase(object):
         utils.save_to_json(all_points, DATA_PATH, name)
 
     # --- Abstract methods
-
     @abstractmethod
     def edge_is_intersected(self, u, v):
+        """ Returns True if the edge u,v has a zero-crossing, False otherwise. """
         # to be implemented by the inheriting classes
         pass
 
     @abstractmethod
     def find_zero_crossing_point(self, u, v):
+        """ Finds the position of the zero-crossing on the edge u,v. """
         # to be implemented by the inheriting classes
         pass

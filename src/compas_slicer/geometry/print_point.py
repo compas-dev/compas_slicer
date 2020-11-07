@@ -14,7 +14,7 @@ class PrintPoint(object):
     pt: :class:`compas.geometry.Point`
         A compas Point consisting out of x, y, z coordinates.
     layer_height: float
-        The vertical distance between the point on this layer and the next layer.
+        The vertical get_distance between the point on this layer and the next layer.
     mesh_normal: :class:`compas.geometry.Vector`
         Normal of the mesh at this PrintPoint.
     up_vector: :class:`compas.geometry.Vector`

@@ -6,6 +6,7 @@ from compas.geometry import Vector, closest_point_in_cloud, length_vector
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
+import scipy
 
 logger = logging.getLogger('logger')
 
@@ -17,6 +18,7 @@ __all__ = ['get_output_directory',
            'point_list_to_dict',
            'get_closest_mesh_vkey_to_pt',
            'get_closest_mesh_normal_to_pt',
+           'get_mesh_laplacian_matrix',
            'get_closest_pt_index',
            'get_closest_pt',
            'plot_networkx_graph',
@@ -33,7 +35,7 @@ def get_output_directory(path):
 
     Parameters
     ----------
-    path : string
+    path: string
         The path where the 'output' directory will be created
 
     Returns
@@ -53,8 +55,8 @@ def get_closest_pt_index(pt, pts):
 
     Parameters
     ----------
-    pt : compas.geometry.Point3d
-    pts : list, compas.geometry.Point3d
+    pt: compas.geometry.Point3d
+    pts: list, compas.geometry.Point3d
 
     Returns
     ----------
@@ -73,8 +75,8 @@ def get_closest_pt(pt, pts):
 
     Parameters
     ----------
-    pt : :class: 'compas.geometry.Point'
-    pts : list, :class: 'compas.geometry.Point3d'
+    pt: :class: 'compas.geometry.Point'
+    pts: list, :class: 'compas.geometry.Point3d'
 
     Returns
     ----------
@@ -91,9 +93,9 @@ def smooth_vectors(vectors, strength, iterations):
 
     Parameters
     ----------
-    vectors : list, :class: 'compas.geometry.Vector'
-    strength : float
-    iterations : int
+    vectors: list, :class: 'compas.geometry.Vector'
+    strength: float
+    iterations: int
 
     Returns
     ----------
@@ -120,9 +122,9 @@ def save_to_json(data, filepath, name):
 
     Parameters
     ----------
-    data : dict
-    filepath : string
-    name : string
+    data: dict
+    filepath: string
+    name: string
     """
 
     filename = os.path.join(filepath, name)
@@ -137,8 +139,8 @@ def load_from_json(filepath, name):
 
     Parameters
     ----------
-    filepath : string
-    name : string
+    filepath: string
+    name: string
     """
 
     filename = os.path.join(filepath, name)
@@ -157,7 +159,7 @@ def check_triangular_mesh(mesh):
 
     Parameters
     ----------
-    mesh : :class: 'compas.datastructures.Mesh'
+    mesh: :class: 'compas.datastructures.Mesh'
     """
 
     for f_key in mesh.faces():
@@ -173,8 +175,8 @@ def get_closest_mesh_vkey_to_pt(mesh, pt):
 
     Parameters
     ----------
-    mesh : :class: 'compas.datastructures.Mesh'
-    pt : :class: 'compas.geometry.Point'
+    mesh: :class: 'compas.datastructures.Mesh'
+    pt: :class: 'compas.geometry.Point'
 
     Returns
     ----------
@@ -195,8 +197,8 @@ def get_closest_mesh_normal_to_pt(mesh, pt):
 
     Parameters
     ----------
-    mesh : :class: 'compas.datastructures.Mesh'
-    pt : :class: 'compas.geometry.Point'
+    mesh: :class: 'compas.datastructures.Mesh'
+    pt: :class: 'compas.geometry.Point'
 
     Returns
     ----------
@@ -216,9 +218,9 @@ def get_mesh_vertex_coords_with_attribute(mesh, attr, value):
 
     Parameters
     ----------
-    mesh : :class: 'compas.datastructures.Mesh'
-    attr : str
-    value : anything that can be stored into a dictionary
+    mesh: :class: 'compas.datastructures.Mesh'
+    attr: str
+    value: anything that can be stored into a dictionary
 
     Returns
     ----------
@@ -239,10 +241,10 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
 
     Parameters
     ----------
-    k : int, index of the point
-    point : :class: 'compas.geometry.Point'
-    path : :class: 'compas_slicer.geometry.Path'
-    mesh : :class: 'compas.datastructures.Mesh'
+    k: int, index of the point
+    point: :class: 'compas.geometry.Point'
+    path: :class: 'compas_slicer.geometry.Path'
+    mesh: :class: 'compas.datastructures.Mesh'
 
     Returns
     ----------
@@ -280,6 +282,35 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     return normal
 
 
+def get_mesh_laplacian_matrix(mesh, fix_boundaries=True):
+    """
+    Gets the laplace operator of the mesh
+
+    Parameters
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    fix_boundaries: bool
+
+    Returns
+    ----------
+    :class: 'scipy.sparse.csr_matrix'
+        sparse matrix (dimensions: #V x #V), laplace operator, each row i corresponding to v(i, :)
+    """
+    import igl
+    logger.info('Getting laplacian matrix, fix boundaries : ' + str(fix_boundaries))
+    v, f = mesh.to_vertices_and_faces()
+    L = igl.cotmatrix(np.array(v), np.array(f))
+
+    if fix_boundaries:
+        # fix boundaries by putting the corresponding columns of the sparse matrix to 0
+        L_dense = L.toarray()
+        for i, (vkey, data) in enumerate(mesh.vertices(data=True)):
+            if data['boundary'] > 0:
+                L_dense[i][:] = np.zeros(len(v))
+        L = scipy.sparse.csr_matrix(L_dense)
+    return L
+
+
 #######################################
 #  networkx graph
 
@@ -289,7 +320,7 @@ def plot_networkx_graph(G):
 
     Parameters
     ----------
-    G : networkx.Graph
+    G: networkx.Graph
     """
 
     plt.subplot(121)
@@ -306,7 +337,7 @@ def point_list_to_dict(pts_list):
 
     Parameters
     ----------
-    pts_list : list, :class:`compas.geometry.Point`
+    pts_list: list, :class:`compas.geometry.Point`
 
     Returns
     ----------
@@ -326,7 +357,7 @@ def flattened_list_of_dictionary(dictionary):
 
     Parameters
     ----------
-    dictionary : dict
+    dictionary: dict
 
     Returns
     ----------
@@ -345,15 +376,15 @@ def get_dict_key_from_value(dictionary, val):
 
     Parameters
     ----------
-    dictionary : dict
-    val : anything that can be stored in a dictionary
+    dictionary: dict
+    val: anything that can be stored in a dictionary
     """
 
     for key in dictionary:
         value = dictionary[key]
         if val == value:
             return key
-    return "key doesn't exist"
+    return "key doesn'weight exist"
 
 
 #######################################
@@ -381,9 +412,9 @@ def get_all_files_with_name(startswith, endswith, DATA_PATH):
 
     Parameters
     ----------
-    startswith : string
-    endswith : string
-    DATA_PATH : string
+    startswith: string
+    endswith: string
+    DATA_PATH: string
 
     Returns
     ----------

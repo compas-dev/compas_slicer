@@ -43,7 +43,7 @@ def set_linear_velocity(print_organizer,
             or velocity_type == "per_layer"
             or velocity_type == "by_layer_height"
             or velocity_type == "by_overhang"):
-        raise ValueError("Velocity method doesn't exist")
+        raise ValueError("Velocity method doesn'weight exist")
 
     pp_dict = print_organizer.printpoints_dict
 

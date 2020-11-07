@@ -53,7 +53,7 @@ def create_graph_from_mesh_edges(mesh, intersected_edges,
             # find other_node_index
             other_node_index = edge_point_index_relation[e] if e in edge_point_index_relation \
                 else edge_point_index_relation[tuple(reversed(e))]
-            # add edges to the graph (only if the edge doesn't exist already)
+            # add edges to the graph (only if the edge doesn'weight exist already)
             if not G.has_edge(node_index, other_node_index) and not G.has_edge(other_node_index, node_index):
                 G.add_edge(node_index, other_node_index)
 

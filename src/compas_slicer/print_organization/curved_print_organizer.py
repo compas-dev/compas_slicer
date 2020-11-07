@@ -117,7 +117,7 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
                     [path_collection.printpoints[j][k] for k, p in enumerate(path.points)]
 
     def check_printpoints_feasibility(self):
-        """ Checks if the distance to the closest support of every layer height is within the admissible limits. """
+        """ Checks if the get_distance to the closest support of every layer height is within the admissible limits. """
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
                 ppt = self.printpoints_dict[layer_key][path_key]

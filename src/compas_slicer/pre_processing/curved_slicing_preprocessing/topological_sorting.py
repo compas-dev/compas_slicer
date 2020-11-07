@@ -35,10 +35,12 @@ class DirectedGraph(object):
         logger.info('Edges : ' + str(self.G.edges(data=True)))
 
         self.N = len(list(self.G.nodes()))
-        self.adj_list = self.get_adjacency_list()
+        self.adj_list = self.get_adjacency_list()  # Nested list where adj_list[i] is a list of all the neighbors
+        # of the i-th component
         self.check_that_all_nodes_found_their_connectivity()
         logger.info('Adjacency list : ' + str(self.adj_list))
-        self.in_degree = self.get_in_degree()
+        self.in_degree = self.get_in_degree()  # Nested list where adj_list[i] is a list of all the edges pointing
+        # to the i-th node.
         self.all_orders = []
 
     def __repr__(self):
@@ -47,21 +49,22 @@ class DirectedGraph(object):
     # ------------------------------------ Methods to be implemented by inheriting classes
     @abstractmethod
     def find_roots(self):
-        """Roots are segments that lie on the build platform, i.e. they can be print first"""
+        """ Roots are segments that lie on the build platform, i.e. they can be print first. """
         pass
 
     @abstractmethod
     def create_graph_nodes(self):
-        """Add the nodes to the graph with their attributes"""
+        """ Add the nodes to the graph with their attributes. """
         pass
 
     @abstractmethod
     def get_children_of_node(self, root):
-        """Find all the segments that lie on the current root segment"""
+        """ Find all the segments that lie on the current root segment. """
         pass
 
     # ------------------------------------ Creation of graph connectivity between different nodes
     def create_directed_graph_edges(self, root_indices):
+        """ Create the connectivity of the directed graph using breadth-first search graph traversal. """
         passed_nodes = []
         queue = root_indices
 
@@ -77,6 +80,7 @@ class DirectedGraph(object):
             [queue.append(child_key) for child_key in children if child_key not in queue]
 
     def check_that_all_nodes_found_their_connectivity(self):
+        """ Assert that there is no island, i.e. no node or groups of nodes that are not connected to the base. """
         good_nodes = [r for r in self.root_indices]
         for children_list in self.adj_list:
             [good_nodes.append(child) for child in children_list if child not in good_nodes]
@@ -85,12 +89,14 @@ class DirectedGraph(object):
 
     # ------------------------------------ Find all topological orders
     def get_adjacency_list(self):
+        """ Returns adjacency list. Nested list where adj_list[i] is a list of all the neighbors of the ith component"""
         adj_list = [[] for _ in range(self.N)]  # adjacency list , size = len(Nodes), stores nodes' neighbors
         for i, adjacent_to_node in self.G.adjacency():
             [adj_list[i].append(key) for key in adjacent_to_node]
         return adj_list
 
     def get_in_degree(self):
+        """ Returns in_degree list. Nested list where adj_list[i] is a list of all the edges pointing to the node."""
         in_degree = [0] * self.N  # in_degree,  size = len(Nodes) , stores in-degree of a node
         for key_degree_tuple in self.G.in_degree:
             key = key_degree_tuple[0]
@@ -99,6 +105,12 @@ class DirectedGraph(object):
         return in_degree
 
     def get_all_topological_orders(self):
+        """
+        Finds  all topological orders from source to sink.
+        Returns
+        ----------
+        list of lists of integers. Each list represents the indices of one topological order.
+        """
         self.all_orders = []  # make sure list is empty
         discovered = [False] * self.N
         path = []  # list to store the topological order
@@ -107,7 +119,10 @@ class DirectedGraph(object):
         return self.all_orders
 
     def get_orders(self, path, discovered):
-        # Sorting algorithm taken from https://www.techiedelight.com/find-all-possible-topological-orderings-of-dag/
+        """
+        Finds all topological orders from source to sink.
+        Sorting algorithm taken from https://www.techiedelight.com/find-all-possible-topological-orderings-of-dag/
+        """
         for v in range(self.N):  # for every node
             # proceed only if in-degree of current node is 0 and current node is not processed yet
             if self.in_degree[v] == 0 and not discovered[v]:
@@ -136,6 +151,7 @@ class DirectedGraph(object):
             self.all_orders.append(copy.deepcopy(path))
 
     def get_parents_of_node(self, node_index):
+        """ Returns the parents of node with i = node_index. """
         return [j for j, adj in enumerate(self.adj_list) if node_index in adj]
 
 
@@ -153,6 +169,7 @@ class MeshDirectedGraph(DirectedGraph):
         DirectedGraph.__init__(self)
 
     def find_roots(self):
+        """ Roots are segments that lie on the build platform, i.e. they can be print first"""
         roots = []
         for i, mesh in enumerate(self.all_meshes):
             for vkey, data in mesh.vertices(data=True):
@@ -162,12 +179,23 @@ class MeshDirectedGraph(DirectedGraph):
         return roots
 
     def create_graph_nodes(self):
-        # initialize graph Meshes as nodes. Cuts and boundaries as attributes
+        """ Add each of the split meshes to the graph as nodes. Cuts and boundaries are stored as attributes. """
         for i, m in enumerate(self.all_meshes):
             self.G.add_node(i, cuts=get_existing_cut_indices(m),
                             boundaries=get_existing_boundary_indices(m))
 
     def get_children_of_node(self, root):
+        """
+        Find all the nodes that lie on the current root.
+
+        Parameters
+        ----------
+        root: int, index of root node
+
+        Returns
+        ----------
+        2 lists [child1, child2, ...], [[common cuts 1], [common cuts 2] ...]
+        """
         children = []
         cut_ids = []
         parent_data = self.G.nodes(data=True)[root]
@@ -200,12 +228,11 @@ class MeshDirectedGraph(DirectedGraph):
         # print('cut_ids : ', cut_ids)
         # utils.interrupt()
 
-        return children, cut_ids  # format: [child1, child2, ...], [[common cuts 1], [common cuts 2] ...]
+        return children, cut_ids
 
 
 #################################
-#  Segments DirectedGraph
-
+#  --- Segments DirectedGraph
 
 class SegmentsDirectedGraph(DirectedGraph):
     """ The SegmentsDirectedGraph is used for topological sorting of multiple segments in one mesh"""
@@ -219,6 +246,7 @@ class SegmentsDirectedGraph(DirectedGraph):
         DirectedGraph.__init__(self)
 
     def find_roots(self):
+        """ Roots are segments that lie on the build platform, i.e. they can be print first"""
         boundary_pts = utils.get_mesh_vertex_coords_with_attribute(self.mesh, 'boundary', 1)
         root_segments = []
         for i, segment in enumerate(self.segments):
@@ -229,11 +257,12 @@ class SegmentsDirectedGraph(DirectedGraph):
         return root_segments
 
     def create_graph_nodes(self):
-        # initialize graph Meshes as nodes. Cuts and boundaries as attributes
+        """ Add each segment to to the graph as a node. """
         for i, segment in enumerate(self.segments):
             self.G.add_node(i)
 
     def get_children_of_node(self, root):
+        """ Find all the nodes that lie on the current root. """
         children = []
         root_segment = self.segments[root]
         root_last_crv_pts = root_segment.paths[-1].points
@@ -248,13 +277,22 @@ class SegmentsDirectedGraph(DirectedGraph):
 
                 if are_neighboring_point_clouds(root_last_crv_pts, segment_first_curve_pts, self.max_d_threshold):
                     children.append(i)
-        return children, [None for _ in children]  # this graph doesn't have cut ids
+        return children, [None for _ in children]  # None because this graph doesn't have cut ids
 
 
 #################################
 # --- helpers
 
 def are_neighboring_point_clouds(pts1, pts2, threshold):
+    """
+    Returns True if 3 or more points of the point clouds are closer than the threshold. False otherwise.
+
+    Parameters
+    ----------
+    pts1: list, :class: 'compas.geometry.Point'
+    pts2: list, :class: 'compas.geometry.Point'
+    threshold: float
+    """
     count = 0
     for pt in pts1:
         if distance_point_point_sqrd(pt, utils.get_closest_pt(pt, pts2)) < threshold:
@@ -265,6 +303,15 @@ def are_neighboring_point_clouds(pts1, pts2, threshold):
 
 
 def is_true_mesh_adjacency(all_meshes, key1, key2):
+    """
+    Returns True if the two meshes share 3 or more vertices. False otherwise.
+
+    Parameters
+    ----------
+    all_meshes: list, :class: 'compas.datastructures.Mesh'
+    key1: int, index of mesh1
+    key2: int, index of mesh2
+    """
     count = 0
     mesh1 = all_meshes[key1]
     mesh2 = all_meshes[key2]
@@ -277,8 +324,6 @@ def is_true_mesh_adjacency(all_meshes, key1, key2):
             if distance_point_point_sqrd(pt, pts_mesh2[ci]) < 0.00001:
                 count += 1
                 if count == 3:
-                    # TODO: improve this. Two meshes could have 3 one-vertex-connections for example.
-                    #        Also two meshes could have only two vertex connection and depend on each other.
                     return True
     return False
 

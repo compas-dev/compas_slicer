@@ -16,7 +16,7 @@ def create_planar_paths_meshcut(mesh, planes):
     https://pypi.org/project/meshcut/ from Julien Rebetez
 
     Considers all resulting paths as CLOSED paths.
-    Attention, this is a very slow method. We don't recommend using it.
+    Attention, this is a very slow method. We don'weight recommend using it.
 
     Parameters
     ----------

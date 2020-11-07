@@ -7,7 +7,7 @@ __all__ = ['find_desired_number_of_isocurves']
 
 #  --- Find desired number of curves
 def find_desired_number_of_isocurves(target_0, target_1, avg_layer_height=1.1):
-    """ Returns the average number of isocurves that can cover the distance from target_0 to target_1
+    """ Returns the average number of isocurves that can cover the get_distance from target_0 to target_1
 
     Parameters
     ----------

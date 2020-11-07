@@ -23,7 +23,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
         BasePrintOrganizer.__init__(self, slicer)
 
     def __repr__(self):
-        return "<CurvedPrintOrganizer with %i layers>" % len(self.slicer.layers)
+        return "<PlanarPrintOrganizer with %i layers>" % len(self.slicer.layers)
 
     def create_printpoints(self):
         """ Create the print points of the fabrication process """

@@ -30,7 +30,6 @@ def main():
     create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)
 
     parameters = {
-        'create_intermediary_outputs': True,
         'avg_layer_height': 5.0,  # controls number of curves that will be generated
         'min_layer_height': 0.1,
         'max_layer_height': 50.0,  # 2.0,

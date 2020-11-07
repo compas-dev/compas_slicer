@@ -83,13 +83,13 @@ def seams_align(slicer, align_with="next_path"):
                 else:
                     raise NameError("Unknown align_with : " + str(align_with))
 
-                #  computes distance between pt_to_align_with and the current path points
+                #  computes get_distance between pt_to_align_with and the current path points
                 distance_current_pt_align_pt = [distance_point_point(pt_to_align_with, pt) for pt in path_to_change]
                 #  gets the index of the closest point by looking for the minimum
                 new_start_index = distance_current_pt_align_pt.index(min(distance_current_pt_align_pt))
-                #  shifts the list by the distance determined
+                #  shifts the list by the get_distance determined
                 shift_list = path_to_change[new_start_index:] + path_to_change[:new_start_index]
-                #  shifts the list by the distance determined
+                #  shifts the list by the get_distance determined
                 # layer.paths[j].points = shift_list
 
                 if first_last_point_the_same:
