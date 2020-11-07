@@ -42,6 +42,7 @@ class BaseBoundary:
         return "<BaseBoundary object with %i points>" % len(self.points)
 
     def get_up_vectors(self):
+        """ Finds the up_vectors of each point of the boundary. A smoothing step is also included. """
         up_vectors = []
         for i, p in enumerate(self.points):
             v1 = Vector.from_start_end(p, self.points[(i + 1) % len(self.points)])
@@ -54,14 +55,8 @@ class BaseBoundary:
         up_vectors = utils.smooth_vectors(up_vectors, strength=0.4, iterations=3)
         return up_vectors
 
-    def get_closest_normal(self, pt):
-        if self.override_vector:
-            return self.override_vector
-        else:
-            i = utils.get_closest_pt_index(pt, self.points)
-            return self.up_vectors[i]
-
     def to_data(self):
+        """ Returns a dictionary with the data of the class. """
         return {"points": utils.point_list_to_dict(self.points),
                 "up_vectors": utils.point_list_to_dict(self.up_vectors)}
 

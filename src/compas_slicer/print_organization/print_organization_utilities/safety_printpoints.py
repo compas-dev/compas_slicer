@@ -12,8 +12,8 @@ def add_safety_printpoints(print_organizer, z_hop=20.0):
 
     Parameters
     ----------
-    print_organizer: :class:`compas.print_organization.PrintOrganizer`
-        An instance of the PrintOrganizer class.
+    print_organizer: :class:`compas.print_organization.BasePrintOrganizer`
+        An instance of the BasePrintOrganizer class.
     z_hop: float
         Vertical distance (in millimeters) of the safety point above the PrintPoint.
     """
@@ -29,10 +29,10 @@ def add_safety_printpoints(print_organizer, z_hop=20.0):
     pp_copy_dict = {}  # should not be altering the dict that we are iterating through > copy
 
     # get last layer key and path
-    last_layer_key = 'layer_%d' % (len(pp_dict) - 1)
-    last_path_key = 'path_%d' % (len(pp_dict[last_layer_key]) - 1)
-    # check if there are multiple paths in the last layer
-    multiple_paths_in_last_layer = False if len(pp_dict[last_layer_key]) == 1 else True
+    # last_layer_key = 'layer_%d' % (len(pp_dict) - 1)
+    # last_path_key = 'path_%d' % (len(pp_dict[last_layer_key]) - 1)
+    # # check if there are multiple paths in the last layer
+    # multiple_paths_in_last_layer = False if len(pp_dict[last_layer_key]) == 1 else True
 
     for layer_key in pp_dict:
         pp_copy_dict[layer_key] = {}
@@ -41,17 +41,18 @@ def add_safety_printpoints(print_organizer, z_hop=20.0):
             pp_copy_dict[layer_key][path_key] = []
 
             for i, printpoint in enumerate(pp_dict[layer_key][path_key]):
-                # add a safety point before the first point of a path
-
-                # if not the first point of the entire print
-                if printpoint is not pp_dict['layer_0']['path_0'][0]:
-                    # or the first point of last layer (except when there are multiple paths in last layer)
-                    if printpoint is not pp_dict[last_layer_key][last_path_key][0] or multiple_paths_in_last_layer:
-                        # check if the last point of a path is set to False
-                        if i == 0 and not pp_dict[layer_key][path_key][-1].extruder_toggle:
-                            # if False, add safety point
-                            safety_printpoint = create_safety_printpoint(printpoint, z_hop, False)
-                            pp_copy_dict[layer_key][path_key].append(safety_printpoint)
+                # Commenting out this code, will remove on next iteration.
+                # I am convinced that it doesnt's do anything more than what is done in lines 61-63.
+                #
+                # # if not the first point of the entire print
+                # if printpoint is not pp_dict['layer_0']['path_0'][0]:
+                #     # or the first point of last layer (except when there are multiple paths in last layer)
+                #     if printpoint is not pp_dict[last_layer_key][last_path_key][0] or multiple_paths_in_last_layer:
+                #         # check if the last point of a path is set to False
+                #         if i == 0 and not pp_dict[layer_key][path_key][-1].extruder_toggle:
+                #             # if False, add safety point
+                #             safety_printpoint = create_safety_printpoint(printpoint, z_hop, False)
+                #             pp_copy_dict[layer_key][path_key].append(safety_printpoint)
 
                 #  regular printing points
                 pp_copy_dict[layer_key][path_key].append(printpoint)
@@ -70,6 +71,19 @@ def add_safety_printpoints(print_organizer, z_hop=20.0):
 
 
 def create_safety_printpoint(printpoint, z_hop, extruder_toggle):
+    """
+
+    Parameters
+    ----------
+    printpoint: :class: 'compas_slicer.geometry.PrintPoint'
+    z_hop: float
+    extruder_toggle: bool
+
+    Returns
+    ----------
+    :class: 'compas_slicer.geometry.PrintPoint'
+    """
+
     pt0 = printpoint.pt
     safety_printpoint = copy.deepcopy(printpoint)
     safety_printpoint.pt = pt0 + Vector(0, 0, z_hop)

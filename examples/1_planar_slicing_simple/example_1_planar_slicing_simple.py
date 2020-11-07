@@ -8,7 +8,7 @@ from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.post_processing import generate_brim
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.post_processing import seams_smooth
-from compas_slicer.print_organization import PrintOrganizer
+from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.print_organization import set_linear_velocity
@@ -84,10 +84,10 @@ def main():
     save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
 
     # ==========================================================================
-    # Initializes the PrintOrganizer and creates PrintPoints
+    # Initializes the BasePrintOrganizer and creates PrintPoints
     # ==========================================================================
-    print_organizer = PrintOrganizer(slicer)
-    print_organizer.create_printpoints(compas_mesh)
+    print_organizer = PlanarPrintOrganizer(slicer)
+    print_organizer.create_printpoints()
 
     # ==========================================================================
     # Set fabrication-related parameters

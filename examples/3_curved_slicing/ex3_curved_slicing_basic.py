@@ -40,8 +40,8 @@ def main():
 
     preprocessor = CurvedSlicingPreprocessor(mesh, parameters, DATA_PATH)
     preprocessor.create_compound_targets()
-    preprocessor.gradient_evaluation(output_filename='gradient_norm.json', target_1=preprocessor.target_LOW,
-                                     target_2=preprocessor.target_HIGH)
+    preprocessor.gradient_evaluation(norm_filename='gradient_norm.json',  g_filename='gradient.json',
+                                     target_1=preprocessor.target_LOW, target_2=preprocessor.target_HIGH)
     preprocessor.find_critical_points(output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
 
     ## --- slicing
@@ -54,18 +54,18 @@ def main():
 
     # ### --- Print organizer
     print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
-    print_organizer.create_printpoints(mesh)
+    print_organizer.create_printpoints()
 
     ### --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()
     utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
     ### ----- Visualize
-    # viewer = ObjectViewer()
-    # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
-    # # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
-    # viewer.update()
-    # viewer.show()
+    viewer = ObjectViewer()
+    slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
+    # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
+    viewer.update()
+    viewer.show()
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")

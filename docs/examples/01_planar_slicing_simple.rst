@@ -22,7 +22,7 @@ The first step is to import the required functions:
     from compas_slicer.post_processing import generate_brim
     from compas_slicer.post_processing import simplify_paths_rdp
     from compas_slicer.post_processing import seams_smooth
-    from compas_slicer.print_organization import PrintOrganizer
+    from compas_slicer.print_organization import BasePrintOrganizer
     from compas_slicer.print_organization import set_extruder_toggle
     from compas_slicer.print_organization import add_safety_printpoints
     from compas_slicer.print_organization import set_linear_velocity
@@ -120,7 +120,7 @@ information from the slicing process.
 
 Since we are now done with operations involving the :class:`PlanarSlicer` class,
 we can save the slicing result to JSON. In the next steps we will use the 
-:class:`PrintOrganizer` class to organize our print for fabrication. 
+:class:`BasePrintOrganizer` class to organize our print for fabrication.
 
 .. code-block:: python
 
@@ -130,15 +130,15 @@ we can save the slicing result to JSON. In the next steps we will use the
 Print organization
 ==================
 
-In the next steps of the process we will use the :class:`PrintOrganizer` to 
+In the next steps of the process we will use the :class:`BasePrintOrganizer` to
 make our slicing result ready for fabrication. First, we initialize the 
-:class:`PrintOrganizer` and create :class:`PrintPoints`. The difference between
+:class:`BasePrintOrganizer` and create :class:`PrintPoints`. The difference between
 :class:`PrintPoints` and the ``compas.geometry.Points`` we were using in the
 previous step is that the :class:`PrintPoints` have additional functionality.
 
 .. code-block:: python
 
-    print_organizer = PrintOrganizer(slicer)
+    print_organizer = BasePrintOrganizer(slicer)
     print_organizer.create_printpoints(compas_mesh)
 
 We can add these additional functionalities to the printpoints by calling 
@@ -184,7 +184,7 @@ The completed final script can be found below:
     from compas_slicer.post_processing import generate_brim
     from compas_slicer.post_processing import simplify_paths_rdp
     from compas_slicer.post_processing import seams_smooth
-    from compas_slicer.print_organization import PrintOrganizer
+    from compas_slicer.print_organization import BasePrintOrganizer
     from compas_slicer.utilities import save_to_json
 
     from compas_viewers.objectviewer import ObjectViewer
@@ -252,9 +252,9 @@ The completed final script can be found below:
     save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
 
     # ==========================================================================
-    # Initializes the PrintOrganizer and creates PrintPoints
+    # Initializes the BasePrintOrganizer and creates PrintPoints
     # ==========================================================================
-    print_organizer = PrintOrganizer(slicer)
+    print_organizer = BasePrintOrganizer(slicer)
     print_organizer.create_printpoints(compas_mesh)
 
     # ==========================================================================

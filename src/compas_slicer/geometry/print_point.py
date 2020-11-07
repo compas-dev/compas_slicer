@@ -52,7 +52,7 @@ class PrintPoint(object):
         self.closest_support_pt = None  # <compas.geometry.Point>
         self.distance_to_support = None  # float
 
-        self.visualization_geometry = None
+        self.visualization_geometry = None  # TODO
         self.is_feasible = True
 
     def __repr__(self):

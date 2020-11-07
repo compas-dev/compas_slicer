@@ -1,19 +1,19 @@
 import compas_slicer
 import logging
-from compas_slicer.geometry import PrintPoint
 from compas.geometry import Polyline
-import compas_slicer.utilities as utils
-import progressbar
 import numpy as np
+from abc import abstractmethod
 
 logger = logging.getLogger('logger')
 
-__all__ = ['PrintOrganizer']
+__all__ = ['BasePrintOrganizer']
 
 
-class PrintOrganizer(object):
+class BasePrintOrganizer(object):
     """
     Base class for organizing the printing process.
+    This class is meant to be extended for the implementation of the various print organizers.
+    Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or CurvedPrintOrganizer.
 
     Attributes
     ----------
@@ -28,34 +28,11 @@ class PrintOrganizer(object):
         self.printpoints_dict = {}
 
     def __repr__(self):
-        return "<PrintOrganizer>"
-
-    ###############################
-    #  --- Initialization
-    def create_printpoints(self, mesh):
-        count = 0
-        logger.info('Creating print points ...')
-        with progressbar.ProgressBar(max_value=self.slicer.total_number_of_points) as bar:
-
-            for i, layer in enumerate(self.slicer.layers):
-                self.printpoints_dict['layer_%d' % i] = {}
-
-                for j, path in enumerate(layer.paths):
-                    self.printpoints_dict['layer_%d' % i]['path_%d' % j] = []
-
-                    for k, point in enumerate(path.points):
-                        normal = utils.get_normal_of_path_on_xy_plane(k, point, path, mesh)
-
-                        printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height,
-                                                mesh_normal=normal)
-
-                        self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
-                        bar.update(count)
-                        count += 1
+        return "<BasePrintOrganizer>"
 
     @property
     def total_number_of_points(self):
-        """int: Total number of points in the slicer."""
+        """int: Total number of points in the PrintOrganizer."""
         total_number_of_pts = 0
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
@@ -68,22 +45,20 @@ class PrintOrganizer(object):
         """int: Number of layers in the PrintOrganizer."""
         return len(self.printpoints_dict)
 
-    @property
     def number_of_paths_on_layer(self, layer_index):
         """int: Number of paths within a Layer of the PrintOrganizer."""
         return len(self.printpoints_dict['layer_%d' % layer_index])
 
-    ###############################
-    #  ---  TODO
+    @abstractmethod
+    def create_printpoints(self):
+        """To be implemented by the inheriting classes"""
+        pass
 
-    def check_feasibility(self):
-        """...
-        """
-        # TODO
-        raise NotImplementedError
+    @abstractmethod
+    def check_printpoints_feasibility(self):
+        """To be implemented by the inheriting classes"""
+        pass
 
-    ###############################
-    #  ---  output printpoints data
     def output_printpoints_dict(self):
         """Returns the PrintPoints as a dictionary."""
         data = {}
@@ -105,11 +80,11 @@ class PrintOrganizer(object):
         Parameters
         ----------
         layer_key: str
-            String containing the key of the layer to remove points from.
+            They key of the layer to remove points from.
         path_key: str
-            String containing the key of the path to remove points from.
+            The key of the path to remove points from.
         tolerance: float, optional
-            Optional value for the distance between points to remove. Defaults to 0.0001.
+            Distance between points to remove. Defaults to 0.0001.
         """
 
         dup_index = []
@@ -134,6 +109,18 @@ class PrintOrganizer(object):
                 self.printpoints_dict[layer_key][path_key].remove(ppt)
 
     def get_printpoint_neighboring_items(self, layer_key, path_key, i):
+        """
+        layer_key: str
+            They key of the layer the current printpoint belongs to.
+        path_key: str
+            They key of the path the current printpoint belongs to.
+        i: int
+            The index of the current printpoint.
+
+        Returns
+        ----------
+        list, :class:  'compas_slicer.geometry.PrintPoint'
+        """
         neighboring_items = []
         if i > 0:
             neighboring_items.append(self.printpoints_dict[layer_key][path_key][i - 1])
@@ -145,10 +132,15 @@ class PrintOrganizer(object):
             neighboring_items.append(None)
         return neighboring_items
 
-    ##################################
-    #  --- Visualization on viewer
     def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
-        """Visualize printpoints on the viewer."""
+        """Visualize printpoints on the compas_viewer.
+
+        Parameters
+        ----------
+        viewer: :class: 'compas_viewers.objectviewer.ObjectViewer'
+        visualize_polyline: bool
+        visualize_printpoints: bool
+        """
         all_pts = []
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:

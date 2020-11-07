@@ -1,22 +1,23 @@
 from compas.geometry import norm_vector, Vector
+import logging
+logger = logging.getLogger('logger')
 
 __all__ = ['set_blend_radius']
 
 
 def set_blend_radius(print_organizer, dfillet=10, buffer=0.3):
-    """Sets the blend radius (filleting) to use.
+    """Sets the blend radius (filleting) for the robotic motion.
 
     Parameters
     ----------
-    print_organizer: :class:`compas_slicer.slicers.PrintOrganizer`
-    d_fillet: float
+    print_organizer: :class:`compas_slicer.slicers.BasePrintOrganizer`
+    dfillet: float
         Value to attempt to fillet with. Defaults to 10 mm.
-    buffer:
-        Buffer to make sure that the blend radius is never to big.
+    buffer: float
+        Buffer to make sure that the blend radius is never too big.
         Defaults to 0.3.
-
     """
-
+    logger.info("Setting blend radius")
     pp_dict = print_organizer.printpoints_dict
 
     for layer_key in pp_dict:

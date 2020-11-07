@@ -1,23 +1,32 @@
 import logging
 from compas.geometry import Point
-from compas_slicer.print_organization.print_organizer import PrintOrganizer
+from compas_slicer.print_organization import BasePrintOrganizer
 from compas_slicer.geometry import VerticalLayer
 from compas_slicer.pre_processing.curved_slicing_preprocessing import topological_sorting as topo_sort
 import compas_slicer.utilities as utils
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
 from compas_slicer.print_organization.curved_print_organization import SegmentConnectivity
-from compas_slicer.print_organization import set_linear_velocity
 
 logger = logging.getLogger('logger')
 
 __all__ = ['CurvedPrintOrganizer']
 
 
-class CurvedPrintOrganizer(PrintOrganizer):
+class CurvedPrintOrganizer(BasePrintOrganizer):
+    """
+    Organizing the printing process for the realization of non-planar contours.
+
+    Attributes
+    ----------
+    slicer: :class:`compas_slicer.slicers.PlanarSlicer`
+        An instance of the compas_slicer.slicers.PlanarSlicer.
+    parameters: dict
+    DATA_PATH: string
+    """
 
     def __init__(self, slicer, parameters, DATA_PATH):
+        BasePrintOrganizer.__init__(self, slicer)
         assert isinstance(slicer.layers[0], VerticalLayer)  # curved printing only works with vertical layers
-        PrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.parameters = parameters
@@ -30,7 +39,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
 
         self.segments = {}  # one segment per vertical layer
         self.create_segments_dict()
-        self.base_boundaries_creation()  # creation of one base boundary per vertical_layer
+        self.create_base_boundaries()  # creation of one base boundary per vertical_layer
         self.create_segment_connectivity()
 
     def __repr__(self):
@@ -45,13 +54,13 @@ class CurvedPrintOrganizer(PrintOrganizer):
                                                                DATA_PATH=self.DATA_PATH)
 
     def create_segments_dict(self):
-        """ Initializes segments dictionary with empty segments """
+        """ Initializes segments dictionary with empty segments. """
         for i, vertical_layer in enumerate(self.slicer.vertical_layers):
             self.segments[i] = {'boundary': None,
                                 'path_collection': None}
 
-    def base_boundaries_creation(self):
-        """ Creates one BaseBoundary per vertical_layer  """
+    def create_base_boundaries(self):
+        """ Creates one BaseBoundary per vertical_layer."""
         root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
 
@@ -77,7 +86,7 @@ class CurvedPrintOrganizer(PrintOrganizer):
             utils.save_to_json(b_data, self.OUTPUT_PATH, 'boundaries.json')
 
     def create_segment_connectivity(self):
-        """ A SegmentConnectivity finds vertical relation between paths. Creates and fills in printpoints """
+        """ A SegmentConnectivity finds vertical relation between paths. Creates and fills in its printpoints."""
         for i, vertical_layer in enumerate(self.slicer.vertical_layers):
             logger.info('Creating connectivity of segment no %d' % i)
             path_collection = SegmentConnectivity(paths=vertical_layer.paths,
@@ -87,10 +96,11 @@ class CurvedPrintOrganizer(PrintOrganizer):
             path_collection.compute()
             self.segments[i]['path_collection'] = path_collection
 
-    def create_printpoints(self, mesh):
+    def create_printpoints(self):
         """
+        Create the print points of the fabrication process
         Based on the directed graph, select one topological order.
-        From each path collection in that order fill in the PrintPoints dictionary
+        From each path collection in that order copy PrintPoints dictionary in the correct order.
         """
         if len(self.slicer.vertical_layers) > 1:  # the you need to select one topological order
             all_orders = self.topo_sort_graph.get_all_topological_orders()
@@ -106,14 +116,14 @@ class CurvedPrintOrganizer(PrintOrganizer):
                 self.printpoints_dict['layer_%d' % i]['path_%d' % j] = \
                     [path_collection.printpoints[j][k] for k, p in enumerate(path.points)]
 
-    ############################################
-    #  ---  override function from base class
-
-    def set_linear_velocity(self, velocity_type="matching_layer_height", v=None, per_layer_velocities=None):
-        if velocity_type != "matching_layer_height":
-            logger.warning("For non-planar slicing, print velocity should match layer_height")
-        logger.info("Setting linear velocity to match layer_height")
-        set_linear_velocity(self.printpoints_dict, velocity_type, v=v, per_layer_velocities=per_layer_velocities)
+    def check_printpoints_feasibility(self):
+        """ Checks if the distance to the closest support of every layer height is within the admissible limits. """
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                ppt = self.printpoints_dict[layer_key][path_key]
+                d = ppt.distance_to_support
+                if d < self.parameters['min_layer_height'] or d > self.parameters['max_layer_height']:
+                    ppt.is_feasible = False
 
 
 if __name__ == "__main__":

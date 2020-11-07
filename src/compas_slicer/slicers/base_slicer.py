@@ -22,7 +22,6 @@ class BaseSlicer(object):
     This class is meant to be extended for the implementation of the various slicers.
     See :class:`compas.slicer.slicers.PlanarSlicer` and :class:`compas.slicer.slicers.CurvedSlicer` as examples.
 
-
     Attributes
     ----------
     mesh: :class:`compas.datastructures.Mesh`
@@ -129,13 +128,6 @@ class BaseSlicer(object):
             True to visualize mesh, False to not.
         visualize_paths: bool, optional
             True to visualize paths, False to not.
-
-        Examples
-        --------
-        >>> from compas_viewers.objectviewer import ObjectViewer
-        >>> viewer = ObjectViewer()
-        >>> viewer.view.use_shaders = False
-        >>> slicer.visualize_on_viewer(viewer)
         """
 
         if visualize_mesh:

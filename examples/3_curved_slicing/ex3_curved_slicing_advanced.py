@@ -3,15 +3,12 @@ from compas.datastructures import Mesh
 import logging
 from compas.geometry import Point
 import compas_slicer.utilities as utils
-from compas_slicer.geometry import PrintPoint
 from compas_slicer.slicers import CurvedSlicer, BaseSlicer
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.pre_processing import CurvedSlicingPreprocessor
 from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import CurvedPrintOrganizer
-from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.pre_processing import move_mesh_to_point
-from compas_slicer.print_organization.print_organization_utilities import analysis
 import time
 
 logger = logging.getLogger('logger')
