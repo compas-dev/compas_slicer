@@ -1,5 +1,6 @@
 from compas.geometry import norm_vector, Vector
 import logging
+
 logger = logging.getLogger('logger')
 
 __all__ = ['set_blend_radius']
@@ -17,6 +18,7 @@ def set_blend_radius(print_organizer, dfillet=10, buffer=0.3):
         Buffer to make sure that the blend radius is never too big.
         Defaults to 0.3.
     """
+
     logger.info("Setting blend radius")
     pp_dict = print_organizer.printpoints_dict
 
