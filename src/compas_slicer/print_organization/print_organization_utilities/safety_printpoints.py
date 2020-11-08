@@ -42,7 +42,7 @@ def add_safety_printpoints(print_organizer, z_hop=20.0):
 
             for i, printpoint in enumerate(pp_dict[layer_key][path_key]):
                 # Commenting out this code, will remove on next iteration.
-                # I am convinced that it doesnt's do anything more than what is done in lines 61-63.
+                # I believe that it doesnt's do anything more than what is done in lines 61-63.
                 #
                 # # if not the first point of the entire print
                 # if printpoint is not pp_dict['layer_0']['path_0'][0]:
