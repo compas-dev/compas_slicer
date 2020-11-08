@@ -121,7 +121,7 @@ information from the slicing process.
 
 Since we are now done with operations involving the :class:`PlanarSlicer` class,
 we can save the slicing result to JSON. In the next steps we will use the 
-:class:`BasePrintOrganizer` class to organize our print for fabrication.
+:class:`PlanarPrintOrganizer` class to organize our print for fabrication.
 
 .. code-block:: python
 
@@ -131,9 +131,9 @@ we can save the slicing result to JSON. In the next steps we will use the
 Print organization
 ==================
 
-In the next steps of the process we will use the :class:`BasePrintOrganizer` to
+In the next steps of the process we will use the :class:`PlanarPrintOrganizer` to
 make our slicing result ready for fabrication. First, we initialize the 
-:class:`BasePrintOrganizer` and create :class:`PrintPoints`. The difference between
+:class:`PlanarPrintOrganizer` and create :class:`PrintPoints`. The difference between
 :class:`PrintPoints` and the ``compas.geometry.Points`` we were using in the
 previous step is that the :class:`PrintPoints` have additional functionality.
 
@@ -265,7 +265,7 @@ The completed final script can be found below:
     save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
 
     # ==========================================================================
-    # Initializes the BasePrintOrganizer and creates PrintPoints
+    # Initializes the PlanarPrintOrganizer and creates PrintPoints
     # ==========================================================================
     print_organizer = PlanarPrintOrganizer(slicer)
     print_organizer.create_printpoints()
