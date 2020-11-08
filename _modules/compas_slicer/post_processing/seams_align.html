@@ -160,13 +160,13 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;Unknown align_with : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">align_with</span><span class="p">))</span>
 
-                <span class="c1">#  computes get_distance between pt_to_align_with and the current path points</span>
+                <span class="c1">#  computes distance between pt_to_align_with and the current path points</span>
                 <span class="n">distance_current_pt_align_pt</span> <span class="o">=</span> <span class="p">[</span><span class="n">distance_point_point</span><span class="p">(</span><span class="n">pt_to_align_with</span><span class="p">,</span> <span class="n">pt</span><span class="p">)</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">path_to_change</span><span class="p">]</span>
                 <span class="c1">#  gets the index of the closest point by looking for the minimum</span>
                 <span class="n">new_start_index</span> <span class="o">=</span> <span class="n">distance_current_pt_align_pt</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">distance_current_pt_align_pt</span><span class="p">))</span>
-                <span class="c1">#  shifts the list by the get_distance determined</span>
+                <span class="c1">#  shifts the list by the distance determined</span>
                 <span class="n">shift_list</span> <span class="o">=</span> <span class="n">path_to_change</span><span class="p">[</span><span class="n">new_start_index</span><span class="p">:]</span> <span class="o">+</span> <span class="n">path_to_change</span><span class="p">[:</span><span class="n">new_start_index</span><span class="p">]</span>
-                <span class="c1">#  shifts the list by the get_distance determined</span>
+                <span class="c1">#  shifts the list by the distance determined</span>
                 <span class="c1"># layer.paths[j].points = shift_list</span>
 
                 <span class="k">if</span> <span class="n">first_last_point_the_same</span><span class="p">:</span>
