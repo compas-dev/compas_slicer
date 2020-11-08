@@ -24,9 +24,9 @@ def spiralize_contours(slicer):
                 for i, point in enumerate(path.points):
                     # get the number of points in a layer
                     no_of_points = len(path.points)
-                    # calculates get_distance to move
+                    # calculates distance to move
                     distance_to_move = layer_height / no_of_points
-                    # adds the get_distance to move to the z value and create new points
+                    # adds the distance to move to the z value and create new points
                     path.points[i] = Point(point[0], point[1], point[2] + (i*distance_to_move))
                 # removes the first item to create a smooth transition to the next layer
                 path.points.pop(0)
