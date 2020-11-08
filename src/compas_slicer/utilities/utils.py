@@ -384,7 +384,7 @@ def get_dict_key_from_value(dictionary, val):
         value = dictionary[key]
         if val == value:
             return key
-    return "key doesn'weight exist"
+    return "key doesn't exist"
 
 
 #######################################
