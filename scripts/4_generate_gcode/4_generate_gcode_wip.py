@@ -4,7 +4,7 @@ from compas.datastructures import Mesh
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.sorting import align_seams
 from compas_slicer.utilities import simplify_paths_rdp
-from compas_slicer.print_organization import PrintOrganizer
+from compas_slicer.print_organization import BasePrintOrganizer
 from compas_slicer.print_organization import FDMPrinter
 from compas_slicer.positioning import center_mesh_on_build_platform
 from compas_slicer.print_organization import Material
@@ -48,7 +48,7 @@ def main():
     material_PLA.set_parameter("z_hop", 10)
     material_PLA.printout_info()
 
-    print_organizer = PrintOrganizer(slicer, machine_model=machine_model, material=material_PLA)
+    print_organizer = BasePrintOrganizer(slicer, machine_model=machine_model, material=material_PLA)
     print_organizer.generate_gcode(OUTPUT_FILE)
 
 

@@ -6,19 +6,22 @@ __all__ = ['PrintPoint']
 
 class PrintPoint(object):
     """
-    A PrintPoint consists out of a single compas.geometry.Point,
-    with additional functionality added for the printing process.
+    A PrintPoint consists of a compas.geometry.Point,
+    and additional attributes related to the printing process.
 
     Attributes
     ----------
     pt: :class:`compas.geometry.Point`
         A compas Point consisting out of x, y, z coordinates.
     layer_height: float
-        The vertical distance between the point on this layer and the next layer.
+        The distance between the point on this layer and the previous layer.
+        For planar slicing this is the vertical distance, for curved slicing this is absolute distance.
     mesh_normal: :class:`compas.geometry.Vector`
         Normal of the mesh at this PrintPoint.
+        For planar_slicing it is the projection of the normal on the XY plane.
+        # TODO: should we change that?
     up_vector: :class:`compas.geometry.Vector`
-        Vector in vertical (z) direction.
+        Vector in up direction. For planar slicing this corresponds to the z axis, for curved slicing it varies.
     frame: :class:`compas.geometry.Frame`
         Frame with x-axis pointing up, y-axis pointing towards the mesh normal.
     extruder_toggle: bool
@@ -27,7 +30,6 @@ class PrintPoint(object):
         Velocity to use for printing (print speed), in mm/s.
     wait_time: float
         Time in seconds to wait at this PrintPoint.
-
     """
 
     def __init__(self, pt, layer_height, mesh_normal):
@@ -48,11 +50,11 @@ class PrintPoint(object):
         self.wait_time = None
         self.blend_radius = None
 
-        #  --- advanced printpoint
+        #  --- relation to support
         self.closest_support_pt = None  # <compas.geometry.Point>
         self.distance_to_support = None  # float
 
-        self.visualization_geometry = None
+        self.visualization_geometry = None  # TODO
         self.is_feasible = True
 
     def __repr__(self):
@@ -60,8 +62,7 @@ class PrintPoint(object):
         return "<PrintPoint object at (%.2f, %.2f, %.2f)>" % (x, y, z)
 
     def get_frame(self):
-        """Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal.
-        """
+        """ Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal. """
         return Frame(self.pt, self.up_vector, self.mesh_normal)
 
     #################################
@@ -128,3 +129,7 @@ class PrintPoint(object):
 
         pp.is_feasible = data['is_feasible']
         return pp
+
+
+if __name__ == "__main__":
+    pass

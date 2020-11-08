@@ -10,13 +10,14 @@ class TerminalCommand:
     def __init__(self, cmd, cwd=None, env=None):
         """
         Creates a new command container.
-
         Note that this immediately executes the command synchronously and writes the
         return values to the corresponding members.
 
-        :param cmd: The command to execute.
-        :param cwd: The working directory to run the command in.
-        :param env: The environment the command is run in.
+        Attributes
+        ----------
+        cmd : The command to execute.
+        cwd : The working directory to run the command in.
+        env : The environment the command is run in.
         """
         process = p.Popen(cmd, stdout=p.PIPE, stderr=p.PIPE, shell=True, cwd=cwd, env=env)
         stdout, stderr = process.communicate()
@@ -38,3 +39,7 @@ class TerminalCommand:
         words = []
         [words.append(word) for line in lines for word in line.split()]
         return words
+
+
+if __name__ == "__main__":
+    pass

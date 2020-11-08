@@ -3,25 +3,23 @@ from compas_slicer.geometry import Layer
 import logging
 import progressbar
 from compas.geometry import intersection_segment_plane
-from compas_slicer.slicers.slice_utilities import ZeroCrossingContours
+from compas_slicer.slicers.slice_utilities import ZeroCrossingContoursBase
+
+logger = logging.getLogger('logger')
 
 __all__ = ['create_planar_paths']
 
 
-###################################
-#  Intersection function
-###################################
-
 def create_planar_paths(mesh, planes):
     """
     Creates planar contours. Does not rely on external libraries.
-    It is currently the only method that can return both OPEN and CLOSED paths.
+    It is currently the only method that can return identify OPEN versus CLOSED paths.
 
     Parameters
     ----------
-    mesh : compas.datastructures.Mesh
+    mesh: :class: 'compas.datastructures.Mesh'
         The mesh to be sliced
-    planes: list, compas.geometry.Plane
+    planes: list, :class: 'compas.geometry.Plane'
     """
 
     layers = []
@@ -46,24 +44,33 @@ def create_planar_paths(mesh, planes):
     return layers
 
 
-###################################
-#  Intersection class
+class IntersectionCurveMeshPlane(ZeroCrossingContoursBase):
+    """
+    Finds the iso-contours of the function f(x) = vertex_coords.z - plane.z
+    on the mesh.
 
-logger = logging.getLogger('logger')
-
-
-class IntersectionCurveMeshPlane(ZeroCrossingContours):
+    Attributes
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    plane: list, :class: 'compas.geometry.Plane'
+    """
     def __init__(self, mesh, plane):
         self.plane = plane
-        ZeroCrossingContours.__init__(self, mesh)  # initialize from parent class
+        ZeroCrossingContoursBase.__init__(self, mesh)  # initialize from parent class
 
     def edge_is_intersected(self, u, v):
+        """ Returns True if the edge u,v has a zero-crossing, False otherwise. """
         a = self.mesh.vertex_attributes(u, 'xyz')
         b = self.mesh.vertex_attributes(v, 'xyz')
         z = [a[2], b[2]]  # check if the plane.z is withing the range of [a.z, b.z]
         return min(z) <= self.plane.point[2] < max(z)
 
     def find_zero_crossing_point(self, u, v):
+        """ Finds the position of the zero-crossing on the edge u,v. """
         a = self.mesh.vertex_attributes(u, 'xyz')
         b = self.mesh.vertex_attributes(v, 'xyz')
         return intersection_segment_plane((a, b), self.plane)
+
+
+if __name__ == "__main__":
+    pass

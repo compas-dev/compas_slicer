@@ -2,9 +2,10 @@ import numpy as np
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import VerticalLayer, Path
 import logging
-import compas_slicer
 import progressbar
-from compas_slicer.slicers.curved_slicing import assign_distance_to_mesh_vertices
+from compas_slicer.pre_processing import assign_distance_to_mesh_vertices
+from compas_slicer.pre_processing import GeodesicsZeroCrossingContours
+from compas_slicer.post_processing.sort_paths_per_vertical_segment import get_segments_centroids_list
 
 logger = logging.getLogger('logger')
 
@@ -13,16 +14,16 @@ __all__ = ['IsocurvesGenerator']
 
 class IsocurvesGenerator:
     """
-    IsocurvesGenerator is a class that generates isocurves that lie on the input
-    mesh and interpolate the targets (target_LOW, target_HIGH)
+    Generates isocurves that lie on the input mesh and interpolate the targets (target_LOW, target_HIGH)
 
     Attributes
     ----------
-    mesh_ : compas.datastructures.Mesh
-    target_LOW : compas_slicer.slicing.curved_slicing.CompoundTarget
-    target_HIGH : compas_slicer.slicing.curved_slicing.CompoundTarget
+    mesh: :class: 'compas.datastructures.Mesh'
+    target_LOW: :class: 'compas_slicer.slicing.curved_slicing.CompoundTarget'
+    target_HIGH: :class: 'compas_slicer.slicing.curved_slicing.CompoundTarget'
     number_of_curves : int
     """
+
     def __init__(self, mesh, target_LOW, target_HIGH, number_of_curves):
         logging.info("Isocurves Generator...")
         self.mesh = mesh  # compas mesh
@@ -31,17 +32,22 @@ class IsocurvesGenerator:
 
         #  main
         self.segments = [VerticalLayer(id=0)]  # segments that contain isocurves (compas_slicer.Path)
-        t_list = get_t_list(number_of_curves)
-        t_list.pop(0)  # remove first curves that is on 0 (lies on BaseBoundary)
-        self.create_isocurves(t_list)
+        weights_list = get_weights_list(number_of_curves)
+        weights_list.pop(0)  # remove first curves that is on 0 (lies on BaseBoundary)
+        self.create_isocurves(weights_list)
 
-    #  --- main
+    def create_isocurves(self, weights_list):
+        """
+        Creates one isocurve for each weight
 
-    def create_isocurves(self, t_list):
-        with progressbar.ProgressBar(max_value=len(t_list)) as bar:
-            for i, t in enumerate(t_list):
-                assign_distance_to_mesh_vertices(self.mesh, t, self.target_LOW, self.target_HIGH)
-                zero_contours = compas_slicer.slicers.GeodesicsZeroCrossingContours(self.mesh)
+        Parameters
+        ----------
+        weights_list: list, float, the weights in ascending order.
+        """
+        with progressbar.ProgressBar(max_value=len(weights_list)) as bar:
+            for i, weight in enumerate(weights_list):
+                assign_distance_to_mesh_vertices(self.mesh, weight, self.target_LOW, self.target_HIGH)
+                zero_contours = GeodesicsZeroCrossingContours(self.mesh)
                 zero_contours.compute()
 
                 for j, key in enumerate(zero_contours.sorted_point_clusters):
@@ -54,7 +60,7 @@ class IsocurvesGenerator:
                             current_segment = self.segments[0]
                         else:  # find the candidate segment for new isocurve
                             centroid = np.mean(np.array(pts), axis=0)
-                            other_centroids = self.get_segments_centroids_list()
+                            other_centroids = get_segments_centroids_list(self.segments)
                             candidate_segment = self.segments[utils.get_closest_pt_index(centroid, other_centroids)]
                             threshold_max_centroid_dist = 15
                             if np.linalg.norm(candidate_segment.head_centroid - centroid) < threshold_max_centroid_dist:
@@ -69,20 +75,16 @@ class IsocurvesGenerator:
                 # advance progress bar
                 bar.update(i)
 
-    def get_segments_centroids_list(self):
-        head_centroids = []
-        for segment in self.segments:
-            head_centroids.append(segment.head_centroid)
-        return head_centroids
 
-
-#################################
-#  Additional functionality
-
-def get_t_list(number_of_curves):
-    t_list = [0.001]  # [0.001]
+def get_weights_list(number_of_curves):
+    """ Returns a list of #number_of_curves floats from 0.001 to 0.997. """
+    t_list = [0.001]
     a = list(np.arange(number_of_curves + 1) / (number_of_curves + 1))
     a.pop(0)
     t_list.extend(a)
     t_list.append(0.997)
     return t_list
+
+
+if __name__ == "__main__":
+    pass

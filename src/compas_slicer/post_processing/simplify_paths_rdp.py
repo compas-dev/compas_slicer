@@ -4,6 +4,7 @@ import logging
 import progressbar
 
 from compas.geometry import Point
+
 # from compas_slicer.geometry import PrintPoint, Contour
 
 logger = logging.getLogger('logger')
@@ -27,6 +28,7 @@ def simplify_paths_rdp(slicer, threshold):
 
     logger.info("Paths simplification rdp")
     remaining_pts_num = 0
+
     with progressbar.ProgressBar(max_value=len(slicer.layers)) as bar:
         for i, layer in enumerate(slicer.layers):
             for path in layer.paths:
@@ -35,3 +37,7 @@ def simplify_paths_rdp(slicer, threshold):
                 remaining_pts_num += len(path.points)
                 bar.update(i)
         logger.info('%d Points remaining after rdp simplification' % remaining_pts_num)
+
+
+if __name__ == "__main__":
+    pass

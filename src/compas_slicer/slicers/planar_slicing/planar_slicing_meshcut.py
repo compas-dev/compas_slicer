@@ -16,13 +16,13 @@ def create_planar_paths_meshcut(mesh, planes):
     https://pypi.org/project/meshcut/ from Julien Rebetez
 
     Considers all resulting paths as CLOSED paths.
-    Attention, this is a very slow method.
+    Attention, this is a very slow method. We don't recommend using it.
 
     Parameters
     ----------
-    mesh : compas.datastructures.Mesh
+    mesh: :class: 'compas.datastructures.Mesh'
         A compas mesh.
-    planes: list, compas.geometry.Plane
+    planes: list, :class: 'compas.geometry.Plane'
     """
 
     # Convert compas mesh to meshcut mesh
@@ -38,14 +38,8 @@ def create_planar_paths_meshcut(mesh, planes):
     layers = []
     with progressbar.ProgressBar(max_value=len(planes)) as bar:
         for i, plane in enumerate(planes):
-            # z = plane.point[2]
-            # logger.info('Cutting at height %.3f, %d percent done' % (
-            #     z, int(100 * (z - min_z) / (max_z - min_z))))
-
             paths_per_layer = []
-
             plane = meshcut.Plane(plane.point, plane.normal)  # define plane
-
             meshcut_array = meshcut.cross_section_mesh(meshcut_mesh, plane)
 
             for _j, item in enumerate(meshcut_array):

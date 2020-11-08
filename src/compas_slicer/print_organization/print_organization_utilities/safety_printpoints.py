@@ -12,8 +12,8 @@ def add_safety_printpoints(print_organizer, z_hop=20.0):
 
     Parameters
     ----------
-    print_organizer: :class:`compas.print_organization.PrintOrganizer`
-        An instance of the PrintOrganizer class.
+    print_organizer: :class:`compas.print_organization.BasePrintOrganizer`
+        An instance of the BasePrintOrganizer class.
     z_hop: float
         Vertical distance (in millimeters) of the safety point above the PrintPoint.
     """
@@ -41,7 +41,6 @@ def add_safety_printpoints(print_organizer, z_hop=20.0):
             pp_copy_dict[layer_key][path_key] = []
 
             for i, printpoint in enumerate(pp_dict[layer_key][path_key]):
-                # add a safety point before the first point of a path
 
                 # if not the first point of the entire print
                 if printpoint is not pp_dict['layer_0']['path_0'][0]:
@@ -50,7 +49,7 @@ def add_safety_printpoints(print_organizer, z_hop=20.0):
                         # check if the last point of a path is set to False
                         if i == 0 and not pp_dict[layer_key][path_key][-1].extruder_toggle:
                             # if False, add safety point
-                            safety_printpoint = create_safety_printpoint(printpoint, z_hop, False)
+                            safety_printpoint = add_safety_printpoint(printpoint, z_hop, False)
                             pp_copy_dict[layer_key][path_key].append(safety_printpoint)
 
                 #  regular printing points
@@ -58,18 +57,31 @@ def add_safety_printpoints(print_organizer, z_hop=20.0):
 
                 #  adds a safety point after every printpoint that has extruder_toggle = False
                 if printpoint.extruder_toggle is False:
-                    safety_printpoint = create_safety_printpoint(printpoint, z_hop, False)
+                    safety_printpoint = add_safety_printpoint(printpoint, z_hop, False)
                     pp_copy_dict[layer_key][path_key].append(safety_printpoint)
 
     #  insert a safety print point at the beginning
-    safety_printpoint = create_safety_printpoint(pp_dict['layer_0']['path_0'][0], z_hop, False)
+    safety_printpoint = add_safety_printpoint(pp_dict['layer_0']['path_0'][0], z_hop, False)
     pp_copy_dict['layer_0']['path_0'].insert(0, safety_printpoint)
 
     #  the safety printpoint has already been added at the end since the last printpoint extruder_toggle_type is False
     print_organizer.printpoints_dict = pp_copy_dict
 
 
-def create_safety_printpoint(printpoint, z_hop, extruder_toggle):
+def add_safety_printpoint(printpoint, z_hop, extruder_toggle):
+    """
+
+    Parameters
+    ----------
+    printpoint: :class: 'compas_slicer.geometry.PrintPoint'
+    z_hop: float
+    extruder_toggle: bool
+
+    Returns
+    ----------
+    :class: 'compas_slicer.geometry.PrintPoint'
+    """
+
     pt0 = printpoint.pt
     safety_printpoint = copy.deepcopy(printpoint)
     safety_printpoint.pt = pt0 + Vector(0, 0, z_hop)

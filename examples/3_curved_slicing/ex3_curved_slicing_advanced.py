@@ -3,15 +3,12 @@ from compas.datastructures import Mesh
 import logging
 from compas.geometry import Point
 import compas_slicer.utilities as utils
-from compas_slicer.geometry import PrintPoint
 from compas_slicer.slicers import CurvedSlicer, BaseSlicer
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.pre_processing import CurvedSlicingPreprocessor
 from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import CurvedPrintOrganizer
-from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.pre_processing import move_mesh_to_point
-from compas_slicer.print_organization.print_organization_utilities import analysis
 import time
 
 logger = logging.getLogger('logger')
@@ -31,7 +28,8 @@ def main():
     start_time = time.time()
 
     parameters = {
-        'create_intermediary_outputs': True,
+        'target_LOW_smooth_union': [True, 7],  # boolean, blend_radius
+        'target_HIGH_smooth_union': [True, 7],  # boolean, blend_radius
         'avg_layer_height': 5.0,  # controls number of curves that will be generated
         'min_layer_height': 0.1,
         'max_layer_height': 50.0,  # 2.0,
@@ -51,15 +49,20 @@ def main():
     # --- Create pre-processor
     preprocessor = CurvedSlicingPreprocessor(mesh, parameters, DATA_PATH)
     preprocessor.create_compound_targets()
+    preprocessor.targets_laplacian_smoothing(iterations=4, strength=0.05)
+
 
     #########################################
     # --- slicing
     if REGION_SPLIT:
         # --- ADVANCED slicing with region split
-        preprocessor.scalar_field_evaluation(output_filename='gradient_norm.json')
+        preprocessor.gradient_evaluation(output_filename='gradient_norm.json',
+                                         target_1=preprocessor.target_LOW,
+                                         target_2=preprocessor.target_HIGH)
         preprocessor.find_critical_points(output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
         preprocessor.region_split(save_split_meshes=True)  # split mesh regions on saddle points
 
+    utils.interrupt()
     #########################################
     # --- slicing
     if SLICER:
@@ -69,8 +72,9 @@ def main():
         for i, split_mesh in enumerate(split_meshes):
             preprocessor_split = CurvedSlicingPreprocessor(split_mesh, parameters, DATA_PATH)
             preprocessor_split.create_compound_targets()
-            preprocessor_split.scalar_field_evaluation(output_filename='gradient_norm_%d.json' % i)
-
+            preprocessor.gradient_evaluation(output_filename='gradient_norm_%d.json' % i,
+                                             target_1=preprocessor.target_LOW,
+                                             target_2=preprocessor.target_HIGH)
             slicer = CurvedSlicer(split_mesh, preprocessor_split, parameters)
             if i == 3:
                 slicer.n_multiplier = 0.85

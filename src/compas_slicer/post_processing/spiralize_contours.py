@@ -1,5 +1,4 @@
 import logging
-
 from compas.geometry import Point
 
 logger = logging.getLogger('logger')

@@ -13,10 +13,10 @@ Classes
     :toctree: generated/
     :nosignatures:
 
-    PrintOrganizer
+    BasePrintOrganizer
 
 
-PrintOrganizer
+BasePrintOrganizer
 --------------
 
 .. autosummary::
@@ -44,9 +44,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .print_organization_utilities import *  # noqa: F401 E402 F403
-from .print_organizer import *  # noqa: F401 E402 F403
+
+from .base_print_organizer import *  # noqa: F401 E402 F403
+from .planar_print_organizer import *  # noqa: F401 E402 F403
 from .curved_print_organizer import *  # noqa: F401 E402 F403
+
 from .curved_print_organization import *  # noqa: F401 E402 F403
+from .print_organization_utilities import *  # noqa: F401 E402 F403
 
 __all__ = [name for name in dir() if not name.startswith('_')]

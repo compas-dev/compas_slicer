@@ -8,7 +8,7 @@ __all__ = ['seams_smooth']
 
 
 def seams_smooth(slicer, smooth_distance):
-    """Smoothes the seams (transition between layers)
+    """Smooths the seams (transition between layers)
     by removing points within a certain distance.
 
     Parameters
@@ -17,10 +17,6 @@ def seams_smooth(slicer, smooth_distance):
         An instance of one of the compas_slicer.slicers classes.
     smooth_distance: float
         Distance (in mm) to perform smoothing
-
-    Returns
-    -------
-    None
     """
 
     logger.info("Smoothing seams with a distance of %i mm" % smooth_distance)

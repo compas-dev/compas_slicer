@@ -30,17 +30,17 @@ def main():
     create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)
 
     parameters = {
-        'create_intermediary_outputs': True,
         'avg_layer_height': 5.0,  # controls number of curves that will be generated
         'min_layer_height': 0.1,
         'max_layer_height': 50.0,  # 2.0,
-        'layer_heights_smoothing': [False, 3, 0.5],  # boolean, iterations, strength
-        'up_vectors_smoothing': [False, 3, 0.5]  # boolean, iterations, strength
+        'layer_heights_smoothing': [False, 5, 0.2],  # boolean, iterations, strength
+        'up_vectors_smoothing': [True, 5, 0.2]  # boolean, iterations, strength
     }
 
     preprocessor = CurvedSlicingPreprocessor(mesh, parameters, DATA_PATH)
     preprocessor.create_compound_targets()
-    preprocessor.scalar_field_evaluation(output_filename='gradient_norm.json')
+    preprocessor.gradient_evaluation(norm_filename='gradient_norm.json',  g_filename='gradient.json',
+                                     target_1=preprocessor.target_LOW, target_2=preprocessor.target_HIGH)
     preprocessor.find_critical_points(output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
 
     ## --- slicing
@@ -53,18 +53,18 @@ def main():
 
     # ### --- Print organizer
     print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
-    print_organizer.create_printpoints(mesh)
+    print_organizer.create_printpoints()
 
     ### --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()
     utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
     ### ----- Visualize
-    # viewer = ObjectViewer()
-    # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
-    # # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
-    # viewer.update()
-    # viewer.show()
+    viewer = ObjectViewer()
+    slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
+    # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
+    viewer.update()
+    viewer.show()
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")

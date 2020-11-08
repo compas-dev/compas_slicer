@@ -1,12 +1,14 @@
 from compas.geometry import distance_point_point
 from compas_slicer.geometry import VerticalLayer
+import compas_slicer.utilities as utils
 import numpy as np
 
 import logging
 
 logger = logging.getLogger('logger')
 
-__all__ = ['sort_per_segment']
+__all__ = ['sort_per_segment',
+           'get_segments_centroids_list']
 
 
 def sort_per_segment(slicer, max_layers_per_segment, threshold):
@@ -17,8 +19,8 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
     ----------
     slicer: :class:`compas_slicer.slicers.BaseSlicer`
         An instance of one of the compas_slicer.slicers classes.
-    d_threshold: float
-        The maximum distance that the centroids of two successive paths can have to belong in the same group
+    threshold: float
+        The maximum get_distance that the centroids of two successive paths can have to belong in the same group
         Recommended value, slightly bigger than the layer height
     max_layers_per_segment: int
         Maximum number of layers that a segment can consist of
@@ -38,7 +40,7 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
             else:  # find the candidate segment for new isocurve
                 contour_centroid = list(np.average(np.array(path.points), axis=0))
                 other_centroids = get_segments_centroids_list(segments)
-                candidate_segment = segments[get_closest_pt_index(contour_centroid, other_centroids)]
+                candidate_segment = segments[utils.get_closest_pt_index(contour_centroid, other_centroids)]
                 if distance_point_point(candidate_segment.head_centroid, contour_centroid) < threshold:
                     if max_layers_per_segment:
                         if len(candidate_segment.paths) < max_layers_per_segment:
@@ -57,13 +59,9 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
     slicer.print_paths = segments
 
 
-def get_closest_pt_index(pt, pts):
-    distances = [distance_point_point(p, pt) for p in pts]
-    min_index = distances.index(min(distances))
-    return min_index
-
-
 def get_segments_centroids_list(segments):
+    """ Returns a list with points that are the centroids of the heads of all segments. The head
+    of a segment is its last path. """
     head_centroids = []
     for segment in segments:
         head_centroids.append(segment.head_centroid)

@@ -9,8 +9,8 @@ __all__ = ['Path']
 
 class Path(object):
     """
-    A Path is a contour within a Layer. A Path consists out of a list of
-    compas.Points, plus some additional attributes.
+    A Path is a connected contour within a Layer. A Path consists of a list of
+    compas.geometry.Points.
 
     Attributes
     ----------
@@ -18,6 +18,7 @@ class Path(object):
         :class:`compas.geometry.Point`
     is_closed : bool
         True if the Path is a closed curve, False if the Path is open.
+        If the path is closed, the first and the last point are identical.
     """
 
     def __init__(self, points, is_closed):

@@ -17,7 +17,8 @@ __all__ = ['BaseSlicer']
 
 class BaseSlicer(object):
     """
-    The BaseSlicer class is an organizational class that holds all the information for the slice process
+    This is an organizational class that holds all the information for the slice process.
+    Do not use this class directly in your python code. Instead use PlanarSlicer or CurvedSlicer.
     This class is meant to be extended for the implementation of the various slicers.
     See :class:`compas.slicer.slicers.PlanarSlicer` and :class:`compas.slicer.slicers.CurvedSlicer` as examples.
 
@@ -32,7 +33,6 @@ class BaseSlicer(object):
         assert isinstance(mesh, compas.datastructures.Mesh), \
             "Input mesh must be of type <compas.datastructures.Mesh>, not " + str(type(mesh))
         utils.check_triangular_mesh(mesh)
-        mesh = compas.datastructures.mesh_weld(mesh, precision='2f')  # make sure the mesh is welded
 
         #  input
         self.mesh = mesh
@@ -77,7 +77,7 @@ class BaseSlicer(object):
 
     @abstractmethod
     def generate_paths(self):
-        # To be implemented by the inheriting classes
+        """To be implemented by the inheriting classes. """
         pass
 
     def post_processing(self):
@@ -128,13 +128,6 @@ class BaseSlicer(object):
             True to visualize mesh, False to not.
         visualize_paths: bool, optional
             True to visualize paths, False to not.
-
-        Examples
-        --------
-        >>> from compas_viewers.objectviewer import ObjectViewer
-        >>> viewer = ObjectViewer()
-        >>> viewer.view.use_shaders = False
-        >>> slicer.visualize_on_viewer(viewer)
         """
 
         if visualize_mesh:

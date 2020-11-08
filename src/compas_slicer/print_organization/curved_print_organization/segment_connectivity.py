@@ -42,12 +42,13 @@ class SegmentConnectivity:
     ######################
     # Main
     def compute(self):
+        """ Run the segment connectivity process. """
         self.initialize_printpoints()
         self.fill_in_printpoints_information()
 
         if self.parameters['layer_heights_smoothing'][0]:
             logger.info('Layer heights smoothing using horizontal neighbors')
-            self.smooth_printpoints_heights()
+            self.smooth_printpoints_layer_heights()
         if self.parameters['up_vectors_smoothing'][0]:
             logger.info('Up vectors smoothing using horizontal neighbors')
             self.smooth_up_vectors()
@@ -55,13 +56,15 @@ class SegmentConnectivity:
     ######################
     # Utilities
     def initialize_printpoints(self):
+        """ Initializes printpoints in a list, without filling in their attributes. """
         for i, path in enumerate(self.paths):
             self.printpoints[i] = [PrintPoint(pt=p, layer_height=None,
                                               mesh_normal=utils.get_closest_mesh_normal_to_pt(self.mesh, p))
                                    for p in path.points]
 
     def fill_in_printpoints_information(self):
-        crv_to_check = Path(self.base_boundary.points, True)  # Fake path for the lower boundary
+        """ Fills in the attributes of previously initialized printpoints. """
+        crv_to_check = Path(self.base_boundary.points, True)  # creation of fake path for the lower boundary
         with progressbar.ProgressBar(max_value=len(self.paths)) as bar:
             for i, path in enumerate(self.paths):
                 for j, p in enumerate(path.points):
@@ -75,21 +78,21 @@ class SegmentConnectivity:
                     self.printpoints[i][j].up_vector = Vector(*normalize_vector(Vector.from_start_end(cp, p)))
                     self.printpoints[i][j].frame = self.printpoints[i][j].get_frame()
 
-                    if d < self.parameters['min_layer_height'] or d > self.parameters['max_layer_height']:
-                        self.printpoints[i][j].is_feasible = False
                 bar.update(i)
                 crv_to_check = path
 
-    def smooth_printpoints_heights(self):
-        iterations = self.parameters['layer_heights_smoothing'][2]
-        strength = self.parameters['layer_heights_smoothing'][3]
+    def smooth_printpoints_layer_heights(self):
+        """ Smooth printpoints heights based on neighboring. """
+        iterations = self.parameters['layer_heights_smoothing'][1]
+        strength = self.parameters['layer_heights_smoothing'][2]
         for i, path in enumerate(self.paths):
-            self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.height,
+            self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.layer_height,
                                                   set_attr_value=set_printpoint_height)
 
     def smooth_up_vectors(self):
-        iterations = self.parameters['up_vectors_smoothing'][2]
-        strength = self.parameters['up_vectors_smoothing'][3]
+        """ Smooth printpoints up_vectors based on neighboring. """
+        iterations = self.parameters['up_vectors_smoothing'][1]
+        strength = self.parameters['up_vectors_smoothing'][2]
         for i, path in enumerate(self.paths):
             self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.up_vector,
                                                   set_attr_value=set_printpoint_up_vec)
@@ -99,19 +102,11 @@ class SegmentConnectivity:
         """General description.
         Parameters
         ----------
-        param : type
-            Explanation sentence.
-        Returns
-        -------
-        what it returns
-            Explanation sentence.
-
-        :param path_index: int
-        :param iterations: int
-        :param strength: float
-        :param get_attr_value: function that takes a printpoint, get_attr_value(pp)
-        :param set_attr_value: function that takes a printpoint, set_attr_value(pp, new_value)
-        :return: None
+        path_index: int
+        iterations: int
+        strength: float
+        get_attr_value: function that returns an attribute of a printpoint, get_attr_value(pp)
+        set_attr_value: function that sets an attribute of a printpoint, set_attr_value(pp, new_value)
         """
         for _ in range(iterations):
             attributes = [get_attr_value(pp) for pp in self.printpoints[path_index]]
@@ -130,8 +125,14 @@ class SegmentConnectivity:
 
 
 def set_printpoint_up_vec(pp, v):
+    """ Set printpoint.up_vector = v. """
     pp.up_vector = v
 
 
 def set_printpoint_height(pp, h):
-    pp.height = h
+    """ Set printpoint.layer_height = h. """
+    pp.layer_height = h
+
+
+if __name__ == "__main__":
+    pass

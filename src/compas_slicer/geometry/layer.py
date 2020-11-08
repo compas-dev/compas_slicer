@@ -11,12 +11,9 @@ __all__ = ['Layer',
 
 class Layer(object):
     """
-    A Layer stores a group of ordered print_paths.
-
-    A Layer is generated when a geometry is sliced into layers and can therefore be
-    seen as a 'slice' of a geometry. Layers are typically organized horizontally,
-    but can also be organized vertically. A Layer consists out of one, or multiple
-    Paths (depending on the geometry).
+    A Layer stores a group of ordered paths that are generated when a geometry is sliced.
+    Layers are typically organized horizontally, but can also be organized vertically (see VerticalLayer).
+    A Layer consists of one, or multiple Paths (depending on the geometry).
 
     Attributes
     ----------
@@ -33,6 +30,14 @@ class Layer(object):
     def __repr__(self):
         no_of_paths = len(self.paths) if self.paths else 0
         return "<Layer object with %i paths>" % no_of_paths
+
+    @property
+    def total_number_of_points(self):
+        """Returns the total number of points within the layer."""
+        num = 0
+        for path in self.paths:
+            num += len(path.printpoints)
+        return num
 
     @classmethod
     def from_data(cls, data):
@@ -69,17 +74,15 @@ class Layer(object):
             data['paths'][i] = path.to_data()
         return data
 
-    def total_number_of_points(self):
-        """Returns the total number of points within a layer."""
-        num = 0
-        for path in self.paths:
-            num += len(path.printpoints)
-        return num
-
 
 class VerticalLayer(Layer):
     """
     Vertical ordering. A VerticalLayer stores the print paths sorted in vertical groups.
+    It is created with an empty list of paths that is filled in afterwards.
+
+    Attributes
+    ----------
+    id: int, identifier of vertical layer
     """
 
     def __init__(self, id):
@@ -88,20 +91,17 @@ class VerticalLayer(Layer):
         self.head_centroid = None
 
     def append_(self, path):
+        """ Add path to self.paths list. """
         self.paths.append(path)
         self.compute_head_centroid()
 
     def compute_head_centroid(self):
+        """ Find the centroid of all the points of the last path in the self.paths list"""
         pts = np.array(self.paths[-1].points)
         self.head_centroid = np.mean(pts, axis=0)
 
-    def total_number_of_points(self):
-        num = 0
-        for path in self.paths:
-            num += len(path.printpoints)
-        return num
-
     def printout_details(self):
+        """ Prints the details of the class. """
         logger.info("VerticalLayer id : %d" % self.id)
         logger.info("Total number of paths : %d" % len(self.paths))
 
@@ -140,3 +140,7 @@ class VerticalLayer(Layer):
         layer = cls(id=None)
         layer.paths = paths
         return layer
+
+
+if __name__ == "__main__":
+    pass
