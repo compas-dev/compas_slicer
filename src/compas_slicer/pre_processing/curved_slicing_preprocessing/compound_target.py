@@ -8,10 +8,6 @@ from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
 from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances
 import statistics
 
-packages = utils.TerminalCommand('conda list').get_split_output_strings()
-if 'igl' in packages:
-    import igl
-
 logger = logging.getLogger('logger')
 
 __all__ = ['CompoundTarget',

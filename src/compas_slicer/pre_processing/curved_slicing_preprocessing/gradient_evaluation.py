@@ -2,7 +2,7 @@ import numpy as np
 import logging
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertices, \
-    compute_face_gradient, compute_vertex_gradient, normalize_gradient
+    compute_face_gradient, compute_vertex_gradient
 
 logger = logging.getLogger('logger')
 __all__ = ['GradientEvaluation']

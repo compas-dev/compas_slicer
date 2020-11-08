@@ -41,7 +41,7 @@ def main():
     ### --- Generate brim
     generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
 
-    ### --- Simplify the printpaths by removing points with a certain threshold
+    ### --- Simplify the paths by removing points with a certain threshold
     # change the threshold value to remove more or less points
     simplify_paths_rdp(slicer, threshold=0.9)
 

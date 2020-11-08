@@ -83,16 +83,16 @@ class SegmentConnectivity:
 
     def smooth_printpoints_layer_heights(self):
         """ Smooth printpoints heights based on neighboring. """
-        iterations = self.parameters['layer_heights_smoothing'][2]
-        strength = self.parameters['layer_heights_smoothing'][3]
+        iterations = self.parameters['layer_heights_smoothing'][1]
+        strength = self.parameters['layer_heights_smoothing'][2]
         for i, path in enumerate(self.paths):
             self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.layer_height,
                                                   set_attr_value=set_printpoint_height)
 
     def smooth_up_vectors(self):
         """ Smooth printpoints up_vectors based on neighboring. """
-        iterations = self.parameters['up_vectors_smoothing'][2]
-        strength = self.parameters['up_vectors_smoothing'][3]
+        iterations = self.parameters['up_vectors_smoothing'][1]
+        strength = self.parameters['up_vectors_smoothing'][2]
         for i, path in enumerate(self.paths):
             self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.up_vector,
                                                   set_attr_value=set_printpoint_up_vec)

@@ -79,11 +79,11 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
         else:
             self.segments[0]['boundary'] = root_boundary
 
-        if self.parameters['create_intermediary_outputs']:
-            b_data = {}
-            for i in self.segments:
-                b_data[i] = self.segments[i]['boundary'].to_data()
-            utils.save_to_json(b_data, self.OUTPUT_PATH, 'boundaries.json')
+        # save intermediary outputs
+        b_data = {}
+        for i in self.segments:
+            b_data[i] = self.segments[i]['boundary'].to_data()
+        utils.save_to_json(b_data, self.OUTPUT_PATH, 'boundaries.json')
 
     def create_segment_connectivity(self):
         """ A SegmentConnectivity finds vertical relation between paths. Creates and fills in its printpoints."""

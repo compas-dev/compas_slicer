@@ -33,8 +33,8 @@ def main():
         'avg_layer_height': 5.0,  # controls number of curves that will be generated
         'min_layer_height': 0.1,
         'max_layer_height': 50.0,  # 2.0,
-        'layer_heights_smoothing': [False, 3, 0.5],  # boolean, iterations, strength
-        'up_vectors_smoothing': [False, 3, 0.5]  # boolean, iterations, strength
+        'layer_heights_smoothing': [False, 5, 0.2],  # boolean, iterations, strength
+        'up_vectors_smoothing': [True, 5, 0.2]  # boolean, iterations, strength
     }
 
     preprocessor = CurvedSlicingPreprocessor(mesh, parameters, DATA_PATH)
