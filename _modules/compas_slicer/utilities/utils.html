@@ -83,18 +83,19 @@
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;get_output_directory&#39;</span><span class="p">,</span>
            <span class="s1">&#39;save_to_json&#39;</span><span class="p">,</span>
            <span class="s1">&#39;load_from_json&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;total_length_of_dictionary&#39;</span><span class="p">,</span>
            <span class="s1">&#39;flattened_list_of_dictionary&#39;</span><span class="p">,</span>
            <span class="s1">&#39;interrupt&#39;</span><span class="p">,</span>
            <span class="s1">&#39;point_list_to_dict&#39;</span><span class="p">,</span>
            <span class="s1">&#39;get_closest_mesh_vkey_to_pt&#39;</span><span class="p">,</span>
            <span class="s1">&#39;get_closest_mesh_normal_to_pt&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;get_mesh_laplacian_matrix&#39;</span><span class="p">,</span>
            <span class="s1">&#39;get_closest_pt_index&#39;</span><span class="p">,</span>
            <span class="s1">&#39;get_closest_pt&#39;</span><span class="p">,</span>
            <span class="s1">&#39;plot_networkx_graph&#39;</span><span class="p">,</span>
@@ -109,14 +110,14 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if a directory with the name &#39;output&#39; exists in the path. If not it creates it.</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    path : string</span>
+<span class="sd">    path: str</span>
 <span class="sd">        The path where the &#39;output&#39; directory will be created</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
-<span class="sd">    path : string</span>
+<span class="sd">    str</span>
 <span class="sd">        The path to the new (or already existing) &#39;output&#39; directory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">)</span>
@@ -129,17 +130,16 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the index of the closest point of &#39;pt&#39; in the point cloud &#39;pts&#39;.</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pt : compas.geometry.Point3d</span>
-<span class="sd">    pts : list, compas.geometry.Point3d</span>
+<span class="sd">    pt: compas.geometry.Point3d</span>
+<span class="sd">    pts: list, compas.geometry.Point3d</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
 <span class="sd">    int</span>
 <span class="sd">        The index of the closest point</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">ci</span> <span class="o">=</span> <span class="n">closest_point_in_cloud</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">pt</span><span class="p">,</span> <span class="n">cloud</span><span class="o">=</span><span class="n">pts</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
     <span class="c1"># distances = [distance_point_point_sqrd(p, pt) for p in pts]</span>
     <span class="c1"># ci = distances.index(min(distances))</span>
@@ -150,17 +150,16 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     Finds the closest point of &#39;pt&#39; in the point cloud &#39;pts&#39;.</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pt : compas.geometry.Point3d</span>
-<span class="sd">    pts : list, compas.geometry.Point3d</span>
+<span class="sd">    pt: :class: &#39;compas.geometry.Point&#39;</span>
+<span class="sd">    pts: list, :class: &#39;compas.geometry.Point3d&#39;</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
 <span class="sd">    compas.geometry.Point3d</span>
 <span class="sd">        The closest point</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">ci</span> <span class="o">=</span> <span class="n">closest_point_in_cloud</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">pt</span><span class="p">,</span> <span class="n">cloud</span><span class="o">=</span><span class="n">pts</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">pts</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span></div>
 
@@ -169,15 +168,15 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Smooths the vector iteratively, with the given number of iterations and strength per iteration</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    vectors : list, compas.geometry.Vector</span>
-<span class="sd">    strength : float</span>
-<span class="sd">    iterations : int</span>
+<span class="sd">    vectors: list, :class: &#39;compas.geometry.Vector&#39;</span>
+<span class="sd">    strength: float</span>
+<span class="sd">    iterations: int</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
-<span class="sd">    list, compas.geometry.Vector3d</span>
+<span class="sd">    list, :class: &#39;compas.geometry.Vector3d&#39;</span>
 <span class="sd">        The smoothened vectors</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -198,11 +197,11 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the provided data to json on the filepath, with the given name</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    data : dict</span>
-<span class="sd">    filepath : string</span>
-<span class="sd">    name : string</span>
+<span class="sd">    data: dict</span>
+<span class="sd">    filepath: str</span>
+<span class="sd">    name: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
@@ -215,10 +214,10 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads json from the filepath</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    filepath : string</span>
-<span class="sd">    name : string</span>
+<span class="sd">    filepath: str</span>
+<span class="sd">    name: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
@@ -235,9 +234,9 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if the mesh is triangular. If not, then it raises an error</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mesh : compas.datastructures.Mesh</span>
+<span class="sd">    mesh: :class: &#39;compas.datastructures.Mesh&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">for</span> <span class="n">f_key</span> <span class="ow">in</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">():</span>
@@ -251,10 +250,10 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the vertex key that is the closest to the point.</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mesh : compas.datastructures.Mesh</span>
-<span class="sd">    pt : compas.geometry.Point</span>
+<span class="sd">    mesh: :class: &#39;compas.datastructures.Mesh&#39;</span>
+<span class="sd">    pt: :class: &#39;compas.geometry.Point&#39;</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
@@ -273,14 +272,14 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the closest vertex normal to the point.</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mesh : compas.datastructures.Mesh</span>
-<span class="sd">    pt : compas.geometry.Point</span>
+<span class="sd">    mesh: :class: &#39;compas.datastructures.Mesh&#39;</span>
+<span class="sd">    pt: :class: &#39;compas.geometry.Point&#39;</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
-<span class="sd">    compas.geometry.Vector</span>
+<span class="sd">    :class: &#39;compas.geometry.Vector&#39;</span>
 <span class="sd">        The closest normal of the mesh.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -294,15 +293,15 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the coordinates of all the vertices that have an attribute with key=attr that equals the value.</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mesh : compas.datastructures.Mesh</span>
-<span class="sd">    attr : str</span>
-<span class="sd">    value : anything that can be stored into a dictionary</span>
+<span class="sd">    mesh: :class: &#39;compas.datastructures.Mesh&#39;</span>
+<span class="sd">    attr: str</span>
+<span class="sd">    value: anything that can be stored into a dictionary</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
-<span class="sd">    list, compas.geometry.Point</span>
+<span class="sd">    list, :class: &#39;compas.geometry.Point&#39;</span>
 <span class="sd">        the closest vertex key</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -317,16 +316,16 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the normal of the curve that lies on the xy plane at the point with index k</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    k : int, index of the point</span>
-<span class="sd">    point : compas.geometry.Point</span>
-<span class="sd">    path : compas_slicer.geometry.Path</span>
-<span class="sd">    mesh : compas.datastructures.Mesh</span>
+<span class="sd">    k: int, index of the point</span>
+<span class="sd">    point: :class: &#39;compas.geometry.Point&#39;</span>
+<span class="sd">    path: :class: &#39;compas_slicer.geometry.Path&#39;</span>
+<span class="sd">    mesh: :class: &#39;compas.datastructures.Mesh&#39;</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
-<span class="sd">    compas.geometry.Vector</span>
+<span class="sd">    :class: &#39;compas.geometry.Vector&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># find mesh normal is not really needed in the 2D case of planar slicer</span>
@@ -349,14 +348,44 @@
             <span class="n">v</span> <span class="o">=</span> <span class="n">normalize_vector</span><span class="p">(</span><span class="n">Vector</span><span class="o">.</span><span class="n">from_start_end</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">prev_pt</span><span class="p">))</span>
             <span class="n">normal</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>  <span class="c1"># rotate 90 degrees clockwise on the xy plane</span>
 
-    <span class="c1"># TODO: Attention! This is just a workaround! find the source of the problem and imrpove this!</span>
     <span class="k">if</span> <span class="n">length_vector</span><span class="p">(</span><span class="n">normal</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># logger.error(&#39;Attention! It looks like you might have some duplicated points&#39;)</span>
+        <span class="c1"># When the neighboring elements happen to cancel out, then search for the true normal,</span>
+        <span class="c1"># and project it on the xy plane for consistency</span>
         <span class="n">normal</span> <span class="o">=</span> <span class="n">get_closest_mesh_normal_to_pt</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span>
+        <span class="n">normal</span> <span class="o">=</span> <span class="p">[</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span>
 
     <span class="n">normal</span> <span class="o">=</span> <span class="n">normalize_vector</span><span class="p">(</span><span class="n">normal</span><span class="p">)</span>
     <span class="n">normal</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">normal</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">normal</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_mesh_laplacian_matrix</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">fix_boundaries</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the laplace operator of the mesh</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mesh: :class: &#39;compas.datastructures.Mesh&#39;</span>
+<span class="sd">    fix_boundaries: bool</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    :class: &#39;scipy.sparse.csr_matrix&#39;</span>
+<span class="sd">        sparse matrix (dimensions: #V x #V), laplace operator, each row i corresponding to v(i, :)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">igl</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Getting laplacian matrix, fix boundaries : &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fix_boundaries</span><span class="p">))</span>
+    <span class="n">v</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">()</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">igl</span><span class="o">.</span><span class="n">cotmatrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">fix_boundaries</span><span class="p">:</span>
+        <span class="c1"># fix boundaries by putting the corresponding columns of the sparse matrix to 0</span>
+        <span class="n">L_dense</span> <span class="o">=</span> <span class="n">L</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">vkey</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;boundary&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">L_dense</span><span class="p">[</span><span class="n">i</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">L_dense</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">L</span>
 
 
 <span class="c1">#######################################</span>
@@ -366,9 +395,9 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plots the graph G</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    G : networkx.Graph</span>
+<span class="sd">    G: networkx.Graph</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
@@ -383,9 +412,9 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Turns a list of compas.geometry.Point into a dictionary, so that it can be saved to Json.</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pts_list : list, compas.geometry.Point</span>
+<span class="sd">    pts_list: list, :class:`compas.geometry.Point`</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
@@ -398,35 +427,14 @@
     <span class="k">return</span> <span class="n">data</span></div>
 
 
-<span class="c1">#  --- Length of dictionary</span>
-<div class="viewcode-block" id="total_length_of_dictionary"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.total_length_of_dictionary.html#compas_slicer.utilities.total_length_of_dictionary">[docs]</a><span class="k">def</span> <span class="nf">total_length_of_dictionary</span><span class="p">(</span><span class="n">dictionary</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Measures the total length of all the components of a dictionary</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    dictionary : dict</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
-<span class="sd">    float, total length of dictionary</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">total_length</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="p">:</span>
-        <span class="n">total_length</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">total_length</span></div>
-
-
 <span class="c1">#  --- Flattened list of dictionary</span>
 <div class="viewcode-block" id="flattened_list_of_dictionary"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.flattened_list_of_dictionary.html#compas_slicer.utilities.flattened_list_of_dictionary">[docs]</a><span class="k">def</span> <span class="nf">flattened_list_of_dictionary</span><span class="p">(</span><span class="n">dictionary</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Turns the dictionary into a flat list</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    dictionary : dict</span>
+<span class="sd">    dictionary: dict</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
@@ -443,17 +451,17 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the key of a dictionary that stores the val</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    dictionary : dict</span>
-<span class="sd">    val : anything that can be stored in a dictionary</span>
+<span class="sd">    dictionary: dict</span>
+<span class="sd">    val: anything that can be stored in a dictionary</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">key</span>
-    <span class="k">return</span> <span class="s2">&quot;key doesn&#39;t exist&quot;</span></div>
+    <span class="k">return</span> <span class="s2">&quot;key doesn&#39;weight exist&quot;</span></div>
 
 
 <span class="c1">#######################################</span>
@@ -479,15 +487,15 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds all the filenames in the DATA_PATH that start and end with the provided strings</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    startswith : string</span>
-<span class="sd">    endswith : string</span>
-<span class="sd">    DATA_PATH : string</span>
+<span class="sd">    startswith: str</span>
+<span class="sd">    endswith: str</span>
+<span class="sd">    DATA_PATH: str</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
-<span class="sd">    list, string</span>
+<span class="sd">    list, str</span>
 <span class="sd">        All the filenames</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

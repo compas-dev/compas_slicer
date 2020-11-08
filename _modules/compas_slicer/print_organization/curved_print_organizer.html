@@ -77,24 +77,33 @@
         <h1 class="display-4 p-0 mb-5">Source code for compas_slicer.print_organization.curved_print_organizer</h1><div class="highlight"><pre><code>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.print_organization.print_organizer</span> <span class="kn">import</span> <span class="n">PrintOrganizer</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">BasePrintOrganizer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.geometry</span> <span class="kn">import</span> <span class="n">VerticalLayer</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.print_organization.curved_print_organization</span> <span class="kn">import</span> <span class="n">topological_sorting</span> <span class="k">as</span> <span class="n">topo_sort</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.pre_processing.curved_slicing_preprocessing</span> <span class="kn">import</span> <span class="n">topological_sorting</span> <span class="k">as</span> <span class="n">topo_sort</span>
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization.curved_print_organization</span> <span class="kn">import</span> <span class="n">BaseBoundary</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization.curved_print_organization</span> <span class="kn">import</span> <span class="n">SegmentConnectivity</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_linear_velocity</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CurvedPrintOrganizer&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="CurvedPrintOrganizer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.html#compas_slicer.print_organization.CurvedPrintOrganizer">[docs]</a><span class="k">class</span> <span class="nc">CurvedPrintOrganizer</span><span class="p">(</span><span class="n">PrintOrganizer</span><span class="p">):</span>
+<div class="viewcode-block" id="CurvedPrintOrganizer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.html#compas_slicer.print_organization.CurvedPrintOrganizer">[docs]</a><span class="k">class</span> <span class="nc">CurvedPrintOrganizer</span><span class="p">(</span><span class="n">BasePrintOrganizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Organizing the printing process for the realization of non-planar contours.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    slicer: :class:`compas_slicer.slicers.PlanarSlicer`</span>
+<span class="sd">        An instance of the compas_slicer.slicers.PlanarSlicer.</span>
+<span class="sd">    parameters: dict</span>
+<span class="sd">    DATA_PATH: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CurvedPrintOrganizer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.__init__.html#compas_slicer.print_organization.CurvedPrintOrganizer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slicer</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">DATA_PATH</span><span class="p">):</span>
+        <span class="n">BasePrintOrganizer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">VerticalLayer</span><span class="p">)</span>  <span class="c1"># curved printing only works with vertical layers</span>
-        <span class="n">PrintOrganizer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">DATA_PATH</span> <span class="o">=</span> <span class="n">DATA_PATH</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">OUTPUT_PATH</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_output_directory</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
@@ -107,7 +116,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># one segment per vertical layer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_segments_dict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">base_boundaries_creation</span><span class="p">()</span>  <span class="c1"># creation of one base boundary per vertical_layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_base_boundaries</span><span class="p">()</span>  <span class="c1"># creation of one base boundary per vertical_layer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_segment_connectivity</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -122,13 +131,13 @@
                                                                <span class="n">DATA_PATH</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">DATA_PATH</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CurvedPrintOrganizer.create_segments_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.create_segments_dict.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_segments_dict">[docs]</a>    <span class="k">def</span> <span class="nf">create_segments_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Initializes segments dictionary with empty segments &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Initializes segments dictionary with empty segments. &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">vertical_layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">vertical_layers</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;boundary&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                                 <span class="s1">&#39;path_collection&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="CurvedPrintOrganizer.base_boundaries_creation"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.base_boundaries_creation.html#compas_slicer.print_organization.CurvedPrintOrganizer.base_boundaries_creation">[docs]</a>    <span class="k">def</span> <span class="nf">base_boundaries_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Creates one BaseBoundary per vertical_layer  &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="CurvedPrintOrganizer.create_base_boundaries"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.create_base_boundaries.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_base_boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">create_base_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Creates one BaseBoundary per vertical_layer.&quot;&quot;&quot;</span>
         <span class="n">root_vs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_mesh_vertex_coords_with_attribute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;boundary&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">root_boundary</span> <span class="o">=</span> <span class="n">BaseBoundary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">root_vs</span><span class="p">])</span>
 
@@ -147,14 +156,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_boundary</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;create_intermediary_outputs&#39;</span><span class="p">]:</span>
-            <span class="n">b_data</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
-                <span class="n">b_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;boundary&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">b_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;boundaries.json&#39;</span><span class="p">)</span></div>
+        <span class="c1"># save intermediary outputs</span>
+        <span class="n">b_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
+            <span class="n">b_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;boundary&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">b_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;boundaries.json&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CurvedPrintOrganizer.create_segment_connectivity"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.create_segment_connectivity.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_segment_connectivity">[docs]</a>    <span class="k">def</span> <span class="nf">create_segment_connectivity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; A SegmentConnectivity finds vertical relation between paths. Creates and fills in printpoints &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; A SegmentConnectivity finds vertical relation between paths. Creates and fills in its printpoints.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">vertical_layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">vertical_layers</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating connectivity of segment no </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
             <span class="n">path_collection</span> <span class="o">=</span> <span class="n">SegmentConnectivity</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">vertical_layer</span><span class="o">.</span><span class="n">paths</span><span class="p">,</span>
@@ -164,10 +173,11 @@
             <span class="n">path_collection</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;path_collection&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_collection</span></div>
 
-<div class="viewcode-block" id="CurvedPrintOrganizer.create_printpoints"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.create_printpoints.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_printpoints">[docs]</a>    <span class="k">def</span> <span class="nf">create_printpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">):</span>
+<div class="viewcode-block" id="CurvedPrintOrganizer.create_printpoints"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.create_printpoints.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_printpoints">[docs]</a>    <span class="k">def</span> <span class="nf">create_printpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the print points of the fabrication process</span>
 <span class="sd">        Based on the directed graph, select one topological order.</span>
-<span class="sd">        From each path collection in that order fill in the PrintPoints dictionary</span>
+<span class="sd">        From each path collection in that order copy PrintPoints dictionary in the correct order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">vertical_layers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># the you need to select one topological order</span>
             <span class="n">all_orders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_sort_graph</span><span class="o">.</span><span class="n">get_all_topological_orders</span><span class="p">()</span>
@@ -183,14 +193,18 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">][</span><span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> \
                     <span class="p">[</span><span class="n">path_collection</span><span class="o">.</span><span class="n">printpoints</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)]</span></div>
 
-    <span class="c1">############################################</span>
-    <span class="c1">#  ---  override function from base class</span>
+<div class="viewcode-block" id="CurvedPrintOrganizer.check_printpoints_feasibility"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.check_printpoints_feasibility.html#compas_slicer.print_organization.CurvedPrintOrganizer.check_printpoints_feasibility">[docs]</a>    <span class="k">def</span> <span class="nf">check_printpoints_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks if the get_distance to the closest support of every layer height is within the admissible limits. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
+                <span class="n">ppt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">ppt</span><span class="o">.</span><span class="n">distance_to_support</span>
+                <span class="k">if</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;min_layer_height&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;max_layer_height&#39;</span><span class="p">]:</span>
+                    <span class="n">ppt</span><span class="o">.</span><span class="n">is_feasible</span> <span class="o">=</span> <span class="kc">False</span></div></div>
 
-<div class="viewcode-block" id="CurvedPrintOrganizer.set_linear_velocity"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.set_linear_velocity.html#compas_slicer.print_organization.CurvedPrintOrganizer.set_linear_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">set_linear_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">velocity_type</span><span class="o">=</span><span class="s2">&quot;matching_layer_height&quot;</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">per_layer_velocities</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">velocity_type</span> <span class="o">!=</span> <span class="s2">&quot;matching_layer_height&quot;</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;For non-planar slicing, print velocity should match layer_height&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting linear velocity to match layer_height&quot;</span><span class="p">)</span>
-        <span class="n">set_linear_velocity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">,</span> <span class="n">velocity_type</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">per_layer_velocities</span><span class="o">=</span><span class="n">per_layer_velocities</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
 </code></pre></div>
         
       </main>

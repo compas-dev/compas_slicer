@@ -95,10 +95,11 @@ out of a shape with a single contour (also known as a ‘vase’).</p>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">generate_brim</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_smooth</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">PrintOrganizer</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">PlanarPrintOrganizer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_extruder_toggle</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">add_safety_printpoints</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_linear_velocity</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_blend_radius</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.utilities</span> <span class="kn">import</span> <span class="n">save_to_json</span>
 <span class="kn">from</span> <span class="nn">compas_viewers.objectviewer</span> <span class="kn">import</span> <span class="n">ObjectViewer</span>
 
@@ -176,19 +177,19 @@ information from the slicing process.</p>
 </div>
 <p>Since we are now done with operations involving the <code class="xref py py-class docutils literal notranslate"><span class="pre">PlanarSlicer</span></code> class,
 we can save the slicing result to JSON. In the next steps we will use the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">PrintOrganizer</span></code> class to organize our print for fabrication.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BasePrintOrganizer</span></code> class to organize our print for fabrication.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">DATA</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
 </div>
 <div class="section" id="print-organization">
 <h2><span class="section-number">1.3. </span>Print organization</h2>
-<p>In the next steps of the process we will use the <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintOrganizer</span></code> to
+<p>In the next steps of the process we will use the <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePrintOrganizer</span></code> to
 make our slicing result ready for fabrication. First, we initialize the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">PrintOrganizer</span></code> and create <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code>. The difference between
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BasePrintOrganizer</span></code> and create <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code>. The difference between
 <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code> and the <code class="docutils literal notranslate"><span class="pre">compas.geometry.Points</span></code> we were using in the
 previous step is that the <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code> have additional functionality.</p>
-<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">print_organizer</span> <span class="o">=</span> <span class="n">PrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">)</span>
+<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">print_organizer</span> <span class="o">=</span> <span class="n">PlanarPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">)</span>
 <span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">)</span>
 </code></pre></div>
 </div>
@@ -222,24 +223,31 @@ Printpoints as data and then export them to a <code class="docutils literal notr
 <div class="section" id="final-script">
 <h2><span class="section-number">1.4. </span>Final script</h2>
 <p>The completed final script can be found below:</p>
-<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="kn">from</span> <span class="nn">compas_slicer.pre_processing</span> <span class="kn">import</span> <span class="n">move_mesh_to_point</span>
+<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.pre_processing</span> <span class="kn">import</span> <span class="n">move_mesh_to_point</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers</span> <span class="kn">import</span> <span class="n">PlanarSlicer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">generate_brim</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_smooth</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">PrintOrganizer</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">PlanarPrintOrganizer</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_extruder_toggle</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">add_safety_printpoints</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_linear_velocity</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_blend_radius</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.utilities</span> <span class="kn">import</span> <span class="n">save_to_json</span>
-
 <span class="kn">from</span> <span class="nn">compas_viewers.objectviewer</span> <span class="kn">import</span> <span class="n">ObjectViewer</span>
+
 <span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
-
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="c1"># ==============================================================================</span>
 <span class="c1"># Logging</span>
 <span class="c1"># ==============================================================================</span>
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(levelname)s</span><span class="s1">-</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 
@@ -248,11 +256,16 @@ Printpoints as data and then export them to a <code class="docutils literal notr
 <span class="c1"># ==============================================================================</span>
 
 <span class="n">DATA</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_output_directory</span><span class="p">(</span><span class="n">DATA</span><span class="p">)</span>  <span class="c1"># creates &#39;output&#39; folder if it doesn&#39;t already exist</span>
 <span class="n">MODEL</span> <span class="o">=</span> <span class="s1">&#39;simple_vase.obj&#39;</span>
+
+
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
 <span class="c1"># ==========================================================================</span>
 <span class="c1"># Load mesh</span>
 <span class="c1"># ==========================================================================</span>
+
 <span class="n">compas_mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA</span><span class="p">,</span> <span class="n">MODEL</span><span class="p">))</span>
 
 <span class="c1"># ==========================================================================</span>
@@ -260,22 +273,22 @@ Printpoints as data and then export them to a <code class="docutils literal notr
 <span class="c1"># ==========================================================================</span>
 <span class="n">move_mesh_to_point</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">,</span> <span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Slice the model, try out different slicers by changing the slicer_type</span>
-<span class="c1"># options: &#39;default&#39;, &#39;meshcut&#39;, &#39;cgal&#39;</span>
-<span class="c1"># ==========================================================================</span>
+<span class="c1">### --- Slicer</span>
+<span class="c1"># options: &#39;default&#39; : Both for open and closed paths. But slow</span>
+<span class="c1">#          &#39;cgal&#39; : Very fast. Only for closed paths. Requires additional installation (compas_cgal).</span>
+
 <span class="n">slicer</span> <span class="o">=</span> <span class="n">PlanarSlicer</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">,</span> <span class="n">slicer_type</span><span class="o">=</span><span class="s2">&quot;cgal&quot;</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
 <span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>
 
 <span class="c1"># ==========================================================================</span>
 <span class="c1"># Generate brim</span>
 <span class="c1"># ==========================================================================</span>
-<span class="c1"># generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)</span>
+<span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_paths</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
 <span class="c1"># ==========================================================================</span>
 <span class="c1"># Simplify the paths by removing points with a certain threshold</span>
 <span class="c1"># change the threshold value to remove more or less points</span>
-<span class="c1"># ==========================================================================</span>
+
 <span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 
 <span class="c1"># ==========================================================================</span>
@@ -292,35 +305,42 @@ Printpoints as data and then export them to a <code class="docutils literal notr
 <span class="c1"># ==========================================================================</span>
 <span class="c1"># Save slicer data to JSON</span>
 <span class="c1"># ==========================================================================</span>
-<span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">DATA</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
+<span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
 
 <span class="c1"># ==========================================================================</span>
-<span class="c1"># Initializes the PrintOrganizer and creates PrintPoints</span>
+<span class="c1"># Initializes the BasePrintOrganizer and creates PrintPoints</span>
 <span class="c1"># ==========================================================================</span>
-<span class="n">print_organizer</span> <span class="o">=</span> <span class="n">PrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">)</span>
-<span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">)</span>
+<span class="n">print_organizer</span> <span class="o">=</span> <span class="n">PlanarPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">)</span>
+<span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">()</span>
 
 <span class="c1"># ==========================================================================</span>
 <span class="c1"># Set fabrication-related parameters</span>
 <span class="c1"># ==========================================================================</span>
-<span class="n">print_organizer</span><span class="o">.</span><span class="n">set_extruder_toggle</span><span class="p">()</span>
-<span class="c1"># print_organizer.add_safety_printpoints(z_hop=20)</span>
-<span class="n">print_organizer</span><span class="o">.</span><span class="n">set_linear_velocity</span><span class="p">(</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+
+<span class="n">set_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
+<span class="n">add_safety_printpoints</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">z_hop</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="n">set_linear_velocity</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mf">25.0</span><span class="p">)</span>
+<span class="n">set_blend_radius</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">d_fillet</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
 <span class="c1"># ==========================================================================</span>
 <span class="c1"># Converts the PrintPoints to data and saves to JSON</span>
 <span class="c1"># =========================================================================</span>
 <span class="n">printpoints_data</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">output_printpoints_dict</span><span class="p">()</span>
-<span class="n">save_to_json</span><span class="p">(</span><span class="n">printpoints_data</span><span class="p">,</span> <span class="n">DATA</span><span class="p">,</span> <span class="s1">&#39;out_printpoints.json&#39;</span><span class="p">)</span>
+<span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">printpoints_data</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;out_printpoints.json&#39;</span><span class="p">)</span>
 
 <span class="c1"># ==========================================================================</span>
 <span class="c1"># Initializes the compas_viewer and visualizes results</span>
 <span class="c1"># ==========================================================================</span>
 <span class="n">viewer</span> <span class="o">=</span> <span class="n">ObjectViewer</span><span class="p">()</span>
+<span class="c1">#     slicer.visualize_on_viewer(viewer)</span>
 <span class="n">print_organizer</span><span class="o">.</span><span class="n">visualize_on_viewer</span><span class="p">(</span><span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_polyline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                     <span class="n">visualize_printpoints</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">use_shaders</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total elapsed time&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
 </code></pre></div>
 </div>
 </div>
@@ -349,7 +369,6 @@ Printpoints as data and then export them to a <code class="docutils literal notr
 <li class="nav-item active"><a class="nav-link reference internal" href="../examples.html">Examples</a><ul class="nav flex-column active">
 <li class="nav-item active"><a class="nav-link active current reference internal" href="#">1. Simple planar slicing</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="02_planar_slicing_advanced.html">2. Advanced planar slicing</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="03_curved_slicing.html">3. Curved slicing</a></li>
 </ul>
 </li>
 <li class="nav-item"><a class="nav-link reference internal" href="../api.html">API Reference</a></li>

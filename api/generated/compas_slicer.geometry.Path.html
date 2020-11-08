@@ -21,7 +21,7 @@
   
   
   
-    <link rel="prev" title="Layer.total_number_of_points" href="compas_slicer.geometry.Layer.total_number_of_points.html" />
+    <link rel="prev" title="Layer.to_data" href="compas_slicer.geometry.Layer.to_data.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -84,13 +84,14 @@
 <dt id="compas_slicer.geometry.Path">
 <em class="property">class </em><code class="sig-prename descclassname">compas_slicer.geometry.</code><code class="sig-name descname">Path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span></em>, <em class="sig-param"><span class="n">is_closed</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/geometry/path.html#Path"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>A Path is a contour within a Layer. A Path consists out of a list of
-compas.Points, plus some additional attributes.</p>
+<p>A Path is a connected contour within a Layer. A Path consists of a list of
+compas.geometry.Points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>points</strong> (<em>list</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">compas.geometry.Point</span></code></p></li>
-<li><p><strong>is_closed</strong> (<em>bool</em>) – True if the Path is a closed curve, False if the Path is open.</p></li>
+<li><p><strong>is_closed</strong> (<em>bool</em>) – True if the Path is a closed curve, False if the Path is open.
+If the path is closed, the first and the last point are identical.</p></li>
 </ul>
 </dd>
 </dl>

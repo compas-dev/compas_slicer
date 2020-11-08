@@ -17,11 +17,11 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="CurvedPrintOrganizer.output_printpoints_dict" href="compas_slicer.print_organization.CurvedPrintOrganizer.output_printpoints_dict.html" />
+    <link rel="next" title="CurvedPrintOrganizer.number_of_paths_on_layer" href="compas_slicer.print_organization.CurvedPrintOrganizer.number_of_paths_on_layer.html" />
   
   
   
-    <link rel="prev" title="CurvedPrintOrganizer.check_feasibility" href="compas_slicer.print_organization.CurvedPrintOrganizer.check_feasibility.html" />
+    <link rel="prev" title="CurvedPrintOrganizer.topological_sorting" href="compas_slicer.print_organization.CurvedPrintOrganizer.topological_sorting.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -83,7 +83,20 @@
 <dl class="py method">
 <dt id="compas_slicer.print_organization.CurvedPrintOrganizer.get_printpoint_neighboring_items">
 <code class="sig-prename descclassname">CurvedPrintOrganizer.</code><code class="sig-name descname">get_printpoint_neighboring_items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">layer_key</span></em>, <em class="sig-param"><span class="n">path_key</span></em>, <em class="sig-param"><span class="n">i</span></em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
+<dd><dl class="simple">
+<dt>layer_key: str</dt><dd><p>They key of the layer the current printpoint belongs to.</p>
+</dd>
+<dt>path_key: str</dt><dd><p>They key of the path the current printpoint belongs to.</p>
+</dd>
+<dt>i: int</dt><dd><p>The index of the current printpoint.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>list,</strong> (<em>class:  ‘compas_slicer.geometry.PrintPoint’</em>)</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 

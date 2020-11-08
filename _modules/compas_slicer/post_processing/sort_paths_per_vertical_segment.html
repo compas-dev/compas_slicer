@@ -77,13 +77,15 @@
         <h1 class="display-4 p-0 mb-5">Source code for compas_slicer.post_processing.sort_paths_per_vertical_segment</h1><div class="highlight"><pre><code>
 <span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">distance_point_point</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.geometry</span> <span class="kn">import</span> <span class="n">VerticalLayer</span>
+<span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_per_segment&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_per_segment&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;get_segments_centroids_list&#39;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="sort_per_segment"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.sort_per_segment.html#compas_slicer.post_processing.sort_per_segment">[docs]</a><span class="k">def</span> <span class="nf">sort_per_segment</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">max_layers_per_segment</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
@@ -94,8 +96,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    slicer: :class:`compas_slicer.slicers.BaseSlicer`</span>
 <span class="sd">        An instance of one of the compas_slicer.slicers classes.</span>
-<span class="sd">    d_threshold: float</span>
-<span class="sd">        The maximum distance that the centroids of two successive paths can have to belong in the same group</span>
+<span class="sd">    threshold: float</span>
+<span class="sd">        The maximum get_distance that the centroids of two successive paths can have to belong in the same group</span>
 <span class="sd">        Recommended value, slightly bigger than the layer height</span>
 <span class="sd">    max_layers_per_segment: int</span>
 <span class="sd">        Maximum number of layers that a segment can consist of</span>
@@ -115,7 +117,7 @@
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># find the candidate segment for new isocurve</span>
                 <span class="n">contour_centroid</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
                 <span class="n">other_centroids</span> <span class="o">=</span> <span class="n">get_segments_centroids_list</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span>
-                <span class="n">candidate_segment</span> <span class="o">=</span> <span class="n">segments</span><span class="p">[</span><span class="n">get_closest_pt_index</span><span class="p">(</span><span class="n">contour_centroid</span><span class="p">,</span> <span class="n">other_centroids</span><span class="p">)]</span>
+                <span class="n">candidate_segment</span> <span class="o">=</span> <span class="n">segments</span><span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">get_closest_pt_index</span><span class="p">(</span><span class="n">contour_centroid</span><span class="p">,</span> <span class="n">other_centroids</span><span class="p">)]</span>
                 <span class="k">if</span> <span class="n">distance_point_point</span><span class="p">(</span><span class="n">candidate_segment</span><span class="o">.</span><span class="n">head_centroid</span><span class="p">,</span> <span class="n">contour_centroid</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">max_layers_per_segment</span><span class="p">:</span>
                         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_segment</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_layers_per_segment</span><span class="p">:</span>
@@ -134,13 +136,9 @@
     <span class="n">slicer</span><span class="o">.</span><span class="n">print_paths</span> <span class="o">=</span> <span class="n">segments</span></div>
 
 
-<span class="k">def</span> <span class="nf">get_closest_pt_index</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">pts</span><span class="p">):</span>
-    <span class="n">distances</span> <span class="o">=</span> <span class="p">[</span><span class="n">distance_point_point</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pt</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pts</span><span class="p">]</span>
-    <span class="n">min_index</span> <span class="o">=</span> <span class="n">distances</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">distances</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">min_index</span>
-
-
 <span class="k">def</span> <span class="nf">get_segments_centroids_list</span><span class="p">(</span><span class="n">segments</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns a list with points that are the centroids of the heads of all segments. The head</span>
+<span class="sd">    of a segment is its last path. &quot;&quot;&quot;</span>
     <span class="n">head_centroids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">:</span>
         <span class="n">head_centroids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">head_centroid</span><span class="p">)</span>

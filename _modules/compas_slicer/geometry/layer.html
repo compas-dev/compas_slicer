@@ -88,12 +88,9 @@
 
 <div class="viewcode-block" id="Layer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.html#compas_slicer.geometry.Layer">[docs]</a><span class="k">class</span> <span class="nc">Layer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A Layer stores a group of ordered print_paths.</span>
-
-<span class="sd">    A Layer is generated when a geometry is sliced into layers and can therefore be</span>
-<span class="sd">    seen as a &#39;slice&#39; of a geometry. Layers are typically organized horizontally,</span>
-<span class="sd">    but can also be organized vertically. A Layer consists out of one, or multiple</span>
-<span class="sd">    Paths (depending on the geometry).</span>
+<span class="sd">    A Layer stores a group of ordered paths that are generated when a geometry is sliced.</span>
+<span class="sd">    Layers are typically organized horizontally, but can also be organized vertically (see VerticalLayer).</span>
+<span class="sd">    A Layer consists of one, or multiple Paths (depending on the geometry).</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -110,6 +107,14 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">no_of_paths</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;Layer object with </span><span class="si">%i</span><span class="s2"> paths&gt;&quot;</span> <span class="o">%</span> <span class="n">no_of_paths</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">total_number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the total number of points within the layer.&quot;&quot;&quot;</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+            <span class="n">num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">printpoints</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">num</span>
 
 <div class="viewcode-block" id="Layer.from_data"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.from_data.html#compas_slicer.geometry.Layer.from_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
@@ -144,19 +149,17 @@
                 <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;horizontal_layer&#39;</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
             <span class="n">data</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">data</span></div>
-
-<div class="viewcode-block" id="Layer.total_number_of_points"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.total_number_of_points.html#compas_slicer.geometry.Layer.total_number_of_points">[docs]</a>    <span class="k">def</span> <span class="nf">total_number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the total number of points within a layer.&quot;&quot;&quot;</span>
-        <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
-            <span class="n">num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">printpoints</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">num</span></div></div>
+        <span class="k">return</span> <span class="n">data</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">VerticalLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Vertical ordering. A VerticalLayer stores the print paths sorted in vertical groups.</span>
+<span class="sd">    It is created with an empty list of paths that is filled in afterwards.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    id: int, identifier of vertical layer</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
@@ -165,20 +168,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">head_centroid</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">append_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add path to self.paths list. &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compute_head_centroid</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">compute_head_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Find the centroid of all the points of the last path in the self.paths list&quot;&quot;&quot;</span>
         <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head_centroid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">total_number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
-            <span class="n">num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">printpoints</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">num</span>
-
     <span class="k">def</span> <span class="nf">printout_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Prints the details of the class. &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;VerticalLayer id : </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Total number of paths : </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">))</span>
 
@@ -217,6 +217,10 @@
         <span class="n">layer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">layer</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="n">paths</span>
         <span class="k">return</span> <span class="n">layer</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
 </code></pre></div>
         
       </main>

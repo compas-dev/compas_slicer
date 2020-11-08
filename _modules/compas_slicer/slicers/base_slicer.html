@@ -94,7 +94,8 @@
 
 <div class="viewcode-block" id="BaseSlicer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer">[docs]</a><span class="k">class</span> <span class="nc">BaseSlicer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The BaseSlicer class is an organizational class that holds all the information for the slice process</span>
+<span class="sd">    This is an organizational class that holds all the information for the slice process.</span>
+<span class="sd">    Do not use this class directly in your python code. Instead use PlanarSlicer or CurvedSlicer.</span>
 <span class="sd">    This class is meant to be extended for the implementation of the various slicers.</span>
 <span class="sd">    See :class:`compas.slicer.slicers.PlanarSlicer` and :class:`compas.slicer.slicers.CurvedSlicer` as examples.</span>
 
@@ -109,7 +110,6 @@
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">compas</span><span class="o">.</span><span class="n">datastructures</span><span class="o">.</span><span class="n">Mesh</span><span class="p">),</span> \
             <span class="s2">&quot;Input mesh must be of type &lt;compas.datastructures.Mesh&gt;, not &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mesh</span><span class="p">))</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">check_triangular_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
-        <span class="n">mesh</span> <span class="o">=</span> <span class="n">compas</span><span class="o">.</span><span class="n">datastructures</span><span class="o">.</span><span class="n">mesh_weld</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="s1">&#39;2f&#39;</span><span class="p">)</span>  <span class="c1"># make sure the mesh is welded</span>
 
         <span class="c1">#  input</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="n">mesh</span>
@@ -154,7 +154,7 @@
 
 <div class="viewcode-block" id="BaseSlicer.generate_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.generate_paths.html#compas_slicer.slicers.BaseSlicer.generate_paths">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">generate_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># To be implemented by the inheriting classes</span>
+        <span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes. &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.post_processing"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.post_processing.html#compas_slicer.slicers.BaseSlicer.post_processing">[docs]</a>    <span class="k">def</span> <span class="nf">post_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -205,13 +205,6 @@
 <span class="sd">            True to visualize mesh, False to not.</span>
 <span class="sd">        visualize_paths: bool, optional</span>
 <span class="sd">            True to visualize paths, False to not.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; from compas_viewers.objectviewer import ObjectViewer</span>
-<span class="sd">        &gt;&gt;&gt; viewer = ObjectViewer()</span>
-<span class="sd">        &gt;&gt;&gt; viewer.view.use_shaders = False</span>
-<span class="sd">        &gt;&gt;&gt; slicer.visualize_on_viewer(viewer)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">visualize_mesh</span><span class="p">:</span>

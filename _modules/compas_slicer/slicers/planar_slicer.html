@@ -87,16 +87,17 @@
 
 <div class="viewcode-block" id="PlanarSlicer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.PlanarSlicer.html#compas_slicer.slicers.PlanarSlicer">[docs]</a><span class="k">class</span> <span class="nc">PlanarSlicer</span><span class="p">(</span><span class="n">BaseSlicer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    PlanarSlicer implements generation of planar contours from a mesh.</span>
+<span class="sd">    Generates planar contours on a mesh.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    mesh: :class:`compas.datastructures.Mesh`</span>
 <span class="sd">        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).</span>
-<span class="sd">    slicer_type: string</span>
+<span class="sd">    slicer_type: str</span>
 <span class="sd">        String representing which slicing method to use.</span>
+<span class="sd">        options: &#39;default&#39;, &#39;cgal&#39;, &#39;meshcut&#39;</span>
 <span class="sd">    layer_height: float</span>
-<span class="sd">        Number representing the distance between layers (slices).</span>
+<span class="sd">        Distance between layers (slices).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="PlanarSlicer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.PlanarSlicer.__init__.html#compas_slicer.slicers.PlanarSlicer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">slicer_type</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
         <span class="n">BaseSlicer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
@@ -135,6 +136,10 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;Invalid slicing type : &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">slicer_type</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
 </code></pre></div>
         
       </main>

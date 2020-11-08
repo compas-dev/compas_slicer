@@ -97,16 +97,7 @@
 <span class="sd">    target_point: :class:`compas.geometry.Point`</span>
 <span class="sd">        The point to move the mesh to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># get center bottom point of mesh model</span>
-    <span class="n">bbox</span> <span class="o">=</span> <span class="n">mesh_bounding_box</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
-    <span class="n">corner_pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
-
-    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">corner_pts</span><span class="p">]</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">corner_pts</span><span class="p">]</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">corner_pts</span><span class="p">]</span>
-
-    <span class="n">mesh_center_pt</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">mesh_center_pt</span> <span class="o">=</span> <span class="n">get_mid_pt_base</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 
     <span class="c1"># transform mesh</span>
     <span class="n">mesh_frame</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">mesh_center_pt</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
@@ -145,6 +136,10 @@
     <span class="n">mesh_mid_pt</span> <span class="o">=</span> <span class="n">Point</span><span class="p">((</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">mesh_mid_pt</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
 </code></pre></div>
         
       </main>

@@ -21,7 +21,7 @@
   
   
   
-    <link rel="prev" title="PrintOrganizer.visualize_on_viewer" href="compas_slicer.print_organization.PrintOrganizer.visualize_on_viewer.html" />
+    <link rel="prev" title="BasePrintOrganizer.visualize_on_viewer" href="compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -83,7 +83,17 @@
 <dl class="py class">
 <dt id="compas_slicer.print_organization.CurvedPrintOrganizer">
 <em class="property">class </em><code class="sig-prename descclassname">compas_slicer.print_organization.</code><code class="sig-name descname">CurvedPrintOrganizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">slicer</span></em>, <em class="sig-param"><span class="n">parameters</span></em>, <em class="sig-param"><span class="n">DATA_PATH</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/curved_print_organizer.html#CurvedPrintOrganizer"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.print_organization.print_organizer.PrintOrganizer</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.print_organization.base_print_organizer.BasePrintOrganizer</span></code></p>
+<p>Organizing the printing process for the realization of non-planar contours.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slicer</strong> (<a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.html#compas_slicer.slicers.PlanarSlicer" title="compas_slicer.slicers.PlanarSlicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.PlanarSlicer</span></code></a>) – An instance of the compas_slicer.slicers.PlanarSlicer.</p></li>
+<li><p><strong>parameters</strong> (<em>dict</em>)</p></li>
+<li><p><strong>DATA_PATH</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">Attributes</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -103,11 +113,8 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_layers</span></code></p></td>
 <td><p>Number of layers in the PrintOrganizer.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_paths_on_layer</span></code></p></td>
-<td><p>Number of paths within a Layer of the PrintOrganizer.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_number_of_points</span></code></p></td>
-<td><p>Total number of points in the slicer.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_number_of_points</span></code></p></td>
+<td><p>Total number of points in the PrintOrganizer.</p></td>
 </tr>
 </tbody>
 </table>
@@ -121,20 +128,20 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.__init__.html#compas_slicer.print_organization.CurvedPrintOrganizer.__init__" title="compas_slicer.print_organization.CurvedPrintOrganizer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(slicer, parameters, DATA_PATH)</p></td>
 <td><p>Initialize self.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.base_boundaries_creation.html#compas_slicer.print_organization.CurvedPrintOrganizer.base_boundaries_creation" title="compas_slicer.print_organization.CurvedPrintOrganizer.base_boundaries_creation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">base_boundaries_creation</span></code></a>()</p></td>
-<td><p>Creates one BaseBoundary per vertical_layer</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.check_printpoints_feasibility.html#compas_slicer.print_organization.CurvedPrintOrganizer.check_printpoints_feasibility" title="compas_slicer.print_organization.CurvedPrintOrganizer.check_printpoints_feasibility"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_printpoints_feasibility</span></code></a>()</p></td>
+<td><p>Checks if the get_distance to the closest support of every layer height is within the admissible limits.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.create_printpoints.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_printpoints" title="compas_slicer.print_organization.CurvedPrintOrganizer.create_printpoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_printpoints</span></code></a>(mesh)</p></td>
-<td><p>Based on the directed graph, select one topological order.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.create_base_boundaries.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_base_boundaries" title="compas_slicer.print_organization.CurvedPrintOrganizer.create_base_boundaries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_base_boundaries</span></code></a>()</p></td>
+<td><p>Creates one BaseBoundary per vertical_layer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.create_segment_connectivity.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_segment_connectivity" title="compas_slicer.print_organization.CurvedPrintOrganizer.create_segment_connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_segment_connectivity</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.create_printpoints.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_printpoints" title="compas_slicer.print_organization.CurvedPrintOrganizer.create_printpoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_printpoints</span></code></a>()</p></td>
+<td><p>Create the print points of the fabrication process Based on the directed graph, select one topological order.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.create_segment_connectivity.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_segment_connectivity" title="compas_slicer.print_organization.CurvedPrintOrganizer.create_segment_connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_segment_connectivity</span></code></a>()</p></td>
 <td><p>A SegmentConnectivity finds vertical relation between paths.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.create_segments_dict.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_segments_dict" title="compas_slicer.print_organization.CurvedPrintOrganizer.create_segments_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_segments_dict</span></code></a>()</p></td>
-<td><p>Initializes segments dictionary with empty segments</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.set_linear_velocity.html#compas_slicer.print_organization.CurvedPrintOrganizer.set_linear_velocity" title="compas_slicer.print_organization.CurvedPrintOrganizer.set_linear_velocity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linear_velocity</span></code></a>([velocity_type, v, …])</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.create_segments_dict.html#compas_slicer.print_organization.CurvedPrintOrganizer.create_segments_dict" title="compas_slicer.print_organization.CurvedPrintOrganizer.create_segments_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_segments_dict</span></code></a>()</p></td>
+<td><p>Initializes segments dictionary with empty segments.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.topological_sorting.html#compas_slicer.print_organization.CurvedPrintOrganizer.topological_sorting" title="compas_slicer.print_organization.CurvedPrintOrganizer.topological_sorting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">topological_sorting</span></code></a>()</p></td>
 <td><p>When the print consists of various paths, this function initializes a class that creates a directed graph with all these parts, with the connectivity of each part reflecting which other parts it lies on, and which other parts lie on it.</p></td>
@@ -148,12 +155,11 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.check_feasibility.html#compas_slicer.print_organization.CurvedPrintOrganizer.check_feasibility" title="compas_slicer.print_organization.CurvedPrintOrganizer.check_feasibility"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_feasibility</span></code></a>()</p></td>
-<td><p><p>…</p>
-</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.get_printpoint_neighboring_items.html#compas_slicer.print_organization.CurvedPrintOrganizer.get_printpoint_neighboring_items" title="compas_slicer.print_organization.CurvedPrintOrganizer.get_printpoint_neighboring_items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_printpoint_neighboring_items</span></code></a>(layer_key, …)</p></td>
+<td><p>layer_key: str</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.get_printpoint_neighboring_items.html#compas_slicer.print_organization.CurvedPrintOrganizer.get_printpoint_neighboring_items" title="compas_slicer.print_organization.CurvedPrintOrganizer.get_printpoint_neighboring_items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_printpoint_neighboring_items</span></code></a>(layer_key, …)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.number_of_paths_on_layer.html#compas_slicer.print_organization.CurvedPrintOrganizer.number_of_paths_on_layer" title="compas_slicer.print_organization.CurvedPrintOrganizer.number_of_paths_on_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_paths_on_layer</span></code></a>(layer_index)</p></td>
+<td><p>int: Number of paths within a Layer of the PrintOrganizer.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.output_printpoints_dict.html#compas_slicer.print_organization.CurvedPrintOrganizer.output_printpoints_dict" title="compas_slicer.print_organization.CurvedPrintOrganizer.output_printpoints_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_printpoints_dict</span></code></a>()</p></td>
 <td><p>Returns the PrintPoints as a dictionary.</p></td>
@@ -162,7 +168,7 @@
 <td><p>Remove subsequent points that are within a certain tolerance.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.CurvedPrintOrganizer.visualize_on_viewer.html#compas_slicer.print_organization.CurvedPrintOrganizer.visualize_on_viewer" title="compas_slicer.print_organization.CurvedPrintOrganizer.visualize_on_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_on_viewer</span></code></a>(viewer, …)</p></td>
-<td><p>Visualize printpoints on the viewer.</p></td>
+<td><p>Visualize printpoints on the compas_viewer.</p></td>
 </tr>
 </tbody>
 </table>

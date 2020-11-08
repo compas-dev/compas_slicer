@@ -88,13 +88,15 @@
 
 <div class="viewcode-block" id="CurvedSlicer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.CurvedSlicer.html#compas_slicer.slicers.CurvedSlicer">[docs]</a><span class="k">class</span> <span class="nc">CurvedSlicer</span><span class="p">(</span><span class="n">BaseSlicer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    CurvedSlicer is a class that generates non-planar slices that interpolate user-defined boundaries</span>
+<span class="sd">    Generates non-planar contours that interpolate user-defined boundaries.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mesh : compas.datastructures.Mesh</span>
+<span class="sd">    mesh : :class: &#39;compas.datastructures.Mesh&#39;</span>
 <span class="sd">        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)</span>
-<span class="sd">    preprocessor : compas_slicer.pre_processing.CurvedSlicingPreprocessor</span>
+<span class="sd">        Note that the topology of the mesh matters, irregular tesselation can lead to undesired results.</span>
+<span class="sd">        WE recommend to 1)retopologize, 2) triangulate, and 3) weld your mesh in advance.</span>
+<span class="sd">    preprocessor : :class: &#39;compas_slicer.pre_processing.CurvedSlicingPreprocessor&#39;</span>
 <span class="sd">    parameters : dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -107,7 +109,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_multiplier</span> <span class="o">=</span> <span class="mf">1.0</span></div>
 
 <div class="viewcode-block" id="CurvedSlicer.generate_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.CurvedSlicer.generate_paths.html#compas_slicer.slicers.CurvedSlicer.generate_paths">[docs]</a>    <span class="k">def</span> <span class="nf">generate_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># --- generate paths</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">find_desired_number_of_isocurves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocessor</span><span class="o">.</span><span class="n">target_LOW</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessor</span><span class="o">.</span><span class="n">target_HIGH</span><span class="p">,</span>
                                              <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;avg_layer_height&#39;</span><span class="p">])</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> paths will be generated&#39;</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>

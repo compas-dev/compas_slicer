@@ -85,8 +85,8 @@
 
 
 <div class="viewcode-block" id="seams_smooth"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.seams_smooth.html#compas_slicer.post_processing.seams_smooth">[docs]</a><span class="k">def</span> <span class="nf">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Smoothes the seams (transition between layers)</span>
-<span class="sd">    by removing points within a certain distance.</span>
+    <span class="sd">&quot;&quot;&quot;Smooths the seams (transition between layers)</span>
+<span class="sd">    by removing points within a certain get_distance.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -94,13 +94,9 @@
 <span class="sd">        An instance of one of the compas_slicer.slicers classes.</span>
 <span class="sd">    smooth_distance: float</span>
 <span class="sd">        Distance (in mm) to perform smoothing</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Smoothing seams with a distance of </span><span class="si">%i</span><span class="s2"> mm&quot;</span> <span class="o">%</span> <span class="n">smooth_distance</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Smoothing seams with a get_distance of </span><span class="si">%i</span><span class="s2"> mm&quot;</span> <span class="o">%</span> <span class="n">smooth_distance</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -113,7 +109,7 @@
                         <span class="c1"># remove points if within smooth_distance</span>
                         <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># create new point at a distance of the</span>
+                        <span class="c1"># create new point at a get_distance of the</span>
                         <span class="c1"># &#39;smooth_distance&#39; from the first point,</span>
                         <span class="c1"># so that all seams are of equal length</span>
                         <span class="n">vect</span> <span class="o">=</span> <span class="n">Vector</span><span class="o">.</span><span class="n">from_start_end</span><span class="p">(</span><span class="n">pt0</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span>

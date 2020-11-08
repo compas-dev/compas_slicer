@@ -82,13 +82,14 @@
 <h1 class="display-4 p-0 mb-5">set_blend_radius</h1>
 <dl class="py function">
 <dt id="compas_slicer.print_organization.set_blend_radius">
-<code class="sig-prename descclassname">compas_slicer.print_organization.</code><code class="sig-name descname">set_blend_radius</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_organizer</span></em>, <em class="sig-param"><span class="n">dfillet</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">buffer</span><span class="o">=</span><span class="default_value">0.3</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/print_organization_utilities/blend_radius.html#set_blend_radius"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Sets the blend radius (filleting) to use.</p>
+<code class="sig-prename descclassname">compas_slicer.print_organization.</code><code class="sig-name descname">set_blend_radius</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_organizer</span></em>, <em class="sig-param"><span class="n">d_fillet</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">buffer</span><span class="o">=</span><span class="default_value">0.3</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/print_organization_utilities/blend_radius.html#set_blend_radius"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets the blend radius (filleting) for the robotic motion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>print_organizer</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.BasePrintOrganizer</span></code>)</p></li>
 <li><p><strong>d_fillet</strong> (<em>float</em>) – Value to attempt to fillet with. Defaults to 10 mm.</p></li>
-<li><p><strong>buffer</strong> – Buffer to make sure that the blend radius is never to big.
+<li><p><strong>buffer</strong> (<em>float</em>) – Buffer to make sure that the blend radius is never too big.
 Defaults to 0.3.</p></li>
 </ul>
 </dd>

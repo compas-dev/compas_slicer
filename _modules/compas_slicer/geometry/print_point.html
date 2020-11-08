@@ -83,19 +83,22 @@
 
 <div class="viewcode-block" id="PrintPoint"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.PrintPoint.html#compas_slicer.geometry.PrintPoint">[docs]</a><span class="k">class</span> <span class="nc">PrintPoint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A PrintPoint consists out of a single compas.geometry.Point,</span>
-<span class="sd">    with additional functionality added for the printing process.</span>
+<span class="sd">    A PrintPoint consists of a compas.geometry.Point,</span>
+<span class="sd">    and additional attributes related to the printing process.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pt: :class:`compas.geometry.Point`</span>
 <span class="sd">        A compas Point consisting out of x, y, z coordinates.</span>
 <span class="sd">    layer_height: float</span>
-<span class="sd">        The vertical distance between the point on this layer and the next layer.</span>
+<span class="sd">        The distance between the point on this layer and the previous layer.</span>
+<span class="sd">        For planar slicing this is the vertical distance, for curved slicing this is absolute distance.</span>
 <span class="sd">    mesh_normal: :class:`compas.geometry.Vector`</span>
 <span class="sd">        Normal of the mesh at this PrintPoint.</span>
+<span class="sd">        For planar_slicing it is the projection of the normal on the XY plane.</span>
+<span class="sd">        # TODO: should we change that?</span>
 <span class="sd">    up_vector: :class:`compas.geometry.Vector`</span>
-<span class="sd">        Vector in vertical (z) direction.</span>
+<span class="sd">        Vector in up direction. For planar slicing this corresponds to the z axis, for curved slicing it varies.</span>
 <span class="sd">    frame: :class:`compas.geometry.Frame`</span>
 <span class="sd">        Frame with x-axis pointing up, y-axis pointing towards the mesh normal.</span>
 <span class="sd">    extruder_toggle: bool</span>
@@ -104,7 +107,6 @@
 <span class="sd">        Velocity to use for printing (print speed), in mm/s.</span>
 <span class="sd">    wait_time: float</span>
 <span class="sd">        Time in seconds to wait at this PrintPoint.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PrintPoint.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.PrintPoint.__init__.html#compas_slicer.geometry.PrintPoint.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pt</span><span class="p">,</span> <span class="n">layer_height</span><span class="p">,</span> <span class="n">mesh_normal</span><span class="p">):</span>
@@ -125,11 +127,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wait_time</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blend_radius</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1">#  --- advanced printpoint</span>
+        <span class="c1">#  --- relation to support</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">closest_support_pt</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># &lt;compas.geometry.Point&gt;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">distance_to_support</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># float</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">visualization_geometry</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visualization_geometry</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># TODO</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_feasible</span> <span class="o">=</span> <span class="kc">True</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -137,8 +139,7 @@
         <span class="k">return</span> <span class="s2">&quot;&lt;PrintPoint object at (</span><span class="si">%.2f</span><span class="s2">, </span><span class="si">%.2f</span><span class="s2">, </span><span class="si">%.2f</span><span class="s2">)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PrintPoint.get_frame"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.PrintPoint.get_frame.html#compas_slicer.geometry.PrintPoint.get_frame">[docs]</a>    <span class="k">def</span> <span class="nf">get_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_vector</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_normal</span><span class="p">)</span></div>
 
     <span class="c1">#################################</span>
@@ -205,6 +206,10 @@
 
         <span class="n">pp</span><span class="o">.</span><span class="n">is_feasible</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;is_feasible&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">pp</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
 </code></pre></div>
         
       </main>

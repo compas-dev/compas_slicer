@@ -86,8 +86,8 @@
 
 <div class="viewcode-block" id="Path"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Path.html#compas_slicer.geometry.Path">[docs]</a><span class="k">class</span> <span class="nc">Path</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A Path is a contour within a Layer. A Path consists out of a list of</span>
-<span class="sd">    compas.Points, plus some additional attributes.</span>
+<span class="sd">    A Path is a connected contour within a Layer. A Path consists of a list of</span>
+<span class="sd">    compas.geometry.Points.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -95,6 +95,7 @@
 <span class="sd">        :class:`compas.geometry.Point`</span>
 <span class="sd">    is_closed : bool</span>
 <span class="sd">        True if the Path is a closed curve, False if the Path is open.</span>
+<span class="sd">        If the path is closed, the first and the last point are identical.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Path.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Path.__init__.html#compas_slicer.geometry.Path.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">is_closed</span><span class="p">):</span>

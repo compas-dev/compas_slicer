@@ -84,16 +84,35 @@
 <dt id="compas_slicer.geometry.Layer">
 <em class="property">class </em><code class="sig-prename descclassname">compas_slicer.geometry.</code><code class="sig-name descname">Layer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">paths</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/geometry/layer.html#Layer"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>A Layer stores a group of ordered print_paths.</p>
-<p>A Layer is generated when a geometry is sliced into layers and can therefore be
-seen as a ‘slice’ of a geometry. Layers are typically organized horizontally,
-but can also be organized vertically. A Layer consists out of one, or multiple
-Paths (depending on the geometry).</p>
+<p>A Layer stores a group of ordered paths that are generated when a geometry is sliced.
+Layers are typically organized horizontally, but can also be organized vertically (see VerticalLayer).
+A Layer consists of one, or multiple Paths (depending on the geometry).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><p><strong>paths</strong> (<em>list</em>) – <a class="reference internal" href="compas_slicer.geometry.Path.html#compas_slicer.geometry.Path" title="compas_slicer.geometry.Path"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.geometry.Path</span></code></a></p>
 </dd>
 </dl>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_number_of_points</span></code></p></td>
+<td><p>Returns the total number of points within the layer.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Inherited Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+</tbody>
+</table>
 <p class="rubric">Methods</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -109,9 +128,6 @@ Paths (depending on the geometry).</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.geometry.Layer.to_data.html#compas_slicer.geometry.Layer.to_data" title="compas_slicer.geometry.Layer.to_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_data</span></code></a>()</p></td>
 <td><p>Returns a dictionary of structured data representing the data structure.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.geometry.Layer.total_number_of_points.html#compas_slicer.geometry.Layer.total_number_of_points" title="compas_slicer.geometry.Layer.total_number_of_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_number_of_points</span></code></a>()</p></td>
-<td><p>Returns the total number of points within a layer.</p></td>
 </tr>
 </tbody>
 </table>

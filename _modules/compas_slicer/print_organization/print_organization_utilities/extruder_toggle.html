@@ -88,9 +88,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    print_organizer: :class:`compas.print_organization.PrintOrganizer`</span>
+<span class="sd">    print_organizer: :class:`compas.print_organization.BasePrintOrganizer`</span>
 <span class="sd">    slicer: :class:`compas.slicers.BaseSlicer`</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting extruder toggle&quot;</span><span class="p">)</span>
 
@@ -143,8 +142,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    print_organizer: :class:`compas.print_organization.PrintOrganizer`</span>
-<span class="sd">        ...</span>
+<span class="sd">    print_organizer: :class:`compas.print_organization.BasePrintOrganizer`</span>
 <span class="sd">    override_value: bool</span>
 <span class="sd">        Value to override the extruder_toggle values with.</span>
 
@@ -159,6 +157,10 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;Override value must be of type bool&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
 </code></pre></div>
         
       </main>

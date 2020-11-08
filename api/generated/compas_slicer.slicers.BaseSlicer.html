@@ -84,7 +84,8 @@
 <dt id="compas_slicer.slicers.BaseSlicer">
 <em class="property">class </em><code class="sig-prename descclassname">compas_slicer.slicers.</code><code class="sig-name descname">BaseSlicer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mesh</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/base_slicer.html#BaseSlicer"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>The BaseSlicer class is an organizational class that holds all the information for the slice process
+<p>This is an organizational class that holds all the information for the slice process.
+Do not use this class directly in your python code. Instead use PlanarSlicer or CurvedSlicer.
 This class is meant to be extended for the implementation of the various slicers.
 See <code class="xref py py-class docutils literal notranslate"><span class="pre">compas.slicer.slicers.PlanarSlicer</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">compas.slicer.slicers.CurvedSlicer</span></code> as examples.</p>
 <dl class="field-list simple">
@@ -130,7 +131,7 @@ See <code class="xref py py-class docutils literal notranslate"><span class="pre
 <td><p>Construct a slicer from its data representation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.BaseSlicer.generate_paths.html#compas_slicer.slicers.BaseSlicer.generate_paths" title="compas_slicer.slicers.BaseSlicer.generate_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_paths</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>To be implemented by the inheriting classes.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.slicers.BaseSlicer.get_layers_dict.html#compas_slicer.slicers.BaseSlicer.get_layers_dict" title="compas_slicer.slicers.BaseSlicer.get_layers_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_layers_dict</span></code></a>()</p></td>
 <td><p>Returns a dictionary consisting of the layers.</p></td>

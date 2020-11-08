@@ -84,12 +84,14 @@
 <dt id="compas_slicer.slicers.CurvedSlicer">
 <em class="property">class </em><code class="sig-prename descclassname">compas_slicer.slicers.</code><code class="sig-name descname">CurvedSlicer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mesh</span></em>, <em class="sig-param"><span class="n">preprocessor</span></em>, <em class="sig-param"><span class="n">parameters</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/curved_slicer.html#CurvedSlicer"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.base_slicer.BaseSlicer</span></code></p>
-<p>CurvedSlicer is a class that generates non-planar slices that interpolate user-defined boundaries</p>
+<p>Generates non-planar contours that interpolate user-defined boundaries.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mesh</strong> (<em>compas.datastructures.Mesh</em>) – Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)</p></li>
-<li><p><strong>preprocessor</strong> (<em>compas_slicer.pre_processing.CurvedSlicingPreprocessor</em>)</p></li>
+<li><p><strong>mesh</strong> (<em>:class: ‘compas.datastructures.Mesh’</em>) – Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
+Note that the topology of the mesh matters, irregular tesselation can lead to undesired results.
+WE recommend to 1)retopologize, 2) triangulate, and 3) weld your mesh in advance.</p></li>
+<li><p><strong>preprocessor</strong> (<em>:class: ‘compas_slicer.pre_processing.CurvedSlicingPreprocessor’</em>)</p></li>
 <li><p><strong>parameters</strong> (<em>dict</em>)</p></li>
 </ul>
 </dd>
@@ -129,7 +131,7 @@
 <td><p>Initialize self.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.slicers.CurvedSlicer.generate_paths.html#compas_slicer.slicers.CurvedSlicer.generate_paths" title="compas_slicer.slicers.CurvedSlicer.generate_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_paths</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>To be implemented by the inheriting classes.</p></td>
 </tr>
 </tbody>
 </table>
