@@ -177,16 +177,16 @@ information from the slicing process.</p>
 </div>
 <p>Since we are now done with operations involving the <code class="xref py py-class docutils literal notranslate"><span class="pre">PlanarSlicer</span></code> class,
 we can save the slicing result to JSON. In the next steps we will use the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BasePrintOrganizer</span></code> class to organize our print for fabrication.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">PlanarPrintOrganizer</span></code> class to organize our print for fabrication.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">DATA</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
 </div>
 <div class="section" id="print-organization">
 <h2><span class="section-number">1.3. </span>Print organization</h2>
-<p>In the next steps of the process we will use the <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePrintOrganizer</span></code> to
+<p>In the next steps of the process we will use the <code class="xref py py-class docutils literal notranslate"><span class="pre">PlanarPrintOrganizer</span></code> to
 make our slicing result ready for fabrication. First, we initialize the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BasePrintOrganizer</span></code> and create <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code>. The difference between
+<code class="xref py py-class docutils literal notranslate"><span class="pre">PlanarPrintOrganizer</span></code> and create <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code>. The difference between
 <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code> and the <code class="docutils literal notranslate"><span class="pre">compas.geometry.Points</span></code> we were using in the
 previous step is that the <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code> have additional functionality.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">print_organizer</span> <span class="o">=</span> <span class="n">PlanarPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">)</span>
@@ -308,7 +308,7 @@ Printpoints as data and then export them to a <code class="docutils literal notr
 <span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
 
 <span class="c1"># ==========================================================================</span>
-<span class="c1"># Initializes the BasePrintOrganizer and creates PrintPoints</span>
+<span class="c1"># Initializes the PlanarPrintOrganizer and creates PrintPoints</span>
 <span class="c1"># ==========================================================================</span>
 <span class="n">print_organizer</span> <span class="o">=</span> <span class="n">PlanarPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">)</span>
 <span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">()</span>
