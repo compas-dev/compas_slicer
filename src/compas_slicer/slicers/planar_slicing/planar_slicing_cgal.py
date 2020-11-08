@@ -31,7 +31,7 @@ def create_planar_paths_cgal(mesh, planes):
     if 'compas-cgal' not in packages and 'compas_cgal' not in packages:
         raise PluginNotInstalledError("--------ATTENTION! ----------- \
                         Compas_cgal library is missing! \
-                        You can'weight use this planar slicing method without it. \
+                        You can't use this planar slicing method without it. \
                         Check the README instructions for how to install it, \
                         or use another planar slicing method.")
 
