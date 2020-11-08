@@ -84,7 +84,7 @@ def main():
     save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
 
     # ==========================================================================
-    # Initializes the BasePrintOrganizer and creates PrintPoints
+    # Initializes the PlanarPrintOrganizer and creates PrintPoints
     # ==========================================================================
     print_organizer = PlanarPrintOrganizer(slicer)
     print_organizer.create_printpoints()
