@@ -16,7 +16,7 @@ class PlanarSlicer(BaseSlicer):
     ----------
     mesh: :class:`compas.datastructures.Mesh`
         Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).
-    slicer_type: string
+    slicer_type: str
         String representing which slicing method to use.
         options: 'default', 'cgal', 'meshcut'
     layer_height: float

@@ -6,13 +6,13 @@ logger = logging.getLogger('logger')
 __all__ = ['set_blend_radius']
 
 
-def set_blend_radius(print_organizer, dfillet=10, buffer=0.3):
+def set_blend_radius(print_organizer, d_fillet=10, buffer=0.3):
     """Sets the blend radius (filleting) for the robotic motion.
 
     Parameters
     ----------
     print_organizer: :class:`compas_slicer.slicers.BasePrintOrganizer`
-    dfillet: float
+    d_fillet: float
         Value to attempt to fillet with. Defaults to 10 mm.
     buffer: float
         Buffer to make sure that the blend radius is never too big.
@@ -28,7 +28,7 @@ def set_blend_radius(print_organizer, dfillet=10, buffer=0.3):
             for i, printpoint in enumerate(path_printpoints):
                 neighboring_items = print_organizer.get_printpoint_neighboring_items(layer_key, path_key, i)
 
-                radius = dfillet
+                radius = d_fillet
                 if neighboring_items[0]:
                     radius = min(radius,
                                  norm_vector(Vector.from_start_end(neighboring_items[0].pt, printpoint.pt)) * buffer)

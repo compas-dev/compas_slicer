@@ -92,8 +92,8 @@ class BasePrintOrganizer(object):
         duplicate_ppts = []
         for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
             if i < len(self.printpoints_dict[layer_key][path_key]) - 1:
-                next = self.printpoints_dict[layer_key][path_key][i + 1]
-                if np.linalg.norm(np.array(printpoint.pt) - np.array(next.pt)) < tolerance:
+                next_ppt = self.printpoints_dict[layer_key][path_key][i + 1]
+                if np.linalg.norm(np.array(printpoint.pt) - np.array(next_ppt.pt)) < tolerance:
                     dup_index.append(i)
                     duplicate_ppts.append(printpoint)
 

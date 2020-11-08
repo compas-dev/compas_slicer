@@ -35,12 +35,12 @@ def get_output_directory(path):
 
     Parameters
     ----------
-    path: string
+    path: str
         The path where the 'output' directory will be created
 
     Returns
     ----------
-    string
+    str
         The path to the new (or already existing) 'output' directory
     """
     output_dir = os.path.join(path, 'output')
@@ -123,8 +123,8 @@ def save_to_json(data, filepath, name):
     Parameters
     ----------
     data: dict
-    filepath: string
-    name: string
+    filepath: str
+    name: str
     """
 
     filename = os.path.join(filepath, name)
@@ -139,8 +139,8 @@ def load_from_json(filepath, name):
 
     Parameters
     ----------
-    filepath: string
-    name: string
+    filepath: str
+    name: str
     """
 
     filename = os.path.join(filepath, name)
@@ -412,13 +412,13 @@ def get_all_files_with_name(startswith, endswith, DATA_PATH):
 
     Parameters
     ----------
-    startswith: string
-    endswith: string
-    DATA_PATH: string
+    startswith: str
+    endswith: str
+    DATA_PATH: str
 
     Returns
     ----------
-    list, string
+    list, str
         All the filenames
     """
 

@@ -31,7 +31,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 # ==============================================================================
 
 DATA = os.path.join(os.path.dirname(__file__), 'data')
-OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn'weight already exist
+OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
 MODEL = 'simple_vase.obj'
 
 
@@ -53,7 +53,7 @@ def main():
     # options: 'default' : Both for open and closed paths. But slow
     #          'cgal' : Very fast. Only for closed paths. Requires additional installation (compas_cgal).
 
-    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=1.5)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
     slicer.slice_model()
 
     # ==========================================================================
@@ -96,7 +96,7 @@ def main():
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
     set_linear_velocity(print_organizer, "constant", v=25.0)
-    set_blend_radius(print_organizer, dfillet=10)
+    set_blend_radius(print_organizer, d_fillet=10)
 
     # ==========================================================================
     # Converts the PrintPoints to data and saves to JSON

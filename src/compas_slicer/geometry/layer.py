@@ -101,6 +101,7 @@ class VerticalLayer(Layer):
         self.head_centroid = np.mean(pts, axis=0)
 
     def printout_details(self):
+        """ Prints the details of the class. """
         logger.info("VerticalLayer id : %d" % self.id)
         logger.info("Total number of paths : %d" % len(self.paths))
 

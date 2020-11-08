@@ -77,7 +77,7 @@ class BaseSlicer(object):
 
     @abstractmethod
     def generate_paths(self):
-        # To be implemented by the inheriting classes
+        """To be implemented by the inheriting classes. """
         pass
 
     def post_processing(self):

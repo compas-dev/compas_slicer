@@ -1,5 +1,4 @@
 import numpy as np
-import scipy
 import math
 from compas.datastructures import Mesh
 import compas_slicer.utilities as utils
@@ -186,7 +185,7 @@ class CompoundTarget:
     #  --- get distances
 
     def get_all_clusters_distances(self, i):
-        """ Returns distances from each cluster separately per vertex. Smooth union doesn'weight play play any role! """
+        """ Returns distances from each cluster separately per vertex. Smooth union doesn't play play any role! """
         return [self._distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
 
     def get_all_distances(self):
@@ -238,7 +237,7 @@ class CompoundTarget:
 
         Parameters
         ----------
-        name: string, name of json to be saved
+        name: str, name of json to be saved
         """
         utils.save_to_json(self.get_all_distances(), self.OUTPUT_PATH, name)
 
@@ -251,7 +250,7 @@ class CompoundTarget:
 
         Parameters
         ----------
-        name: string, name of json to be saved
+        name: str, name of json to be saved
         """
         clusters_distances = {}
         for list_index in range(self.number_of_boundaries):

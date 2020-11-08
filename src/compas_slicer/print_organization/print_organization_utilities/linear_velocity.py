@@ -119,14 +119,14 @@ def calculate_linear_velocity_based_on_overhang(printpoint, mesh, angle_range, s
     # remap values
     min_speed, max_speed = speed_range
     min_angle, max_angle = angle_range
-    oldrange = max_angle - min_angle
-    newrange = max_speed - min_speed
+    old_range = max_angle - min_angle
+    new_range = max_speed - min_speed
 
     if overhang_angle <= min_angle:
         return max_speed
     elif min_angle < overhang_angle <= max_angle:
-        velocity = (((overhang_angle - min_angle) * newrange) / oldrange) + min_speed
-        return newrange - (velocity - newrange)
+        velocity = (((overhang_angle - min_angle) * new_range) / old_range) + min_speed
+        return new_range - (velocity - new_range)
     else:  # overhang_angle > max_angle:
         return min_speed
 

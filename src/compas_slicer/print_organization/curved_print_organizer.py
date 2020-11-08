@@ -21,7 +21,7 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
     slicer: :class:`compas_slicer.slicers.PlanarSlicer`
         An instance of the compas_slicer.slicers.PlanarSlicer.
     parameters: dict
-    DATA_PATH: string
+    DATA_PATH: str
     """
 
     def __init__(self, slicer, parameters, DATA_PATH):

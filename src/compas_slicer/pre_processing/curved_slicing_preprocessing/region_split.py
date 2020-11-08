@@ -198,8 +198,8 @@ class MeshSplitter:
         self.mesh.cull_vertices()  # remove all unused vertices
         try:
             self.mesh.unify_cycles()
-        except:
-            print('ATTENTION: Could not unify cycles')
+        except AssertionError:
+            logger.warning('Could NOT unify cycles')
         if not self.mesh.is_valid():
             logger.warning('Attention! Mesh is NOT valid!')
 
@@ -235,7 +235,7 @@ class MeshSplitter:
         ----------
         float, the weights from 0 to 1.
         """
-        weight_list = get_t_list(n=resolution, start=0.001, end=0.999)
+        weight_list = get_weights_list(n=resolution, start=0.001, end=0.999)
         # TODO: save next d to avoid re-evaluating
         for i, weight in enumerate(weight_list[:-1]):
             current_d = assign_distance_to_mesh_vertex(vkey, weight, self.target_LOW, self.target_HIGH)
@@ -249,7 +249,7 @@ class MeshSplitter:
 # --- helpers
 ###############################################
 
-def get_t_list(n, start=0.03, end=1.0):
+def get_weights_list(n, start=0.03, end=1.0):
     """ Returns a numpy array with n numbers from start to end. """
     return list(np.arange(start=start, stop=end, step=(end - start) / n))
 
@@ -415,13 +415,13 @@ def weld_mesh(mesh, OUTPUT_PATH, precision='2f'):
 
     welded_mesh = compas.datastructures.mesh_weld(mesh, precision=precision)
 
-    welded_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # make sure there's no empty fkeys
+    welded_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # make sure there's no empty f_keys
     welded_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # TODO: find a better way to do this
 
     try:
         welded_mesh.unify_cycles()
         logger.info("Unified cycles of welded_mesh")
-    except:
+    except AssertionError:
         logger.error("Attention! Could NOT unify cycles of welded_mesh")
 
     if not welded_mesh.is_valid():  # and iteration < 3:

@@ -14,7 +14,7 @@ class GradientEvaluation:
     Attributes
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
-    DATA_PATH: string, path to the data folder
+    DATA_PATH: str, path to the data folder
     weight:
     target_LOW: :class: 'compas_slicer.pre_processor.CompoundTarget'
     target_HIGH: :class: 'compas_slicer.pre_processor.CompoundTarget'

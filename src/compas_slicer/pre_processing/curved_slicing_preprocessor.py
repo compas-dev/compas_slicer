@@ -22,7 +22,7 @@ class CurvedSlicingPreprocessor:
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
     parameters: dict
-    DATA_PATH: string, path to the data folder
+    DATA_PATH: str, path to the data folder
     """
 
     def __init__(self, mesh, parameters, DATA_PATH):
@@ -114,13 +114,14 @@ class CurvedSlicingPreprocessor:
         """
         Splits the mesh on the saddle points. This process can take a long time.
         It consists of four parts:
-        1) Create cuts on the mesh so that they intersect the saddle points and follow the get_distance function iso-contour
+        1) Create cuts on the mesh so that they intersect the saddle points and follow the get_distance function
+        iso-contour
         2) Separate mesh neighborhoods  from cuts
         3) Topological sorting of split meshes to determine their connectivity and sequence.
         4) Finally resulting meshes are saved to json.
 
-        The intermediary outputs are saved to json, so if you don'weight want to be recomputing the entire thing every time,
-        you can turn the respective processes to false.
+        The intermediary outputs are saved to json, so if you don'weight want to be recomputing the entire thing every
+        time, you can turn the respective processes to false.
         """
 
         print("")

@@ -9,7 +9,7 @@ from compas.plugins import PluginNotInstalledError
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
 
-if 'compas-cgal' in packages:
+if 'compas-cgal' in packages or 'compas_cgal' in packages:
     from compas_cgal.slicer import slice_mesh
 
 logger = logging.getLogger('logger')
@@ -40,18 +40,6 @@ def create_planar_paths_cgal(mesh, planes):
 
     # slicing operation
     contours = slice_mesh(M, planes)
-
-    def get_grouped_list(item_list, key_function):
-        # first sort, because grouping only groups consecutively matching items
-        sorted_list = sorted(item_list, key=key_function)
-        # group items, using the provided key function
-        grouped_iter = itertools.groupby(sorted_list, key_function)
-        # return reformatted list
-        return [list(group) for _key, group in grouped_iter]
-
-    def key_function(item):
-        return item[0][2]
-
     cgal_layers = get_grouped_list(contours, key_function=key_function)
 
     layers = []
@@ -76,6 +64,20 @@ def create_planar_paths_cgal(mesh, planes):
             bar.update(i)
 
     return layers
+
+
+def get_grouped_list(item_list, key_function):
+    """ Groups layers horizontally. """
+    # first sort, because grouping only groups consecutively matching items
+    sorted_list = sorted(item_list, key=key_function)
+    # group items, using the provided key function
+    grouped_iter = itertools.groupby(sorted_list, key_function)
+    # return reformatted list
+    return [list(group) for _key, group in grouped_iter]
+
+
+def key_function(item):
+    return item[0][2]
 
 
 if __name__ == "__main__":
