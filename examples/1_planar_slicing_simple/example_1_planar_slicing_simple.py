@@ -22,14 +22,12 @@ from compas.geometry import Point
 # ==============================================================================
 # Logging
 # ==============================================================================
-
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 # ==============================================================================
 # Select location of data folder and specify model to slice
 # ==============================================================================
-
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
 MODEL = 'simple_vase.obj'
@@ -41,7 +39,6 @@ def main():
     # ==========================================================================
     # Load mesh
     # ==========================================================================
-
     compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
 
     # ==========================================================================
@@ -49,10 +46,12 @@ def main():
     # ==========================================================================
     move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
-    ### --- Slicer
-    # options: 'default' : Both for open and closed paths. But slow
-    #          'cgal' : Very fast. Only for closed paths. Requires additional installation (compas_cgal).
-
+    # ==========================================================================
+    # Slicing
+    # options: 'default': Both for open and closed paths. But slow
+    #          'cgal':    Very fast. Only for closed paths.
+    #                     Requires additional installation (compas_cgal).
+    # ==========================================================================
     slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
     slicer.slice_model()
 
@@ -64,7 +63,7 @@ def main():
     # ==========================================================================
     # Simplify the paths by removing points with a certain threshold
     # change the threshold value to remove more or less points
-
+    # ==========================================================================
     simplify_paths_rdp(slicer, threshold=0.3)
 
     # ==========================================================================
@@ -92,11 +91,17 @@ def main():
     # ==========================================================================
     # Set fabrication-related parameters
     # ==========================================================================
-
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
     set_linear_velocity(print_organizer, "constant", v=25.0)
-    set_blend_radius(print_organizer, d_fillet=10)
+    set_blend_radius(print_organizer, d_fillet=10.0)
+
+    # ==========================================================================
+    # Prints out the info of the PrintOrganizer
+    # ==========================================================================
+    slicer.printout_info()
+
+    print_organizer.printout_info()
 
     # ==========================================================================
     # Converts the PrintPoints to data and saves to JSON
@@ -108,7 +113,6 @@ def main():
     # Initializes the compas_viewer and visualizes results
     # ==========================================================================
     viewer = ObjectViewer()
-    #     slicer.visualize_on_viewer(viewer)
     print_organizer.visualize_on_viewer(viewer, visualize_polyline=True,
                                         visualize_printpoints=False)
     viewer.view.use_shaders = False

@@ -1,6 +1,6 @@
 import compas_slicer
 import logging
-from compas.geometry import Polyline
+from compas.geometry import Polyline, distance_point_point
 import numpy as np
 from abc import abstractmethod
 
@@ -131,6 +131,49 @@ class BasePrintOrganizer(object):
         else:
             neighboring_items.append(None)
         return neighboring_items
+
+    def printout_info(self):
+        """Prints out information from the PrintOrganizer"""
+
+        layers = 0
+        paths = 0
+        total_number_of_pts = 0
+        total_time = 0
+        total_length = 0
+        flat_dict = []
+
+        for layer_key in self.printpoints_dict:
+            layers += 1
+            for path_key in self.printpoints_dict[layer_key]:
+                paths += 1
+                for printpoint in self.printpoints_dict[layer_key][path_key]:
+                    flat_dict.append(printpoint)
+                    total_number_of_pts += 1
+
+        for i in range(len(flat_dict)):
+            curr = flat_dict[i]
+            prev = flat_dict[i-1]
+
+            if i > 0:
+                # calculate length of toolpath
+                length = distance_point_point(prev.pt, curr.pt)
+                total_length += length
+                # get speed for every section and calculate time
+                if curr.velocity:
+                    speed = curr.velocity
+                    time = length/speed
+                    total_time += time
+
+        min, sec = divmod(total_time, 60)
+        hour, min = divmod(min, 60)
+
+        print("\n---- PrintOrganizer Info ----")
+        print("Number of layers: %d" % layers)
+        print("Number of paths: %d" % paths)
+        print("Number of PrintPoints: %d" % total_number_of_pts)
+        print("Toolpath length: %d mm" % total_length)
+        print("Printing time: %d hours, %02d min, %02d sec" % (hour, min, sec))
+        print("")
 
     def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
         """Visualize printpoints on the compas_viewer.

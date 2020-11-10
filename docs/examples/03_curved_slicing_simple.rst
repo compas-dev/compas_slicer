@@ -1,6 +1,6 @@
-****************************
-Curved slicing, simple example
-****************************
+*********************
+Simple curved slicing
+*********************
 
 .. figure:: figures/curved_slicing.PNG
     :figclass: figure

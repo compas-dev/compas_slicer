@@ -17,7 +17,7 @@ Classes
 
 
 BasePrintOrganizer
---------------
+------------------
 
 .. autosummary::
     :toctree: generated/
