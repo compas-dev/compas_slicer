@@ -15,7 +15,6 @@ utils
 
     save_to_json
     load_from_json
-    total_length_of_dictionary
     flattened_list_of_dictionary
     interrupt
     point_list_to_dict
