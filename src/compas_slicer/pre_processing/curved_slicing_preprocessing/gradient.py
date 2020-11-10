@@ -129,6 +129,17 @@ def normalize_gradient(X):
     return X / np.linalg.norm(X, axis=1)[..., np.newaxis]  # normalize
 
 
+def gradient_norm_laplacian_smoothing(X, L):
+    logger.info('Laplacian smoothing of the gradient norm')
+    print (X.shape)
+    raise NameError
+    # X = np.array(X)  # a: numpy array containing the attribute to be smoothed
+    # for _ in range(iterations):  # iterative smoothing
+    #     a_prime = a + strength * self.L * a
+    #     a = a_prime
+    # self.update_distances_lists(new_distances_lists)
+
+
 def get_scalar_field_from_gradient(mesh, X, L, cotans):
     """
     Find scalar field u that best explains gradient X.

@@ -56,9 +56,8 @@ def main():
     # --- slicing
     if REGION_SPLIT:
         # --- ADVANCED slicing with region split
-        preprocessor.gradient_evaluation(output_filename='gradient_norm.json',
-                                         target_1=preprocessor.target_LOW,
-                                         target_2=preprocessor.target_HIGH)
+        preprocessor.gradient_evaluation(norm_filename='gradient_norm.json', g_filename='gradient.json',
+                                         target_1=preprocessor.target_LOW, target_2=preprocessor.target_HIGH)
         preprocessor.find_critical_points(output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
         preprocessor.region_split(save_split_meshes=True)  # split mesh regions on saddle points
 
@@ -72,9 +71,8 @@ def main():
         for i, split_mesh in enumerate(split_meshes):
             preprocessor_split = CurvedSlicingPreprocessor(split_mesh, parameters, DATA_PATH)
             preprocessor_split.create_compound_targets()
-            preprocessor.gradient_evaluation(output_filename='gradient_norm_%d.json' % i,
-                                             target_1=preprocessor.target_LOW,
-                                             target_2=preprocessor.target_HIGH)
+            preprocessor.gradient_evaluation(norm_filename='gradient_norm_%d.json' % i, g_filename='gradient_%d.json' % i,
+                                             target_1=preprocessor.target_LOW, target_2=preprocessor.target_HIGH)
             slicer = CurvedSlicer(split_mesh, preprocessor_split, parameters)
             if i == 3:
                 slicer.n_multiplier = 0.85

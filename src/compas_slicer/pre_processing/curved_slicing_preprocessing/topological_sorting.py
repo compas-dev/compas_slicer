@@ -30,6 +30,10 @@ class DirectedGraph(object):
         self.G = nx.DiGraph()
         self.create_graph_nodes()
         self.root_indices = self.find_roots()
+        logger.info('Graph roots : ' + str(self.root_indices))
+        self.end_indices = self.find_ends()
+        logger.info('Graph ends : ' + str(self.end_indices))
+
         self.create_directed_graph_edges(copy.deepcopy(self.root_indices))
         logger.info('Nodes : ' + str(self.G.nodes(data=True)))
         logger.info('Edges : ' + str(self.G.edges(data=True)))
@@ -49,7 +53,12 @@ class DirectedGraph(object):
     # ------------------------------------ Methods to be implemented by inheriting classes
     @abstractmethod
     def find_roots(self):
-        """ Roots are segments that lie on the build platform, i.e. they can be print first. """
+        """ Roots are segments that lie on the build platform. Like that they can be print first. """
+        pass
+
+    @abstractmethod
+    def find_ends(self):
+        """ Ends are segments that belong to exclusively one segment. Like that they can be print last. """
         pass
 
     @abstractmethod
@@ -69,6 +78,7 @@ class DirectedGraph(object):
         queue = root_indices
 
         while len(queue) > 0:
+            queue = self.sort_queue_with_end_targets_last(queue)
             current_node = queue[0]
             queue.remove(current_node)
             passed_nodes.append(current_node)
@@ -86,6 +96,17 @@ class DirectedGraph(object):
             [good_nodes.append(child) for child in children_list if child not in good_nodes]
         assert len(good_nodes) == self.N, 'There are floating segments on directed graph. Investigate the process of \
                                           the creation of the graph. '
+
+    def sort_queue_with_end_targets_last(self, queue):
+        """ Sorts the queue so that the segments that have an end target are always at the end. """
+        print("BEFORE SORTING: ", queue)
+        queue_copy = copy.deepcopy(queue)
+        for index in queue:
+            if index in self.end_indices:
+                queue_copy.remove(index)  # remove it from its current position
+                queue_copy.append(index)  # append it last
+        print("AFTER SORTING: ", queue_copy)
+        return queue_copy
 
     # ------------------------------------ Find all topological orders
     def get_adjacency_list(self):
@@ -158,6 +179,7 @@ class DirectedGraph(object):
 #################################
 #  --- Meshes DirectedGraph
 
+
 class MeshDirectedGraph(DirectedGraph):
     """ The MeshDirectedGraph is used for topological sorting of multiple meshes that have been
     generated as a result of region split over the saddle points of the mesh scalar function """
@@ -169,7 +191,7 @@ class MeshDirectedGraph(DirectedGraph):
         DirectedGraph.__init__(self)
 
     def find_roots(self):
-        """ Roots are segments that lie on the build platform, i.e. they can be print first"""
+        """ Roots are segments that lie on the build platform. Like that they can be print first. """
         roots = []
         for i, mesh in enumerate(self.all_meshes):
             for vkey, data in mesh.vertices(data=True):
@@ -177,6 +199,16 @@ class MeshDirectedGraph(DirectedGraph):
                     if data['boundary'] == 1:
                         roots.append(i)
         return roots
+
+    def find_ends(self):
+        """ Ends are segments that belong to exclusively one segment. Like that they can be print last. """
+        ends = []
+        for i, mesh in enumerate(self.all_meshes):
+            for vkey, data in mesh.vertices(data=True):
+                if i not in ends:
+                    if data['boundary'] == 2:
+                        ends.append(i)
+        return ends
 
     def create_graph_nodes(self):
         """ Add each of the split meshes to the graph as nodes. Cuts and boundaries are stored as attributes. """
@@ -215,7 +247,7 @@ class MeshDirectedGraph(DirectedGraph):
                     children.append(key)
                     cut_ids.append(common_cuts)
 
-        # --- debugging output
+        ## --- debugging output
         # self.all_meshes[root].to_obj(self.OUTPUT_PATH + '/root.obj')
         # for child in children:
         #     self.all_meshes[child].to_obj(self.OUTPUT_PATH + '/child_%d.obj' % child)
@@ -246,15 +278,24 @@ class SegmentsDirectedGraph(DirectedGraph):
         DirectedGraph.__init__(self)
 
     def find_roots(self):
-        """ Roots are segments that lie on the build platform, i.e. they can be print first"""
+        """ Roots are segments that lie on the build platform. Like that they can be print first. """
         boundary_pts = utils.get_mesh_vertex_coords_with_attribute(self.mesh, 'boundary', 1)
         root_segments = []
         for i, segment in enumerate(self.segments):
             first_curve_pts = segment.paths[0].points
             if are_neighboring_point_clouds(boundary_pts, first_curve_pts, self.max_d_threshold):
                 root_segments.append(i)
-        logger.info('Graph roots : ' + str(root_segments))
         return root_segments
+
+    def find_ends(self):
+        """ Ends are segments that belong to exclusively one segment. Like that they can be print last. """
+        boundary_pts = utils.get_mesh_vertex_coords_with_attribute(self.mesh, 'boundary', 2)
+        end_segments = []
+        for i, segment in enumerate(self.segments):
+            last_curve_pts = segment.paths[-1].points
+            if are_neighboring_point_clouds(boundary_pts, last_curve_pts, self.max_d_threshold):
+                end_segments.append(i)
+        return end_segments
 
     def create_graph_nodes(self):
         """ Add each segment to to the graph as a node. """
@@ -271,10 +312,6 @@ class SegmentsDirectedGraph(DirectedGraph):
         for i, segment in enumerate(self.segments):
             if i != root:
                 segment_first_curve_pts = segment.paths[0].points
-                # utils.save_to_json(utils.point_list_to_dict(segment_first_curve_pts), self.OUTPUT_PATH,
-                #                    'segment_first_curve_pts.json')
-                # utils.interrupt()
-
                 if are_neighboring_point_clouds(root_last_crv_pts, segment_first_curve_pts, self.max_d_threshold):
                     children.append(i)
         return children, [None for _ in children]  # None because this graph doesn't have cut ids
