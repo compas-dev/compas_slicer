@@ -51,7 +51,7 @@ Curved slicing, simple example
 
         preprocessor = CurvedSlicingPreprocessor(mesh, parameters, DATA_PATH)
         preprocessor.create_compound_targets()
-        preprocessor.gradient_evaluation(norm_filename='gradient_norm.json',  g_filename='gradient.json',
+        preprocessor.create_gradient_evaluation(norm_filename='gradient_norm.json',  g_filename='gradient.json',
                                          target_1=preprocessor.target_LOW, target_2=preprocessor.target_HIGH)
         preprocessor.find_critical_points(output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
 
