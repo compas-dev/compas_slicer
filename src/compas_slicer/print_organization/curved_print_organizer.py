@@ -49,9 +49,9 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
         """ When the print consists of various paths, this function initializes a class that creates
         a directed graph with all these parts, with the connectivity of each part reflecting which
         other parts it lies on, and which other parts lie on it."""
+        max_layer_height = utils.get_param(self.parameters, 'max_layer_height', default_value=50)
         self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.slicer.vertical_layers,
-                                                               max_d_threshold=self.parameters['max_layer_height'],
-                                                               DATA_PATH=self.DATA_PATH)
+                                                               max_layer_height, DATA_PATH=self.DATA_PATH)
 
     def create_segments_dict(self):
         """ Initializes segments dictionary with empty segments. """
@@ -118,11 +118,14 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
 
     def check_printpoints_feasibility(self):
         """ Checks if the get_distance to the closest support of every layer height is within the admissible limits. """
+        max_layer_height = utils.get_param(self.parameters, 'max_layer_height', default_value=50)
+        min_layer_height = utils.get_param(self.parameters, 'min_layer_height', default_value=0.1)
+
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
                 ppt = self.printpoints_dict[layer_key][path_key]
                 d = ppt.distance_to_support
-                if d < self.parameters['min_layer_height'] or d > self.parameters['max_layer_height']:
+                if d < min_layer_height or d > max_layer_height:
                     ppt.is_feasible = False
 
 

@@ -27,7 +27,8 @@ __all__ = ['get_output_directory',
            'get_dict_key_from_value',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
-           'get_all_files_with_name']
+           'get_all_files_with_name',
+           'get_param']
 
 
 def get_output_directory(path):
@@ -408,6 +409,31 @@ def get_dict_key_from_value(dictionary, val):
         if val == value:
             return key
     return "key doesn't exist"
+
+
+#######################################
+#  parameters
+
+def get_param(params, key, default_value):
+    """
+    Function useful for accessing the params dictionary of curved slicing.
+    If the key is in the params dict, it returns its value,
+    otherwise it returns the default_value.
+
+    Parameters
+    ----------
+    params: dict
+    key: str
+    default_value: anything that can be saved in a dict
+
+    Returns
+    ----------
+    params[key] if key in params, otherwise default_value
+    """
+    if key in params:
+        return params[key]
+    else:
+        return default_value
 
 
 #######################################

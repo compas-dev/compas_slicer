@@ -3,7 +3,7 @@ from compas_slicer.slicers import BaseSlicer
 from compas_slicer.slicers.curved_slicing import find_desired_number_of_isocurves
 import logging
 from compas_slicer.slicers.curved_slicing import IsocurvesGenerator
-
+import compas_slicer.utilities as utils
 logger = logging.getLogger('logger')
 
 __all__ = ['CurvedSlicer']
@@ -32,8 +32,10 @@ class CurvedSlicer(BaseSlicer):
         self.n_multiplier = 1.0
 
     def generate_paths(self):
+        """ Generates curved paths-polylines. """
+        avg_layer_height = utils.get_param(self.parameters, 'avg_layer_height', default_value=5.0)
         n = find_desired_number_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH,
-                                             self.parameters['avg_layer_height'])
+                                             avg_layer_height)
         logger.info('%d paths will be generated' % n)
 
         isocurves_generator = IsocurvesGenerator(self.mesh, self.preprocessor.target_LOW,

@@ -1,5 +1,5 @@
 import logging
-from compas_slicer.pre_processing.curved_slicing_preprocessing import smooth_union_list
+from compas_slicer.pre_processing.curved_slicing_preprocessing import blend_union_list
 
 logger = logging.getLogger('logger')
 
@@ -80,8 +80,8 @@ def get_weighted_distance(vkey, weight, target_LOW, target_HIGH):
 
         distances = [(weight - 1) * d_low + weight * d_high for d_high, weight in zip(ds_high, weights)]
 
-        if target_HIGH.has_smooth_union:
-            return smooth_union_list(distances, target_HIGH.r)
+        if target_HIGH.has_blend_union:
+            return blend_union_list(distances, target_HIGH.blend_radius)
         else:
             return min(distances)
 

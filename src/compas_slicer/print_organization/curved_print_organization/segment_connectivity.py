@@ -46,12 +46,14 @@ class SegmentConnectivity:
         self.initialize_printpoints()
         self.fill_in_printpoints_information()
 
-        if self.parameters['layer_heights_smoothing'][0]:
+        h_smoothing = utils.get_param(self.parameters, 'layer_heights_smoothing', default_value=[False, 5, 0.2])
+        if h_smoothing[0]:
             logger.info('Layer heights smoothing using horizontal neighbors')
-            self.smooth_printpoints_layer_heights()
-        if self.parameters['up_vectors_smoothing'][0]:
+            self.smooth_printpoints_layer_heights(iterations=h_smoothing[1], strength=h_smoothing[2])
+        v_smoothing = utils.get_param(self.parameters, 'up_vectors_smoothing', default_value=[True, 2, 0.2])
+        if v_smoothing[0]:
             logger.info('Up vectors smoothing using horizontal neighbors')
-            self.smooth_up_vectors()
+            self.smooth_up_vectors(iterations=v_smoothing[1], strength=v_smoothing[2])
 
     ######################
     # Utilities
@@ -64,6 +66,9 @@ class SegmentConnectivity:
 
     def fill_in_printpoints_information(self):
         """ Fills in the attributes of previously initialized printpoints. """
+        max_layer_height = utils.get_param(self.parameters, 'max_layer_height', default_value=50)
+        min_layer_height = utils.get_param(self.parameters, 'min_layer_height', default_value=0.1)
+
         crv_to_check = Path(self.base_boundary.points, True)  # creation of fake path for the lower boundary
         with progressbar.ProgressBar(max_value=len(self.paths)) as bar:
             for i, path in enumerate(self.paths):
@@ -73,26 +78,21 @@ class SegmentConnectivity:
 
                     self.printpoints[i][j].closest_support_pt = Point(*cp)
                     self.printpoints[i][j].distance_to_support = d
-                    self.printpoints[i][j].layer_height = max(min(d, self.parameters['max_layer_height']),
-                                                              self.parameters['min_layer_height'])
+                    self.printpoints[i][j].layer_height = max(min(d, max_layer_height), min_layer_height)
                     self.printpoints[i][j].up_vector = Vector(*normalize_vector(Vector.from_start_end(cp, p)))
                     self.printpoints[i][j].frame = self.printpoints[i][j].get_frame()
 
                 bar.update(i)
                 crv_to_check = path
 
-    def smooth_printpoints_layer_heights(self):
+    def smooth_printpoints_layer_heights(self, iterations, strength):
         """ Smooth printpoints heights based on neighboring. """
-        iterations = self.parameters['layer_heights_smoothing'][1]
-        strength = self.parameters['layer_heights_smoothing'][2]
         for i, path in enumerate(self.paths):
             self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.layer_height,
                                                   set_attr_value=set_printpoint_height)
 
-    def smooth_up_vectors(self):
+    def smooth_up_vectors(self, iterations, strength):
         """ Smooth printpoints up_vectors based on neighboring. """
-        iterations = self.parameters['up_vectors_smoothing'][1]
-        strength = self.parameters['up_vectors_smoothing'][2]
         for i, path in enumerate(self.paths):
             self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.up_vector,
                                                   set_attr_value=set_printpoint_up_vec)

@@ -47,15 +47,13 @@ class MeshSplitter:
     mesh: :class: 'compas.datastructures.Mesh'
     target_LOW: :class: 'compas_slicer.pre_processing.CompoundTarget'
     target_HIGH: :class: 'compas_slicer.pre_processing.CompoundTarget'
-    parameters: dict, stores the process parameters
     DATA_PATH: str, the path to the data folder
     """
 
-    def __init__(self, mesh, target_LOW, target_HIGH, parameters, DATA_PATH):
+    def __init__(self, mesh, target_LOW, target_HIGH, DATA_PATH):
         self.mesh = mesh  # compas mesh
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
-        self.parameters = parameters
         self.target_LOW, self.target_HIGH = target_LOW, target_HIGH
 
         g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, 0.5, self.target_LOW, self.target_HIGH)

@@ -99,13 +99,11 @@ class DirectedGraph(object):
 
     def sort_queue_with_end_targets_last(self, queue):
         """ Sorts the queue so that the segments that have an end target are always at the end. """
-        print("BEFORE SORTING: ", queue)
         queue_copy = copy.deepcopy(queue)
         for index in queue:
             if index in self.end_indices:
                 queue_copy.remove(index)  # remove it from its current position
                 queue_copy.append(index)  # append it last
-        print("AFTER SORTING: ", queue_copy)
         return queue_copy
 
     # ------------------------------------ Find all topological orders
