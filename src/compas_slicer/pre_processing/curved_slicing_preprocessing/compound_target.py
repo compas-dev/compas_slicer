@@ -12,7 +12,7 @@ import statistics
 logger = logging.getLogger('logger')
 
 __all__ = ['CompoundTarget',
-           'smooth_union_list']
+           'blend_union_list']
 
 
 class CompoundTarget:
@@ -31,27 +31,28 @@ class CompoundTarget:
         The value of the attribute dict with key=v_attr. If in a vertex data[v_attr]==value then the vertex is part of
         this target.
     DATA_PATH : str
-    has_smooth_union: bool
-    r : float
+    has_blend_union: bool
+    blend_radius : float
     geodesics_method : str
-        'exact' is the only method currently implemented
+        'exact_igl'  exact igl geodesic distances
+        'heat'   custom heat geodesic distances
     anisotropic_scaling : bool
         This is not yet implemented
     """
 
-    def __init__(self, mesh, v_attr, value, DATA_PATH, has_smooth_union=False, r=15.0,
-                 geodesics_method='exact', anisotropic_scaling=False):
+    def __init__(self, mesh, v_attr, value, DATA_PATH, has_blend_union=False, blend_radius=15.0,
+                 geodesics_method='exact_igl', anisotropic_scaling=False):
 
         logger.info('Creating target with attribute : ' + v_attr + '=%d' % value)
-        logger.info('has_smooth_union : ' + str(has_smooth_union) + ', r =  %.4f' % r)
+        logger.info('has_blend_union : ' + str(has_blend_union) + ', blend_radius =  %.4f' % blend_radius)
         self.mesh = mesh
         self.v_attr = v_attr
         self.value = value
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 
-        self.has_smooth_union = has_smooth_union
-        self.r = r
+        self.has_blend_union = has_blend_union
+        self.blend_radius = blend_radius
 
         self.geodesics_method = geodesics_method
         self.anisotropic_scaling = anisotropic_scaling  # Anisotropic scaling not yet implemented
@@ -103,7 +104,7 @@ class CompoundTarget:
         Computes the geodesic distances from each of the target's neighborhoods  to all the mesh vertices.
         Fills in the distances attributes.
         """
-        if self.geodesics_method == 'exact':
+        if self.geodesics_method == 'exact_igl':
             distances_lists = [get_igl_EXACT_geodesic_distances(self.mesh, vstarts) for vstarts in
                                self.clustered_vkeys]
         elif self.geodesics_method == 'heat':
@@ -186,8 +187,8 @@ class CompoundTarget:
 
     def get_distance(self, i):
         """ Return get_distance for vertex with index i. """
-        if self.has_smooth_union:
-            return self.smooth_union(i)
+        if self.has_blend_union:
+            return self.blend_union(i)
         else:
             return self.union(i)
 
@@ -199,9 +200,9 @@ class CompoundTarget:
         """ Union of distances for vertex with index i"""
         return np.min(self._np_distances_lists_flipped[i])
 
-    def smooth_union(self, i):
+    def blend_union(self, i):
         """ Smooth union of distances for vertex with index i"""
-        return smooth_union_list(values=self._np_distances_lists_flipped[i], r=self.r)
+        return blend_union_list(values=self._np_distances_lists_flipped[i], r=self.blend_radius)
 
     #############################
     #  --- scalar field smoothing
@@ -266,22 +267,22 @@ class CompoundTarget:
 ####################
 #  utils
 
-def smooth_union_list(values, r):
-    """ Returns a smooth union of the elements of the list, with blend radius r. """
+def blend_union_list(values, r):
+    """ Returns a smooth union of the elements of the list, with blend radius blend_radius. """
     d_result = 9999999  # very big number
     for d in values:
-        d_result = smooth_union(d_result, d, r)
+        d_result = blend_union(d_result, d, r)
     return d_result
 
 
-def smooth_union(da, db, r):
-    """ Returns a smooth union of the two elements da, db with blend radius r. """
+def blend_union(da, db, r):
+    """ Returns a smooth union of the two elements da, db with blend radius blend_radius. """
     e = max(r - abs(da - db), 0)
     return min(da, db) - e * e * 0.25 / r
 
 
 def champfer_union(da, db, r):
-    """ Returns a champfer union of the two elements da, db with blend radius r. """
+    """ Returns a champfer union of the two elements da, db with blend radius blend_radius. """
     m = min(da, db)
     if m > (da ** 2 + db ** 2 - r ** 2) * math.sqrt(0.5):
         print('here')
