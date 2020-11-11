@@ -4,13 +4,15 @@ import scipy
 
 logger = logging.getLogger('logger')
 
-__all__ = ['compute_vertex_gradient',
-           'compute_edge_gradient',
-           'compute_face_gradient',
-           'normalize_gradient']
+__all__ = ['get_vertex_gradient_from_face_gradient',
+           'get_edge_gradient_from_vertex_gradient',
+           'get_face_gradient_from_scalar_field',
+           'normalize_gradient',
+           'get_per_face_divergence',
+           'get_scalar_field_from_gradient']
 
 
-def compute_vertex_gradient(mesh, face_gradient):
+def get_vertex_gradient_from_face_gradient(mesh, face_gradient):
     """
     Finds vertex gradient given an already calculated per face gradient.
 
@@ -37,7 +39,7 @@ def compute_vertex_gradient(mesh, face_gradient):
     return np.array(vertex_gradient)
 
 
-def compute_edge_gradient(mesh, vertex_gradient):
+def get_edge_gradient_from_vertex_gradient(mesh, vertex_gradient):
     """
     Finds edge gradient given an already calculated per vertex gradient.
 
@@ -57,7 +59,7 @@ def compute_edge_gradient(mesh, vertex_gradient):
     return np.array(edge_gradient)
 
 
-def compute_face_gradient(mesh, u):
+def get_face_gradient_from_scalar_field(mesh, u):
     """
     Finds face gradient from scalar field u.
     Scalar field u is given per vertex.
@@ -97,7 +99,7 @@ def get_face_edge_vectors(mesh, fkey):
     return edge_0, edge_1, edge_2
 
 
-def compute_per_face_divergence(mesh, X, cotans):
+def get_per_face_divergence(mesh, X, cotans):
     """
     Computes the divergence of the gradient X for the mesh, using cotangent weights.
 
@@ -129,17 +131,6 @@ def normalize_gradient(X):
     return X / np.linalg.norm(X, axis=1)[..., np.newaxis]  # normalize
 
 
-def gradient_norm_laplacian_smoothing(X, L):
-    logger.info('Laplacian smoothing of the gradient norm')
-    print (X.shape)
-    raise NameError
-    # X = np.array(X)  # a: numpy array containing the attribute to be smoothed
-    # for _ in range(iterations):  # iterative smoothing
-    #     a_prime = a + strength * self.L * a
-    #     a = a_prime
-    # self.update_distances_lists(new_distances_lists)
-
-
 def get_scalar_field_from_gradient(mesh, X, L, cotans):
     """
     Find scalar field u that best explains gradient X.
@@ -158,9 +149,10 @@ def get_scalar_field_from_gradient(mesh, X, L, cotans):
     ----------
     np.array (dimensions : #V x 1) one scalar value per vertex.
     """
-    div_X = compute_per_face_divergence(mesh, X, cotans)
+    div_X = get_per_face_divergence(mesh, X, cotans)
     u = scipy.sparse.linalg.spsolve(L, div_X)
     u = u - np.amin(u)  # make start value equal 0
+    u = 2*u
     return u
 
 

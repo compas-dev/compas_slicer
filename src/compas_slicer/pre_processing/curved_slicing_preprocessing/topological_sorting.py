@@ -247,7 +247,7 @@ class MeshDirectedGraph(DirectedGraph):
                     children.append(key)
                     cut_ids.append(common_cuts)
 
-        ## --- debugging output
+        # --- debugging output
         # self.all_meshes[root].to_obj(self.OUTPUT_PATH + '/root.obj')
         # for child in children:
         #     self.all_meshes[child].to_obj(self.OUTPUT_PATH + '/child_%d.obj' % child)

@@ -6,6 +6,7 @@ import logging
 import networkx as nx
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
 from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances
+
 import statistics
 
 logger = logging.getLogger('logger')
@@ -54,11 +55,6 @@ class CompoundTarget:
 
         self.geodesics_method = geodesics_method
         self.anisotropic_scaling = anisotropic_scaling  # Anisotropic scaling not yet implemented
-
-        self.L = None  # 'scipy.sparse.csr_matrix', sparse matrix (dimensions: #V x #V), laplace operator.
-        # = igl.cotmatrix(v, f)
-        self.cotans = None  # F by 3 list of 1/2*cotangents corresponding angles
-        # = igl.cotmatrix_entries(v, f)
 
         self.offset = 0
         self.VN = len(list(self.mesh.vertices()))
@@ -145,7 +141,7 @@ class CompoundTarget:
             ds_avg_HIGH = self.get_boundaries_rel_dist_from_other_target(other_target)
 
             for i, d in enumerate(ds_avg_HIGH):  # offset all distances except the maximum one
-                if abs(d - max(ds_avg_HIGH)) > 0.01:  # if it isn'weight the max value
+                if abs(d - max(ds_avg_HIGH)) > 0.01:  # if it isn't weight the max value
                     ds_avg_HIGH[i] = d + self.offset
 
             self.weight_max_per_cluster = [d / max(ds_avg_HIGH) for d in ds_avg_HIGH]
@@ -208,18 +204,18 @@ class CompoundTarget:
         return smooth_union_list(values=self._np_distances_lists_flipped[i], r=self.r)
 
     #############################
-    #  --- get_distance smoothing
+    #  --- scalar field smoothing
+
     def laplacian_smoothing(self, iterations, strength):
-        """ Smooth the distances on the mesh, using iterative laplacian smoothing."""
-        if self.L is None:
-            self.L = utils.get_mesh_laplacian_matrix(self.mesh, fix_boundaries=True)
+        """ Smooth the distances on the mesh, using iterative laplacian smoothing. """
+        L = utils.get_mesh_laplacian_matrix_igl(self.mesh, fix_boundaries=True)
         new_distances_lists = []
 
         logger.info('Laplacian smoothing of all distances')
         for i, a in enumerate(self._distances_lists):
             a = np.array(a)  # a: numpy array containing the attribute to be smoothed
             for _ in range(iterations):  # iterative smoothing
-                a_prime = a + strength * self.L * a
+                a_prime = a + strength * L * a
                 a = a_prime
             new_distances_lists.append(list(a))
         self.update_distances_lists(new_distances_lists)

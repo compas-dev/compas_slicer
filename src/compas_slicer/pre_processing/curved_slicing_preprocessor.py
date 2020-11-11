@@ -81,24 +81,6 @@ class CurvedSlicingPreprocessor:
         self.target_HIGH.save_distances("distances_HIGH.json")
         self.target_HIGH.save_distances_clusters("distances_clusters_HIGH.json")
 
-    def targets_laplacian_smoothing_gradient_norm(self, iterations, strength, smooth_target_low=True,
-                                                  smooth_target_high=True):
-        """
-        Smooth the norm of the gradient of the targets scalar field. Saves again the distances to json.
-
-        Parameters
-        ----------
-        iterations: int
-        strength: float
-        """
-        # if smooth_target_low:
-        #     g_eval = self.create_gradient_evaluation(target_1=self.target_LOW, )
-        self.target_LOW.laplacian_smoothing(iterations=iterations, strength=strength)
-        self.target_HIGH.laplacian_smoothing(iterations=iterations, strength=strength)
-        self.target_LOW.save_distances("distances_LOW.json")
-        self.target_HIGH.save_distances("distances_HIGH.json")
-        self.target_HIGH.save_distances_clusters("distances_clusters_HIGH.json")
-
     ###########################
     # --- scalar field evaluation
 
@@ -108,6 +90,7 @@ class CurvedSlicingPreprocessor:
         Creates a compas_slicer.pre_processing.GradientEvaluation that is stored in self.g_evaluation
         Also, computes the gradient and gradient_norm and saves them to Json .
         """
+        assert self.target_LOW.VN == target_1.VN, "Attention! Preprocessor does not match targets. "
         g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, 0.1, target_1, target_2)
         g_evaluation.compute_gradient()
         g_evaluation.compute_gradient_norm()
