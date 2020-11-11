@@ -5,7 +5,8 @@ import compas_slicer.utilities as utils
 import logging
 import networkx as nx
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
-from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances
+from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances, \
+    get_custom_HEAT_geodesic_distances
 
 import statistics
 
@@ -108,7 +109,9 @@ class CompoundTarget:
             distances_lists = [get_igl_EXACT_geodesic_distances(self.mesh, vstarts) for vstarts in
                                self.clustered_vkeys]
         elif self.geodesics_method == 'heat':
-            raise NotImplementedError
+
+            distances_lists = [get_custom_HEAT_geodesic_distances(self.mesh, vstarts, self.OUTPUT_PATH) for vstarts in
+                               self.clustered_vkeys]
         else:
             raise ValueError('Unknown geodesics method : ' + self.geodesics_method)
 

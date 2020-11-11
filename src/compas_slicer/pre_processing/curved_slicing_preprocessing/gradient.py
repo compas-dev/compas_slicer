@@ -155,6 +155,8 @@ def get_scalar_field_from_gradient(mesh, X, L, cotans):
     u = 2*u
     return u
 
+# def get_scalar_field_from
+
 
 if __name__ == "__main__":
     pass
