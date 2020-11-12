@@ -69,3 +69,71 @@ It is available via conda-forge for Windows, OSX, and Linux, and can be installe
 
     conda activate <environment>
     conda install COMPAS compas_cgal
+
+
+Troubleshooting
+===============
+
+If you encounter a problem that is not described here, please file an issue 
+using the `Issue Tracker <https://github.com/dbt-ethz/compas_slicer/issues>`_.
+
+Git not recognized
+------------------
+
+.. code-block:: bash
+
+    'git' is not recognized as an internal or external command, operable program or batch file. 
+
+If you get this error, either you do not have GIT installed or your paths are not correctly set.
+If you don't have either GIT/SourceTree/GitHub Desktop installed, you still need to install GiT.
+Go to the `Git website <https://git-scm.com/downloads>`_ and install it using the instructions provided. 
+
+If you have installed GIT (or SourceTree/GitHub Desktop) it might be that you have to add the path to 
+your environment variables. To do this, go to 'Environment Variables' on your computer, then in 
+'user variables' click 'Path' and do 'Edit'. You then need to add the path where your git.exe file is 
+located to the environment variables. The location of this git.exe file depends on your GIT installation 
+but is probably
+
+* GIT: C:\Program Files\Git\cmd\
+* SourceTree: C:\Users\<username>\AppData\Local\Atlassian\SourceTree\git_local\cmd
+* GitHub Desktop: C:\Users\<username>\AppData\Local\GitHubDesktop\app-<appversion>\resources\app\git\cmd
+
+Installing Planarity
+--------------------
+
+.. code-block:: bash
+
+    ModuleNotFoundError: No module named 'Cython'
+
+The installation process with pip can fail while installing planarity because Cython is not installed.
+In that case, install cython using pip (or conda) and then run the installation of COMPAS_SLICER again.
+
+.. code-block:: bash
+
+    pip install cython --install-option="--no-cython-compile"
+
+Microsoft Visual C++ Build Tools
+--------------------------------
+
+.. code-block:: bash
+
+    error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
+
+The installation with pip can fail because “Microsoft Visual C++ Build Tools are missing”. 
+To install the Microsoft Visual C++ Build Tools choose one of the options provided here: 
+https://www.scivision.dev/python-windows-visual-c-14-required/ and just follow the instructions. 
+Then run the pip installation commands again.
+
+Numpy error
+-----------
+
+.. code-block:: bash
+
+    RuntimeError: The current Numpy installation ('C:\\Users\\<username>\\.conda\\envs\\compas_slicer\\lib\\site-packages\\numpy\\__init__.py') fails to pass a sanity check due to a bug in the windows runtime. See this issue for more information: https://tinyurl.com/y3dm3h86
+
+A conflict between Numpy and Python can appear, in order to fix this you need to downgrade Numpy to 1.19.3 (from 1.19.4).
+Make sure you are in the correct environment and type:
+
+.. code-block:: bash
+
+    pip install numpy==1.19.3
