@@ -59,7 +59,7 @@ def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH, v_equalize
 # --- GeodesicsSolver
 
 USE_FORWARDS_EULER = False
-HEAT_DIFFUSION_ITERATIONS = 2150
+HEAT_DIFFUSION_ITERATIONS = 250
 DELTA = 0.1
 
 

@@ -144,7 +144,7 @@ class CompoundTarget:
             ds_avg_HIGH = self.get_boundaries_rel_dist_from_other_target(other_target)
 
             for i, d in enumerate(ds_avg_HIGH):  # offset all distances except the maximum one
-                if abs(d - max(ds_avg_HIGH)) > 0.01:  # if it isn't weight the max value
+                if abs(d - max(ds_avg_HIGH)) > 0.01:  # if it isn't the max value
                     ds_avg_HIGH[i] = d + self.offset
 
             self.weight_max_per_cluster = [d / max(ds_avg_HIGH) for d in ds_avg_HIGH]
