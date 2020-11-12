@@ -99,13 +99,11 @@
 <span class="sd">    layer_height: float</span>
 <span class="sd">        Distance between layers (slices).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="PlanarSlicer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.PlanarSlicer.__init__.html#compas_slicer.slicers.PlanarSlicer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">slicer_type</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">brim_toggle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">number_of_brim_paths</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="PlanarSlicer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.PlanarSlicer.__init__.html#compas_slicer.slicers.PlanarSlicer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">slicer_type</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
         <span class="n">BaseSlicer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span> <span class="o">=</span> <span class="n">layer_height</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slicer_type</span> <span class="o">=</span> <span class="n">slicer_type</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">brim_toggle</span> <span class="o">=</span> <span class="n">brim_toggle</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_brim_paths</span> <span class="o">=</span> <span class="n">number_of_brim_paths</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slicer_type</span> <span class="o">=</span> <span class="n">slicer_type</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;PlanarSlicer with </span><span class="si">%d</span><span class="s2"> layers and layer_height : </span><span class="si">%.2f</span><span class="s2"> mm&gt;&quot;</span> <span class="o">%</span> \

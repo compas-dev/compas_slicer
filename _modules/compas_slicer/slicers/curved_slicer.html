@@ -80,7 +80,7 @@
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers.curved_slicing</span> <span class="kn">import</span> <span class="n">find_desired_number_of_isocurves</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers.curved_slicing</span> <span class="kn">import</span> <span class="n">IsocurvesGenerator</span>
-
+<span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CurvedSlicer&#39;</span><span class="p">]</span>
@@ -109,8 +109,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_multiplier</span> <span class="o">=</span> <span class="mf">1.0</span></div>
 
 <div class="viewcode-block" id="CurvedSlicer.generate_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.CurvedSlicer.generate_paths.html#compas_slicer.slicers.CurvedSlicer.generate_paths">[docs]</a>    <span class="k">def</span> <span class="nf">generate_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Generates curved paths-polylines. &quot;&quot;&quot;</span>
+        <span class="n">avg_layer_height</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="s1">&#39;avg_layer_height&#39;</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">find_desired_number_of_isocurves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocessor</span><span class="o">.</span><span class="n">target_LOW</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessor</span><span class="o">.</span><span class="n">target_HIGH</span><span class="p">,</span>
-                                             <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;avg_layer_height&#39;</span><span class="p">])</span>
+                                             <span class="n">avg_layer_height</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> paths will be generated&#39;</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
 
         <span class="n">isocurves_generator</span> <span class="o">=</span> <span class="n">IsocurvesGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessor</span><span class="o">.</span><span class="n">target_LOW</span><span class="p">,</span>
