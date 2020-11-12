@@ -2,7 +2,8 @@ import numpy as np
 import logging
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertices, \
-    compute_face_gradient, compute_vertex_gradient
+    get_face_gradient_from_scalar_field
+from compas_slicer.pre_processing.curved_slicing_preprocessing import get_vertex_gradient_from_face_gradient
 
 logger = logging.getLogger('logger')
 __all__ = ['GradientEvaluation']
@@ -19,6 +20,7 @@ class GradientEvaluation:
     target_LOW: :class: 'compas_slicer.pre_processor.CompoundTarget'
     target_HIGH: :class: 'compas_slicer.pre_processor.CompoundTarget'
     """
+
     def __init__(self, mesh, DATA_PATH, weight=0.5, target_LOW=None, target_HIGH=None):
         print('')
         logger.info('Gradient evaluation')
@@ -48,8 +50,8 @@ class GradientEvaluation:
     def compute_gradient(self):
         """ Computes the gradient on the faces and the vertices. """
         u_v = [self.mesh.vertex[vkey]["get_distance"] for vkey in self.mesh.vertices()]
-        self.face_gradient = compute_face_gradient(self.mesh, u_v)
-        self.vertex_gradient = compute_vertex_gradient(self.mesh, self.face_gradient)
+        self.face_gradient = get_face_gradient_from_scalar_field(self.mesh, u_v)
+        self.vertex_gradient = get_vertex_gradient_from_face_gradient(self.mesh, self.face_gradient)
 
     def compute_gradient_norm(self):
         """ Computes the norm of the gradient. """

@@ -18,7 +18,8 @@ __all__ = ['get_output_directory',
            'point_list_to_dict',
            'get_closest_mesh_vkey_to_pt',
            'get_closest_mesh_normal_to_pt',
-           'get_mesh_laplacian_matrix',
+           'get_mesh_laplacian_matrix_igl',
+           'get_mesh_cotans_igl',
            'get_closest_pt_index',
            'get_closest_pt',
            'plot_networkx_graph',
@@ -26,7 +27,8 @@ __all__ = ['get_output_directory',
            'get_dict_key_from_value',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
-           'get_all_files_with_name']
+           'get_all_files_with_name',
+           'get_param']
 
 
 def get_output_directory(path):
@@ -122,7 +124,7 @@ def save_to_json(data, filepath, name):
 
     Parameters
     ----------
-    data: dict
+    data: dict_or_list
     filepath: str
     name: str
     """
@@ -282,7 +284,10 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     return normal
 
 
-def get_mesh_laplacian_matrix(mesh, fix_boundaries=True):
+#######################################
+# igl utils
+
+def get_mesh_laplacian_matrix_igl(mesh, fix_boundaries=True):
     """
     Gets the laplace operator of the mesh
 
@@ -309,6 +314,25 @@ def get_mesh_laplacian_matrix(mesh, fix_boundaries=True):
                 L_dense[i][:] = np.zeros(len(v))
         L = scipy.sparse.csr_matrix(L_dense)
     return L
+
+
+def get_mesh_cotans_igl(mesh):
+    """
+    Gets the cotangent entries of the mesh
+
+
+    Parameters
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+
+    Returns
+    ----------
+    :class: 'np.array'
+        Dimensions: F by 3 list of 1/2*cotangents corresponding angles
+    """
+    import igl
+    v, f = mesh.to_vertices_and_faces()
+    return igl.cotmatrix_entries(np.array(v), np.array(f))
 
 
 #######################################
@@ -385,6 +409,31 @@ def get_dict_key_from_value(dictionary, val):
         if val == value:
             return key
     return "key doesn't exist"
+
+
+#######################################
+#  parameters
+
+def get_param(params, key, default_value):
+    """
+    Function useful for accessing the params dictionary of curved slicing.
+    If the key is in the params dict, it returns its value,
+    otherwise it returns the default_value.
+
+    Parameters
+    ----------
+    params: dict
+    key: str
+    default_value: anything that can be saved in a dict
+
+    Returns
+    ----------
+    params[key] if key in params, otherwise default_value
+    """
+    if key in params:
+        return params[key]
+    else:
+        return default_value
 
 
 #######################################

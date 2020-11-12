@@ -8,6 +8,7 @@ from compas_slicer.pre_processing.curved_slicing_preprocessing import region_spl
 from compas_slicer.pre_processing import get_existing_cut_indices, get_vertices_that_belong_to_cuts, \
     replace_mesh_vertex_attribute
 import compas_slicer.utilities as utils
+
 logger = logging.getLogger('logger')
 
 __all__ = ['CurvedSlicingPreprocessor']
@@ -33,7 +34,6 @@ class CurvedSlicingPreprocessor:
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.target_LOW = None  # :class: 'compas_slicer.pre_processing.CompoundTarget'
         self.target_HIGH = None  # :class: 'compas_slicer.pre_processing.CompoundTarget'
-        self.g_evaluation = None  # :class: 'compas_slicer.pre_processing.GradientEvaluation'
 
         self.split_meshes = []  # list , :class: 'compas.datastructures.Mesh'
         # The meshes that result from the region splitting process.
@@ -43,21 +43,27 @@ class CurvedSlicingPreprocessor:
 
     def create_compound_targets(self):
         """ Creates the target_LOW and the target_HIGH and computes the geodesic distances. """
-        # -- low target
-        if 'target_LOW_smooth_union' in self.parameters:
-            smooth, r = self.parameters['target_LOW_smooth_union'][0], self.parameters['target_LOW_smooth_union'][1]
-        else:
-            smooth, r = False, 0
-        self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH, has_smooth_union=smooth, r=r)
 
-        # -- high target
-        if 'target_HIGH_smooth_union' in self.parameters:
-            smooth, r = self.parameters['target_HIGH_smooth_union'][0], self.parameters['target_HIGH_smooth_union'][1]
-        else:
-            smooth, r = False, 0
-        self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH, has_smooth_union=smooth, r=r)
-        if 'uneven_upper_targets_offset' in self.parameters:
-            self.target_HIGH.offset = self.parameters['uneven_upper_targets_offset']
+        # --- low target
+        target_blending = utils.get_param(self.parameters, 'target_LOW_smooth_union', default_value=[False, 0])
+        smooth, r = target_blending[0], target_blending[1]
+        geodesics_method = utils.get_param(self.parameters, 'target_LOW_geodesics_method', default_value='exact_igl')
+        self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH,
+                                         has_blend_union=smooth,
+                                         blend_radius=r,
+                                         geodesics_method=geodesics_method)
+
+        # --- high target
+        target_blending = utils.get_param(self.parameters, 'target_HIGH_smooth_union', default_value=[False, 0])
+        smooth, r = target_blending[0], target_blending[1]
+        geodesics_method = utils.get_param(self.parameters, 'target_HIGH_geodesics_method', default_value='exact_igl')
+        self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH,
+                                          has_blend_union=smooth,
+                                          blend_radius=r,
+                                          geodesics_method=geodesics_method)
+
+        # --- uneven boundaries of high target
+        self.target_HIGH.offset = utils.get_param(self.parameters, 'uneven_upper_targets_offset', default_value=0)
         self.target_HIGH.compute_uneven_boundaries_weight_max(self.target_LOW)
 
         #  --- save intermediary get_distance outputs
@@ -84,27 +90,31 @@ class CurvedSlicingPreprocessor:
     ###########################
     # --- scalar field evaluation
 
-    def gradient_evaluation(self, norm_filename, g_filename, target_1, target_2=None):
+    def create_gradient_evaluation(self, target_1, target_2=None, save_output=True,
+                                   norm_filename='gradient_norm.json', g_filename='gradient.json'):
         """
         Creates a compas_slicer.pre_processing.GradientEvaluation that is stored in self.g_evaluation
         Also, computes the gradient and gradient_norm and saves them to Json .
         """
-        self.g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, 0.5, target_1, target_2)
-        self.g_evaluation.compute_gradient()
-        self.g_evaluation.compute_gradient_norm()
+        assert self.target_LOW.VN == target_1.VN, "Attention! Preprocessor does not match targets. "
+        g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, 0.1, target_1, target_2)
+        g_evaluation.compute_gradient()
+        g_evaluation.compute_gradient_norm()
 
-        # save results to json
-        utils.save_to_json(self.g_evaluation.vertex_gradient_norm, self.OUTPUT_PATH, norm_filename)
-        utils.save_to_json(utils.point_list_to_dict(self.g_evaluation.vertex_gradient), self.OUTPUT_PATH, g_filename)
+        if save_output:
+            # save results to json
+            utils.save_to_json(g_evaluation.vertex_gradient_norm, self.OUTPUT_PATH, norm_filename)
+            utils.save_to_json(utils.point_list_to_dict(g_evaluation.vertex_gradient), self.OUTPUT_PATH, g_filename)
 
-    def find_critical_points(self, output_filenames):
+        return g_evaluation
+
+    def find_critical_points(self, g_evaluation, output_filenames):
         """ Computes and saves to json the critical points of the df on the mesh (minima, maxima, saddles)"""
-        assert self.g_evaluation, "You need to create a gradient evaluation first. Use function 'gradient_evaluation'."
-        self.g_evaluation.find_critical_points()
+        g_evaluation.find_critical_points()
         # save results to json
-        utils.save_to_json(self.g_evaluation.minima, self.OUTPUT_PATH, output_filenames[0])
-        utils.save_to_json(self.g_evaluation.maxima, self.OUTPUT_PATH, output_filenames[1])
-        utils.save_to_json(self.g_evaluation.saddles, self.OUTPUT_PATH, output_filenames[2])
+        utils.save_to_json(g_evaluation.minima, self.OUTPUT_PATH, output_filenames[0])
+        utils.save_to_json(g_evaluation.maxima, self.OUTPUT_PATH, output_filenames[1])
+        utils.save_to_json(g_evaluation.saddles, self.OUTPUT_PATH, output_filenames[2])
 
     ###########################
     # --- Region Split
@@ -129,8 +139,7 @@ class CurvedSlicingPreprocessor:
 
         if cut_mesh:  # (1)
             self.mesh.update_default_vertex_attributes({'cut': 0})
-            mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH,
-                                            self.parameters, self.DATA_PATH)
+            mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH, self.DATA_PATH)
             mesh_splitter.run()
 
             self.mesh = mesh_splitter.mesh

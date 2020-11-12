@@ -39,7 +39,6 @@ def main():
 
     ### --- Load initial_mesh
     mesh = Mesh.from_obj(os.path.join(DATA_PATH, OBJ_INPUT_NAME))
-    move_mesh_to_point(mesh, Point(0, 0, 0))
 
     # --- Load targets (boundaries)
     low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
@@ -51,18 +50,18 @@ def main():
     preprocessor.create_compound_targets()
     preprocessor.targets_laplacian_smoothing(iterations=4, strength=0.05)
 
-
     #########################################
-    # --- slicing
+    # --- region split
     if REGION_SPLIT:
         # --- ADVANCED slicing with region split
-        preprocessor.gradient_evaluation(output_filename='gradient_norm.json',
-                                         target_1=preprocessor.target_LOW,
-                                         target_2=preprocessor.target_HIGH)
-        preprocessor.find_critical_points(output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
+        g_eval = preprocessor.create_gradient_evaluation(target_1=preprocessor.target_LOW,
+                                                         target_2=preprocessor.target_HIGH,
+                                                         save_output=True)
+        preprocessor.find_critical_points(g_eval, output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
         preprocessor.region_split(save_split_meshes=True)  # split mesh regions on saddle points
 
-    utils.interrupt()
+        # utils.interrupt()
+
     #########################################
     # --- slicing
     if SLICER:
@@ -72,9 +71,10 @@ def main():
         for i, split_mesh in enumerate(split_meshes):
             preprocessor_split = CurvedSlicingPreprocessor(split_mesh, parameters, DATA_PATH)
             preprocessor_split.create_compound_targets()
-            preprocessor.gradient_evaluation(output_filename='gradient_norm_%d.json' % i,
-                                             target_1=preprocessor.target_LOW,
-                                             target_2=preprocessor.target_HIGH)
+            preprocessor_split.create_gradient_evaluation(norm_filename='gradient_norm_%d.json' % i,
+                                                    g_filename='gradient_%d.json' % i,
+                                                    target_1=preprocessor_split.target_LOW, target_2=preprocessor_split.target_HIGH)
+
             slicer = CurvedSlicer(split_mesh, preprocessor_split, parameters)
             if i == 3:
                 slicer.n_multiplier = 0.85
@@ -82,6 +82,7 @@ def main():
             simplify_paths_rdp(slicer, threshold=1.0)
             utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer_%d.json' % i)
             slicers.append(slicer)
+
         # utils.interrupt()
 
     #########################################
@@ -91,7 +92,7 @@ def main():
         slicers = [BaseSlicer.from_data(utils.load_from_json(OUTPUT_PATH, filename)) for filename in filenames]
         for i, slicer in enumerate(slicers):
             print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
-            print_organizer.create_printpoints(mesh)
+            print_organizer.create_printpoints()
 
             ### --- Save printpoints dictionary to json file
             printpoints_data = print_organizer.output_printpoints_dict()
