@@ -1,7 +1,5 @@
 import os
-import sys
 import json
-from compas.datastructures import Mesh
 import rhinoscriptsyntax as rs
 from compas.datastructures import Mesh
 import Rhino.Geometry as rg
@@ -123,7 +121,7 @@ def load_printpoints(path, folder_name, json_name):
             feasibility.append(data_point["is_feasible"])
 
     return points, frames, layer_heights, up_vectors, mesh_normals, closest_support, \
-           velocities, wait_times, blend_radiuses, extruder_toggles, feasibility
+        velocities, wait_times, blend_radiuses, extruder_toggles, feasibility
 
 
 #######################################
@@ -131,21 +129,21 @@ def load_printpoints(path, folder_name, json_name):
 
 def lightweight_path_visualization(points, extruder_toggles, domain_start, domain_end, diameter, pipe_resolution):
     """ Visualize print paths with simple lines or pipes. """
-    # check input
+    #  check input
     assert len(points) == len(extruder_toggles), \
         'Wrong length of input lists'
 
     print_path_pipes = []
     travel_path_lines = []
 
-    domain_end = min(domain_end, len(points)) # make sure domain_end does not exceed len of pts
+    domain_end = min(domain_end, len(points))  # make sure domain_end does not exceed len of pts
 
     points = points[domain_start:domain_end]
     extruder_toggles = extruder_toggles[domain_start:domain_end]
     for i in range(len(points) - 1):
         if extruder_toggles[i]:
             line = rg.Curve.CreateControlPointCurve([points[i], points[i + 1]])  # create line
-            pipe = rg.Mesh.CreateFromCurvePipe(line, diameter / 2, pipe_resolution, 1, rg.MeshPipeCapStyle.None, True)
+            pipe = rg.Mesh.CreateFromCurvePipe(line, diameter / 2, pipe_resolution, 1, rg.MeshPipeCapStyle(0), True)
             print_path_pipes.append(pipe)
         else:
             line = rg.Curve.CreateControlPointCurve([points[i], points[i + 1]])
@@ -161,13 +159,13 @@ def render_path_visualization(points, mesh_normals, layer_heights, up_vectors, e
     """ Visualize print paths with simple loft surfaces. """
 
     # check input
-    assert len(points) == len(mesh_normals) == len(layer_heights) == len(up_vectors) == len(extruder_toggles),\
-    'Wrong length of input lists'
+    assert len(points) == len(mesh_normals) == len(layer_heights) == len(up_vectors) == len(extruder_toggles), \
+        'Wrong length of input lists'
 
     loft_surfaces = []
     travel_path_lines = []
 
-    if points[0] and mesh_normals[0] and layer_heights[0] and up_vectors[0]: # check if any of the values are None
+    if points[0] and mesh_normals[0] and layer_heights[0] and up_vectors[0]:  # check if any of the values are None
 
         # transform and scale cross sections accordingly
         cen = rs.CurveAreaCentroid(cross_section)[0]
@@ -209,28 +207,27 @@ def render_path_visualization(points, mesh_normals, layer_heights, up_vectors, e
 def tool_visualization(origin_coords, mesh, planes, i):
     """ Visualize example tool motion. """
 
-    i = min(i, len(planes)-1) # make sure i doesn't go beyond available number of planes
+    i = min(i, len(planes) - 1)  # make sure i doesn't go beyond available number of planes
     passed_path = None
 
     if planes[0]:
-        origin = [float(origin_coords[0]), float(origin_coords[1]) , float(origin_coords[2])]
+        origin = [float(origin_coords[0]), float(origin_coords[1]), float(origin_coords[2])]
         o = rg.Point3d(origin[0], origin[1], origin[2])
         x = rg.Vector3d(1, 0, 0)
         z = rg.Vector3d(0, 0, -1)
 
-        ee_frame = rg.Plane(o,x,z)
+        ee_frame = rg.Plane(o, x, z)
         target_frame = planes[i]
 
         T = rg.Transform.PlaneToPlane(ee_frame, target_frame)
         mesh = rs.TransformObject(rs.CopyObject(mesh), T)
 
-        passed_path = rs.AddPolyline([plane.Origin for plane in planes[:i+1]])
+        passed_path = rs.AddPolyline([plane.Origin for plane in planes[:i + 1]])
 
     else:
         print('The planes you have provided are invalid. ')
 
     return mesh, passed_path
-
 
 
 ##############################################
