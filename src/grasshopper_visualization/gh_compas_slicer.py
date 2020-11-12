@@ -1,5 +1,6 @@
 import os
 import json
+import math
 import rhinoscriptsyntax as rs
 from compas.datastructures import Mesh
 import Rhino.Geometry as rg
@@ -121,7 +122,7 @@ def load_printpoints(path, folder_name, json_name):
             feasibility.append(data_point["is_feasible"])
 
     return points, frames, layer_heights, up_vectors, mesh_normals, closest_support, \
-        velocities, wait_times, blend_radiuses, extruder_toggles, feasibility
+           velocities, wait_times, blend_radiuses, extruder_toggles, feasibility
 
 
 #######################################
@@ -230,6 +231,52 @@ def tool_visualization(origin_coords, mesh, planes, i):
     return mesh, passed_path
 
 
+#######################################
+# --- Create_targets (Curved slicing)
+
+def create_targets(mesh, targets, resolution_mult, path, folder_name, json_name):
+    """ Creation of targets for curved slicing. """
+
+    avg_face_area = max(rs.MeshArea([mesh])) / rs.MeshFaceCount(mesh)
+    div_num = int(resolution_mult * avg_face_area)
+
+    pts = []
+    for target in targets:
+        pts.extend(rs.DivideCurve(target, div_num))
+
+    vs = rs.MeshVertices(mesh)
+    vertices = []
+    vertex_indices = []
+    for p in pts:
+        closest_vi = get_closest_point_index(p, vs)
+        if closest_vi not in vertex_indices:
+            ds_from_targets = [distance_of_pt_from_crv(vs[closest_vi], target) for target in targets]
+            if min(ds_from_targets) < 1:  # hardcoded threshold value
+                vertices.append(vs[closest_vi])
+                vertex_indices.append(closest_vi)
+
+    save_json_file(vertex_indices, path, folder_name, json_name)
+    return pts, vertices, vertex_indices
+
+
+#######################################
+# --- Create_targets (Curved slicing)
+
+def load_multiple_meshes(starts_with, ends_with, path, folder_name):
+    """ Load all the meshes that have the specified name, and print them in different colors. """
+    filenames = get_files_with_name(starts_with, ends_with, os.path.join(path, folder_name, 'output'))
+    meshes = [Mesh.from_obj(os.path.join(path, folder_name, 'output', filename)) for filename in filenames]
+
+    loaded_meshes = []
+    for i, m in enumerate(meshes):
+        artist = MeshArtist(m)
+        color = get_color(i, total=len(meshes))
+        mesh = artist.draw(color)
+        loaded_meshes.append(mesh)
+
+    return loaded_meshes
+
+
 ##############################################
 # --- gh_utilities
 
@@ -247,6 +294,62 @@ def load_json_file(path, folder_name, json_name):
         print("Attention! Filename: '" + filename + "' does not exist. ")
 
     return data
+
+
+def save_json_file(data, path, folder_name, json_name):
+    """ Saves data to json. """
+    filename = os.path.join(path, folder_name, json_name)
+    with open(filename, 'w') as f:
+        f.write(json.dumps(data, indent=3, sort_keys=True))
+    print("Saved to Json: '" + filename + "'")
+
+
+def get_closest_point_index(pt, pts):
+    distances = [rs.Distance(p, pt) for p in pts]
+    min_index = distances.index(min(distances))
+    return min_index
+
+
+def distance_of_pt_from_crv(pt, crv):
+    param = rs.CurveClosestPoint(crv, pt)
+    cp = rs.EvaluateCurve(crv, param)
+    return rs.Distance(pt, cp)
+
+
+def get_files_with_name(startswith, endswith, DATA_PATH):
+    files = []
+    for file in os.listdir(DATA_PATH):
+        if file.startswith(startswith) and file.endswith(endswith):
+            files.append(file)
+    print('Found %d files with the given criteria : ' % len(files) + str(files))
+    return files
+
+
+def get_color(i, total):
+    i, total = float(i), float(total)
+
+    c1 = rg.Vector3d(234, 38, 0.0)  # 0.00
+    c2 = rg.Vector3d(234, 126, 0.0)  # 0.25
+    c3 = rg.Vector3d(254, 244, 84)  # 0.50
+    c4 = rg.Vector3d(173, 203, 249)  # 0.75
+    c5 = rg.Vector3d(75, 107, 169)  # 1.00
+
+    a = (i / (total - 1)) * 4.0
+    if 0.0 <= a < 1:
+        c_left, c_right = c1, c2
+    elif 1 <= a < 2:
+        c_left, c_right = c2, c3
+        a -= 1
+    elif 2 <= a < 3:
+        c_left, c_right = c3, c4
+        a -= 2
+    else:
+        c_left, c_right = c4, c5
+        a -= 3
+
+    weight = a
+    c = (1 - weight) * c_left + weight * c_right
+    return [int(c[0]), int(c[1]), int(c[2])]
 
 
 if __name__ == "__main__":
