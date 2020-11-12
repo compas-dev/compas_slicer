@@ -5,6 +5,7 @@ from compas.plugins import PluginNotInstalledError
 from compas_slicer.pre_processing.curved_slicing_preprocessing.gradient import get_scalar_field_from_gradient, \
     get_face_gradient_from_scalar_field, normalize_gradient
 import scipy
+import math
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
@@ -44,14 +45,13 @@ def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
     return distances
 
 
-def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH,
-                                       anisotropic_scaling=False, equalized_v_indices=None):
+def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH, v_equalize=None, anisotropic_scaling=False):
     """ Calculate geodesic distances using the heat method. """
     check_igl_is_installed()
 
     geodesics_solver = GeodesicsSolver(mesh, OUTPUT_PATH)
-    u = geodesics_solver.diffuse_heat(vi_sources, method='simulation')
-    geodesic_dist = geodesics_solver.get_geodesic_distances(u, vi_sources)
+    u = geodesics_solver.diffuse_heat(vi_sources, v_equalize, method='simulation')
+    geodesic_dist = geodesics_solver.get_geodesic_distances(u, vi_sources, v_equalize)
     return geodesic_dist
 
 
@@ -59,12 +59,20 @@ def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH,
 # --- GeodesicsSolver
 
 USE_FORWARDS_EULER = False
-HEAT_DIFFUSION_ITERATIONS = 150
+HEAT_DIFFUSION_ITERATIONS = 2150
 DELTA = 0.1
 
 
 class GeodesicsSolver:
-    """ Computes custom geodesic distances. Implementation of the method presented in the paper Heat Geodesics."""
+    """
+    Computes custom geodesic distances. Starts from implementation of the method presented in the paper
+    'Geodesics in Heat' (Crane, 2013)
+
+    Attributes
+    ----------
+    mesh: :class: compas.datastructures.Mesh
+    OUTPUT_PATH: str
+    """
 
     def __init__(self, mesh, OUTPUT_PATH):
         logger.info('GeodesicsSolver')
@@ -77,20 +85,30 @@ class GeodesicsSolver:
         v = np.array(v)
         f = np.array(f)
 
-        ## compute necessary data
+        # compute necessary data
         self.cotans = igl.cotmatrix_entries(v, f)  # compute_cotan_field(self.mesh)
         self.L = igl.cotmatrix(v, f)  # assemble_laplacian_matrix(self.mesh, self.cotans)
         self.M = igl.massmatrix(v, f)  # create_mass_matrix(mesh)
 
-    def diffuse_heat(self, vi_sources, method='default'):
-        """ Heat diffusion. """
+    def diffuse_heat(self, vi_sources, v_equalize=None, method='simulation'):
+        """
+        Heat diffusion.
+
+        Attributes
+        ----------
+        vi_sources: list, int, the vertex indices of the sources
+        v_equalize: list, int, the vertex indices whose value should be equalized
+        method: str (Currently only 'simulation' works.)
+        """
+        if not v_equalize:
+            v_equalize = []
 
         # First assign starting values (0 everywhere, 1 on the sources)
         u0 = np.zeros(len(list(self.mesh.vertices())))
         u0[vi_sources] = 1.0
         u = u0
 
-        if method == 'default':  # This is a bit buggy! Does not keep boundaries exactly on 0. TODO: INVESTIGATE
+        if method == 'default':  # This is buggy, does not keep boundary exactly on 0. TODO: INVESTIGATE
             t_mult = 1
             t = t_mult * np.mean(np.array([self.mesh.face_area(fkey) for fkey in self.mesh.faces()]))  # avg face area
             solver = scipy.sparse.linalg.factorized(self.M - t * self.L)  # pre-factor solver
@@ -108,29 +126,19 @@ class GeodesicsSolver:
                     b = self.M * u
                     u_prime = scipy.sparse.linalg.spsolve(S, b)
 
-                ## equalized_vs new value
-                # equalized_values = [u_prime[eq_i] for eq_i in self.equalized_v_indices]
+                if len(v_equalize) > 0:
+                    u_prime[v_equalize] = np.min(u_prime[v_equalize])
 
-                # make sure sources remain fixed
-                for j in range(len(u)):
-                    if j in vi_sources:
-                        u[j] = 1.0
-                    else:
-                        a = u_prime[j]
-                        u[j] = a
-
-                    # if j in self.equalized_v_indices:
-                    #     u[j] = 0
-                    #     # u[j] = min(equalized_values)
+                u = u_prime
+                u[vi_sources] = 1.0  # make sure sources remain fixed to 1
 
         # reverse values (to make vstarts on 0)
         u = ([np.max(u)] * len(u)) - u
 
         utils.save_to_json([float(value) for value in u], self.OUTPUT_PATH, 'diffused_heat.json')
-        utils.interrupt()
         return u
 
-    def get_geodesic_distances(self, u, vi_sources):
+    def get_geodesic_distances(self, u, vi_sources, v_equalize=None):
         """
         Finds geodesic distances from heat distribution u. I
 
@@ -138,10 +146,13 @@ class GeodesicsSolver:
         ----------
         u: np.array, dimensions: V x 1 (one scalar value per vertex)
         vi_sources: list, int, the vertex indices of the sources
+        v_equalize: list, int, the vertex indices whose value should be equalized
         """
         X = get_face_gradient_from_scalar_field(self.mesh, u)
         X = normalize_gradient(X)
         geodesic_dist = get_scalar_field_from_gradient(self.mesh, X, self.L, self.cotans)
+        assert not math.isnan(geodesic_dist[0]), \
+            "Attention, the 'get_scalar_field_from_gradient' function returned Nan. "
         geodesic_dist[vi_sources] = 0  # coerce boundary vertices to be on 0 (fixes small boundary imprecision)
         return geodesic_dist
 
