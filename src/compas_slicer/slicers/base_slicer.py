@@ -66,13 +66,10 @@ class BaseSlicer(object):
     #  --- Functions
 
     def slice_model(self, *args, **kwargs):
-        """Slices the model and applies standard post-processing (seams_align and unify_paths)."""
+        """Slices the model and applies standard post-processing and removing of invalid paths."""
 
-        start_time = time.time()  # time measurement
         self.generate_paths()
-        end_time = time.time()
-        logger.info('')
-        logger.info("Slicing operation took: %.2f seconds" % (end_time - start_time))
+        self.remove_invalid_paths_and_layers()
         self.post_processing()
 
     @abstractmethod
@@ -89,6 +86,22 @@ class BaseSlicer(object):
 
         logger.info("Created %d Layers with %d total number of points"
                     % (len(self.layers), self.total_number_of_points))
+
+    def remove_invalid_paths_and_layers(self):
+        """Removes invalid layers and paths from the slicer."""
+
+        for i, layer in enumerate(self.layers):
+            # check for invalid paths
+            for j, path in enumerate(layer.paths):
+                # check if a path has less than two points and removes
+                if len(path.points) < 2:
+                    invalid_path = layer.paths.pop(j)
+                    logger.warning("Invalid Path found: Layer %d, Path %d, %s" % (i, j, str(invalid_path)))
+            # check for invalid layers
+            if len(layer.paths) < 1:
+                # check if a layer has less than one path and removes
+                invalid_layer = self.layers.pop(i)
+                logger.warning("Invalid Layer found: Layer %d, %s" % (i, str(invalid_layer)))
 
     ##############################
     #  --- Output
