@@ -6,7 +6,7 @@ from .mesh_attributes_handling import *  # noqa: F401 E402 F403
 from .compound_target import *  # noqa: F401 E402 F403
 from .geodesics import *  # noqa: F401 E402 F403
 from .assign_vertex_distance import *  # noqa: F401 E402 F403
-from .geodesics_zero_crossing_contours import *  # noqa: F401 E402 F403
+from .curved_zero_crossing_contours import *  # noqa: F401 E402 F403
 from .gradient import *  # noqa: F401 E402 F403
 from .gradient_evaluation import *  # noqa: F401 E402 F403
 from .region_split import *  # noqa: F401 E402 F403

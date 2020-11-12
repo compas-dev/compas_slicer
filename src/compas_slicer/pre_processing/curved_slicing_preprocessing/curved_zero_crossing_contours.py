@@ -1,10 +1,10 @@
 from compas_slicer.slicers.slice_utilities import ZeroCrossingContoursBase
 from compas.geometry import Vector, add_vectors, scale_vector
 
-__all__ = ['GeodesicsZeroCrossingContours']
+__all__ = ['CurvedZeroCrossingContours']
 
 
-class GeodesicsZeroCrossingContours(ZeroCrossingContoursBase):
+class CurvedZeroCrossingContours(ZeroCrossingContoursBase):
     """
     Finds the iso-contours of the function f(x) = vertex_data['distance']
     on the mesh.

@@ -109,7 +109,6 @@ class CompoundTarget:
             distances_lists = [get_igl_EXACT_geodesic_distances(self.mesh, vstarts) for vstarts in
                                self.clustered_vkeys]
         elif self.geodesics_method == 'heat':
-
             distances_lists = [get_custom_HEAT_geodesic_distances(self.mesh, vstarts, self.OUTPUT_PATH) for vstarts in
                                self.clustered_vkeys]
         else:

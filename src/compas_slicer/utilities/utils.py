@@ -124,7 +124,7 @@ def save_to_json(data, filepath, name):
 
     Parameters
     ----------
-    data: dict
+    data: dict_or_list
     filepath: str
     name: str
     """
