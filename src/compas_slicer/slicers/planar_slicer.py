@@ -22,11 +22,13 @@ class PlanarSlicer(BaseSlicer):
     layer_height: float
         Distance between layers (slices).
     """
-    def __init__(self, mesh, slicer_type="default", layer_height=2.0):
+    def __init__(self, mesh, slicer_type="default", layer_height=2.0, brim_toggle=False, number_of_brim_paths=0):
         BaseSlicer.__init__(self, mesh)
 
         self.layer_height = layer_height
         self.slicer_type = slicer_type
+        self.brim_toggle = brim_toggle
+        self.number_of_brim_paths = number_of_brim_paths
 
     def __repr__(self):
         return "<PlanarSlicer with %d layers and layer_height : %.2f mm>" % \
