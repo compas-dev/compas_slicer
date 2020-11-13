@@ -89,7 +89,8 @@ class CompoundTarget:
         self.all_target_vkeys = [vkey for vkey, data in self.mesh.vertices(data=True) if
                                  data[self.v_attr] == self.value]
         assert len(self.all_target_vkeys) > 0, "There are no vertices in the mesh with the attribute : " \
-                                               + self.v_attr + ", value : %d" % self.value
+                                               + self.v_attr + ", value : %d" % self.value + " .Probably you made a " \
+                                               "mistake while creating the targets. "
         G = create_graph_from_mesh_vkeys(self.mesh, self.all_target_vkeys)
         assert len(list(G.nodes())) == len(self.all_target_vkeys)
         self.number_of_boundaries = len(list(nx.connected_components(G)))
@@ -177,33 +178,41 @@ class CompoundTarget:
         return min(extreme_distances), max(extreme_distances)
 
     #############################
-    #  --- get distances
+    #  --- get all distances
 
-    def get_all_clusters_distances(self, i):
-        """ Returns distances from each cluster separately per vertex. Smooth union doesn't play play any role! """
-        return [self._distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
-
+    # All distances
     def get_all_distances(self):
         """ Returns the resulting distances per every vertex. """
         return [self.get_distance(i) for i in range(self.VN)]
 
-    def get_distance(self, i):
-        """ Return get_distance for vertex with index i. """
-        if self.has_blend_union:
-            return self.blend_union(i)
-        else:
-            return self.union(i)
+    def get_all_clusters_distances_dict(self):
+        """ Returns dict. keys: index of connected target neighborhood, value: list, distances (one per vertex). """
+        return {i: self._distances_lists[i] for i in range(self.number_of_boundaries)}
 
     def get_max_dist(self):
         """ Returns the maximum distance that the target has on a mesh vertex. """
         return self._max_dist
 
+    #############################
+    #  --- per vkey distances
+
+    def get_all_distances_for_vkey(self, i):
+        """ Returns distances from each cluster separately for vertex i. Smooth union doesn't play here any role. """
+        return [self._distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
+
+    def get_distance(self, i):
+        """ Return get_distance for vertex with vkey i. """
+        if self.has_blend_union:
+            return self.blend_union(i)
+        else:
+            return self.union(i)
+
     def union(self, i):
-        """ Union of distances for vertex with index i"""
+        """ Union of distances for vertex with vkey i"""
         return np.min(self._np_distances_lists_flipped[i])
 
     def blend_union(self, i):
-        """ Smooth union of distances for vertex with index i"""
+        """ Smooth union of distances for vertex with vkey i"""
         return blend_union_list(values=self._np_distances_lists_flipped[i], r=self.blend_radius)
 
     #############################
@@ -235,27 +244,6 @@ class CompoundTarget:
         name: str, name of json to be saved
         """
         utils.save_to_json(self.get_all_distances(), self.OUTPUT_PATH, name)
-
-    def save_distances_clusters(self, name):
-        """
-        Save distances for each cluster separately to json.
-        Saves a dict with (number_of_boundaries x VN) distance values.
-            key: int, index of connected boundary neighborhood.
-            value: list, distance values (one per vertex).
-
-        Parameters
-        ----------
-        name: str, name of json to be saved
-        """
-        clusters_distances = {}
-        for list_index in range(self.number_of_boundaries):
-            clusters_distances[list_index] = []
-
-        for i in range(self.VN):
-            all_ds = self.get_all_clusters_distances(i)
-            for j, d in enumerate(all_ds):
-                clusters_distances[j].append(d)
-        utils.save_to_json(clusters_distances, self.OUTPUT_PATH, name)
 
     #  ------ assign new Mesh
     def assign_new_mesh(self, mesh):

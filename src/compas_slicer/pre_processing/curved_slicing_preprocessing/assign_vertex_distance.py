@@ -69,7 +69,7 @@ def get_weighted_distance(vkey, weight, target_LOW, target_HIGH):
     # --- calculation with uneven weights
     if target_HIGH.has_uneven_weights:
         d_low = target_LOW.get_distance(vkey)  # float
-        ds_high = target_HIGH.get_all_clusters_distances(vkey)  # list of floats (# number_of_boundaries)
+        ds_high = target_HIGH.get_all_distances_for_vkey(vkey)  # list of floats (# number_of_boundaries)
 
         if target_HIGH.number_of_boundaries > 1:
             weights_remapped = [remap_unbound(weight, 0, weight_max, 0, 1)

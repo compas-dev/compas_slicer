@@ -119,7 +119,8 @@ class MeshSplitter:
                                              strength=0.2)  # smoothen the cut close to the saddle point.
 
                 # save to json intermediary results
-                zero_contours.save_point_clusters_to_json(self.OUTPUT_PATH, 'point_clusters_%d.json' % int(i))
+                zero_contours.save_point_clusters_as_polylines_to_json(self.OUTPUT_PATH,
+                                                                       'point_clusters_polylines_%d.json' % int(i))
 
                 #  --- (4) Create cut
                 logger.info("Creating cut on mesh")

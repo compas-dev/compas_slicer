@@ -72,8 +72,9 @@ def main():
             preprocessor_split = CurvedSlicingPreprocessor(split_mesh, parameters, DATA_PATH)
             preprocessor_split.create_compound_targets()
             preprocessor_split.create_gradient_evaluation(norm_filename='gradient_norm_%d.json' % i,
-                                                    g_filename='gradient_%d.json' % i,
-                                                    target_1=preprocessor_split.target_LOW, target_2=preprocessor_split.target_HIGH)
+                                                          g_filename='gradient_%d.json' % i,
+                                                          target_1=preprocessor_split.target_LOW,
+                                                          target_2=preprocessor_split.target_HIGH)
 
             slicer = CurvedSlicer(split_mesh, preprocessor_split, parameters)
             if i == 3:
