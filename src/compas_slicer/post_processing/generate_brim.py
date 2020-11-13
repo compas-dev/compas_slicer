@@ -29,7 +29,6 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
     Returns
     -------
     None
-
     """
     logger.info(
         "Generating brim with layer width: %.2f mm, consisting of %d layers" % (layer_width, number_of_brim_paths))
@@ -82,6 +81,9 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
     slicer.layers[0] = Layer(paths=paths_per_layer)
 
     seams_align(slicer, align_with="next_path")
+
+    slicer.brim_toggle = True
+    slicer.number_of_brim_paths = number_of_brim_paths
 
 
 if __name__ == "__main__":

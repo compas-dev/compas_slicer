@@ -5,7 +5,6 @@ from compas_slicer.utilities import utils
 from compas.geometry import Polyline
 from compas_slicer.geometry import Layer, VerticalLayer
 from compas_slicer.post_processing import seams_align, unify_paths_orientation
-import time
 import logging
 import copy
 from abc import abstractmethod
@@ -66,13 +65,10 @@ class BaseSlicer(object):
     #  --- Functions
 
     def slice_model(self, *args, **kwargs):
-        """Slices the model and applies standard post-processing (seams_align and unify_paths)."""
+        """Slices the model and applies standard post-processing and removing of invalid paths."""
 
-        start_time = time.time()  # time measurement
         self.generate_paths()
-        end_time = time.time()
-        logger.info('')
-        logger.info("Slicing operation took: %.2f seconds" % (end_time - start_time))
+        self.remove_invalid_paths_and_layers()
         self.post_processing()
 
     @abstractmethod
@@ -89,6 +85,36 @@ class BaseSlicer(object):
 
         logger.info("Created %d Layers with %d total number of points"
                     % (len(self.layers), self.total_number_of_points))
+
+    def remove_invalid_paths_and_layers(self):
+        """Removes invalid layers and paths from the slicer."""
+
+        paths_to_remove = []
+        layers_to_remove = []
+
+        for i, layer in enumerate(self.layers):
+            for j, path in enumerate(layer.paths):
+                # check if a path has less than two points and appends to list to_remove
+                if len(path.points) < 2:
+                    paths_to_remove.append(path)
+                    logger.warning("Invalid Path found: Layer %d, Path %d, %s" % (i, j, str(path)))
+                    # check if the layer that the invalid path was in has only one path
+                    # this means that path is now invalid, and the entire layer should be removed
+                    if len(layer.paths) == 1:
+                        layers_to_remove.append(layer)
+                        logger.warning("Invalid Layer found: Layer %d, %s" % (i, str(layer)))
+            # check for layers with less than one path and appends to list to_remove
+            if len(layer.paths) < 1:
+                layers_to_remove.append(layer)
+                logger.warning("Invalid Layer found: Layer %d, %s" % (i, str(layer)))
+
+        # compares the two lists and removes any invalid items
+        for i, layer in enumerate(self.layers):
+            for j, path in enumerate(layer.paths):
+                if path in paths_to_remove:
+                    layer.paths.remove(path)
+            if layer in layers_to_remove:
+                self.layers.remove(layer)
 
     ##############################
     #  --- Output
