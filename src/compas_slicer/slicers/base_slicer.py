@@ -89,18 +89,32 @@ class BaseSlicer(object):
     def remove_invalid_paths_and_layers(self):
         """Removes invalid layers and paths from the slicer."""
 
+        paths_to_remove = []
+        layers_to_remove = []
+
         for i, layer in enumerate(self.layers):
-            # check for invalid paths
             for j, path in enumerate(layer.paths):
-                # check if a path has less than two points and removes
+                # check if a path has less than two points and appends to list to_remove
                 if len(path.points) < 2:
-                    invalid_path = layer.paths.pop(j)
-                    logger.warning("Invalid Path found: Layer %d, Path %d, %s" % (i, j, str(invalid_path)))
-            # check for invalid layers
+                    paths_to_remove.append(path)
+                    logger.warning("Invalid Path found: Layer %d, Path %d, %s" % (i, j, str(path)))
+                    # check if the layer that the invalid path was in has only one path
+                    # this means that path is now invalid, and the entire layer should be removed
+                    if len(layer.paths) == 1:
+                        layers_to_remove.append(layer)
+                        logger.warning("Invalid Layer found: Layer %d, %s" % (i, str(layer)))
+            # check for layers with less than one path and appends to list to_remove
             if len(layer.paths) < 1:
-                # check if a layer has less than one path and removes
-                invalid_layer = self.layers.pop(i)
-                logger.warning("Invalid Layer found: Layer %d, %s" % (i, str(invalid_layer)))
+                layers_to_remove.append(layer)
+                logger.warning("Invalid Layer found: Layer %d, %s" % (i, str(layer)))
+
+        # compares the two lists and removes any invalid items
+        for i, layer in enumerate(self.layers):
+            for j, path in enumerate(layer.paths):
+                if path in paths_to_remove:
+                    layer.paths.remove(path)
+            if layer in layers_to_remove:
+                self.layers.remove(layer)
 
     ##############################
     #  --- Output
