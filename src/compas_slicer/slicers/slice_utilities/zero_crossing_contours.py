@@ -73,7 +73,7 @@ class ZeroCrossingContoursBase(object):
             for i, e in enumerate(self.intersection_points):
                 self.edge_point_index_relation[e] = i
 
-    def save_point_clusters_to_json(self, DATA_PATH, name):
+    def save_point_clusters_as_polylines_to_json(self, DATA_PATH, name):
         all_points = {}
         for i, key in enumerate(self.sorted_point_clusters):
             all_points[i] = utils.point_list_to_dict(self.sorted_point_clusters[key])

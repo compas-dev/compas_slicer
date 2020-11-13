@@ -277,8 +277,28 @@ def load_multiple_meshes(starts_with, ends_with, path, folder_name):
     return loaded_meshes
 
 
+#######################################
+# --- Load json points
+
+def load_json_points(path, folder_name, json_name):
+    """Loads a json file that stores a dictionary of N points in the format:
+    data['1']=[x1,y1,z1], ...,  data['N']=[xN,yN,zN]"""
+    data = load_json_file(path, folder_name, json_name)
+    points = None
+    if data:
+        points = []
+        for i in range(len(data)):
+            points.append(rg.Point3d(data[str(i)][0], data[str(i)][1], data[str(i)][2]))
+    return points
+
+
 ##############################################
 # --- gh_utilities
+
+def missing_input():
+    """ How to deal cases where the user has not defined all the necessary inputs. """
+    print('Please provide all the inputs')
+
 
 def load_json_file(path, folder_name, json_name):
     """ Loads data from json. """
@@ -326,6 +346,7 @@ def get_files_with_name(startswith, endswith, DATA_PATH):
 
 
 def get_color(i, total):
+    """ Returns a color per index interpolating the colorspace of 5 colors that are hardcoded (c1 .. c5). """
     i, total = float(i), float(total)
 
     c1 = rg.Vector3d(234, 38, 0.0)  # 0.00
