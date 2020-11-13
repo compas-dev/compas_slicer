@@ -1,6 +1,5 @@
 import os
 import json
-import math
 import rhinoscriptsyntax as rs
 from compas.datastructures import Mesh
 import Rhino.Geometry as rg
@@ -121,8 +120,8 @@ def load_printpoints(path, folder_name, json_name):
             extruder_toggles.append(data_point["extruder_toggle"])
             feasibility.append(data_point["is_feasible"])
 
-    return points, frames, layer_heights, up_vectors, mesh_normals, closest_support, \
-           velocities, wait_times, blend_radiuses, extruder_toggles, feasibility
+    return points, frames, layer_heights, up_vectors, mesh_normals, closest_support, velocities, wait_times, \
+        blend_radiuses, extruder_toggles, feasibility
 
 
 #######################################
