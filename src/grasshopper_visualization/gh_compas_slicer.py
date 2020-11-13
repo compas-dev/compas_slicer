@@ -156,7 +156,8 @@ def lightweight_path_visualization(points, extruder_toggles, domain_start, domai
 #######################################
 # --- Render path visualization
 
-def render_path_visualization(points, mesh_normals, layer_heights, up_vectors, extruder_toggles, cross_section):
+def render_path_visualization(points, mesh_normals, layer_heights, up_vectors, extruder_toggles, cross_section,
+                              planar_printing):
     """ Visualize print paths with simple loft surfaces. """
 
     # check input
@@ -167,6 +168,10 @@ def render_path_visualization(points, mesh_normals, layer_heights, up_vectors, e
     travel_path_lines = []
 
     if points[0] and mesh_normals[0] and layer_heights[0] and up_vectors[0]:  # check if any of the values are None
+
+        if planar_printing:  # then make sure that all normals lie on the xy plane
+            for n in mesh_normals:
+                n[2] = 0
 
         # transform and scale cross sections accordingly
         cen = rs.CurveAreaCentroid(cross_section)[0]
@@ -318,9 +323,11 @@ def load_json_vectors(path, folder_name, json_name):
 # --- Load json polylines
 
 def load_json_polylines(path, folder_name, json_name):
-    """Loads a json file that stores a dictionary of N polylines in the format:
+    """
+    Loads a json file that stores a dictionary of N polylines in the format:
     data['0']=points_dict_0, ..., data['N'] = points_dict_N, where points_dict is in the format:
-    points_dict['0']=[x0,y0,z0], ...,  points_dict['N']=[xN,yN,zN]"""
+    points_dict['0']=[x0,y0,z0], ...,  points_dict['N']=[xN,yN,zN]
+    """
     data = load_json_file(path, folder_name, json_name)
     all_points = []
     polylines = []
@@ -367,16 +374,20 @@ def load_base_boundaries(path, folder_name, json_name):
 # --- Load json BaseBoundaries
 
 def distance_fields_interpolation(path, folder_name, json_name1, json_name2, weight):
+    """ Simple interpolation of the distance fields that are stored in the two json files. """
     distances_LOW = load_json_file(path, folder_name, json_name1)
     distances_HIGH = load_json_file(path, folder_name, json_name2)
 
     if distances_LOW and distances_HIGH:
-        return [d2*weight-d1*(1-weight) for d1,d2 in zip(distances_LOW, distances_HIGH)]
+        assert (len(distances_LOW) == len(distances_HIGH)), 'Wrong number of distances provided. '
+        return [d2 * weight - d1 * (1 - weight) for d1, d2 in zip(distances_LOW, distances_HIGH)]
+
 
 #######################################
 # --- Load json BaseBoundaries
 
 def distance_fields_weighted_interpolation(path, folder_name, json_name, weight):
+    """ Weighted interpolation of the two distance fields in the json file. """
     data = load_json_file(path, folder_name, json_name)
     interpolation = []
 
@@ -409,7 +420,7 @@ def distance_fields_weighted_interpolation(path, folder_name, json_name, weight)
 ##############################################
 
 def missing_input():
-    """ How to deal cases where the user has not defined all the necessary inputs. """
+    """ Deals with cases where the user has not defined all the necessary inputs. """
     print('Please provide all the inputs')
 
 
@@ -438,18 +449,21 @@ def save_json_file(data, path, folder_name, json_name):
 
 
 def get_closest_point_index(pt, pts):
+    """ Closest point index of the pts from pt. """
     distances = [rs.Distance(p, pt) for p in pts]
     min_index = distances.index(min(distances))
     return min_index
 
 
 def distance_of_pt_from_crv(pt, crv):
+    """ Smallest distance from point to curve. """
     param = rs.CurveClosestPoint(crv, pt)
     cp = rs.EvaluateCurve(crv, param)
     return rs.Distance(pt, cp)
 
 
 def get_files_with_name(startswith, endswith, DATA_PATH):
+    """ Find all files with the specified start and end in the data path. """
     files = []
     for file in os.listdir(DATA_PATH):
         if file.startswith(startswith) and file.endswith(endswith):
@@ -487,6 +501,7 @@ def get_color(i, total):
 
 
 def remap_unbound(input_val, in_from, in_to, out_from, out_to):
+    """ Remap numbers without clamping values. """
     out_range = out_to - out_from
     in_range = in_to - in_from
     in_val = input_val - in_from
@@ -496,7 +511,7 @@ def remap_unbound(input_val, in_from, in_to, out_from, out_to):
 
 
 def blend_union_list(values, r):
-    """ Returns a smooth union of the elements of the list, with blend radius r. """
+    """ Returns a blend union of the elements of the list, with blend radius r. """
     d_result = 9999999  # very big number
     for d in values:
         d_result = blend_union(d_result, d, r)
@@ -504,6 +519,7 @@ def blend_union_list(values, r):
 
 
 def blend_union(da, db, r):
+    """ Blend union of the distances da, db with blend radius r. """
     e = max(r - abs(da - db), 0)
     return min(da, db) - e * e * 0.25 / r
 

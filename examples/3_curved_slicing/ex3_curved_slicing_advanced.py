@@ -19,9 +19,9 @@ OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection.obj')
 # OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection_HIGH_RES.obj')
 
-REGION_SPLIT = False
-SLICER = False
-PRINT_ORGANIZER = False
+REGION_SPLIT = True
+SLICER = True
+PRINT_ORGANIZER = True
 
 
 def main():

@@ -89,7 +89,8 @@ class CompoundTarget:
         self.all_target_vkeys = [vkey for vkey, data in self.mesh.vertices(data=True) if
                                  data[self.v_attr] == self.value]
         assert len(self.all_target_vkeys) > 0, "There are no vertices in the mesh with the attribute : " \
-                                               + self.v_attr + ", value : %d" % self.value
+                                               + self.v_attr + ", value : %d" % self.value + " .Probably you made a " \
+                                               "mistake while creating the targets. "
         G = create_graph_from_mesh_vkeys(self.mesh, self.all_target_vkeys)
         assert len(list(G.nodes())) == len(self.all_target_vkeys)
         self.number_of_boundaries = len(list(nx.connected_components(G)))
