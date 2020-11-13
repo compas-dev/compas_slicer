@@ -366,7 +366,17 @@ def load_base_boundaries(path, folder_name, json_name):
 #######################################
 # --- Load json BaseBoundaries
 
-def distance_fields_interpolation(path, folder_name, json_name, weight):
+def distance_fields_interpolation(path, folder_name, json_name1, json_name2, weight):
+    distances_LOW = load_json_file(path, folder_name, json_name1)
+    distances_HIGH = load_json_file(path, folder_name, json_name2)
+
+    if distances_LOW and distances_HIGH:
+        return [d2*weight-d1*(1-weight) for d1,d2 in zip(distances_LOW, distances_HIGH)]
+
+#######################################
+# --- Load json BaseBoundaries
+
+def distance_fields_weighted_interpolation(path, folder_name, json_name, weight):
     data = load_json_file(path, folder_name, json_name)
     interpolation = []
 
@@ -376,8 +386,6 @@ def distance_fields_interpolation(path, folder_name, json_name, weight):
         t_ends_HIGH = data['t_end_per_cluster_HIGH']
         has_blend_union = data['has_blend_union_HIGH']
         blend_radius = data['blend_radius']
-
-        print(len(distances_HIGH_dict[str('0')]))
 
         weights_remapped = [remap_unbound(weight, 0, t_end, 0, 1) for t_end in t_ends_HIGH]
 
