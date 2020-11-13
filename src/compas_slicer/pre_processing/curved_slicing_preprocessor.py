@@ -69,8 +69,16 @@ class CurvedSlicingPreprocessor:
         #  --- save intermediary get_distance outputs
         self.target_LOW.save_distances("distances_LOW.json")
         self.target_HIGH.save_distances("distances_HIGH.json")
-        self.target_HIGH.save_distances_clusters("distances_clusters_HIGH.json")
-        utils.save_to_json(self.target_HIGH.weight_max_per_cluster, self.OUTPUT_PATH, "t_end_per_cluster_HIGH.json")
+        self.save_df_interpolation_data()
+
+    def save_df_interpolation_data(self):
+        """ Saves a dictionary with the data for visualization of the interpolation of the targets distance fields."""
+        df_interpolation = {'distances_LOW': self.target_LOW.get_all_distances(),
+                            'distances_HIGH_clusters': self.target_HIGH.get_all_clusters_distances_dict(),
+                            't_end_per_cluster_HIGH': self.target_HIGH.weight_max_per_cluster,
+                            'has_blend_union_HIGH': self.target_HIGH.has_blend_union,
+                            'blend_radius': self.target_HIGH.blend_radius}
+        utils.save_to_json(df_interpolation, self.OUTPUT_PATH, "df_interpolation.json")
 
     def targets_laplacian_smoothing(self, iterations, strength):
         """
@@ -85,7 +93,7 @@ class CurvedSlicingPreprocessor:
         self.target_HIGH.laplacian_smoothing(iterations=iterations, strength=strength)
         self.target_LOW.save_distances("distances_LOW.json")
         self.target_HIGH.save_distances("distances_HIGH.json")
-        self.target_HIGH.save_distances_clusters("distances_clusters_HIGH.json")
+        self.save_df_interpolation_data()
 
     ###########################
     # --- scalar field evaluation
