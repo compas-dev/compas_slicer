@@ -29,7 +29,6 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
     Returns
     -------
     None
-
     """
     logger.info(
         "Generating brim with layer width: %.2f mm, consisting of %d layers" % (layer_width, number_of_brim_paths))
