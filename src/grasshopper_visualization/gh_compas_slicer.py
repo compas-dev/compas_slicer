@@ -281,10 +281,13 @@ def load_multiple_meshes(starts_with, ends_with, path, folder_name):
 # --- Load json points
 
 def load_json_points(path, folder_name, json_name):
-    """Loads a json file that stores a dictionary of N points in the format:
-    data['1']=[x1,y1,z1], ...,  data['N']=[xN,yN,zN]"""
+    """
+    Loads a json file that stores a dictionary of N points in the format:
+    data['0']=[x0,y0,z0], ...,  data['N']=[xN,yN,zN]
+    """
     data = load_json_file(path, folder_name, json_name)
     points = None
+
     if data:
         points = []
         for i in range(len(data)):
@@ -292,8 +295,110 @@ def load_json_points(path, folder_name, json_name):
     return points
 
 
+#######################################
+# --- Load json vectors
+
+def load_json_vectors(path, folder_name, json_name):
+    """
+    Loads a json file from the 'output' folder,
+    that stores a vector field in the format:
+    data['0']=[x0,y0,z0], ...,  data['N']=[xN,yN,zN]
+    """
+    data = load_json_file(path, folder_name, json_name)
+    vectors = None
+
+    if data:
+        vectors = []
+        for i in range(len(data)):
+            vectors.append(rg.Vector3d(data[str(i)][0], data[str(i)][1], data[str(i)][2]))
+    return vectors
+
+
+#######################################
+# --- Load json polylines
+
+def load_json_polylines(path, folder_name, json_name):
+    """Loads a json file that stores a dictionary of N polylines in the format:
+    data['0']=points_dict_0, ..., data['N'] = points_dict_N, where points_dict is in the format:
+    points_dict['0']=[x0,y0,z0], ...,  points_dict['N']=[xN,yN,zN]"""
+    data = load_json_file(path, folder_name, json_name)
+    all_points = []
+    polylines = []
+
+    if data:
+        for i in range(len(data)):
+            pts = []
+            pts_dict = data[str(i)]
+
+            for j in range(len(pts_dict)):
+                p = pts_dict[str(j)]
+                pts.append(rg.Point3d(p[0], p[1], p[2]))
+            all_points.extend(pts)
+            polylines.append(rs.AddPolyline(pts))
+
+    return polylines, all_points
+
+
+#######################################
+# --- Load json BaseBoundaries
+
+def load_base_boundaries(path, folder_name, json_name):
+    """
+    Loads a json file that stores a dictionary of BaseBoundary classes in the format:
+    data['0']=base_boundary_1.to_data(), ..., data['N']=base_boundary_N.to_data()
+    """
+    data = load_json_file(path, folder_name, json_name)
+    points, vectors, number_of_boundaries = [], [], None
+
+    if data:
+        number_of_boundaries = len(data)
+
+        for i in range(len(data)):
+            p = data[str(i)]['points']
+            v = data[str(i)]['up_vectors']
+
+            points.extend([rg.Point3d(p[key][0], p[key][1], p[key][2]) for key in p])
+            vectors.extend([rg.Vector3d(v[key][0], v[key][1], v[key][2]) for key in v])
+
+    return points, vectors, number_of_boundaries
+
+
+#######################################
+# --- Load json BaseBoundaries
+
+def distance_fields_interpolation(path, folder_name, json_name, weight):
+    data = load_json_file(path, folder_name, json_name)
+    interpolation = []
+
+    if data:
+        distances_LOW = data['distances_LOW']
+        distances_HIGH_dict = data['distances_HIGH_clusters']
+        t_ends_HIGH = data['t_end_per_cluster_HIGH']
+        has_blend_union = data['has_blend_union_HIGH']
+        blend_radius = data['blend_radius']
+
+        print(len(distances_HIGH_dict[str('0')]))
+
+        weights_remapped = [remap_unbound(weight, 0, t_end, 0, 1) for t_end in t_ends_HIGH]
+
+        for i in range(len(distances_LOW)):
+            d_low = distances_LOW[i]
+            ds_high = [distances_HIGH_dict[str(j)][i] for j in range(len(distances_HIGH_dict))]
+
+            ds = [(w - 1) * d_low + w * d_high for d_high, w in zip(ds_high, weights_remapped)]
+
+            if has_blend_union:
+                d_final = blend_union_list(ds, blend_radius)
+            else:
+                d_final = min(ds)
+            interpolation.append(abs(d_final))
+
+    return interpolation
+
+
 ##############################################
-# --- gh_utilities
+# --- utilities
+##############################################
 
 def missing_input():
     """ How to deal cases where the user has not defined all the necessary inputs. """
@@ -371,6 +476,28 @@ def get_color(i, total):
     weight = a
     c = (1 - weight) * c_left + weight * c_right
     return [int(c[0]), int(c[1]), int(c[2])]
+
+
+def remap_unbound(input_val, in_from, in_to, out_from, out_to):
+    out_range = out_to - out_from
+    in_range = in_to - in_from
+    in_val = input_val - in_from
+    val = (float(in_val) / in_range) * out_range
+    out_val = out_from + val
+    return out_val
+
+
+def blend_union_list(values, r):
+    """ Returns a smooth union of the elements of the list, with blend radius r. """
+    d_result = 9999999  # very big number
+    for d in values:
+        d_result = blend_union(d_result, d, r)
+    return d_result
+
+
+def blend_union(da, db, r):
+    e = max(r - abs(da - db), 0)
+    return min(da, db) - e * e * 0.25 / r
 
 
 if __name__ == "__main__":
