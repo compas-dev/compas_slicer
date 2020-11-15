@@ -77,7 +77,7 @@
         <h1 class="display-4 p-0 mb-5">Source code for compas_slicer.geometry.path</h1><div class="highlight"><pre><code>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">compas</span>
-<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">distance_point_point_sqrd</span>
+<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
@@ -101,9 +101,6 @@
 <div class="viewcode-block" id="Path.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Path.__init__.html#compas_slicer.geometry.Path.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">is_closed</span><span class="p">):</span>
         <span class="c1"># check input</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">compas</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">Point</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">is_closed</span><span class="p">:</span>  <span class="c1"># if the path is closed, first and last point should be the same.</span>
-            <span class="k">if</span> <span class="n">distance_point_point_sqrd</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">:</span>
-                <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>  <span class="c1"># :class: compas.geometry.Point</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="o">=</span> <span class="n">is_closed</span>  <span class="c1"># bool</span></div>

@@ -85,6 +85,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">distance_point_point_sqrd</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
@@ -159,9 +160,18 @@
         <span class="c1">#  --- Align the seams between layers and unify orientation</span>
         <span class="n">seams_align</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">align_with</span><span class="o">=</span><span class="s1">&#39;x_axis&#39;</span><span class="p">)</span>
         <span class="n">unify_paths_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_paths</span><span class="p">()</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created </span><span class="si">%d</span><span class="s2"> Layers with </span><span class="si">%d</span><span class="s2"> total number of points&quot;</span>
                     <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_number_of_points</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="BaseSlicer.close_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.close_paths.html#compas_slicer.slicers.BaseSlicer.close_paths">[docs]</a>    <span class="k">def</span> <span class="nf">close_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; For paths that are labeled as closed, it makes sure that the first and the last point are identical. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>  <span class="c1"># if the path is closed, first and last point should be the same.</span>
+                    <span class="k">if</span> <span class="n">distance_point_point_sqrd</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.00001</span><span class="p">:</span>  <span class="c1"># if not already the same</span>
+                        <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.remove_invalid_paths_and_layers"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.remove_invalid_paths_and_layers.html#compas_slicer.slicers.BaseSlicer.remove_invalid_paths_and_layers">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid_paths_and_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Removes invalid layers and paths from the slicer.&quot;&quot;&quot;</span>
