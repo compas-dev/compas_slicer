@@ -1,6 +1,6 @@
 import logging
 import compas
-from compas.geometry import Point, distance_point_point_sqrd
+from compas.geometry import Point
 
 logger = logging.getLogger('logger')
 
@@ -24,9 +24,6 @@ class Path(object):
     def __init__(self, points, is_closed):
         # check input
         assert isinstance(points[0], compas.geometry.Point)
-        if is_closed:  # if the path is closed, first and last point should be the same.
-            if distance_point_point_sqrd(points[0], points[-1]) > 0.001:
-                points.append(points[0])
 
         self.points = points  # :class: compas.geometry.Point
         self.is_closed = is_closed  # bool

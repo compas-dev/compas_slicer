@@ -8,6 +8,7 @@ from compas_slicer.post_processing import seams_align, unify_paths_orientation
 import logging
 import copy
 from abc import abstractmethod
+from compas.geometry import distance_point_point_sqrd
 
 logger = logging.getLogger('logger')
 
@@ -82,9 +83,18 @@ class BaseSlicer(object):
         #  --- Align the seams between layers and unify orientation
         seams_align(self, align_with='x_axis')
         unify_paths_orientation(self)
+        self.close_paths()
 
         logger.info("Created %d Layers with %d total number of points"
                     % (len(self.layers), self.total_number_of_points))
+
+    def close_paths(self):
+        """ For paths that are labeled as closed, it makes sure that the first and the last point are identical. """
+        for layer in self.layers:
+            for path in layer.paths:
+                if path.is_closed:  # if the path is closed, first and last point should be the same.
+                    if distance_point_point_sqrd(path.points[0], path.points[-1]) > 0.00001:  # if not already the same
+                        path.points.append(path.points[0])
 
     def remove_invalid_paths_and_layers(self):
         """Removes invalid layers and paths from the slicer."""
