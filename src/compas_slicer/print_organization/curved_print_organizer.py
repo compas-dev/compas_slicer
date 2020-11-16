@@ -114,7 +114,7 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
         if len(self.horizontal_layers) > 0:
             logger.warning('Attention, curved print organizer doesnt create printpoints for horizontal layers. \
                             Feature coming soon!')
-            
+
         for i in self.selected_order:
             path_collection = self.segments[i]['path_collection']
             self.printpoints_dict['layer_%d' % i] = {}
