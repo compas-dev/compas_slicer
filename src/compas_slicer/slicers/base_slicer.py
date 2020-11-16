@@ -56,13 +56,13 @@ class BaseSlicer(object):
 
     @property
     def vertical_layers(self):
-        if len(self.layers) > 0:
-            if isinstance(self.layers[0], VerticalLayer):
-                return self.layers  # What a hacky way to do this...
-            else:
-                raise NameError('The slicer does not have vertical_layers')
-        else:
-            return []
+        """ Returns a list of all the vertical layers stored in the slicer. """
+        return [layer for layer in self.layers if isinstance(layer, VerticalLayer)]
+
+    @property
+    def horizontal_layers(self):
+        """ Returns a list of all the layers stored in the slicer that are NOT vertical. """
+        return [layer for layer in self.layers if not isinstance(layer, VerticalLayer)]
 
     ##############################
     #  --- Functions

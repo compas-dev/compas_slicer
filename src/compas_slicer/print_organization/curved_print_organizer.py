@@ -26,14 +26,18 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
 
     def __init__(self, slicer, parameters, DATA_PATH):
         BasePrintOrganizer.__init__(self, slicer)
-        assert isinstance(slicer.layers[0], VerticalLayer)  # curved printing only works with vertical layers
+        # assert isinstance(slicer.layers[0], VerticalLayer)  # curved printing only works with vertical layers
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.parameters = parameters
 
+        self.vertical_layers = slicer.vertical_layers
+        self.horizontal_layers = slicer.horizontal_layers
+        assert len(self.vertical_layers) + len(self.horizontal_layers) == len(slicer.layers)
+
         # topological sorting of vertical layers depending on their connectivity
         self.topo_sort_graph = None
-        if len(self.slicer.vertical_layers) > 1:
+        if len(self.vertical_layers) > 1:
             self.topological_sorting()
         self.selected_order = None
 
@@ -50,12 +54,12 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
         a directed graph with all these parts, with the connectivity of each part reflecting which
         other parts it lies on, and which other parts lie on it."""
         max_layer_height = utils.get_param(self.parameters, 'max_layer_height', default_value=50)
-        self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.slicer.vertical_layers,
+        self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.vertical_layers,
                                                                max_layer_height, DATA_PATH=self.DATA_PATH)
 
     def create_segments_dict(self):
         """ Initializes segments dictionary with empty segments. """
-        for i, vertical_layer in enumerate(self.slicer.vertical_layers):
+        for i, vertical_layer in enumerate(self.vertical_layers):
             self.segments[i] = {'boundary': None,
                                 'path_collection': None}
 
@@ -64,15 +68,15 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
         root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
 
-        if len(self.slicer.vertical_layers) > 1:
-            for i, vertical_layer in enumerate(self.slicer.vertical_layers):
+        if len(self.vertical_layers) > 1:
+            for i, vertical_layer in enumerate(self.vertical_layers):
                 parents_of_current_node = self.topo_sort_graph.get_parents_of_node(i)
                 if len(parents_of_current_node) == 0:
                     boundary = root_boundary
                 else:
                     boundary_pts = []
                     for parent_index in parents_of_current_node:
-                        parent = self.slicer.vertical_layers[parent_index]
+                        parent = self.vertical_layers[parent_index]
                         boundary_pts.extend(parent.paths[-1].points)
                     boundary = BaseBoundary(self.slicer.mesh, boundary_pts)
                 self.segments[i]['boundary'] = boundary
@@ -87,7 +91,7 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
 
     def create_segment_connectivity(self):
         """ A SegmentConnectivity finds vertical relation between paths. Creates and fills in its printpoints."""
-        for i, vertical_layer in enumerate(self.slicer.vertical_layers):
+        for i, vertical_layer in enumerate(self.vertical_layers):
             logger.info('Creating connectivity of segment no %d' % i)
             path_collection = SegmentConnectivity(paths=vertical_layer.paths,
                                                   base_boundary=self.segments[i]['boundary'],
@@ -102,7 +106,7 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
         Based on the directed graph, select one topological order.
         From each path collection in that order copy PrintPoints dictionary in the correct order.
         """
-        if len(self.slicer.vertical_layers) > 1:  # the you need to select one topological order
+        if len(self.vertical_layers) > 1:  # the you need to select one topological order
             all_orders = self.topo_sort_graph.get_all_topological_orders()
             self.selected_order = all_orders[0]  # TODO: add more elaborate selection strategy
         else:
