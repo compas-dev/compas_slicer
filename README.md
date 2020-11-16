@@ -57,17 +57,10 @@ Additional Features
 ### Compas_cal
 Compas_cgal offers a very fast planar slicing method, in order to install it on your <environment> follow the steps described below
 
-- Clone compas_cgal repository (https://github.com/BlockResearchGroup/compas_cgal)
 ```bash
 conda activate <environment>
-conda install eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11
+conda install COMPAS compas_cgal
 ```
-- Navigate to the folder where you cloned the compas_cgal repository and install compas_cgal using:
-```bash
-pip install -e .
-```
-- You should get the message 'Successfully installed compas-cgal'
-
 
 Contributions
 ------------
