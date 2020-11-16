@@ -1,7 +1,6 @@
 import logging
 from compas.geometry import Point
 from compas_slicer.print_organization import BasePrintOrganizer
-from compas_slicer.geometry import VerticalLayer
 from compas_slicer.pre_processing.curved_slicing_preprocessing import topological_sorting as topo_sort
 import compas_slicer.utilities as utils
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
@@ -112,6 +111,10 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
         else:
             self.selected_order = [0]  # there is only one segment, only this option
 
+        if len(self.horizontal_layers) > 0:
+            logger.warning('Attention, curved print organizer doesnt create printpoints for horizontal layers. \
+                            Feature coming soon!')
+            
         for i in self.selected_order:
             path_collection = self.segments[i]['path_collection']
             self.printpoints_dict['layer_%d' % i] = {}
