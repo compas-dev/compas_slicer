@@ -42,6 +42,9 @@ class BaseSlicer(object):
         self.layers = []  # any class inheriting from SortedPathCollection, i.e.  Layer(horizontal sorting)
         # or VerticalLayer (vertical sorting)
 
+        self.brim_toggle = False
+        self.number_of_brim_paths = 0
+
     @property
     def total_number_of_points(self):
         """int: Total number of points in the slicer."""
