@@ -82,7 +82,7 @@
 <h1 class="display-4 p-0 mb-5">PlanarSlicer</h1>
 <dl class="py class">
 <dt id="compas_slicer.slicers.PlanarSlicer">
-<em class="property">class </em><code class="sig-prename descclassname">compas_slicer.slicers.</code><code class="sig-name descname">PlanarSlicer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mesh</span></em>, <em class="sig-param"><span class="n">slicer_type</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">layer_height</span><span class="o">=</span><span class="default_value">2.0</span></em>, <em class="sig-param"><span class="n">brim_toggle</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">number_of_brim_paths</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/planar_slicer.html#PlanarSlicer"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_slicer.slicers.</code><code class="sig-name descname">PlanarSlicer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mesh</span></em>, <em class="sig-param"><span class="n">slicer_type</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">layer_height</span><span class="o">=</span><span class="default_value">2.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/planar_slicer.html#PlanarSlicer"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.base_slicer.BaseSlicer</span></code></p>
 <p>Generates planar contours on a mesh.</p>
 <dl class="field-list simple">
@@ -111,11 +111,14 @@ options: ‘default’, ‘cgal’, ‘meshcut’</p></li>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_number_of_points</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">horizontal_layers</span></code></p></td>
+<td><p>Returns a list of all the layers stored in the slicer that are NOT vertical.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_number_of_points</span></code></p></td>
 <td><p>Total number of points in the slicer.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vertical_layers</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vertical_layers</span></code></p></td>
+<td><p>Returns a list of all the vertical layers stored in the slicer.</p></td>
 </tr>
 </tbody>
 </table>
@@ -126,7 +129,7 @@ options: ‘default’, ‘cgal’, ‘meshcut’</p></li>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.__init__.html#compas_slicer.slicers.PlanarSlicer.__init__" title="compas_slicer.slicers.PlanarSlicer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(mesh[, slicer_type, layer_height, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.__init__.html#compas_slicer.slicers.PlanarSlicer.__init__" title="compas_slicer.slicers.PlanarSlicer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(mesh[, slicer_type, layer_height])</p></td>
 <td><p>Initialize self.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.generate_paths.html#compas_slicer.slicers.PlanarSlicer.generate_paths" title="compas_slicer.slicers.PlanarSlicer.generate_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_paths</span></code></a>()</p></td>
