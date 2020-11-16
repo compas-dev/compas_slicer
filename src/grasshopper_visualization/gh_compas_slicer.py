@@ -143,7 +143,7 @@ def lightweight_path_visualization(points, extruder_toggles, domain_start, domai
     for i in range(len(points) - 1):
         if extruder_toggles[i]:
             line = rg.Curve.CreateControlPointCurve([points[i], points[i + 1]])  # create line
-            pipe = rg.Mesh.CreateFromCurvePipe(line, diameter / 2, pipe_resolution, 1, rg.MeshPipeCapStyle(0), True)
+            pipe = rg.Mesh.CreateFromCurvePipe(line, diameter / 2, pipe_resolution, 1, 0, True)
             print_path_pipes.append(pipe)
         else:
             line = rg.Curve.CreateControlPointCurve([points[i], points[i + 1]])
