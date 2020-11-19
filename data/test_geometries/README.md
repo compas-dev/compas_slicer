@@ -12,9 +12,12 @@ Licences
 | connection3legs_open_low_res      | Ioanna Mitropoulou, mitropoulou@arch.ethz.ch                                           |
 | distorted_v_closed_mid_res        | Joris Burger, burger@arch.ethz.ch                                                      |
 | distorted_a_closed_mid_res        | Joris Burger, burger@arch.ethz.ch                                                      |
+| facade_infill_open_mid_res        | Matthias Leschok, leschok@arch.ethz.ch                                                 |
 | overhang_coin_closed_low_res      | Joris Burger, burger@arch.ethz.ch                                                      |
 | simple_box_closed_low_res         | Joris Burger, burger@arch.ethz.ch                                                      |
 | simple_box_closed_mid_res         | Joris Burger, burger@arch.ethz.ch                                                      |
 | simple_cylinder_closed_mid_res    | Joris Burger, burger@arch.ethz.ch                                                      |
 | simple_vase_open_low_res          | Joris Burger, burger@arch.ethz.ch                                                      |
 | wavy_vase_open_low_res            | Ioanna Mitropoulou, mitropoulou@arch.ethz.ch                                           |
+
+
