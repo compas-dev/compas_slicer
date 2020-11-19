@@ -43,11 +43,15 @@ printed in the terminal.
 
 Next we point to the data folder. Compas_slicer assumed there is a folder named ``data``
 where it looks for the model to slice. The model to slice can be of type ``.stl`` or ``.obj``.
+Also, we want to have a folder called ``output``, where all of the output of our slicing 
+process can be stored. Therefore, we run the command ``get_output_directory(DATA)``, which 
+checks if the ``output`` folder exists and if not, it creates it. 
 
 .. code-block:: python
 
     DATA = os.path.join(os.path.dirname(__file__), 'data')
-    MODEL = 'simple_vase.obj'
+    OUTPUT_DIR = utils.get_output_directory(DATA)
+    MODEL = 'simple_vase_open_low_res.obj'
 
 Slicing process
 ===============
@@ -66,8 +70,7 @@ The layer height needs to be specified by the user. Furthermore, the ``slicing_t
 can be changed to use different methods of generating the 'slices'. Currently,
 three methods for slicing are supported:
 
-* ``default``: Uses only standard compas functions, without external libraries.
-* ``meshcut``: Uses the 'meshcut' library, is a rather slow method.
+* ``default``: Uses only standard compas functions, without external libraries, but can be a bit slow.
 * ``cgal``: Uses the 'compas_cgal' package, this is a very fast method but requires you to install compas_cgal.
 
 The three methods will all return the slices of your model, so it is up to you 
@@ -104,9 +107,9 @@ information on how the algorithm works see: `Ramer–Douglas–Peucker algorithm
     simplify_paths_rdp(slicer, threshold=0.3)
 
 Currently the 'seam' between different layers of our shape is a 'hard seam',
-the printer would move up almost vertically to move to the next layer (see 
-image on the left). To make the seam more 'smooth', and less visible we can 
-use the ``seams_smooth`` function.
+the printer would move up almost vertically to move to the next layer. 
+To make the seam more 'smooth', and less visible we can use the 
+``seams_smooth`` function.
 
 .. code-block:: python
 
@@ -125,7 +128,7 @@ we can save the slicing result to JSON. In the next steps we will use the
 
 .. code-block:: python
 
-    save_to_json(slicer.to_data(), DATA, 'slicer_data.json')
+    save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
 
 
 Print organization
