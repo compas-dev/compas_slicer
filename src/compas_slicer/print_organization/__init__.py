@@ -37,6 +37,7 @@ Functions
     override_extruder_toggle
     set_linear_velocity
     set_blend_radius
+    add_safety_printpoints
 
 """
 
