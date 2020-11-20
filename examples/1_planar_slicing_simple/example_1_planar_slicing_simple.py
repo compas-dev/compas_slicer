@@ -30,7 +30,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 # ==============================================================================
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
-MODEL = 'simple_vase.obj'
+MODEL = 'simple_vase_open_low_res.obj'
 
 
 def main():

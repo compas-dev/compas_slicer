@@ -10,5 +10,4 @@ Here you can find some examples files for compas_slicer
    :titlesonly:
 
    examples/01_planar_slicing_simple
-   examples/02_planar_slicing_advanced
-   examples/03_curved_slicing_simple
+   examples/02_curved_slicing_simple

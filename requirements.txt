@@ -1,6 +1,4 @@
 attrs>=19.2.0
-# compas_fab @ git+https://github.com/compas-dev/compas_fab.git#egg=compas_fab
-#compas_fab>=0.11,<0.12,
 rdp==0.8
 meshcut==0.2.1
 pyclipper==1.2.0

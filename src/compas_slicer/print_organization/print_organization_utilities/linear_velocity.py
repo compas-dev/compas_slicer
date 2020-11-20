@@ -57,7 +57,7 @@ def set_linear_velocity(print_organizer,
 
                 elif velocity_type == "per_layer":
                     assert per_layer_velocities, "You need to provide one velocity value per layer"
-                    assert len(per_layer_velocities) == pp_dict, \
+                    assert len(per_layer_velocities) == print_organizer.number_of_layers, \
                         'Wrong number of velocity values. You need to provide one velocity value per layer, ' \
                         'on the "per_layer_velocities" list.'
                     printpoint.velocity = per_layer_velocities[i]
