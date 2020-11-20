@@ -114,9 +114,13 @@ printed in the terminal.</p>
 </code></pre></div>
 </div>
 <p>Next we point to the data folder. Compas_slicer assumed there is a folder named <code class="docutils literal notranslate"><span class="pre">data</span></code>
-where it looks for the model to slice. The model to slice can be of type <code class="docutils literal notranslate"><span class="pre">.stl</span></code> or <code class="docutils literal notranslate"><span class="pre">.obj</span></code>.</p>
+where it looks for the model to slice. The model to slice can be of type <code class="docutils literal notranslate"><span class="pre">.stl</span></code> or <code class="docutils literal notranslate"><span class="pre">.obj</span></code>.
+Also, we want to have a folder called <code class="docutils literal notranslate"><span class="pre">output</span></code>, where all of the output of our slicing
+process can be stored. Therefore, we run the command <code class="docutils literal notranslate"><span class="pre">get_output_directory(DATA)</span></code>, which
+checks if the <code class="docutils literal notranslate"><span class="pre">output</span></code> folder exists and if not, it creates it.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">DATA</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
-<span class="n">MODEL</span> <span class="o">=</span> <span class="s1">&#39;simple_vase.obj&#39;</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_output_directory</span><span class="p">(</span><span class="n">DATA</span><span class="p">)</span>
+<span class="n">MODEL</span> <span class="o">=</span> <span class="s1">&#39;simple_vase_open_low_res.obj&#39;</span>
 </code></pre></div>
 </div>
 </div>
@@ -134,8 +138,7 @@ The layer height needs to be specified by the user. Furthermore, the <code class
 can be changed to use different methods of generating the ‘slices’. Currently,
 three methods for slicing are supported:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">default</span></code>: Uses only standard compas functions, without external libraries.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">meshcut</span></code>: Uses the ‘meshcut’ library, is a rather slow method.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">default</span></code>: Uses only standard compas functions, without external libraries, but can be a bit slow.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cgal</span></code>: Uses the ‘compas_cgal’ package, this is a very fast method but requires you to install compas_cgal.</p></li>
 </ul>
 <p>The three methods will all return the slices of your model, so it is up to you
@@ -164,9 +167,9 @@ information on how the algorithm works see: <a class="reference external" href="
 </code></pre></div>
 </div>
 <p>Currently the ‘seam’ between different layers of our shape is a ‘hard seam’,
-the printer would move up almost vertically to move to the next layer (see
-image on the left). To make the seam more ‘smooth’, and less visible we can
-use the <code class="docutils literal notranslate"><span class="pre">seams_smooth</span></code> function.</p>
+the printer would move up almost vertically to move to the next layer.
+To make the seam more ‘smooth’, and less visible we can use the
+<code class="docutils literal notranslate"><span class="pre">seams_smooth</span></code> function.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </code></pre></div>
 </div>
@@ -178,7 +181,7 @@ information from the slicing process.</p>
 <p>Since we are now done with operations involving the <code class="xref py py-class docutils literal notranslate"><span class="pre">PlanarSlicer</span></code> class,
 we can save the slicing result to JSON. In the next steps we will use the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">PlanarPrintOrganizer</span></code> class to organize our print for fabrication.</p>
-<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">DATA</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
+<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
 </div>
