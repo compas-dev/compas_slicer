@@ -14,7 +14,7 @@ def set_wait_time(print_organizer, wait_time):
 
     Parameters
     ----------
-    print_organizer: :class:`compas.print_organization.BasePrintOrganizer`
+    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
     wait_time: float
         Time in seconds to introduce to add as a wait time
     """
@@ -51,7 +51,7 @@ def override_wait_time(print_organizer, override_value):
 
     Parameters
     ----------
-    print_organizer: :class:`compas.print_organization.BasePrintOrganizer`
+    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
     override_value: float
         Value to override the wait_time values with.
     """

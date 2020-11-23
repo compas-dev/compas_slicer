@@ -18,7 +18,7 @@ def set_linear_velocity(print_organizer,
 
     Parameters
     ----------
-    print_organizer: :class:`compas.print_organization.BasePrintOrganizer`
+    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
     velocity_type: str
         Determines how to add linear velocity to the printpoints.
 
