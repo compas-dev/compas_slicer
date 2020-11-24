@@ -38,6 +38,8 @@ Functions
     set_linear_velocity
     set_blend_radius
     add_safety_printpoints
+    set_wait_time
+    override_wait_time
 
 """
 

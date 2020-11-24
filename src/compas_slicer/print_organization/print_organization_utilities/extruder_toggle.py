@@ -11,7 +11,7 @@ def set_extruder_toggle(print_organizer, slicer):
 
     Parameters
     ----------
-    print_organizer: :class:`compas.print_organization.BasePrintOrganizer`
+    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
     slicer: :class:`compas.slicers.BaseSlicer`
     """
     logger.info("Setting extruder toggle")
