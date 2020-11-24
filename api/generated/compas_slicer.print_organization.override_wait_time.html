@@ -17,11 +17,11 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="set_blend_radius" href="compas_slicer.print_organization.set_blend_radius.html" />
+    <link rel="next" title="pre_processing" href="../pre_processing.html" />
   
   
   
-    <link rel="prev" title="override_extruder_toggle" href="compas_slicer.print_organization.override_extruder_toggle.html" />
+    <link rel="prev" title="set_wait_time" href="compas_slicer.print_organization.set_wait_time.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -78,28 +78,17 @@
       <main class="col-12 col-md-9 col-xl-7 px-2 px-md-5 py-5 compas-content" role="main">
         
         
-        <div class="detail section" id="set-linear-velocity">
-<h1 class="display-4 p-0 mb-5">set_linear_velocity</h1>
+        <div class="detail section" id="override-wait-time">
+<h1 class="display-4 p-0 mb-5">override_wait_time</h1>
 <dl class="py function">
-<dt id="compas_slicer.print_organization.set_linear_velocity">
-<code class="sig-prename descclassname">compas_slicer.print_organization.</code><code class="sig-name descname">set_linear_velocity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_organizer</span></em>, <em class="sig-param"><span class="n">velocity_type</span></em>, <em class="sig-param"><span class="n">v</span><span class="o">=</span><span class="default_value">25.0</span></em>, <em class="sig-param"><span class="n">per_layer_velocities</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">angle_range</span><span class="o">=</span><span class="default_value">(None, None)</span></em>, <em class="sig-param"><span class="n">speed_range</span><span class="o">=</span><span class="default_value">(None, None)</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/print_organization_utilities/linear_velocity.html#set_linear_velocity"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Sets the linear velocity parameter of the printpoints depending on the selected type.</p>
-<dl class="field-list">
+<dt id="compas_slicer.print_organization.override_wait_time">
+<code class="sig-prename descclassname">compas_slicer.print_organization.</code><code class="sig-name descname">override_wait_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_organizer</span></em>, <em class="sig-param"><span class="n">override_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/print_organization_utilities/wait_time.html#override_wait_time"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Overrides the wait_time value for the printpoints with a user-defined value.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>print_organizer</strong> (<a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.html#compas_slicer.print_organization.BasePrintOrganizer" title="compas_slicer.print_organization.BasePrintOrganizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.print_organization.BasePrintOrganizer</span></code></a>)</p></li>
-<li><p><strong>velocity_type</strong> (<em>str</em>) – Determines how to add linear velocity to the printpoints.</p>
-<p>‘constant’:              one value used for all printpoints
-‘per_layer’:             different values used for every layer
-‘by_layer_height’:       set velocity in accordance to layer height (beta, to be improved)
-‘by_overhang’:           set velocity in accordance to the overhang (beta, to be improved)</p>
-</li>
-<li><p><strong>v</strong> (<em>float</em>) – Velocity value (in mm/s) to set for printpoints. Defaults to 25 mm/s.</p></li>
-<li><p><strong>per_layer_velocities</strong> (<em>list of floats</em>) – If setting velocity per layer, provide a list of floats with equal length to the number of layers.</p></li>
-<li><p><strong>angle_range</strong> (<em>tuple</em>) – Two angles (in degrees) that give the minimum and maximum value to map the speed_range to.
-For example, (10, 50) will assign the maximum speed to overhang angles of 10 degrees
-or less, and the minimum speed to points with an overhang angle of 50 degrees and above.</p></li>
-<li><p><strong>speed_range</strong> (<em>tuple</em>) – xxx</p></li>
+<li><p><strong>override_value</strong> (<em>float</em>) – Value to override the wait_time values with.</p></li>
 </ul>
 </dd>
 </dl>
@@ -153,7 +142,7 @@ or less, and the minimum speed to points with an overhang angle of 50 degrees an
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">set_linear_velocity</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">override_wait_time</a></li>
 </ul>
 
       </div>
