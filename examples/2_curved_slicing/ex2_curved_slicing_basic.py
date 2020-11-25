@@ -5,8 +5,11 @@ import compas_slicer.utilities as utils
 from compas_slicer.slicers import CurvedSlicer
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.pre_processing import CurvedSlicingPreprocessor
+from compas_slicer.print_organization import set_extruder_toggle
+from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import CurvedPrintOrganizer
+from compas_slicer.post_processing import seams_smooth
 from compas_viewers.objectviewer import ObjectViewer
 import time
 
@@ -47,6 +50,7 @@ def main():
     ## --- slicing
     slicer = CurvedSlicer(mesh, preprocessor, parameters)
     slicer.slice_model()  # compute_norm_of_gradient contours
+    seams_smooth(slicer, smooth_distance=10)
 
     simplify_paths_rdp(slicer, threshold=1.0)
     slicer.printout_info()
@@ -55,6 +59,8 @@ def main():
     # ### --- Print organizer
     print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
     print_organizer.create_printpoints()
+    set_extruder_toggle(print_organizer, slicer)
+    add_safety_printpoints(print_organizer, z_hop=10.0)
 
     ### --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()
@@ -62,8 +68,8 @@ def main():
 
     ### ----- Visualize
     viewer = ObjectViewer()
-    slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
-    # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
+    # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
+    print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
     viewer.update()
     viewer.show()
 
