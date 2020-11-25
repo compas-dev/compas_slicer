@@ -25,8 +25,6 @@ def add_safety_printpoints(print_organizer, z_hop=10.0):
     pp_dict = print_organizer.printpoints_dict
     pp_copy_dict = {}  # should not be altering the dict that we are iterating through > copy
 
-    print('print_organizer.slicer.number_of_brim_paths : ', print_organizer.slicer.number_of_brim_paths)
-
     for i, layer_key in enumerate(pp_dict):
         pp_copy_dict[layer_key] = {}
 

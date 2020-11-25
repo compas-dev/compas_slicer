@@ -13,7 +13,6 @@ from compas_slicer.print_organization import set_linear_velocity
 from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.print_organization.print_organization_utilities.extruder_toggle import check_assigned_extruder_toggle
 from compas.datastructures import Mesh
-import copy
 
 HERE = os.path.dirname(__file__)
 DATA = os.path.join(HERE, '..', 'data/test_geometries')
