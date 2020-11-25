@@ -1,5 +1,6 @@
 import compas_slicer
 import logging
+
 logger = logging.getLogger('logger')
 
 __all__ = ['set_extruder_toggle',
@@ -38,7 +39,7 @@ def set_extruder_toggle(print_organizer, slicer):
                 # horizontal layers with multiple paths should be interrupted so that the extruder
                 # can travel from one path to the other, exception is added for the brim layers
                 if slicer.brim_toggle and i == 0:
-                    if j % (slicer.number_of_brim_paths+1) == slicer.number_of_brim_paths:
+                    if j % (slicer.number_of_brim_paths + 1) == slicer.number_of_brim_paths:
                         interrupt_path = True
                     else:
                         interrupt_path = False
@@ -96,7 +97,6 @@ def check_assigned_extruder_toggle(print_organizer):
                 if pp.extruder_toggle is None:
                     all_toggles_assigned = False
     return all_toggles_assigned
-
 
 
 if __name__ == "__main__":

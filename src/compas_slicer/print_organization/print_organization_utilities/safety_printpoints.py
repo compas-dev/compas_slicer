@@ -34,7 +34,7 @@ def add_safety_printpoints(print_organizer, z_hop=10.0):
             pp_copy_dict[layer_key][path_key] = []
 
             for k, printpoint in enumerate(pp_dict[layer_key][path_key]):
-                #  regular printing points
+                #  add regular printing points
                 pp_copy_dict[layer_key][path_key].append(printpoint)
 
                 # add safety printpoints if there is an interruption
@@ -58,7 +58,9 @@ def add_safety_printpoints(print_organizer, z_hop=10.0):
 
 
 def find_next_printpoint(pp_dict, layer_key, path_key, i, j, k):
-    """ Find the next printpoint of the current printpoint. """
+    """
+    Returns the next printpoint of the current printpoint if it exists, otherwise returns None.
+    """
     next_ppt = None
     if k < len(pp_dict[layer_key][path_key]) - 1:  # If there are more ppts in the current path, then take the next ppt
         next_ppt = pp_dict[layer_key][path_key][k + 1]
