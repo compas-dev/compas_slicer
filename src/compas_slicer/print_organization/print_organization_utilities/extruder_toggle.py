@@ -3,7 +3,8 @@ import logging
 logger = logging.getLogger('logger')
 
 __all__ = ['set_extruder_toggle',
-           'override_extruder_toggle']
+           'override_extruder_toggle',
+           'check_assigned_extruder_toggle']
 
 
 def set_extruder_toggle(print_organizer, slicer):
@@ -84,6 +85,15 @@ def override_extruder_toggle(print_organizer, override_value):
 
     else:
         raise NameError("Override value must be of type bool")
+
+
+def check_assigned_extruder_toggle(print_organizer):
+    """ Checks that all the printpoints have an assigned extruder toggle. """
+    for layer_key in print_organizer.printpoints_dict:
+        for path_key in print_organizer.printpoints_dict[layer_key]:
+            for pp in print_organizer.printpoints_dict[layer_key][path_key]:
+                assert pp.extruder_toggle is not None, \
+                    'You need to set the extruder toggles first, before you can create safety points'
 
 
 if __name__ == "__main__":
