@@ -153,6 +153,9 @@ def get_scalar_field_from_gradient(mesh, X, L, cotans):
     u = scipy.sparse.linalg.spsolve(L, div_X)
     u = u - np.amin(u)  # make start value equal 0
     u = 2*u
+
+    print('From gradient to scalar field, error: %.4f' % np.linalg.norm(L*u - div_X))
+
     return u
 
 # def get_scalar_field_from

@@ -27,7 +27,7 @@ def check_igl_is_installed():
 
 def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
     """
-    Calculate geodesic distances using libigl.
+    Calculate geodesic distances using libigl, exact.
 
     Parameters
     ----------
@@ -40,13 +40,32 @@ def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
     v = np.array(v)
     f = np.array(f)
     vertices_target = np.arange(len(v))  # all vertices are targets
-    vstart = np.array(vertices_start)
-    distances = igl.exact_geodesic(v, f, vstart, vertices_target)
+    distances = igl.exact_geodesic(v, f, np.array(vertices_start), vertices_target)
+    return distances
+
+
+def get_igl_HEAT_geodesic_distances(mesh, vertices_start):
+    """
+    Calculate geodesic distances using libigl, heat.
+
+    Parameters
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    vertices_start: list, int
+    """
+    check_igl_is_installed()
+
+    v, f = mesh.to_vertices_and_faces()
+    v = np.array(v)
+    f = np.array(f)
+    t = 10.0
+    distances = igl.heat_geodesic(v, f, t, np.array(vertices_start))
+
     return distances
 
 
 def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH, v_equalize=None, anisotropic_scaling=False):
-    """ Calculate geodesic distances using the heat method. """
+    """ Calculate custom geodesic distances using the heat method. """
     check_igl_is_installed()
 
     geodesics_solver = GeodesicsSolver(mesh, OUTPUT_PATH)
@@ -113,6 +132,7 @@ class GeodesicsSolver:
             t = t_mult * np.mean(np.array([self.mesh.face_area(fkey) for fkey in self.mesh.faces()]))  # avg face area
             solver = scipy.sparse.linalg.factorized(self.M - t * self.L)  # pre-factor solver
             u = solver(u0)  # solve the heat equation: u = (VA - t * Lc) * u0
+            u[vi_sources] = 1.0  # make sure sources remain fixed to 1
 
         elif method == 'simulation':
             u = u0
