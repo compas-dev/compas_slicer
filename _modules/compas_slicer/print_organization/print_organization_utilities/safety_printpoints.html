@@ -76,6 +76,7 @@
         
         <h1 class="display-4 p-0 mb-5">Source code for compas_slicer.print_organization.print_organization_utilities.safety_printpoints</h1><div class="highlight"><pre><code>
 <span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Vector</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.print_organization.print_organization_utilities.extruder_toggle</span> <span class="kn">import</span> <span class="n">check_assigned_extruder_toggle</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
@@ -94,21 +95,14 @@
 <span class="sd">    z_hop: float</span>
 <span class="sd">        Vertical distance (in millimeters) of the safety point above the PrintPoint.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
-            <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
-                <span class="k">assert</span> <span class="n">pp</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> \
-                    <span class="s1">&#39;You need to set the extruder toggles first, before you can create safety points&#39;</span>
-
+    <span class="k">assert</span> <span class="n">check_assigned_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">),</span> \
+        <span class="s1">&#39;You need to set the extruder toggles first, before you can create safety points&#39;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generating safety print points with height &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">z_hop</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; mm&quot;</span><span class="p">)</span>
 
     <span class="n">pp_dict</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span>
     <span class="n">pp_copy_dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># should not be altering the dict that we are iterating through &gt; copy</span>
 
-    <span class="c1"># get last layer key</span>
-    <span class="n">last_layer_key</span> <span class="o">=</span> <span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="c1"># check if there are multiple paths in the last layer</span>
-    <span class="n">multiple_paths_in_last_layer</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="n">last_layer_key</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">True</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;print_organizer.slicer.number_of_brim_paths : &#39;</span><span class="p">,</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">number_of_brim_paths</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">):</span>
         <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -117,46 +111,46 @@
             <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]):</span>
-                <span class="c1">#  regular printing points</span>
+                <span class="c1">#  add regular printing points</span>
                 <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">printpoint</span><span class="p">)</span>
 
-                <span class="c1"># adds a safety point after every printpoint that has extruder_toggle = False</span>
-                <span class="c1"># and before the first point of the path</span>
+                <span class="c1"># add safety printpoints if there is an interruption</span>
                 <span class="k">if</span> <span class="n">printpoint</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                    <span class="c1"># create safety printpoint</span>
-                    <span class="n">safety_printpoint</span> <span class="o">=</span> <span class="n">add_safety_printpoint</span><span class="p">(</span><span class="n">printpoint</span><span class="p">,</span> <span class="n">z_hop</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-                    <span class="c1"># if there is a brim in the first layer, don&#39;t add the safety points to the brim</span>
-                    <span class="k">if</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">brim_toggle</span> <span class="ow">and</span> <span class="n">layer_key</span> <span class="o">==</span> <span class="s1">&#39;layer_0&#39;</span><span class="p">:</span>
-                        <span class="n">brim_start_path</span> <span class="o">=</span> <span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">print_organizer</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">number_of_brim_paths</span><span class="p">)</span>
-                        <span class="n">start_safety_printpoint</span> <span class="o">=</span> <span class="n">add_safety_printpoint</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">brim_start_path</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">z_hop</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-                        <span class="c1"># for the first point of the print (layer_0, path_0), don&#39;t add a safety point in the beginning</span>
-                        <span class="k">if</span> <span class="n">brim_start_path</span> <span class="o">!=</span> <span class="s1">&#39;path_0&#39;</span><span class="p">:</span>
-                            <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">brim_start_path</span><span class="p">]</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">start_safety_printpoint</span><span class="p">)</span>  <span class="c1"># insert at the beginning</span>
-                        <span class="c1"># if the next layer after the brim (layer 1) has only one path, don&#39;t add a safety point at the end</span>
-                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="s1">&#39;layer_1&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-                            <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">safety_printpoint</span><span class="p">)</span>  <span class="c1"># append at the end</span>
 
-                    <span class="c1"># for layers without a brim, append safety point at the beginning and end</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># except if the first point of the print since it is added later</span>
-                        <span class="k">if</span> <span class="n">layer_key</span> <span class="o">==</span> <span class="s1">&#39;layer_0&#39;</span> <span class="ow">and</span> <span class="n">path_key</span> <span class="o">==</span> <span class="s1">&#39;path_0&#39;</span><span class="p">:</span>
-                            <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">safety_printpoint</span><span class="p">)</span>  <span class="c1"># append only at the end</span>
-                        <span class="c1"># and except for last layer if it does not have multiple paths</span>
-                        <span class="k">elif</span> <span class="n">layer_key</span> <span class="o">==</span> <span class="n">last_layer_key</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">multiple_paths_in_last_layer</span><span class="p">:</span>
-                            <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">safety_printpoint</span><span class="p">)</span>  <span class="c1"># append only at the end</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">safety_printpoint</span><span class="p">)</span>
-                            <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">safety_printpoint</span><span class="p">)</span>  <span class="c1"># append at the end</span>
+                    <span class="c1"># safety ppt after current printpoint</span>
+                    <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">create_safety_printpoint</span><span class="p">(</span><span class="n">printpoint</span><span class="p">,</span> <span class="n">z_hop</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
 
-    <span class="c1">#  insert a safety print point at the beginning</span>
-    <span class="n">safety_printpoint</span> <span class="o">=</span> <span class="n">add_safety_printpoint</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="s1">&#39;layer_0&#39;</span><span class="p">][</span><span class="s1">&#39;path_0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">z_hop</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="c1">#  safety ppt before next printpoint (if there exists one)</span>
+                    <span class="n">next_ppt</span> <span class="o">=</span> <span class="n">find_next_printpoint</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">,</span> <span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">next_ppt</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">next_ppt</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>  <span class="c1"># if it is a printing ppt</span>
+                            <span class="n">pp_copy_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">create_safety_printpoint</span><span class="p">(</span><span class="n">next_ppt</span><span class="p">,</span> <span class="n">z_hop</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+
+    <span class="c1">#  finally, insert a safety print point at the beginning of the entire print</span>
+    <span class="n">safety_printpoint</span> <span class="o">=</span> <span class="n">create_safety_printpoint</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="s1">&#39;layer_0&#39;</span><span class="p">][</span><span class="s1">&#39;path_0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">z_hop</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
     <span class="n">pp_copy_dict</span><span class="p">[</span><span class="s1">&#39;layer_0&#39;</span><span class="p">][</span><span class="s1">&#39;path_0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">safety_printpoint</span><span class="p">)</span>
 
     <span class="c1">#  the safety printpoint has already been added at the end since the last printpoint extruder_toggle_type is False</span>
     <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span> <span class="o">=</span> <span class="n">pp_copy_dict</span></div>
 
 
-<span class="k">def</span> <span class="nf">add_safety_printpoint</span><span class="p">(</span><span class="n">printpoint</span><span class="p">,</span> <span class="n">z_hop</span><span class="p">,</span> <span class="n">extruder_toggle</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">find_next_printpoint</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">,</span> <span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the next printpoint of the current printpoint if it exists, otherwise returns None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">next_ppt</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># If there are more ppts in the current path, then take the next ppt</span>
+        <span class="n">next_ppt</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">][</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Otherwise take the next path if there are more paths in the current layer</span>
+            <span class="n">next_ppt</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Otherwise take the next layer if there are more layers in the current slicer</span>
+                <span class="n">next_ppt</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="s1">&#39;path_0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">next_ppt</span>
+
+
+<span class="k">def</span> <span class="nf">create_safety_printpoint</span><span class="p">(</span><span class="n">printpoint</span><span class="p">,</span> <span class="n">z_hop</span><span class="p">,</span> <span class="n">extruder_toggle</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Parameters</span>

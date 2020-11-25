@@ -77,10 +77,12 @@
         <h1 class="display-4 p-0 mb-5">Source code for compas_slicer.print_organization.print_organization_utilities.extruder_toggle</h1><div class="highlight"><pre><code>
 <span></span><span class="kn">import</span> <span class="nn">compas_slicer</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;set_extruder_toggle&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;override_extruder_toggle&#39;</span><span class="p">]</span>
+           <span class="s1">&#39;override_extruder_toggle&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;check_assigned_extruder_toggle&#39;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="set_extruder_toggle"><a class="viewcode-back" href="../../../../api/generated/compas_slicer.print_organization.set_extruder_toggle.html#compas_slicer.print_organization.set_extruder_toggle">[docs]</a><span class="k">def</span> <span class="nf">set_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">slicer</span><span class="p">):</span>
@@ -114,7 +116,7 @@
                 <span class="c1"># horizontal layers with multiple paths should be interrupted so that the extruder</span>
                 <span class="c1"># can travel from one path to the other, exception is added for the brim layers</span>
                 <span class="k">if</span> <span class="n">slicer</span><span class="o">.</span><span class="n">brim_toggle</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">j</span> <span class="o">%</span> <span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">number_of_brim_paths</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">slicer</span><span class="o">.</span><span class="n">number_of_brim_paths</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">j</span> <span class="o">%</span> <span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">number_of_brim_paths</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">slicer</span><span class="o">.</span><span class="n">number_of_brim_paths</span><span class="p">:</span>
                         <span class="n">interrupt_path</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">interrupt_path</span> <span class="o">=</span> <span class="kc">False</span>
@@ -161,6 +163,17 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;Override value must be of type bool&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">check_assigned_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Checks that all the printpoints have an assigned extruder toggle. &quot;&quot;&quot;</span>
+    <span class="n">all_toggles_assigned</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">pp</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">all_toggles_assigned</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">all_toggles_assigned</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
