@@ -30,7 +30,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 # ==============================================================================
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
-MODEL = 'distorted_v_closed_mid_res.stl'
+MODEL = 'simple_vase_open_low_res.obj'
 
 
 def main():
@@ -39,7 +39,7 @@ def main():
     # ==========================================================================
     # Load mesh
     # ==========================================================================
-    compas_mesh = Mesh.from_stl(os.path.join(DATA, MODEL))
+    compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
 
     # ==========================================================================
     # Move to origin
@@ -52,7 +52,7 @@ def main():
     #          'cgal':    Very fast. Only for closed paths.
     #                     Requires additional installation (compas_cgal).
     # ==========================================================================
-    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=15)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
     slicer.slice_model()
 
     # ==========================================================================
@@ -64,13 +64,13 @@ def main():
     # Simplify the paths by removing points with a certain threshold
     # change the threshold value to remove more or less points
     # ==========================================================================
-    simplify_paths_rdp(slicer, threshold=1.3)
+    simplify_paths_rdp(slicer, threshold=0.3)
 
     # ==========================================================================
     # Smooth the seams between layers
     # change the smooth_distance value to achieve smoother, or more abrupt seams
     # ==========================================================================
-    # seams_smooth(slicer, smooth_distance=10)
+    seams_smooth(slicer, smooth_distance=10)
 
     # ==========================================================================
     # Prints out the info of the slicer
@@ -93,8 +93,8 @@ def main():
     # ==========================================================================
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
-    # set_linear_velocity(print_organizer, "constant", v=25.0)
-    # set_blend_radius(print_organizer, d_fillet=10.0)
+    set_linear_velocity(print_organizer, "constant", v=25.0)
+    set_blend_radius(print_organizer, d_fillet=10.0)
 
     # ==========================================================================
     # Prints out the info of the PrintOrganizer
