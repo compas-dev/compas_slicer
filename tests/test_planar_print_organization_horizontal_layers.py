@@ -33,8 +33,8 @@ def test_planar_set_extruder_toggle_for_horizontal_layers():
     """ Tests set_extruder_toggle on planar slicer. """
 
     # copy to avoid altering the classes, so that all test functions can start from same setup
-    print_organizer_copy = copy.deepcopy(print_organizer)
-    slicer_copy = copy.deepcopy(slicer)
+    print_organizer_copy = print_organizer  # copy.deepcopy(print_organizer) #TODO! Create copy operators
+    slicer_copy = slicer  # copy.deepcopy(slicer) #TODO! Create copy operators
 
     set_extruder_toggle(print_organizer_copy, slicer_copy)
     assert check_assigned_extruder_toggle(
@@ -101,9 +101,9 @@ def test_planar_set_extruder_toggle_for_horizontal_layers():
                                                            "extruder_toggle = False. \n The error is on layer %d " \
                                                            "out of total %d layers, \n path %d of total %d paths, " \
                                                            "\n with %d printpoints. " % (
-                                                           i, len(slicer_copy.layers) - 1, j,
-                                                           len(slicer_copy.layers[i].paths) - 1,
-                                                           len(path_extruder_toggles))
+                                                               i, len(slicer_copy.layers) - 1, j,
+                                                               len(slicer_copy.layers[i].paths) - 1,
+                                                               len(path_extruder_toggles))
             else:
                 assert path_Falses == 0, "On an path that should NOT be interrupted there should be 0 extruder_toggle " \
                                          "= False, instead you have %d Falses.\n  The error came up on layer %d out " \
@@ -117,9 +117,9 @@ def test_planar_add_safety_printpoints_for_horizontal_layers():
     """ Tests add_safety_printpoints on planar slicer. """
 
     # copy to avoid altering the classes, so that all test functions can start from same setup
-    print_organizer_copy = copy.deepcopy(print_organizer)
-    slicer_copy = copy.deepcopy(slicer)
-    set_extruder_toggle(print_organizer_copy, slicer_copy)
+    print_organizer_copy = print_organizer  # copy.deepcopy(print_organizer) #TODO! Create copy operators
+    slicer_copy = slicer  # copy.deepcopy(slicer) #TODO! Create copy operators
+    set_extruder_toggle(print_organizer_copy, slicer_copy) # has already been don
 
     pp_dict = print_organizer_copy.printpoints_dict
 
