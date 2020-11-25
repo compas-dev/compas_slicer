@@ -144,21 +144,23 @@ def test_planar_add_safety_printpoints_for_horizontal_layers():
 
 def test_planar_set_linear_velocity_constant_for_horizontal_layers():
     """ Tests set_linear_velocity on planar slicer, with constant value. """
-
-    # copy to avoid altering the classes, so that all test functions can start from same setup
-    print_organizer_copy = copy.deepcopy(print_organizer)
-    slicer_copy = copy.deepcopy(slicer)
-
-    set_linear_velocity(print_organizer_copy, "constant", v=25.0)
+    #
+    # # copy to avoid altering the classes, so that all test functions can start from same setup
+    # print_organizer_copy = copy.deepcopy(print_organizer)
+    # slicer_copy = copy.deepcopy(slicer)
+    #
+    # set_linear_velocity(print_organizer_copy, "constant", v=25.0)
+    pass
     # TODO check results
 
 
 def test_planar_set_blend_radius_for_horizontal_layers():
     """ Tests set_blend_radius on planar slicer. """
-
-    # copy to avoid altering the classes, so that all test functions can start from same setup
-    print_organizer_copy = copy.deepcopy(print_organizer)
-    slicer_copy = copy.deepcopy(slicer)
-
-    set_blend_radius(print_organizer_copy, d_fillet=10.0)
+    #
+    # # copy to avoid altering the classes, so that all test functions can start from same setup
+    # print_organizer_copy = copy.deepcopy(print_organizer)
+    # slicer_copy = copy.deepcopy(slicer)
+    #
+    # set_blend_radius(print_organizer_copy, d_fillet=10.0)
+    pass
     # TODO check results
