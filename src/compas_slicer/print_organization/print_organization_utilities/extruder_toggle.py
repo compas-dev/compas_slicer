@@ -90,10 +90,12 @@ def override_extruder_toggle(print_organizer, override_value):
 
 def check_assigned_extruder_toggle(print_organizer):
     """ Checks that all the printpoints have an assigned extruder toggle. """
+    pp_dict = print_organizer.printpoints_dict
     all_toggles_assigned = True
-    for layer_key in print_organizer.printpoints_dict:
-        for path_key in print_organizer.printpoints_dict[layer_key]:
-            for pp in print_organizer.printpoints_dict[layer_key][path_key]:
+    for layer_key in pp_dict:
+        for path_key in pp_dict[layer_key]:
+            for pp in pp_dict[layer_key][path_key]:
+
                 if pp.extruder_toggle is None:
                     all_toggles_assigned = False
     return all_toggles_assigned
