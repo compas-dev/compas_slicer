@@ -4,7 +4,7 @@ from pyclipper import scale_from_clipper, scale_to_clipper
 from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Path
 from compas.geometry import Point
-
+import compas_slicer
 import logging
 from compas_slicer.post_processing import seams_align
 
@@ -13,7 +13,7 @@ logger = logging.getLogger('logger')
 __all__ = ['generate_brim']
 
 
-def generate_brim(slicer, layer_width, number_of_brim_paths):
+def generate_brim(slicer, layer_width, number_of_brim_offsets):
     """Creates a brim around the bottom contours of the print.
 
     Parameters
@@ -23,7 +23,7 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
     layer_width: float
         A number representing the distance between brim contours
         (typically the width of a layer)
-    number_of_brim_paths: int
+    number_of_brim_offsets: int
         Number of brim paths to add.
 
     Returns
@@ -31,7 +31,7 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
     None
     """
     logger.info(
-        "Generating brim with layer width: %.2f mm, consisting of %d layers" % (layer_width, number_of_brim_paths))
+        "Generating brim with layer width: %.2f mm, consisting of %d layers" % (layer_width, number_of_brim_offsets))
 
     #  TODO: Add post_processing for merging several contours when the brims overlap.
     #  uses the default scaling factor of 2**32
@@ -40,7 +40,24 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
 
     paths_per_layer = []
 
-    for path in slicer.layers[0].paths:
+    # (1) --- find if slicer has vertical or horizontal layers, and select which paths are to be offset.
+    if isinstance(slicer.layers[0], compas_slicer.geometry.VerticalLayer):
+        # then find all paths that lie on the print platform and make them brim.
+        paths_to_offset = [slicer.layers[0].paths[0]]
+        has_vertical_layers = True
+        # TODO: check if other layers lie on the build platform and offset those as well
+    else:
+        # then replace the first layer with a brim layer.
+        paths_to_offset = slicer.layers[0].paths
+        has_vertical_layers = False
+
+    # (2) --- create new empty brim_layer
+    brim_layer = Layer(paths=[])
+    brim_layer.is_brim = True
+    brim_layer.number_of_brim_offsets = number_of_brim_offsets
+
+    # (3) --- create offsets and add them to the paths of the brim_layer
+    for path in paths_to_offset:
         #  evaluate per path
         xy_coords_for_clipper = []
         for point in path.points:
@@ -53,7 +70,7 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
         pco.AddPath(scale_to_clipper(xy_coords_for_clipper, SCALING_FACTOR), pyclipper.JT_MITER,
                     pyclipper.ET_CLOSEDPOLYGON)
 
-        for i in range(number_of_brim_paths + 1):
+        for i in range(number_of_brim_offsets):
             #  iterate through a list of brim paths
             clipper_points_per_brim_path = []
 
@@ -73,17 +90,17 @@ def generate_brim(slicer, layer_width, number_of_brim_paths):
 
             #  create a path per brim contour
             new_path = Path(points=clipper_points_per_brim_path, is_closed=True)
-            paths_per_layer.append(new_path)
+            brim_layer.paths.append(new_path)
 
-    new_layer = Layer(paths=paths_per_layer)
-    new_layer.paths.reverse()  # go from outside towards the object
+    brim_layer.paths.reverse()  # go from outside towards the object
 
-    slicer.layers[0] = Layer(paths=paths_per_layer)
+    # (4) --- Add the brim layer to the slicer
+    if not has_vertical_layers:
+        slicer.layers[0] = brim_layer  # replace first layer
+    else:
+        slicer.layers.insert(0, brim_layer)  # insert brim layer as the first layer of the slicer
 
     seams_align(slicer, align_with="next_path")
-
-    slicer.brim_toggle = True
-    slicer.number_of_brim_paths = number_of_brim_paths
 
 
 if __name__ == "__main__":

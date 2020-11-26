@@ -27,6 +27,9 @@ class Layer(object):
             assert isinstance(paths[0], compas_slicer.geometry.Path)
         self.paths = paths
 
+        self.is_brim = False
+        self.number_of_brim_offsets = 0
+
     def __repr__(self):
         no_of_paths = len(self.paths) if self.paths else 0
         return "<Layer object with %i paths>" % no_of_paths

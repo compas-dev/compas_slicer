@@ -23,6 +23,7 @@ def set_extruder_toggle(print_organizer, slicer):
     for i, layer in enumerate(slicer.layers):
         layer_key = 'layer_%d' % i
         is_vertical_layer = isinstance(layer, compas_slicer.geometry.VerticalLayer)
+        is_brim_layer = layer.is_brim
 
         for j, path in enumerate(layer.paths):
             path_key = 'path_%d' % j
@@ -30,6 +31,7 @@ def set_extruder_toggle(print_organizer, slicer):
 
             # --- decide if the path should be interrupted at the end
             interrupt_path = False
+
             if not is_closed_path:
                 interrupt_path = True
                 # open paths should always be interrupted
@@ -38,11 +40,8 @@ def set_extruder_toggle(print_organizer, slicer):
                 interrupt_path = True
                 # horizontal layers with multiple paths should be interrupted so that the extruder
                 # can travel from one path to the other, exception is added for the brim layers
-                if slicer.brim_toggle and i == 0:
-                    if j % (slicer.number_of_brim_paths + 1) == slicer.number_of_brim_paths:
-                        interrupt_path = True
-                    else:
-                        interrupt_path = False
+                if is_brim_layer and (j + 1) % layer.number_of_brim_offsets != 0:
+                    interrupt_path = False
 
             if is_vertical_layer and j == len(layer.paths) - 1:
                 interrupt_path = True
