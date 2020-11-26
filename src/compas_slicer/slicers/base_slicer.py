@@ -128,7 +128,6 @@ class BaseSlicer(object):
             if layer in layers_to_remove:
                 self.layers.remove(layer)
 
-
     def find_vertical_layers_with_first_path_on_base(self):
         bbox = mesh_bounding_box(self.mesh)
         z_min = min([p[2] for p in bbox])
@@ -145,10 +144,6 @@ class BaseSlicer(object):
                 vertical_layer_indices.append(i)
 
         return paths_on_base, vertical_layer_indices
-
-
-
-
 
     ##############################
     #  --- Output
