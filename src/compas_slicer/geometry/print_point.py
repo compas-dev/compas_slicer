@@ -45,17 +45,16 @@ class PrintPoint(object):
         self.frame = self.get_frame()  # compas.geometry.Frame
 
         #  --- print_organization related attributes
-        self.extruder_toggle = None
-        self.velocity = None
-        self.wait_time = None
-        self.blend_radius = None
+        self.extruder_toggle = None  # bool
+        self.velocity = None  # float (mm/s)
+        self.wait_time = None  # float (sec)
+        self.blend_radius = None  # float (mm)
 
         #  --- relation to support
         self.closest_support_pt = None  # <compas.geometry.Point>
         self.distance_to_support = None  # float
 
-        self.visualization_geometry = None  # TODO
-        self.is_feasible = True
+        self.is_feasible = True  # bool
 
     def __repr__(self):
         x, y, z = self.pt[0], self.pt[1], self.pt[2]

@@ -1,6 +1,5 @@
 import pyclipper
 from pyclipper import scale_from_clipper, scale_to_clipper
-
 from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Path
 from compas.geometry import Point
@@ -38,15 +37,15 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
     #  see: https://github.com/fonttools/pyclipper/wiki/Deprecating-SCALING_FACTOR
     SCALING_FACTOR = 2 ** 32
 
-    paths_per_layer = []
-
     # (1) --- find if slicer has vertical or horizontal layers, and select which paths are to be offset.
-    if isinstance(slicer.layers[0], compas_slicer.geometry.VerticalLayer):
+    if isinstance(slicer.layers[0], compas_slicer.geometry.VerticalLayer):  # Vertical layers
         # then find all paths that lie on the print platform and make them brim.
-        paths_to_offset = [slicer.layers[0].paths[0]]
+        paths_to_offset, layers_i = slicer.find_vertical_layers_with_first_path_on_base()
+        for i, first_path in zip(layers_i, paths_to_offset):
+            slicer.layers[i].paths.remove(first_path)  # remove first path that will become part of the brim layer
         has_vertical_layers = True
-        # TODO: check if other layers lie on the build platform and offset those as well
-    else:
+
+    else:  # Horizontal layers
         # then replace the first layer with a brim layer.
         paths_to_offset = slicer.layers[0].paths
         has_vertical_layers = False

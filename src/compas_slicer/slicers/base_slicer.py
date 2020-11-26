@@ -1,4 +1,5 @@
 import compas
+import numpy as np
 import compas_slicer
 from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
@@ -8,6 +9,7 @@ from compas_slicer.post_processing import seams_align, unify_paths_orientation
 import logging
 import copy
 from abc import abstractmethod
+from compas.datastructures import mesh_bounding_box
 from compas.geometry import distance_point_point_sqrd
 
 logger = logging.getLogger('logger')
@@ -126,6 +128,28 @@ class BaseSlicer(object):
             if layer in layers_to_remove:
                 self.layers.remove(layer)
 
+
+    def find_vertical_layers_with_first_path_on_base(self):
+        bbox = mesh_bounding_box(self.mesh)
+        z_min = min([p[2] for p in bbox])
+        paths_on_base = []
+        vertical_layer_indices = []
+        d_threshold = 30
+
+        for i, vertical_layer in enumerate(self.vertical_layers):
+            first_path = vertical_layer.paths[0]
+            avg_z_dist_from_min = np.average(np.array([abs(pt[2] - z_min) for pt in first_path.points]))
+
+            if avg_z_dist_from_min < d_threshold:
+                paths_on_base.append(vertical_layer.paths[0])
+                vertical_layer_indices.append(i)
+
+        return paths_on_base, vertical_layer_indices
+
+
+
+
+
     ##############################
     #  --- Output
 
@@ -205,10 +229,11 @@ class BaseSlicer(object):
         mesh = Mesh.from_data(data['mesh'])
         slicer = cls(mesh)
         layers_data = data['layers']
-        if layers_data['0']['layer_type'] == 'horizontal_layer':
-            slicer.layers = [Layer.from_data(layers_data[key]) for key in layers_data]
-        else:  # 'vertical_layer'
-            slicer.layers = [VerticalLayer.from_data(layers_data[key]) for key in layers_data]
+        for layer_key in layers_data:
+            if layers_data[layer_key]['layer_type'] == 'horizontal_layer':
+                slicer.layers.append(Layer.from_data(layers_data[layer_key]))
+            else:  # 'vertical_layer'
+                slicer.layers.append(VerticalLayer.from_data(layers_data[layer_key]))
         slicer.layer_height = data['layer_height']
         return slicer
 

@@ -12,7 +12,7 @@ __all__ = ['sort_per_segment',
 
 
 def sort_per_segment(slicer, max_layers_per_segment, threshold):
-    """Sorts in vertical segments the contours that are stored in the horizontal layers.
+    """Sorts in vertical vertical_layers_print_data the contours that are stored in the horizontal layers.
     This is done by grouping the centroids of the paths based on proximity.
 
     Parameters
@@ -29,7 +29,7 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
     """
     logger.info("Sorting per segment")
 
-    segments = [VerticalLayer(id=0)]  # segments that contain isocurves
+    segments = [VerticalLayer(id=0)]  # vertical_layers_print_data that contain isocurves
     for layer in slicer.layers:
         for path in layer.paths:
             current_segment = None
@@ -55,12 +55,12 @@ def sort_per_segment(slicer, max_layers_per_segment, threshold):
             #  Assign contour to current segment
             current_segment.append_(path)
 
-    logger.info("Number of segments : %d" % len(segments))
+    logger.info("Number of vertical_layers_print_data : %d" % len(segments))
     slicer.print_paths = segments
 
 
 def get_segments_centroids_list(segments):
-    """ Returns a list with points that are the centroids of the heads of all segments. The head
+    """ Returns a list with points that are the centroids of the heads of all vertical_layers_print_data. The head
     of a segment is its last path. """
     head_centroids = []
     for segment in segments:
