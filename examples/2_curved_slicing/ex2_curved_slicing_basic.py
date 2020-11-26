@@ -11,6 +11,7 @@ from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import CurvedPrintOrganizer
 from compas_slicer.post_processing import seams_smooth
 from compas_viewers.objectviewer import ObjectViewer
+from compas_slicer.post_processing import generate_brim
 import time
 
 logger = logging.getLogger('logger')
@@ -33,7 +34,7 @@ def main():
     create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)
 
     parameters = {
-        'avg_layer_height': 5.0,  # controls number of curves that will be generated
+        'avg_layer_height': 15.0,  # controls number of curves that will be generated
         'min_layer_height': 0.1,
         'max_layer_height': 50.0,  # 2.0,
         'layer_heights_smoothing': [False, 5, 0.2],  # boolean, iterations, strength
@@ -50,6 +51,7 @@ def main():
     ## --- slicing
     slicer = CurvedSlicer(mesh, preprocessor, parameters)
     slicer.slice_model()  # compute_norm_of_gradient contours
+    generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=5)
     seams_smooth(slicer, smooth_distance=10)
 
     simplify_paths_rdp(slicer, threshold=1.0)

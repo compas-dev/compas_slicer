@@ -10,6 +10,7 @@ from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import CurvedPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
+from compas_slicer.post_processing import generate_brim
 import time
 
 logger = logging.getLogger('logger')
@@ -20,7 +21,7 @@ OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection.obj')
 # OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection_HIGH_RES.obj')
 
-REGION_SPLIT = True
+REGION_SPLIT = False
 SLICER = True
 PRINT_ORGANIZER = True
 
@@ -60,7 +61,6 @@ def main():
                                                          save_output=True)
         preprocessor.find_critical_points(g_eval, output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
         preprocessor.region_split(save_split_meshes=True)  # split mesh regions on saddle points
-
         # utils.interrupt()
 
     #########################################
@@ -81,6 +81,10 @@ def main():
             if i == 3:
                 slicer.n_multiplier = 0.85
             slicer.slice_model()
+
+            if i == 0:
+                generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=5)
+
             simplify_paths_rdp(slicer, threshold=1.0)
             utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer_%d.json' % i)
             slicers.append(slicer)
@@ -93,6 +97,7 @@ def main():
         filenames = utils.get_all_files_with_name('curved_slicer_', '.json', OUTPUT_PATH)
         slicers = [BaseSlicer.from_data(utils.load_from_json(OUTPUT_PATH, filename)) for filename in filenames]
         for i, slicer in enumerate(slicers):
+
             print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
             print_organizer.create_printpoints()
             set_extruder_toggle(print_organizer, slicer)

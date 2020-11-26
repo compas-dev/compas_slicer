@@ -39,7 +39,7 @@ def main():
     move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
     # Slicing
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=10.5)  # CHANGE TO 1.5 !!!!!!!!!!
+    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=7.0)
     slicer.slice_model()
     sort_per_vertical_segment(slicer)
 

@@ -58,13 +58,13 @@ def main():
     # ==========================================================================
     # Generate brim
     # ==========================================================================
-    generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
+    generate_brim(slicer, layer_width=3.0, number_of_brim_paths=4)
 
     # ==========================================================================
     # Simplify the paths by removing points with a certain threshold
     # change the threshold value to remove more or less points
     # ==========================================================================
-    simplify_paths_rdp(slicer, threshold=0.3)
+    simplify_paths_rdp(slicer, threshold=0.6)
 
     # ==========================================================================
     # Smooth the seams between layers
@@ -99,8 +99,6 @@ def main():
     # ==========================================================================
     # Prints out the info of the PrintOrganizer
     # ==========================================================================
-    slicer.printout_info()
-
     print_organizer.printout_info()
 
     # ==========================================================================
