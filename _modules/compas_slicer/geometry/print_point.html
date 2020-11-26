@@ -122,17 +122,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_frame</span><span class="p">()</span>  <span class="c1"># compas.geometry.Frame</span>
 
         <span class="c1">#  --- print_organization related attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wait_time</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">blend_radius</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># float (mm/s)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_time</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># float (sec)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blend_radius</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># float (mm)</span>
 
         <span class="c1">#  --- relation to support</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">closest_support_pt</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># &lt;compas.geometry.Point&gt;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">distance_to_support</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># float</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">visualization_geometry</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># TODO</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_feasible</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_feasible</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># bool</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>

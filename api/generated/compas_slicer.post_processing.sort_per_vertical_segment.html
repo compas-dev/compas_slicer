@@ -9,19 +9,19 @@
   <meta name="author" content="" />
   <meta name="description" content="" />
 
-  <link rel="shortcut icon" href="../_static/images/compas.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../../_static/images/compas.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/styles/default.min.css">
-  <link rel="stylesheet" type="text/css" href="../_static/css/compas.css" />
-  <link rel="stylesheet" type="text/css" href="../_static/css/compas-reference.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/compas.css" />
+  <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="simplify_paths_rdp" href="generated/compas_slicer.post_processing.simplify_paths_rdp.html" />
+    <link rel="next" title="generate_brim" href="compas_slicer.post_processing.generate_brim.html" />
   
   
   
-    <link rel="prev" title="get_mid_pt_base" href="generated/compas_slicer.pre_processing.get_mid_pt_base.html" />
+    <link rel="prev" title="seams_smooth" href="compas_slicer.post_processing.seams_smooth.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -44,7 +44,7 @@
     <nav class="navbar navbar-expand navbar-dark col flex-column flex-md-row text-center">
       <!-- brand -->
       <a class="navbar-brand" href="">
-        <img src="../_static/images/compas_icon_white.png" alt="COMPAS SLICER" width="48px" height="48px" />
+        <img src="../../_static/images/compas_icon_white.png" alt="COMPAS SLICER" width="48px" height="48px" />
       </a>
       <!-- brand -->
       <!-- primary -->
@@ -78,59 +78,26 @@
       <main class="col-12 col-md-9 col-xl-7 px-2 px-md-5 py-5 compas-content" role="main">
         
         
-        <span class="target" id="module-compas_slicer.post_processing"></span><div class="section" id="post-processing">
-<h1 class="display-4 p-0 mb-5">post_processing</h1>
-<div class="section" id="polyline-simplification">
-<h2>Polyline simplification</h2>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.post_processing.simplify_paths_rdp.html#compas_slicer.post_processing.simplify_paths_rdp" title="compas_slicer.post_processing.simplify_paths_rdp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simplify_paths_rdp</span></code></a></p></td>
-<td><p>Simplifies a path using the Ramer–Douglas–Peucker algorithm, implemented in the rdp python library.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="sorting">
-<h2>Sorting</h2>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.post_processing.seams_align.html#compas_slicer.post_processing.seams_align" title="compas_slicer.post_processing.seams_align"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seams_align</span></code></a></p></td>
-<td><p>Aligns the seams (start- and endpoint) of a print.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_slicer.post_processing.seams_smooth.html#compas_slicer.post_processing.seams_smooth" title="compas_slicer.post_processing.seams_smooth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seams_smooth</span></code></a></p></td>
-<td><p>Smooths the seams (transition between layers) by removing points within a certain distance.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.post_processing.sort_per_vertical_segment.html#compas_slicer.post_processing.sort_per_vertical_segment" title="compas_slicer.post_processing.sort_per_vertical_segment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_per_vertical_segment</span></code></a></p></td>
-<td><p>Sorts in vertical vertical_layers_print_data the contours that are stored in the horizontal layers.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="additional">
-<h2>Additional</h2>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.post_processing.generate_brim.html#compas_slicer.post_processing.generate_brim" title="compas_slicer.post_processing.generate_brim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_brim</span></code></a></p></td>
-<td><p>Creates a brim around the bottom contours of the print.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_slicer.post_processing.spiralize_contours.html#compas_slicer.post_processing.spiralize_contours" title="compas_slicer.post_processing.spiralize_contours"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spiralize_contours</span></code></a></p></td>
-<td><p>Spiralizes contours.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+        <div class="detail section" id="sort-per-vertical-segment">
+<h1 class="display-4 p-0 mb-5">sort_per_vertical_segment</h1>
+<dl class="py function">
+<dt id="compas_slicer.post_processing.sort_per_vertical_segment">
+<code class="sig-prename descclassname">compas_slicer.post_processing.</code><code class="sig-name descname">sort_per_vertical_segment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">slicer</span></em>, <em class="sig-param"><span class="n">dist_threshold</span><span class="o">=</span><span class="default_value">30.0</span></em>, <em class="sig-param"><span class="n">max_layers_per_segment</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/post_processing/sort_paths_per_vertical_segment.html#sort_per_vertical_segment"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sorts in vertical vertical_layers_print_data the contours that are stored in the horizontal layers.
+This is done by grouping the centroids of the paths based on proximity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slicer</strong> (<a class="reference internal" href="compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer" title="compas_slicer.slicers.BaseSlicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.BaseSlicer</span></code></a>) – An instance of one of the compas_slicer.slicers classes.</p></li>
+<li><p><strong>dist_threshold</strong> (<em>float</em>) – The maximum get_distance that the centroids of two successive paths can have to belong in the same group
+Recommended value, slightly bigger than the layer height</p></li>
+<li><p><strong>max_layers_per_segment</strong> (<em>int</em>) – Maximum number of layers that a segment can consist of
+If None, then the segment has unlimited number of layers</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
         
@@ -138,7 +105,7 @@
       <!-- content -->
       <!-- sidebar -->
       <div class="col-12 col-md-3 compas-sidebar" role="navigation"> 
-        <form id="search" class="d-flex align-items-center compas-searchbox" action="../search.html" method="get">
+        <form id="search" class="d-flex align-items-center compas-searchbox" action="../../search.html" method="get">
           <input class="form-control" type="text" name="q" placeholder="Search docs" />
           <input type="hidden" name="check_keywords" value="yes" />
           <input type="hidden" name="area" value="default" />
@@ -150,25 +117,25 @@
         
           <div id="compas-navigation" class="collapse compas-navigation">
           <ul class="nav flex-column active">
-<li class="nav-item"><a class="nav-link reference internal" href="../index.html">Overview</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../installation.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../tutorials.html">Tutorials</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../examples.html">Examples</a></li>
-<li class="nav-item active"><a class="nav-link reference internal" href="../api.html">API Reference</a><ul class="nav flex-column active">
-<li class="nav-item active"><a class="nav-link reference internal" href="compas_slicer.html">compas_slicer</a><ul class="nav flex-column active">
-<li class="nav-item"><a class="nav-link reference internal" href="geometry.html">geometry</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="slicers.html">slicers</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="print_organization.html">print_organization</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="pre_processing.html">pre_processing</a></li>
-<li class="nav-item active"><a class="nav-link active current reference internal" href="#">post_processing</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="utilities.html">utilities</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../index.html">Overview</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../installation.html">Installation</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../examples.html">Examples</a></li>
+<li class="nav-item active"><a class="nav-link reference internal" href="../../api.html">API Reference</a><ul class="nav flex-column active">
+<li class="nav-item active"><a class="nav-link reference internal" href="../compas_slicer.html">compas_slicer</a><ul class="nav flex-column active">
+<li class="nav-item"><a class="nav-link reference internal" href="../geometry.html">geometry</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../slicers.html">slicers</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../print_organization.html">print_organization</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../pre_processing.html">pre_processing</a></li>
+<li class="nav-item active"><a class="nav-link reference internal" href="../post_processing.html">post_processing</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../utilities.html">utilities</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="nav-item"><a class="nav-link reference internal" href="../devguide.html">Developer Guide</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../license.html">License</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../citing.html">Citing</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../devguide.html">Developer Guide</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../license.html">License</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../citing.html">Citing</a></li>
 </ul>
 
           </div>
@@ -179,12 +146,7 @@
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">post_processing</a><ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="#polyline-simplification">Polyline simplification</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#sorting">Sorting</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#additional">Additional</a></li>
-</ul>
-</li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">sort_per_vertical_segment</a></li>
 </ul>
 
       </div>
@@ -242,9 +204,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.0.0/anchor.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
 
-  <script src="../_static/underscore.js"></script>
-  <script src="../_static/doctools.js"></script>
-  <script src="../_static/js/searchtools_.js"></script>
+  <script src="../../_static/underscore.js"></script>
+  <script src="../../_static/doctools.js"></script>
+  <script src="../../_static/js/searchtools_.js"></script>
 
   <script>
   $(document).ready(function() {

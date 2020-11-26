@@ -77,11 +77,10 @@
         <h1 class="display-4 p-0 mb-5">Source code for compas_slicer.post_processing.generate_brim</h1><div class="highlight"><pre><code>
 <span></span><span class="kn">import</span> <span class="nn">pyclipper</span>
 <span class="kn">from</span> <span class="nn">pyclipper</span> <span class="kn">import</span> <span class="n">scale_from_clipper</span><span class="p">,</span> <span class="n">scale_to_clipper</span>
-
 <span class="kn">from</span> <span class="nn">compas_slicer.geometry</span> <span class="kn">import</span> <span class="n">Layer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.geometry</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
-
+<span class="kn">import</span> <span class="nn">compas_slicer</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_align</span>
 
@@ -90,7 +89,7 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;generate_brim&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="generate_brim"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.generate_brim.html#compas_slicer.post_processing.generate_brim">[docs]</a><span class="k">def</span> <span class="nf">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="p">,</span> <span class="n">number_of_brim_paths</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_brim"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.generate_brim.html#compas_slicer.post_processing.generate_brim">[docs]</a><span class="k">def</span> <span class="nf">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates a brim around the bottom contours of the print.</span>
 
 <span class="sd">    Parameters</span>
@@ -100,7 +99,7 @@
 <span class="sd">    layer_width: float</span>
 <span class="sd">        A number representing the distance between brim contours</span>
 <span class="sd">        (typically the width of a layer)</span>
-<span class="sd">    number_of_brim_paths: int</span>
+<span class="sd">    number_of_brim_offsets: int</span>
 <span class="sd">        Number of brim paths to add.</span>
 
 <span class="sd">    Returns</span>
@@ -108,16 +107,33 @@
 <span class="sd">    None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="s2">&quot;Generating brim with layer width: </span><span class="si">%.2f</span><span class="s2"> mm, consisting of </span><span class="si">%d</span><span class="s2"> layers&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layer_width</span><span class="p">,</span> <span class="n">number_of_brim_paths</span><span class="p">))</span>
+        <span class="s2">&quot;Generating brim with layer width: </span><span class="si">%.2f</span><span class="s2"> mm, consisting of </span><span class="si">%d</span><span class="s2"> layers&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">layer_width</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="p">))</span>
 
     <span class="c1">#  TODO: Add post_processing for merging several contours when the brims overlap.</span>
     <span class="c1">#  uses the default scaling factor of 2**32</span>
     <span class="c1">#  see: https://github.com/fonttools/pyclipper/wiki/Deprecating-SCALING_FACTOR</span>
     <span class="n">SCALING_FACTOR</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">32</span>
 
-    <span class="n">paths_per_layer</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># (1) --- find if slicer has vertical or horizontal layers, and select which paths are to be offset.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">VerticalLayer</span><span class="p">):</span>  <span class="c1"># Vertical layers</span>
+        <span class="c1"># then find all paths that lie on the print platform and make them brim.</span>
+        <span class="n">paths_to_offset</span><span class="p">,</span> <span class="n">layers_i</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">find_vertical_layers_with_first_path_on_base</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">first_path</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">layers_i</span><span class="p">,</span> <span class="n">paths_to_offset</span><span class="p">):</span>
+            <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">first_path</span><span class="p">)</span>  <span class="c1"># remove first path that will become part of the brim layer</span>
+        <span class="n">has_vertical_layers</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Horizontal layers</span>
+        <span class="c1"># then replace the first layer with a brim layer.</span>
+        <span class="n">paths_to_offset</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">paths</span>
+        <span class="n">has_vertical_layers</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># (2) --- create new empty brim_layer</span>
+    <span class="n">brim_layer</span> <span class="o">=</span> <span class="n">Layer</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">brim_layer</span><span class="o">.</span><span class="n">is_brim</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">brim_layer</span><span class="o">.</span><span class="n">number_of_brim_offsets</span> <span class="o">=</span> <span class="n">number_of_brim_offsets</span>
+
+    <span class="c1"># (3) --- create offsets and add them to the paths of the brim_layer</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths_to_offset</span><span class="p">:</span>
         <span class="c1">#  evaluate per path</span>
         <span class="n">xy_coords_for_clipper</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
@@ -130,7 +146,7 @@
         <span class="n">pco</span><span class="o">.</span><span class="n">AddPath</span><span class="p">(</span><span class="n">scale_to_clipper</span><span class="p">(</span><span class="n">xy_coords_for_clipper</span><span class="p">,</span> <span class="n">SCALING_FACTOR</span><span class="p">),</span> <span class="n">pyclipper</span><span class="o">.</span><span class="n">JT_MITER</span><span class="p">,</span>
                     <span class="n">pyclipper</span><span class="o">.</span><span class="n">ET_CLOSEDPOLYGON</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_brim_paths</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_brim_offsets</span><span class="p">):</span>
             <span class="c1">#  iterate through a list of brim paths</span>
             <span class="n">clipper_points_per_brim_path</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -150,17 +166,17 @@
 
             <span class="c1">#  create a path per brim contour</span>
             <span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">clipper_points_per_brim_path</span><span class="p">,</span> <span class="n">is_closed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">paths_per_layer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
+            <span class="n">brim_layer</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
 
-    <span class="n">new_layer</span> <span class="o">=</span> <span class="n">Layer</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">paths_per_layer</span><span class="p">)</span>
-    <span class="n">new_layer</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># go from outside towards the object</span>
+    <span class="n">brim_layer</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># go from outside towards the object</span>
 
-    <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">Layer</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">paths_per_layer</span><span class="p">)</span>
+    <span class="c1"># (4) --- Add the brim layer to the slicer</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_vertical_layers</span><span class="p">:</span>
+        <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">brim_layer</span>  <span class="c1"># replace first layer</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">brim_layer</span><span class="p">)</span>  <span class="c1"># insert brim layer as the first layer of the slicer</span>
 
-    <span class="n">seams_align</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">align_with</span><span class="o">=</span><span class="s2">&quot;next_path&quot;</span><span class="p">)</span>
-
-    <span class="n">slicer</span><span class="o">.</span><span class="n">brim_toggle</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">slicer</span><span class="o">.</span><span class="n">number_of_brim_paths</span> <span class="o">=</span> <span class="n">number_of_brim_paths</span></div>
+    <span class="n">seams_align</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">align_with</span><span class="o">=</span><span class="s2">&quot;next_path&quot;</span><span class="p">)</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
