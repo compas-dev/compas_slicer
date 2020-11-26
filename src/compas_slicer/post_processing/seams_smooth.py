@@ -1,6 +1,7 @@
 import logging
 from compas.geometry import distance_point_point
 from compas.geometry import Vector
+import compas_slicer
 
 logger = logging.getLogger('logger')
 
@@ -22,7 +23,7 @@ def seams_smooth(slicer, smooth_distance):
     logger.info("Smoothing seams with a distance of %i mm" % smooth_distance)
 
     for i, layer in enumerate(slicer.layers):
-        if len(layer.paths) == 1:
+        if len(layer.paths) == 1 or isinstance(layer, compas_slicer.geometry.VerticalLayer):
             for path in layer.paths:
                 pt0 = path.points[0]
                 # only points in the first half of a path should be evaluated
@@ -41,7 +42,8 @@ def seams_smooth(slicer, smooth_distance):
                         path.points.insert(0, new_pt)
                         break
         else:
-            logger.warning("Smooth seams only works for layers consisting out of a single path, paths were not changed, seam smoothing skipped for layer %i" % i)
+            logger.warning("Smooth seams only works for layers consisting out of a single path, or for vertical layers."
+                           "\nPaths were not changed, seam smoothing skipped for layer %i" % i)
 
 
 if __name__ == "__main__":

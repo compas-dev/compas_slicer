@@ -1,9 +1,11 @@
 import compas_slicer
 import logging
+
 logger = logging.getLogger('logger')
 
 __all__ = ['set_extruder_toggle',
-           'override_extruder_toggle']
+           'override_extruder_toggle',
+           'check_assigned_extruder_toggle']
 
 
 def set_extruder_toggle(print_organizer, slicer):
@@ -37,7 +39,7 @@ def set_extruder_toggle(print_organizer, slicer):
                 # horizontal layers with multiple paths should be interrupted so that the extruder
                 # can travel from one path to the other, exception is added for the brim layers
                 if slicer.brim_toggle and i == 0:
-                    if j % (slicer.number_of_brim_paths+1) == slicer.number_of_brim_paths:
+                    if j % (slicer.number_of_brim_paths + 1) == slicer.number_of_brim_paths:
                         interrupt_path = True
                     else:
                         interrupt_path = False
@@ -84,6 +86,19 @@ def override_extruder_toggle(print_organizer, override_value):
 
     else:
         raise NameError("Override value must be of type bool")
+
+
+def check_assigned_extruder_toggle(print_organizer):
+    """ Checks that all the printpoints have an assigned extruder toggle. """
+    pp_dict = print_organizer.printpoints_dict
+    all_toggles_assigned = True
+    for layer_key in pp_dict:
+        for path_key in pp_dict[layer_key]:
+            for pp in pp_dict[layer_key][path_key]:
+
+                if pp.extruder_toggle is None:
+                    all_toggles_assigned = False
+    return all_toggles_assigned
 
 
 if __name__ == "__main__":

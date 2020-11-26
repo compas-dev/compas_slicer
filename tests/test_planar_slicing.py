@@ -17,6 +17,7 @@ no_of_layers = int(d / layer_height)
 
 
 def test_planar_slicing_success():
+    """ Tests simple planar slicing. """
     slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=layer_height)
     slicer.slice_model()
 
