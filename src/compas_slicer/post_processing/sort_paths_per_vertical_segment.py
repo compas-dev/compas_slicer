@@ -30,6 +30,7 @@ def sort_per_vertical_segment(slicer, dist_threshold=30.0, max_layers_per_segmen
     logger.info("Sorting per segment")
 
     vertical_segments = [VerticalLayer(id=0)]  # vertical_layers_print_data that contain isocurves
+
     for layer in slicer.layers:
         for path in layer.paths:
             current_segment = None
