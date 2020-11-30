@@ -155,7 +155,7 @@ that are offset from the bottom layer, to improve adhesion to the build plate
 <img alt="../_images/01_brim.jpg" class="figure-img img-fluid" src="../_images/01_brim.jpg" />
 <p class="caption"><span class="caption-text"><em>Left: Without brim. Right: With brim</em></span></p>
 </div>
-<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_paths</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </code></pre></div>
 </div>
 <p>Depending on the amount of faces that your input mesh has, a very large amount of
@@ -163,7 +163,7 @@ points can be generated. <code class="docutils literal notranslate"><span class=
 that do not have a high impact on the final shape of the polyline. Increase the
 threshold value to remove more points, decrease it to remove less. For more
 information on how the algorithm works see: <a class="reference external" href="https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm">Ramer–Douglas–Peucker algorithm</a></p>
-<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
 </code></pre></div>
 </div>
 <p>Currently the ‘seam’ between different layers of our shape is a ‘hard seam’,
