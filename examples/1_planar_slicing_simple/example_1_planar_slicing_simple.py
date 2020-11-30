@@ -58,7 +58,7 @@ def main():
     # ==========================================================================
     # Generate brim
     # ==========================================================================
-    generate_brim(slicer, layer_width=3.0, number_of_brim_paths=4)
+    generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
 
     # ==========================================================================
     # Simplify the paths by removing points with a certain threshold
