@@ -27,6 +27,9 @@ class Layer(object):
             assert isinstance(paths[0], compas_slicer.geometry.Path)
         self.paths = paths
 
+        self.is_brim = False
+        self.number_of_brim_offsets = None
+
     def __repr__(self):
         no_of_paths = len(self.paths) if self.paths else 0
         return "<Layer object with %i paths>" % no_of_paths
@@ -57,6 +60,8 @@ class Layer(object):
         paths_data = data['paths']
         paths = [Path.from_data(paths_data[key]) for key in paths_data]
         layer = cls(paths=paths)
+        layer.is_brim = data['is_brim']
+        layer.number_of_brim_offsets = data['number_of_brim_offsets']
         return layer
 
     def to_data(self):
@@ -69,7 +74,9 @@ class Layer(object):
 
         """
         data = {'paths': {i: [] for i in range(len(self.paths))},
-                'layer_type': 'horizontal_layer'}
+                'layer_type': 'horizontal_layer',
+                'is_brim': self.is_brim,
+                'number_of_brim_offsets': self.number_of_brim_offsets}
         for i, path in enumerate(self.paths):
             data['paths'][i] = path.to_data()
         return data
@@ -89,6 +96,10 @@ class VerticalLayer(Layer):
         Layer.__init__(self, paths=[])
         self.id = id
         self.head_centroid = None
+
+    def __repr__(self):
+        no_of_paths = len(self.paths) if self.paths else 0
+        return "<Vertical Layer object with %i paths>" % no_of_paths
 
     def append_(self, path):
         """ Add path to self.paths list. """

@@ -7,12 +7,12 @@ import compas_slicer.utilities as utils
 import progressbar
 
 logger = logging.getLogger('logger')
-__all__ = ['SegmentConnectivity']
+__all__ = ['VerticalConnectivity']
 
 
-class SegmentConnectivity:
+class VerticalConnectivity:
     """
-    SegmentConnectivity finds the vertical relation between paths in a segment.
+    VerticalConnectivity finds the vertical relation between paths in a segment.
     It assumes that each path is supported by the path below, and the first path is
     supported by the BaseBoundary.
     This class creates PrintPoints and fills in their information.
@@ -37,7 +37,7 @@ class SegmentConnectivity:
         self.printpoints = {}  # dict with pne list of printpoints per path
 
     def __repr__(self):
-        return "<SegmentConnectivity with %i paths>" % len(self.paths)
+        return "<VerticalConnectivity with %i paths>" % len(self.paths)
 
     ######################
     # Main

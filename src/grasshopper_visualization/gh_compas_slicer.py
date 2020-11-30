@@ -242,10 +242,11 @@ def create_targets(mesh, targets, resolution_mult, path, folder_name, json_name)
     """ Creation of targets for curved slicing. """
 
     avg_face_area = max(rs.MeshArea([mesh])) / rs.MeshFaceCount(mesh)
-    div_num = int(resolution_mult * avg_face_area)
+    div_num = max(20, int(resolution_mult * avg_face_area))
 
     pts = []
     for target in targets:
+        print(div_num)
         pts.extend(rs.DivideCurve(target, div_num))
 
     vs = rs.MeshVertices(mesh)

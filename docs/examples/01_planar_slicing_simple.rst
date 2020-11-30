@@ -94,7 +94,7 @@ that are offset from the bottom layer, to improve adhesion to the build plate
 
 .. code-block:: python
 
-    generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
+    generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
 
 Depending on the amount of faces that your input mesh has, a very large amount of 
 points can be generated. ``simplify_paths_rdp`` is a function that removes points
@@ -104,7 +104,7 @@ information on how the algorithm works see: `Ramer–Douglas–Peucker algorithm
 
 .. code-block:: python
 
-    simplify_paths_rdp(slicer, threshold=0.3)
+    simplify_paths_rdp(slicer, threshold=0.6)
 
 Currently the 'seam' between different layers of our shape is a 'hard seam',
 the printer would move up almost vertically to move to the next layer. 

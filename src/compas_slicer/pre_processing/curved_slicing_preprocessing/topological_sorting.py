@@ -53,12 +53,12 @@ class DirectedGraph(object):
     # ------------------------------------ Methods to be implemented by inheriting classes
     @abstractmethod
     def find_roots(self):
-        """ Roots are segments that lie on the build platform. Like that they can be print first. """
+        """ Roots are vertical_layers_print_data that lie on the build platform. Like that they can be print first. """
         pass
 
     @abstractmethod
     def find_ends(self):
-        """ Ends are segments that belong to exclusively one segment. Like that they can be print last. """
+        """ Ends are vertical_layers_print_data that belong to exclusively one segment. Like that they can be print last. """
         pass
 
     @abstractmethod
@@ -68,7 +68,7 @@ class DirectedGraph(object):
 
     @abstractmethod
     def get_children_of_node(self, root):
-        """ Find all the segments that lie on the current root segment. """
+        """ Find all the vertical_layers_print_data that lie on the current root segment. """
         pass
 
     # ------------------------------------ Creation of graph connectivity between different nodes
@@ -94,11 +94,11 @@ class DirectedGraph(object):
         good_nodes = [r for r in self.root_indices]
         for children_list in self.adj_list:
             [good_nodes.append(child) for child in children_list if child not in good_nodes]
-        assert len(good_nodes) == self.N, 'There are floating segments on directed graph. Investigate the process of \
+        assert len(good_nodes) == self.N, 'There are floating vertical_layers_print_data on directed graph. Investigate the process of \
                                           the creation of the graph. '
 
     def sort_queue_with_end_targets_last(self, queue):
-        """ Sorts the queue so that the segments that have an end target are always at the end. """
+        """ Sorts the queue so that the vertical_layers_print_data that have an end target are always at the end. """
         queue_copy = copy.deepcopy(queue)
         for index in queue:
             if index in self.end_indices:
@@ -189,7 +189,7 @@ class MeshDirectedGraph(DirectedGraph):
         DirectedGraph.__init__(self)
 
     def find_roots(self):
-        """ Roots are segments that lie on the build platform. Like that they can be print first. """
+        """ Roots are vertical_layers_print_data that lie on the build platform. Like that they can be print first. """
         roots = []
         for i, mesh in enumerate(self.all_meshes):
             for vkey, data in mesh.vertices(data=True):
@@ -199,7 +199,7 @@ class MeshDirectedGraph(DirectedGraph):
         return roots
 
     def find_ends(self):
-        """ Ends are segments that belong to exclusively one segment. Like that they can be print last. """
+        """ Ends are vertical_layers_print_data that belong to exclusively one segment. Like that they can be print last. """
         ends = []
         for i, mesh in enumerate(self.all_meshes):
             for vkey, data in mesh.vertices(data=True):
@@ -265,7 +265,7 @@ class MeshDirectedGraph(DirectedGraph):
 #  --- Segments DirectedGraph
 
 class SegmentsDirectedGraph(DirectedGraph):
-    """ The SegmentsDirectedGraph is used for topological sorting of multiple segments in one mesh"""
+    """ The SegmentsDirectedGraph is used for topological sorting of multiple vertical_layers_print_data in one mesh"""
 
     def __init__(self, mesh, segments, max_d_threshold, DATA_PATH):
         self.mesh = mesh
@@ -276,7 +276,7 @@ class SegmentsDirectedGraph(DirectedGraph):
         DirectedGraph.__init__(self)
 
     def find_roots(self):
-        """ Roots are segments that lie on the build platform. Like that they can be print first. """
+        """ Roots are vertical_layers_print_data that lie on the build platform. Like that they can be print first. """
         boundary_pts = utils.get_mesh_vertex_coords_with_attribute(self.mesh, 'boundary', 1)
         root_segments = []
         for i, segment in enumerate(self.segments):
@@ -286,7 +286,7 @@ class SegmentsDirectedGraph(DirectedGraph):
         return root_segments
 
     def find_ends(self):
-        """ Ends are segments that belong to exclusively one segment. Like that they can be print last. """
+        """ Ends are vertical_layers_print_data that belong to exclusively one segment. Like that they can be print last. """
         boundary_pts = utils.get_mesh_vertex_coords_with_attribute(self.mesh, 'boundary', 2)
         end_segments = []
         for i, segment in enumerate(self.segments):

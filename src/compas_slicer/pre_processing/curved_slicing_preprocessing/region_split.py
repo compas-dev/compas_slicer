@@ -40,7 +40,7 @@ class MeshSplitter:
     For each newly created mesh, a separate slicer needs to be created. Like that,
     we will always have one slicer per mesh with the correct attributes already assigned.
     However, it can still happen that a slicer that takes a split mesh outputs more than one
-    segments (vertical layers).
+    vertical_layers_print_data (vertical layers).
 
     Attributes
     ----------

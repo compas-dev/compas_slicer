@@ -31,7 +31,7 @@ class IsocurvesGenerator:
         self.target_HIGH = target_HIGH
 
         #  main
-        self.segments = [VerticalLayer(id=0)]  # segments that contain isocurves (compas_slicer.Path)
+        self.segments = [VerticalLayer(id=0)]  # vertical_layers_print_data that contain isocurves (compas_slicer.Path)
         weights_list = get_weights_list(number_of_curves)
         weights_list.pop(0)  # remove first curves that is on 0 (lies on BaseBoundary)
         self.create_isocurves(weights_list)

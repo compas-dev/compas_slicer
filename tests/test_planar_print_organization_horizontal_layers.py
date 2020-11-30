@@ -28,13 +28,12 @@ def create_setup(filename):
     compas_mesh = Mesh.from_stl(FILE)
     slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=15)
     slicer.slice_model()
-    generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
+    generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=3)
     simplify_paths_rdp(slicer, threshold=1.3)
     # seams_smooth(slicer, smooth_distance=10)
     slicer.printout_info()
     print_organizer = PlanarPrintOrganizer(slicer)
     print_organizer.create_printpoints()
-
     return slicer, print_organizer
 
 
@@ -74,8 +73,8 @@ def test_planar_set_extruder_toggle_for_horizontal_layers():
                 # closed path
                 else:
                     if len(layer.paths) > 1:
-                        if slicer.brim_toggle and i == 0:  # brim
-                            if j % (slicer.number_of_brim_paths + 1) == slicer.number_of_brim_paths:
+                        if layer.is_brim:  # brim
+                            if (j + 1) % layer.number_of_brim_offsets == 0:
                                 path_should_be_interrupted_at_end = True
                         else:
                             path_should_be_interrupted_at_end = True

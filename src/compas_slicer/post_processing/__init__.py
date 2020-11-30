@@ -21,7 +21,7 @@ Sorting
 
     seams_align
     seams_smooth
-    sort_per_segment
+    sort_per_vertical_segment
 
 Additional
 ==========
