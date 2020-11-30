@@ -92,8 +92,8 @@ class VerticalLayer(Layer):
     id: int, identifier of vertical layer
     """
 
-    def __init__(self, id):
-        Layer.__init__(self, paths=[])
+    def __init__(self, id=0, paths=[]):
+        Layer.__init__(self, paths=paths)
         self.id = id
         self.head_centroid = None
 
