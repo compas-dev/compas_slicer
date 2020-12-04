@@ -10,13 +10,16 @@ __all__ = ['set_wait_time',
 def set_wait_time(print_organizer, wait_type, wait_time):
     """Automatically sets a wait time for the printpoints.
 
-    Sets a wait time for the printpoints if the extruder_toggle switches
-    from False to True. Can be useful to add if there is a slight delay
-    before the extruder starts to extrude.
+    Sets a wait time for the printpoints, either before extrusion starts,
+    after extrusion finishes, or in both cases.
 
     Parameters
     ----------
     print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
+    wait_type: str
+        wait_before_extrusion:  sets a wait time before extrusion (extruder_toggle False to True)
+        wait_after_extrusion: sets a wait time after extrusion (extruder_toggle True to False)
+        wait_before_and_after_extrusion: sets a wait time before, and after extrusion
     wait_time: float
         Time in seconds to introduce to add as a wait time
     """
@@ -39,10 +42,10 @@ def set_wait_time(print_organizer, wait_type, wait_time):
 
                 # for the brim layer don't add any wait times
                 if not print_organizer.slicer.layers[i].is_brim and next_ppt:
-                    if wait_type == "wait_before_extruder_on":
+                    if wait_type == "wait_before_extrusion":
                         if printpoint.extruder_toggle is False and next_ppt.extruder_toggle is True:
                             next_ppt.wait_time = wait_time
-                    elif wait_type == "wait_after_extruder_off":
+                    elif wait_type == "wait_after_extrusion":
                         if printpoint.extruder_toggle is True and next_ppt.extruder_toggle is False:
                             next_ppt.wait_time = wait_time
                     elif wait_type == "wait_after_and_before_extrusion":
