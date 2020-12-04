@@ -71,27 +71,6 @@ Troubleshooting
 If you encounter a problem that is not described here, please file an issue 
 using the `Issue Tracker <https://github.com/dbt-ethz/compas_slicer/issues>`_.
 
-Git not recognized
-------------------
-
-.. code-block:: bash
-
-    'git' is not recognized as an internal or external command, operable program or batch file. 
-
-If you get this error, either you do not have GIT installed or your paths are not correctly set.
-If you don't have either GIT/SourceTree/GitHub Desktop installed, you still need to install GiT.
-Go to the `Git website <https://git-scm.com/downloads>`_ and install it using the instructions provided. 
-
-If you have installed GIT (or SourceTree/GitHub Desktop) it might be that you have to add the path to 
-your environment variables. To do this, go to 'Environment Variables' on your computer, then in 
-'user variables' click 'Path' and do 'Edit'. You then need to add the path where your git.exe file is 
-located to the environment variables. The location of this git.exe file depends on your GIT installation 
-but is probably
-
-* GIT: C:\Program Files\Git\cmd\
-* SourceTree: C:\Users\<username>\AppData\Local\Atlassian\SourceTree\git_local\cmd
-* GitHub Desktop: C:\Users\<username>\AppData\Local\GitHubDesktop\app-<appversion>\resources\app\git\cmd
-
 Installing Planarity
 --------------------
 
