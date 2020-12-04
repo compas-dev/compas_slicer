@@ -25,6 +25,7 @@ __all__ = ['get_output_directory',
            'plot_networkx_graph',
            'get_mesh_vertex_coords_with_attribute',
            'get_dict_key_from_value',
+           'find_next_printpoint',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
            'get_all_files_with_name',
@@ -409,6 +410,22 @@ def get_dict_key_from_value(dictionary, val):
         if val == value:
             return key
     return "key doesn't exist"
+
+
+def find_next_printpoint(pp_dict, layer_key, path_key, i, j, k):
+    """
+    Returns the next printpoint of the current printpoint if it exists, otherwise returns None.
+    """
+    next_ppt = None
+    if k < len(pp_dict[layer_key][path_key]) - 1:  # If there are more ppts in the current path, then take the next ppt
+        next_ppt = pp_dict[layer_key][path_key][k + 1]
+    else:
+        if j < len(pp_dict[layer_key]) - 1:  # Otherwise take the next path if there are more paths in the current layer
+            next_ppt = pp_dict[layer_key]['path_%d' % (j + 1)][0]
+        else:
+            if i < len(pp_dict) - 1:  # Otherwise take the next layer if there are more layers in the current slicer
+                next_ppt = pp_dict['layer_%d' % (i + 1)]['path_0'][0]
+    return next_ppt
 
 
 #######################################
