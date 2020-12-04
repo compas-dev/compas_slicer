@@ -1,11 +1,13 @@
 import logging
+from compas_slicer.utilities import find_next_printpoint
+
 logger = logging.getLogger('logger')
 
 __all__ = ['set_wait_time',
            'override_wait_time']
 
 
-def set_wait_time(print_organizer, wait_time):
+def set_wait_time(print_organizer, wait_type, wait_time):
     """Automatically sets a wait time for the printpoints.
 
     Sets a wait time for the printpoints if the extruder_toggle switches
@@ -32,18 +34,22 @@ def set_wait_time(print_organizer, wait_time):
     for i, layer_key in enumerate(pp_dict):
         for j, path_key in enumerate(pp_dict[layer_key]):
             for k, printpoint in enumerate(pp_dict[layer_key][path_key]):
-                # compares the current point with the previous point
-                # for the first point, compares it with the last point of the path
-                curr = pp_dict[layer_key][path_key][k]
-                prev = pp_dict[layer_key][path_key][k-1]
+                # compares the current point with the next point
+                next_ppt = find_next_printpoint(pp_dict, layer_key, path_key, i, j, k)
 
-                if curr.extruder_toggle is True and prev.extruder_toggle is False:
-                    if print_organizer.slicer.brim_toggle and layer_key == 'layer_0':
-                        # for the brim layer don't add any wait times
-                        pass
-                    else:
-                        # add wait time
-                        printpoint.wait_time = wait_time
+                # for the brim layer don't add any wait times
+                if not print_organizer.slicer.layers[i].is_brim and next_ppt:
+                    if wait_type == "wait_before_extruder_on":
+                        if printpoint.extruder_toggle is False and next_ppt.extruder_toggle is True:
+                            next_ppt.wait_time = wait_time
+                    elif wait_type == "wait_after_extruder_off":
+                        if printpoint.extruder_toggle is True and next_ppt.extruder_toggle is False:
+                            next_ppt.wait_time = wait_time
+                    elif wait_type == "wait_after_and_before_extrusion":
+                        if printpoint.extruder_toggle is False and next_ppt.extruder_toggle is True:
+                            next_ppt.wait_time = wait_time
+                        if printpoint.extruder_toggle is True and next_ppt.extruder_toggle is False:
+                            next_ppt.wait_time = wait_time
 
 
 def override_wait_time(print_organizer, override_value):
