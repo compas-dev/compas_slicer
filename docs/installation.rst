@@ -9,14 +9,23 @@ COMPAS_SLICER can be easily installed on multiple platforms.
 Basic installation steps
 ========================
 
-Step 1: Install compas_slicer
------------------------------
+Step 1: Install compas
+----------------------
 
-Create a new environment (you can replace 'compas_slicer' with your own environment name).
+Create a new environment (you can replace 'compas_slicer' with your own environment name),
+and install compas, compas_cgal, and libigl.
 
 .. code-block:: bash
 
     conda create -n compas_slicer python=3.7
+    conda activate compas_slicer
+    conda install COMPAS
+    conda install COMPAS compas_cgal
+    conda install igl
+
+
+Step 2: Install compas_slicer
+-----------------------------
 
 Clone the repository and activate your environment.
 
@@ -34,7 +43,7 @@ Navigate to the folder where you cloned the compas_slicer repository and install
 You should get the message 'Successfully installed compas-slicer' (amongst other packages)
 
 
-Step 2. Install compas_viewers
+Step 3. Install compas_viewers
 ------------------------------
 
 Install compas_viewers (https://github.com/compas-dev/compas_viewers).
@@ -51,24 +60,9 @@ To install on an existing environment with python=3.7, use:
     pip install <path/to/compas_viewers>
 
 
-Step 3. Test if the library works
+Step 4. Test if the library works
 ---------------------------------
 Run the file examples/1_versions_check.py
-
-
-Additional Features
-===================
-
-compas_cal
-----------
-
-Compas_cgal offers a very fast method for planar slicing.
-It is available via conda-forge for Windows, OSX, and Linux, and can be installed using conda.
-
-.. code-block:: bash
-
-    conda activate <environment>
-    conda install COMPAS compas_cgal
 
 
 Troubleshooting
