@@ -83,12 +83,20 @@
 <p class="lead">COMPAS_SLICER can be easily installed on multiple platforms.</p>
 <div class="section" id="basic-installation-steps">
 <h2>Basic installation steps</h2>
-<div class="section" id="step-1-install-compas-slicer">
-<h3>Step 1: Install compas_slicer</h3>
-<p>Create a new environment (you can replace ‘compas_slicer’ with your own environment name).</p>
+<div class="section" id="step-1-install-compas">
+<h3>Step 1: Install compas</h3>
+<p>Create a new environment (you can replace ‘compas_slicer’ with your own environment name),
+and install compas, compas_cgal, and libigl.</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda create -n compas_slicer <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.7
+conda activate compas_slicer
+conda install COMPAS
+conda install COMPAS compas_cgal
+conda install -c conda-forge igl
 </code></pre></div>
 </div>
+</div>
+<div class="section" id="step-2-install-compas-slicer">
+<h3>Step 2: Install compas_slicer</h3>
 <p>Clone the repository and activate your environment.</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>git clone https://github.com/dbt-ethz/compas_slicer.git
 conda activate compas_slicer
@@ -100,8 +108,8 @@ conda activate compas_slicer
 </div>
 <p>You should get the message ‘Successfully installed compas-slicer’ (amongst other packages)</p>
 </div>
-<div class="section" id="step-2-install-compas-viewers">
-<h3>Step 2. Install compas_viewers</h3>
+<div class="section" id="step-3-install-compas-viewers">
+<h3>Step 3. Install compas_viewers</h3>
 <p>Install compas_viewers (<a class="reference external" href="https://github.com/compas-dev/compas_viewers">https://github.com/compas-dev/compas_viewers</a>).</p>
 <p>Download the wheel file from here: <a class="reference external" href="https://www.lfd.uci.edu/~gohlke/pythonlibs/">https://www.lfd.uci.edu/~gohlke/pythonlibs/</a></p>
 <p>To install on an existing environment with python=3.7, use:</p>
@@ -112,46 +120,15 @@ pip install &lt;path/to/compas_viewers&gt;
 </code></pre></div>
 </div>
 </div>
-<div class="section" id="step-3-test-if-the-library-works">
-<h3>Step 3. Test if the library works</h3>
+<div class="section" id="step-4-test-if-the-library-works">
+<h3>Step 4. Test if the library works</h3>
 <p>Run the file examples/1_versions_check.py</p>
-</div>
-</div>
-<div class="section" id="additional-features">
-<h2>Additional Features</h2>
-<div class="section" id="compas-cal">
-<h3>compas_cal</h3>
-<p>Compas_cgal offers a very fast method for planar slicing.
-It is available via conda-forge for Windows, OSX, and Linux, and can be installed using conda.</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda activate &lt;environment&gt;
-conda install COMPAS compas_cgal
-</code></pre></div>
-</div>
 </div>
 </div>
 <div class="section" id="troubleshooting">
 <h2>Troubleshooting</h2>
 <p>If you encounter a problem that is not described here, please file an issue
 using the <a class="reference external" href="https://github.com/dbt-ethz/compas_slicer/issues">Issue Tracker</a>.</p>
-<div class="section" id="git-not-recognized">
-<h3>Git not recognized</h3>
-<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span><span class="s1">&#39;git&#39;</span> is not recognized as an internal or external command, operable program or batch file.
-</code></pre></div>
-</div>
-<p>If you get this error, either you do not have GIT installed or your paths are not correctly set.
-If you don’t have either GIT/SourceTree/GitHub Desktop installed, you still need to install GiT.
-Go to the <a class="reference external" href="https://git-scm.com/downloads">Git website</a> and install it using the instructions provided.</p>
-<p>If you have installed GIT (or SourceTree/GitHub Desktop) it might be that you have to add the path to
-your environment variables. To do this, go to ‘Environment Variables’ on your computer, then in
-‘user variables’ click ‘Path’ and do ‘Edit’. You then need to add the path where your git.exe file is
-located to the environment variables. The location of this git.exe file depends on your GIT installation
-but is probably</p>
-<ul class="simple">
-<li><p>GIT: C:Program FilesGitcmd</p></li>
-<li><p>SourceTree: C:Users&lt;username&gt;AppDataLocalAtlassianSourceTreegit_localcmd</p></li>
-<li><p>GitHub Desktop: C:Users&lt;username&gt;AppDataLocalGitHubDesktopapp-&lt;appversion&gt;resourcesappgitcmd</p></li>
-</ul>
-</div>
 <div class="section" id="installing-planarity">
 <h3>Installing Planarity</h3>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>ModuleNotFoundError: No module named <span class="s1">&#39;Cython&#39;</span>
@@ -224,17 +201,13 @@ Make sure you are in the correct environment and type:</p>
         <ul class="nav flex-column" id="compas-toc">
 <li class="nav-item"><a class="nav-link reference internal" href="#">Installation</a><ul class="nav flex-column">
 <li class="nav-item"><a class="nav-link reference internal" href="#basic-installation-steps">Basic installation steps</a><ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="#step-1-install-compas-slicer">Step 1: Install compas_slicer</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#step-2-install-compas-viewers">Step 2. Install compas_viewers</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#step-3-test-if-the-library-works">Step 3. Test if the library works</a></li>
-</ul>
-</li>
-<li class="nav-item"><a class="nav-link reference internal" href="#additional-features">Additional Features</a><ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="#compas-cal">compas_cal</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#step-1-install-compas">Step 1: Install compas</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#step-2-install-compas-slicer">Step 2: Install compas_slicer</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#step-3-install-compas-viewers">Step 3. Install compas_viewers</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#step-4-test-if-the-library-works">Step 4. Test if the library works</a></li>
 </ul>
 </li>
 <li class="nav-item"><a class="nav-link reference internal" href="#troubleshooting">Troubleshooting</a><ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="#git-not-recognized">Git not recognized</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#installing-planarity">Installing Planarity</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#microsoft-visual-c-build-tools">Microsoft Visual C++ Build Tools</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#numpy-error">Numpy error</a></li>

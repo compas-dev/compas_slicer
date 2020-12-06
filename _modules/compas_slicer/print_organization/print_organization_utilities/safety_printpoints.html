@@ -77,6 +77,7 @@
         <h1 class="display-4 p-0 mb-5">Source code for compas_slicer.print_organization.print_organization_utilities.safety_printpoints</h1><div class="highlight"><pre><code>
 <span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Vector</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization.print_organization_utilities.extruder_toggle</span> <span class="kn">import</span> <span class="n">check_assigned_extruder_toggle</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.utilities</span> <span class="kn">import</span> <span class="n">find_next_printpoint</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
@@ -130,22 +131,6 @@
 
     <span class="c1">#  the safety printpoint has already been added at the end since the last printpoint extruder_toggle_type is False</span>
     <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span> <span class="o">=</span> <span class="n">pp_copy_dict</span></div>
-
-
-<span class="k">def</span> <span class="nf">find_next_printpoint</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">,</span> <span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the next printpoint of the current printpoint if it exists, otherwise returns None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">next_ppt</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># If there are more ppts in the current path, then take the next ppt</span>
-        <span class="n">next_ppt</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">][</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Otherwise take the next path if there are more paths in the current layer</span>
-            <span class="n">next_ppt</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Otherwise take the next layer if there are more layers in the current slicer</span>
-                <span class="n">next_ppt</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][</span><span class="s1">&#39;path_0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">next_ppt</span>
 
 
 <span class="k">def</span> <span class="nf">create_safety_printpoint</span><span class="p">(</span><span class="n">printpoint</span><span class="p">,</span> <span class="n">z_hop</span><span class="p">,</span> <span class="n">extruder_toggle</span><span class="p">):</span>

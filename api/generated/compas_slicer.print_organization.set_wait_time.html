@@ -82,15 +82,17 @@
 <h1 class="display-4 p-0 mb-5">set_wait_time</h1>
 <dl class="py function">
 <dt id="compas_slicer.print_organization.set_wait_time">
-<code class="sig-prename descclassname">compas_slicer.print_organization.</code><code class="sig-name descname">set_wait_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_organizer</span></em>, <em class="sig-param"><span class="n">wait_time</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/print_organization_utilities/wait_time.html#set_wait_time"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">compas_slicer.print_organization.</code><code class="sig-name descname">set_wait_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">print_organizer</span></em>, <em class="sig-param"><span class="n">wait_type</span></em>, <em class="sig-param"><span class="n">wait_time</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/print_organization_utilities/wait_time.html#set_wait_time"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Automatically sets a wait time for the printpoints.</p>
-<p>Sets a wait time for the printpoints if the extruder_toggle switches
-from False to True. Can be useful to add if there is a slight delay
-before the extruder starts to extrude.</p>
+<p>Sets a wait time for the printpoints, either before extrusion starts,
+after extrusion finishes, or in both cases.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>print_organizer</strong> (<a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.html#compas_slicer.print_organization.BasePrintOrganizer" title="compas_slicer.print_organization.BasePrintOrganizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.print_organization.BasePrintOrganizer</span></code></a>)</p></li>
+<li><p><strong>wait_type</strong> (<em>str</em>) – wait_before_extrusion:  sets a wait time before extrusion (extruder_toggle False to True)
+wait_after_extrusion: sets a wait time after extrusion (extruder_toggle True to False)
+wait_before_and_after_extrusion: sets a wait time before, and after extrusion</p></li>
 <li><p><strong>wait_time</strong> (<em>float</em>) – Time in seconds to introduce to add as a wait time</p></li>
 </ul>
 </dd>
