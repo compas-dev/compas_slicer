@@ -1,5 +1,6 @@
 from compas.geometry import Vector
 from compas_slicer.print_organization.print_organization_utilities.extruder_toggle import check_assigned_extruder_toggle
+from compas_slicer.utilities import find_next_printpoint
 import copy
 import logging
 
@@ -53,22 +54,6 @@ def add_safety_printpoints(print_organizer, z_hop=10.0):
 
     #  the safety printpoint has already been added at the end since the last printpoint extruder_toggle_type is False
     print_organizer.printpoints_dict = pp_copy_dict
-
-
-def find_next_printpoint(pp_dict, layer_key, path_key, i, j, k):
-    """
-    Returns the next printpoint of the current printpoint if it exists, otherwise returns None.
-    """
-    next_ppt = None
-    if k < len(pp_dict[layer_key][path_key]) - 1:  # If there are more ppts in the current path, then take the next ppt
-        next_ppt = pp_dict[layer_key][path_key][k + 1]
-    else:
-        if j < len(pp_dict[layer_key]) - 1:  # Otherwise take the next path if there are more paths in the current layer
-            next_ppt = pp_dict[layer_key]['path_%d' % (j + 1)][0]
-        else:
-            if i < len(pp_dict) - 1:  # Otherwise take the next layer if there are more layers in the current slicer
-                next_ppt = pp_dict['layer_%d' % (i + 1)]['path_0'][0]
-    return next_ppt
 
 
 def create_safety_printpoint(printpoint, z_hop, extruder_toggle):

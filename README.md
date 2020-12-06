@@ -15,11 +15,21 @@ Main features
 Getting started
 ------------
 
-### Step 1: Install compas_slicer
-- Create a new environment (you can replace 'compas_slicer' with your own environment name).
+### Step 1: Install compas
+
+- Create a new environment (you can replace 'compas_slicer' with your own environment name),
+and install compas, compas_cgal, and libigl.
+
 ```bash
 conda create -n compas_slicer python=3.7
+conda activate compas_slicer
+conda install COMPAS
+conda install COMPAS compas_cgal
+conda install -c conda-forge igl
 ```
+
+### Step 2: Install compas_slicer
+
 - Clone the repository and activate your environment.
 ```bash
 git clone https://github.com/dbt-ethz/compas_slicer.git
@@ -31,11 +41,11 @@ pip install -e .
 ```
 - You should get the message 'Successfully installed compas-slicer' (amongst other packages)
 
-### Step 2. Install compas_viewers
+### Step 3. Install compas_viewers
 
 - Install compas_viewers (https://github.com/compas-dev/compas_viewers).
 
-Download the wheel file from here: https://www.lfd.uci.edu/~gohlke/pythonlibs/
+- Download the wheel file from here: https://www.lfd.uci.edu/~gohlke/pythonlibs/
 To install on an existing environment with python=3.7, use:
 ```bash
 conda activate <environment_name>
@@ -44,23 +54,16 @@ pip install <path/to/file>/PyOpenGL‑3.1.5‑cp37‑cp37m‑win_amd64.whl
 pip install <path/to/compas_viewers>
 ```
 
-
-### Step 3. Test if the library works
+### Step 4. Test if the library works
 - Run the file examples/1_versions_check.py
 
 Enjoy!
 
+Troubleshooting
+---------------
 
-Additional Features
-------------
+See here: https://dbt-ethz.github.io/compas_slicer/installation.html#troubleshooting-1
 
-### Compas_cal
-Compas_cgal offers a very fast planar slicing method, in order to install it on your <environment> follow the steps described below
-
-```bash
-conda activate <environment>
-conda install COMPAS compas_cgal
-```
 
 Contributions
 ------------

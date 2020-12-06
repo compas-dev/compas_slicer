@@ -25,6 +25,8 @@ __all__ = ['get_output_directory',
            'plot_networkx_graph',
            'get_mesh_vertex_coords_with_attribute',
            'get_dict_key_from_value',
+           'find_next_printpoint',
+           'find_previous_printpoint',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
            'get_all_files_with_name',
@@ -409,6 +411,39 @@ def get_dict_key_from_value(dictionary, val):
         if val == value:
             return key
     return "key doesn't exist"
+
+
+def find_next_printpoint(pp_dict, layer_key, path_key, i, j, k):
+    """
+    Returns the next printpoint from the current printpoint if it exists, otherwise returns None.
+    """
+    next_ppt = None
+    if k < len(pp_dict[layer_key][path_key]) - 1:  # If there are more ppts in the current path, then take the next ppt
+        next_ppt = pp_dict[layer_key][path_key][k + 1]
+    else:
+        if j < len(pp_dict[layer_key]) - 1:  # Otherwise take the next path if there are more paths in the current layer
+            next_ppt = pp_dict[layer_key]['path_%d' % (j + 1)][0]
+        else:
+            if i < len(pp_dict) - 1:  # Otherwise take the next layer if there are more layers in the current slicer
+                next_ppt = pp_dict['layer_%d' % (i + 1)]['path_0'][0]
+    return next_ppt
+
+
+def find_previous_printpoint(pp_dict, layer_key, path_key, i, j, k):
+    """
+    Returns the previous printpoint from the current printpoint if it exists, otherwise returns None.
+    """
+    prev_ppt = None
+    if k > 0:  # If not the first point in a path, take the previous point in the path
+        prev_ppt = pp_dict[layer_key][path_key][k - 1]
+    else:
+        if j > 0:  # Otherwise take the last point of the previous path, if there are more paths in the current layer
+            prev_ppt = pp_dict[layer_key]['path_%d' % (j - 1)][-1]
+        else:
+            if i > 0:  # Otherwise take the last path of the previous layer if there are more layers in the current slicer
+                last_path_key = len(pp_dict[layer_key]) - 1
+                prev_ppt = pp_dict['layer_%d' % (i - 1)]['path_%d' % (last_path_key)][-1]
+    return prev_ppt
 
 
 #######################################

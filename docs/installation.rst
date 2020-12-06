@@ -9,14 +9,23 @@ COMPAS_SLICER can be easily installed on multiple platforms.
 Basic installation steps
 ========================
 
-Step 1: Install compas_slicer
------------------------------
+Step 1: Install compas
+----------------------
 
-Create a new environment (you can replace 'compas_slicer' with your own environment name).
+Create a new environment (you can replace 'compas_slicer' with your own environment name),
+and install compas, compas_cgal, and libigl.
 
 .. code-block:: bash
 
     conda create -n compas_slicer python=3.7
+    conda activate compas_slicer
+    conda install COMPAS
+    conda install COMPAS compas_cgal
+    conda install -c conda-forge igl
+
+
+Step 2: Install compas_slicer
+-----------------------------
 
 Clone the repository and activate your environment.
 
@@ -34,7 +43,7 @@ Navigate to the folder where you cloned the compas_slicer repository and install
 You should get the message 'Successfully installed compas-slicer' (amongst other packages)
 
 
-Step 2. Install compas_viewers
+Step 3. Install compas_viewers
 ------------------------------
 
 Install compas_viewers (https://github.com/compas-dev/compas_viewers).
@@ -51,24 +60,9 @@ To install on an existing environment with python=3.7, use:
     pip install <path/to/compas_viewers>
 
 
-Step 3. Test if the library works
+Step 4. Test if the library works
 ---------------------------------
 Run the file examples/1_versions_check.py
-
-
-Additional Features
-===================
-
-compas_cal
-----------
-
-Compas_cgal offers a very fast method for planar slicing.
-It is available via conda-forge for Windows, OSX, and Linux, and can be installed using conda.
-
-.. code-block:: bash
-
-    conda activate <environment>
-    conda install COMPAS compas_cgal
 
 
 Troubleshooting
@@ -76,27 +70,6 @@ Troubleshooting
 
 If you encounter a problem that is not described here, please file an issue 
 using the `Issue Tracker <https://github.com/dbt-ethz/compas_slicer/issues>`_.
-
-Git not recognized
-------------------
-
-.. code-block:: bash
-
-    'git' is not recognized as an internal or external command, operable program or batch file. 
-
-If you get this error, either you do not have GIT installed or your paths are not correctly set.
-If you don't have either GIT/SourceTree/GitHub Desktop installed, you still need to install GiT.
-Go to the `Git website <https://git-scm.com/downloads>`_ and install it using the instructions provided. 
-
-If you have installed GIT (or SourceTree/GitHub Desktop) it might be that you have to add the path to 
-your environment variables. To do this, go to 'Environment Variables' on your computer, then in 
-'user variables' click 'Path' and do 'Edit'. You then need to add the path where your git.exe file is 
-located to the environment variables. The location of this git.exe file depends on your GIT installation 
-but is probably
-
-* GIT: C:\Program Files\Git\cmd\
-* SourceTree: C:\Users\<username>\AppData\Local\Atlassian\SourceTree\git_local\cmd
-* GitHub Desktop: C:\Users\<username>\AppData\Local\GitHubDesktop\app-<appversion>\resources\app\git\cmd
 
 Installing Planarity
 --------------------
