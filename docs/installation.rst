@@ -21,7 +21,7 @@ and install compas, compas_cgal, and libigl.
     conda activate compas_slicer
     conda install COMPAS
     conda install COMPAS compas_cgal
-    conda install igl
+    conda install -c conda-forge igl
 
 
 Step 2: Install compas_slicer

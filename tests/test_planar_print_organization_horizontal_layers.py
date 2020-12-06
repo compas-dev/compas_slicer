@@ -15,18 +15,15 @@ from compas_slicer.print_organization.print_organization_utilities.extruder_togg
 from compas.datastructures import Mesh
 
 HERE = os.path.dirname(__file__)
-DATA = os.path.join(HERE, '..', 'data/test_geometries')
-OUTPUT_DIR = utils.get_output_directory(HERE)  # creates 'output' folder if it doesn't already exist
-stl_to_test = ['distorted_v_closed_mid_res.stl'] #, 'distorted_a_closed_mid_res.stl']
+DATA = os.path.join(HERE, 'tests_data')
+stl_to_test = ['distorted_v_closed_low_res.obj']  # , 'distorted_a_closed_low_res.obj']
 
 
 def create_setup(filename):
     """ Setting up the stage for testing. """
-
     FILE = os.path.abspath(os.path.join(DATA, filename))
-
-    compas_mesh = Mesh.from_stl(FILE)
-    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=15)
+    compas_mesh = Mesh.from_obj(FILE)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=20)
     slicer.slice_model()
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=3)
     simplify_paths_rdp(slicer, threshold=1.3)
@@ -156,3 +153,7 @@ def test_planar_set_blend_radius_for_horizontal_layers():
     # set_blend_radius(print_organizer_copy, d_fillet=10.0)
     pass
     # TODO check results
+
+
+if __name__ == '__main__':
+    pass

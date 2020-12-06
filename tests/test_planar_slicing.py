@@ -4,7 +4,7 @@ import os
 from compas.datastructures import Mesh
 from compas_slicer.slicers import PlanarSlicer
 
-DATA = os.path.join(os.path.dirname(__file__), '..', 'data/test_geometries')
+DATA = os.path.join(os.path.dirname(__file__), 'tests_data')
 FILE = os.path.abspath(os.path.join(DATA, 'cylinder.obj'))
 
 compas_mesh = Mesh.from_obj(os.path.join(DATA, FILE))
