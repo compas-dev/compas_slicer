@@ -59,7 +59,7 @@ def get_edge_gradient_from_vertex_gradient(mesh, vertex_gradient):
     return np.array(edge_gradient)
 
 
-def get_face_gradient_from_scalar_field(mesh, u):
+def get_face_gradient_from_scalar_field(mesh, u, use_igl=True):
     """
     Finds face gradient from scalar field u.
     Scalar field u is given per vertex.
@@ -74,20 +74,33 @@ def get_face_gradient_from_scalar_field(mesh, u):
     np.array (dimensions : #F x 3) one gradient vector per face.
     """
     logger.info('Computing per face gradient')
-    grad = []
-    for fkey in mesh.faces():
-        A = mesh.face_area(fkey)
-        N = mesh.face_normal(fkey)
-        edge_0, edge_1, edge_2 = get_face_edge_vectors(mesh, fkey)
-        v0, v1, v2 = mesh.face_vertices(fkey)
-        u0 = u[v0]
-        u1 = u[v1]
-        u2 = u[v2]
-        grad_u = (np.cross(N, edge_0) * u2 +
-                  np.cross(N, edge_1) * u0 +
-                  np.cross(N, edge_2) * u1) / (2 * A)
-        grad.append(grad_u)
-    return np.array(grad)
+    if use_igl:
+        import igl
+        v, f = mesh.to_vertices_and_faces()
+        G = igl.grad(np.array(v), np.array(f))
+        X = G * u
+        nf = len(list(mesh.faces()))
+        X = np.array([[X[i], X[i + nf], X[i + 2 * nf]] for i in range(nf)])
+        return X
+    else:
+        grad = []
+        for fkey in mesh.faces():
+            A = mesh.face_area(fkey)
+            N = mesh.face_normal(fkey)
+            edge_0, edge_1, edge_2 = get_face_edge_vectors(mesh, fkey)
+            v0, v1, v2 = mesh.face_vertices(fkey)
+            u0 = u[v0]
+            u1 = u[v1]
+            u2 = u[v2]
+            vc0 = np.array(mesh.vertex_coordinates(v0))
+            vc1 = np.array(mesh.vertex_coordinates(v1))
+            vc2 = np.array(mesh.vertex_coordinates(v2))
+            grad_u = -1 * ((u1-u0) * np.cross(vc0-vc2, N) + (u2-u0) * np.cross(vc1-vc0, N)) / (2 * A)
+            # grad_u = (np.cross(N, edge_0) * u2 +
+            #           np.cross(N, edge_1) * u0 +
+            #           np.cross(N, edge_2) * u1) / (2 * A)
+            grad.append(grad_u)
+        return np.array(grad)
 
 
 def get_face_edge_vectors(mesh, fkey):
@@ -128,10 +141,11 @@ def get_per_face_divergence(mesh, X, cotans):
 
 def normalize_gradient(X):
     """ Returns normalized gradient X. """
-    return X / np.linalg.norm(X, axis=1)[..., np.newaxis]  # normalize
+    norm = np.linalg.norm(X, axis=1)[..., np.newaxis]
+    return X / norm  # normalize
 
 
-def get_scalar_field_from_gradient(mesh, X, L, cotans):
+def get_scalar_field_from_gradient(mesh, X, C, cotans):
     """
     Find scalar field u that best explains gradient X.
     Laplacian(u) = Divergence(X).
@@ -142,7 +156,7 @@ def get_scalar_field_from_gradient(mesh, X, L, cotans):
     mesh: :class: 'compas.datastructures.Mesh'
     X: np.array, (dimensions: #F x 3), per face gradient
     L: 'scipy.sparse.csr_matrix',
-        sparse matrix (dimensions: #V x #V), laplace operator, each row i corresponding to v(i, :)
+        sparse matrix (dimensions: #V x #V), cotmatrix, each row i corresponding to v(i, :)
     cotans: np.array, (dimensions: #F x 3), 1/2*cotangents corresponding angles
 
     Returns
@@ -150,7 +164,8 @@ def get_scalar_field_from_gradient(mesh, X, L, cotans):
     np.array (dimensions : #V x 1) one scalar value per vertex.
     """
     div_X = get_per_face_divergence(mesh, X, cotans)
-    u = scipy.sparse.linalg.spsolve(L, div_X)
+    u = scipy.sparse.linalg.spsolve(C, div_X)
+    print('Linear system error |A*x - b| = ', np.linalg.norm(C * u - div_X))
     u = u - np.amin(u)  # make start value equal 0
     u = 2*u
     return u

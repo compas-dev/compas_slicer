@@ -23,6 +23,8 @@ class Layer(object):
 
     def __init__(self, paths):
         # check input
+        if paths is None:
+            paths = []
         if len(paths) > 0:
             assert isinstance(paths[0], compas_slicer.geometry.Path)
         self.paths = paths
@@ -92,14 +94,14 @@ class VerticalLayer(Layer):
     id: int, identifier of vertical layer
     """
 
-    def __init__(self, id=0, paths=[]):
+    def __init__(self, id=0, paths=None):
         Layer.__init__(self, paths=paths)
         self.id = id
         self.head_centroid = None
 
     def __repr__(self):
         no_of_paths = len(self.paths) if self.paths else 0
-        return "<Vertical Layer object with %i paths>" % no_of_paths
+        return "<Vertical Layer object with id : %d and %d paths>" % (self.id, no_of_paths)
 
     def append_(self, path):
         """ Add path to self.paths list. """
