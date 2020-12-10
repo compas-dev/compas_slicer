@@ -42,14 +42,14 @@ class GradientEvaluation:
     @property
     def assigned_distances(self):
         """ Returns the distance values that have been assigned to the vertices for the evaluation. """
-        return [data['get_distance'] for vkey, data in self.mesh.vertices(data=True)]
+        return [data['scalar_field'] for vkey, data in self.mesh.vertices(data=True)]
 
     #####################################
     # --- Distance speed scalar evaluation
 
     def compute_gradient(self):
         """ Computes the gradient on the faces and the vertices. """
-        u_v = [self.mesh.vertex[vkey]["get_distance"] for vkey in self.mesh.vertices()]
+        u_v = [self.mesh.vertex[vkey]['scalar_field'] for vkey in self.mesh.vertices()]
         self.face_gradient = get_face_gradient_from_scalar_field(self.mesh, u_v)
         self.vertex_gradient = get_vertex_gradient_from_face_gradient(self.mesh, self.face_gradient)
 
@@ -67,19 +67,19 @@ class GradientEvaluation:
     def find_critical_points(self):
         """ Finds minima, maxima and saddle points of the scalar function on the mesh. """
         for vkey, data in self.mesh.vertices(data=True):
-            current_v = data['get_distance']
+            current_v = data['scalar_field']
             neighbors = self.mesh.vertex_neighbors(vkey, ordered=True)
             values = []
             if len(neighbors) > 0:
                 neighbors.append(neighbors[0])
                 for n in neighbors:
-                    v = self.mesh.vertex_attributes(n)['get_distance']
+                    v = self.mesh.vertex_attributes(n)['scalar_field']
                     if abs(v - current_v) > 0.0:
                         values.append(current_v - v)
                 sgc = count_sign_changes(values)
 
                 if sgc == 0:  # extreme point
-                    if current_v > self.mesh.vertex_attributes(neighbors[0])['get_distance']:
+                    if current_v > self.mesh.vertex_attributes(neighbors[0])['scalar_field']:
                         self.maxima.append(vkey)
                     else:
                         self.minima.append(vkey)

@@ -31,8 +31,10 @@ class DirectedGraph(object):
         self.create_graph_nodes()
         self.root_indices = self.find_roots()
         logger.info('Graph roots : ' + str(self.root_indices))
+        assert len(self.root_indices) > 0, "No root nodes where found. At least one root node is needed."
         self.end_indices = self.find_ends()
         logger.info('Graph ends : ' + str(self.end_indices))
+        assert len(self.end_indices) > 0, "No end nodes where found. At least one end node is needed."
 
         self.create_directed_graph_edges(copy.deepcopy(self.root_indices))
         logger.info('Nodes : ' + str(self.G.nodes(data=True)))
@@ -306,7 +308,6 @@ class SegmentsDirectedGraph(DirectedGraph):
         root_segment = self.segments[root]
         root_last_crv_pts = root_segment.paths[-1].points
 
-        # utils.save_to_json(utils.point_list_to_dict(root_last_crv_pts), self.OUTPUT_PATH, 'root_last_crv_pts.json')
         for i, segment in enumerate(self.segments):
             if i != root:
                 segment_first_curve_pts = segment.paths[0].points
@@ -332,7 +333,7 @@ def are_neighboring_point_clouds(pts1, pts2, threshold):
     for pt in pts1:
         if distance_point_point_sqrd(pt, utils.get_closest_pt(pt, pts2)) < threshold:
             count += 1
-            if count > 3:
+            if count > 2:
                 return True
     return False
 

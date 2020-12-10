@@ -23,7 +23,7 @@ def assign_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
     """
     for i, vkey in enumerate(mesh.vertices()):
         d = assign_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH)
-        mesh.vertex[vkey]["get_distance"] = d
+        mesh.vertex[vkey]['scalar_field'] = d
 
 
 def assign_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH):

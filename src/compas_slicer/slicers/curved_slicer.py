@@ -23,9 +23,11 @@ class CurvedSlicer(BaseSlicer):
     parameters : dict
     """
 
-    def __init__(self, mesh, preprocessor, parameters):
+    def __init__(self, mesh, preprocessor=None, parameters=None):
         BaseSlicer.__init__(self, mesh)
-        assert len(list(mesh.vertices())) == len(list(preprocessor.mesh.vertices()))
+        if preprocessor:
+            # make sure the mesh of the preprocessor and the mesh of the slicer match
+            assert len(list(mesh.vertices())) == len(list(preprocessor.mesh.vertices()))
 
         self.parameters = parameters
         self.preprocessor = preprocessor
@@ -33,6 +35,9 @@ class CurvedSlicer(BaseSlicer):
 
     def generate_paths(self):
         """ Generates curved paths-polylines. """
+        assert self.preprocessor, 'You need to provide a pre-prosessor in order to generate paths.'
+        assert self.parameters, 'You need to provide a parameters dict in order to generate paths.'
+
         avg_layer_height = utils.get_param(self.parameters, 'avg_layer_height', default_value=5.0)
         n = find_desired_number_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH,
                                              avg_layer_height)
