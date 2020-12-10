@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>COMPAS SLICER</title>
+  <title>compas_slicer - compas_slicer.geometry.layer</title>
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -17,7 +17,7 @@
   <link rel="stylesheet" type="text/css" href="../../../_static/css/compas-reference.css" />
 
   
-  
+
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -49,6 +49,7 @@
       </ul>
       <!-- primary -->
       <ul class="navbar-nav d-none d-md-flex ml-md-auto">
+        <!-- version -->
         
         <!-- version -->
         <!-- social -->
@@ -100,6 +101,8 @@
 
 <div class="viewcode-block" id="Layer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.__init__.html#compas_slicer.geometry.Layer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paths</span><span class="p">):</span>
         <span class="c1"># check input</span>
+        <span class="k">if</span> <span class="n">paths</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="n">paths</span>
@@ -169,14 +172,14 @@
 <span class="sd">    id: int, identifier of vertical layer</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
-        <span class="n">Layer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="p">[])</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Layer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="n">paths</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head_centroid</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">no_of_paths</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="k">else</span> <span class="mi">0</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;Vertical Layer object with </span><span class="si">%i</span><span class="s2"> paths&gt;&quot;</span> <span class="o">%</span> <span class="n">no_of_paths</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Vertical Layer object with id : </span><span class="si">%d</span><span class="s2"> and </span><span class="si">%d</span><span class="s2"> paths&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">no_of_paths</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">append_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Add path to self.paths list. &quot;&quot;&quot;</span>
@@ -237,7 +240,7 @@
       </main>
       <!-- content -->
       <!-- sidebar -->
-      <div class="col-12 col-md-3 compas-sidebar" role="navigation"> 
+      <div class="col-12 col-md-3 compas-sidebar" role="navigation">
         <form id="search" class="d-flex align-items-center compas-searchbox" action="../../../search.html" method="get">
           <input class="form-control" type="text" name="q" placeholder="Search docs" />
           <input type="hidden" name="check_keywords" value="yes" />

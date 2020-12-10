@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>COMPAS SLICER</title>
+  <title>compas_slicer - CurvedSlicer</title>
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -19,7 +19,7 @@
   
     <link rel="next" title="CurvedSlicer.__init__" href="compas_slicer.slicers.CurvedSlicer.__init__.html" />
   
-  
+
   
     <link rel="prev" title="PlanarSlicer.visualize_on_viewer" href="compas_slicer.slicers.PlanarSlicer.visualize_on_viewer.html" />
   
@@ -53,6 +53,7 @@
       </ul>
       <!-- primary -->
       <ul class="navbar-nav d-none d-md-flex ml-md-auto">
+        <!-- version -->
         
         <!-- version -->
         <!-- social -->
@@ -82,7 +83,7 @@
 <h1 class="display-4 p-0 mb-5">CurvedSlicer</h1>
 <dl class="py class">
 <dt id="compas_slicer.slicers.CurvedSlicer">
-<em class="property">class </em><code class="sig-prename descclassname">compas_slicer.slicers.</code><code class="sig-name descname">CurvedSlicer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mesh</span></em>, <em class="sig-param"><span class="n">preprocessor</span></em>, <em class="sig-param"><span class="n">parameters</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/curved_slicer.html#CurvedSlicer"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_slicer.slicers.</code><code class="sig-name descname">CurvedSlicer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mesh</span></em>, <em class="sig-param"><span class="n">preprocessor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parameters</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/curved_slicer.html#CurvedSlicer"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.base_slicer.BaseSlicer</span></code></p>
 <p>Generates non-planar contours that interpolate user-defined boundaries.</p>
 <dl class="field-list simple">
@@ -130,7 +131,7 @@ WE recommend to 1)retopologize, 2) triangulate, and 3) weld your mesh in advance
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.CurvedSlicer.__init__.html#compas_slicer.slicers.CurvedSlicer.__init__" title="compas_slicer.slicers.CurvedSlicer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(mesh, preprocessor, parameters)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.CurvedSlicer.__init__.html#compas_slicer.slicers.CurvedSlicer.__init__" title="compas_slicer.slicers.CurvedSlicer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(mesh[, preprocessor, parameters])</p></td>
 <td><p>Initialize self.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.slicers.CurvedSlicer.generate_paths.html#compas_slicer.slicers.CurvedSlicer.generate_paths" title="compas_slicer.slicers.CurvedSlicer.generate_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_paths</span></code></a>()</p></td>
@@ -188,7 +189,7 @@ WE recommend to 1)retopologize, 2) triangulate, and 3) weld your mesh in advance
       </main>
       <!-- content -->
       <!-- sidebar -->
-      <div class="col-12 col-md-3 compas-sidebar" role="navigation"> 
+      <div class="col-12 col-md-3 compas-sidebar" role="navigation">
         <form id="search" class="d-flex align-items-center compas-searchbox" action="../../search.html" method="get">
           <input class="form-control" type="text" name="q" placeholder="Search docs" />
           <input type="hidden" name="check_keywords" value="yes" />
