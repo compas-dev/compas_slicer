@@ -98,7 +98,7 @@ class MeshSplitter:
             g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, param_first_estimation, self.target_LOW,
                                               self.target_HIGH)
             g_evaluation.find_critical_points()
-            saddles_ds_tupples = [(vkey, abs(g_evaluation.mesh.vertex_attribute(vkey, 'get_distance'))) for vkey in
+            saddles_ds_tupples = [(vkey, abs(g_evaluation.mesh.vertex_attribute(vkey, 'scalar_field'))) for vkey in
                                   g_evaluation.saddles]
             saddles_ds_tupples = sorted(saddles_ds_tupples, key=lambda saddle_tupple: saddle_tupple[1])
             vkey = saddles_ds_tupples[0][0]
