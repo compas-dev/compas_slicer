@@ -108,6 +108,24 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;BasePrintOrganizer&gt;&quot;</span>
 
+    <span class="c1">######################</span>
+    <span class="c1"># Abstract methods</span>
+    <span class="c1">######################</span>
+
+<div class="viewcode-block" id="BasePrintOrganizer.create_printpoints"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.create_printpoints.html#compas_slicer.print_organization.BasePrintOrganizer.create_printpoints">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">create_printpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BasePrintOrganizer.check_printpoints_feasibility"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.check_printpoints_feasibility.html#compas_slicer.print_organization.BasePrintOrganizer.check_printpoints_feasibility">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">check_printpoints_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="c1">######################</span>
+    <span class="c1"># Properties</span>
+    <span class="c1">######################</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">total_number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;int: Total number of points in the PrintOrganizer.&quot;&quot;&quot;</span>
@@ -127,30 +145,9 @@
         <span class="sd">&quot;&quot;&quot;int: Number of paths within a Layer of the PrintOrganizer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">layer_index</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="BasePrintOrganizer.create_printpoints"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.create_printpoints.html#compas_slicer.print_organization.BasePrintOrganizer.create_printpoints">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">create_printpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="BasePrintOrganizer.check_printpoints_feasibility"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.check_printpoints_feasibility.html#compas_slicer.print_organization.BasePrintOrganizer.check_printpoints_feasibility">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">check_printpoints_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="BasePrintOrganizer.output_printpoints_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict.html#compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict">[docs]</a>    <span class="k">def</span> <span class="nf">output_printpoints_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the PrintPoints as a dictionary.&quot;&quot;&quot;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">remove_duplicate_points_in_path</span><span class="p">(</span><span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
-                    <span class="n">data</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="n">printpoint</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
-
-                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generated </span><span class="si">%d</span><span class="s2"> print points&quot;</span> <span class="o">%</span> <span class="n">count</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">data</span></div>
+    <span class="c1">######################</span>
+    <span class="c1"># Utils</span>
+    <span class="c1">######################</span>
 
 <div class="viewcode-block" id="BasePrintOrganizer.remove_duplicate_points_in_path"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path.html#compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate_points_in_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove subsequent points that are within a certain tolerance.</span>
@@ -230,7 +227,7 @@
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flat_dict</span><span class="p">)):</span>
             <span class="n">curr</span> <span class="o">=</span> <span class="n">flat_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">prev</span> <span class="o">=</span> <span class="n">flat_dict</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">flat_dict</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># calculate length of toolpath</span>
@@ -239,7 +236,7 @@
                 <span class="c1"># get speed for every section and calculate time</span>
                 <span class="k">if</span> <span class="n">curr</span><span class="o">.</span><span class="n">velocity</span><span class="p">:</span>
                     <span class="n">speed</span> <span class="o">=</span> <span class="n">curr</span><span class="o">.</span><span class="n">velocity</span>
-                    <span class="n">time</span> <span class="o">=</span> <span class="n">length</span><span class="o">/</span><span class="n">speed</span>
+                    <span class="n">time</span> <span class="o">=</span> <span class="n">length</span> <span class="o">/</span> <span class="n">speed</span>
                     <span class="n">total_time</span> <span class="o">+=</span> <span class="n">time</span>
 
         <span class="nb">min</span><span class="p">,</span> <span class="n">sec</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">total_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
@@ -273,7 +270,46 @@
             <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">polyline</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Polyline&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#ffffff&#39;</span><span class="p">})</span>
 
         <span class="k">if</span> <span class="n">visualize_printpoints</span><span class="p">:</span>
-            <span class="p">[</span><span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Point </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_pts</span><span class="p">)]</span></div></div>
+            <span class="p">[</span><span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Point </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_pts</span><span class="p">)]</span></div>
+
+    <span class="c1">######################</span>
+    <span class="c1"># Output data</span>
+    <span class="c1">######################</span>
+
+<div class="viewcode-block" id="BasePrintOrganizer.output_printpoints_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict.html#compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict">[docs]</a>    <span class="k">def</span> <span class="nf">output_printpoints_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a flattened PrintPoints as a dictionary.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict, with printpoints that can be saved as json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_duplicate_points_in_path</span><span class="p">(</span><span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="n">printpoint</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
+
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generated </span><span class="si">%d</span><span class="s2"> print points&quot;</span> <span class="o">%</span> <span class="n">count</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="BasePrintOrganizer.output_gcode"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.output_gcode.html#compas_slicer.print_organization.BasePrintOrganizer.output_gcode">[docs]</a>    <span class="k">def</span> <span class="nf">output_gcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Gets a gcode text file using the function that creates gcode</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parameters: dict with gcode parameters</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        str, gcode text file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check print organizer: Should have horizontal layers, ideally should be planar</span>
+        <span class="c1"># ...</span>
+        <span class="n">gcode</span> <span class="o">=</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">print_organization</span><span class="o">.</span><span class="n">create_gcode_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gcode</span></div></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

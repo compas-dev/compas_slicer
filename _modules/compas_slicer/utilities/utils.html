@@ -91,6 +91,7 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;get_output_directory&#39;</span><span class="p">,</span>
            <span class="s1">&#39;save_to_json&#39;</span><span class="p">,</span>
            <span class="s1">&#39;load_from_json&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;save_to_text_file&#39;</span><span class="p">,</span>
            <span class="s1">&#39;flattened_list_of_dictionary&#39;</span><span class="p">,</span>
            <span class="s1">&#39;interrupt&#39;</span><span class="p">,</span>
            <span class="s1">&#39;point_list_to_dict&#39;</span><span class="p">,</span>
@@ -107,8 +108,7 @@
            <span class="s1">&#39;find_previous_printpoint&#39;</span><span class="p">,</span>
            <span class="s1">&#39;smooth_vectors&#39;</span><span class="p">,</span>
            <span class="s1">&#39;get_normal_of_path_on_xy_plane&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;get_all_files_with_name&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;get_param&#39;</span><span class="p">]</span>
+           <span class="s1">&#39;get_all_files_with_name&#39;</span><span class="p">]</span>
 
 
 <span class="k">def</span> <span class="nf">get_output_directory</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
@@ -230,6 +230,26 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded json: &quot;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span></div>
+
+
+<span class="c1">#######################################</span>
+<span class="c1">#  text file</span>
+
+<span class="k">def</span> <span class="nf">save_to_text_file</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save the provided text on the filepath, with the given name</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: str</span>
+<span class="sd">    filepath: str</span>
+<span class="sd">    name: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Saving to text file: &quot;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 
 <span class="c1">#######################################</span>
@@ -522,31 +542,6 @@
                 <span class="n">last_path_key</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
                 <span class="n">prev_ppt</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)][</span><span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">last_path_key</span><span class="p">)][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">prev_ppt</span>
-
-
-<span class="c1">#######################################</span>
-<span class="c1">#  parameters</span>
-
-<span class="k">def</span> <span class="nf">get_param</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default_value</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Function useful for accessing the params dictionary of curved slicing.</span>
-<span class="sd">    If the key is in the params dict, it returns its value,</span>
-<span class="sd">    otherwise it returns the default_value.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    params: dict</span>
-<span class="sd">    key: str</span>
-<span class="sd">    default_value: anything that can be saved in a dict</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
-<span class="sd">    params[key] if key in params, otherwise default_value</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">default_value</span>
 
 
 <span class="c1">#######################################</span>
