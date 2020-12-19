@@ -10,8 +10,15 @@ def create_gcode_text(printpoints_dict, parameters):
     """ Creates a gcode text file
     Parameters
     ----------
-    printpoints_dict: dict printpoints information
-    parameters : dict with gcode parameters
+    printpoints_dict: dict with compas_slicer.geometry.Printpoint instances.
+        The keys of the dictionary are setup in the following way:
+        {['layer_%d' % i] =
+            {['path_%d' % i] =
+                [printpoint_1 , ....., printpoint_n ]
+            }
+        }
+    parameters : dict with gcode parameters.
+        The defaults for those parameters are in the file compas_slicer.parameters.defaults_gcode.
 
     Returns
     ----------
