@@ -29,7 +29,9 @@ def create_gcode_text(printpoints_dict, parameters):
     # Iterate through the printpoints_dict and add information to the gcode str
     for layer_key in printpoints_dict:
         for path_key in printpoints_dict[layer_key]:
-            pass
+
+            gcode += 'this is a command %.4f %.4f %.4f \n' % (z_hop, extruder_temp, bed_temp)  # just remove this line
+
             # .... gcode += 'command'
     # Thanks!
 

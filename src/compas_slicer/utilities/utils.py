@@ -13,7 +13,7 @@ logger = logging.getLogger('logger')
 __all__ = ['get_output_directory',
            'save_to_json',
            'load_from_json',
-            'save_to_text_file',
+           'save_to_text_file',
            'flattened_list_of_dictionary',
            'interrupt',
            'point_list_to_dict',
