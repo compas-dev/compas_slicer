@@ -8,6 +8,7 @@ from compas_slicer.pre_processing.curved_slicing_preprocessing import region_spl
 from compas_slicer.pre_processing import get_existing_cut_indices, get_vertices_that_belong_to_cuts, \
     replace_mesh_vertex_attribute
 import compas_slicer.utilities as utils
+from compas_slicer.parameters import get_param
 
 logger = logging.getLogger('logger')
 
@@ -45,25 +46,27 @@ class CurvedSlicingPreprocessor:
         """ Creates the target_LOW and the target_HIGH and computes the geodesic distances. """
 
         # --- low target
-        target_blending = utils.get_param(self.parameters, 'target_LOW_smooth_union', default_value=[False, 0])
+        target_blending = get_param(self.parameters, key='target_LOW_smooth_union', defaults_type='curved_slicing')
         smooth, r = target_blending[0], target_blending[1]
-        geodesics_method = utils.get_param(self.parameters, 'target_LOW_geodesics_method', default_value='exact_igl')
+        geodesics_method = get_param(self.parameters, key='target_LOW_geodesics_method', defaults_type='curved_slicing')
         self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH,
                                          has_blend_union=smooth,
                                          blend_radius=r,
                                          geodesics_method=geodesics_method)
 
         # --- high target
-        target_blending = utils.get_param(self.parameters, 'target_HIGH_smooth_union', default_value=[False, 0])
+        target_blending = get_param(self.parameters, key='target_HIGH_smooth_union', defaults_type='curved_slicing')
         smooth, r = target_blending[0], target_blending[1]
-        geodesics_method = utils.get_param(self.parameters, 'target_HIGH_geodesics_method', default_value='exact_igl')
+        geodesics_method = get_param(self.parameters, key='target_HIGH_geodesics_method',
+                                     defaults_type='curved_slicing')
         self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH,
                                           has_blend_union=smooth,
                                           blend_radius=r,
                                           geodesics_method=geodesics_method)
 
         # --- uneven boundaries of high target
-        self.target_HIGH.offset = utils.get_param(self.parameters, 'uneven_upper_targets_offset', default_value=0)
+        self.target_HIGH.offset = get_param(self.parameters, key='uneven_upper_targets_offset',
+                                            defaults_type='curved_slicing')
         self.target_HIGH.compute_uneven_boundaries_weight_max(self.target_LOW)
 
         #  --- save intermediary get_distance outputs

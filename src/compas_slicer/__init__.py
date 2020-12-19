@@ -66,5 +66,6 @@ from .print_organization import *  # noqa: F401 E402 F403
 from .utilities import *  # noqa: F401 E402 F403
 from .post_processing import *  # noqa: F401 E402 F403
 from .pre_processing import *  # noqa: F401 E402 F403
+from .parameters import *  # noqa: F401 E402 F403
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]
