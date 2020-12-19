@@ -1,8 +1,8 @@
-__all__ = ['curved_slicing_param']
+__all__ = ['curved_slicing_default_param']
 
 
-def curved_slicing_param(key):
-    """ Returns the parameters with the specified key. """
+def curved_slicing_default_param(key):
+    """ Returns the default parameters with the specified key. """
     if key in default_parameters:
         return default_parameters[key]
     else:

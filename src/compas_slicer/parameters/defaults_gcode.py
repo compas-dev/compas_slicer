@@ -1,8 +1,8 @@
-__all__ = ['gcode_param']
+__all__ = ['gcode_default_param']
 
 
-def gcode_param(key):
-    """ Returns the parameters with the specified key. """
+def gcode_default_param(key):
+    """ Returns the default parameter with the specified key. """
     if key in default_parameters:
         return default_parameters[key]
     else:
@@ -12,5 +12,9 @@ def gcode_param(key):
 
 default_parameters = \
     {
-        'z_hop': 0.5
+        # These parameters are not thought-through! Feel free to change them as you see fit
+        'extruder_temperature': 200,
+        'bed_temperature': 60,
+        'z_hop': 0.5,
+        # add more parameters as you see fit
     }

@@ -13,6 +13,7 @@ logger = logging.getLogger('logger')
 __all__ = ['get_output_directory',
            'save_to_json',
            'load_from_json',
+            'save_to_text_file',
            'flattened_list_of_dictionary',
            'interrupt',
            'point_list_to_dict',
@@ -151,6 +152,26 @@ def load_from_json(filepath, name):
         data = json.load(f)
     logger.info("Loaded json: " + filename)
     return data
+
+
+#######################################
+#  text file
+
+def save_to_text_file(data, filepath, name):
+    """
+    Save the provided text on the filepath, with the given name
+
+    Parameters
+    ----------
+    data: str
+    filepath: str
+    name: str
+    """
+
+    filename = os.path.join(filepath, name)
+    logger.info("Saving to text file: " + filename)
+    with open(filename, 'w') as f:
+        f.write(data)
 
 
 #######################################

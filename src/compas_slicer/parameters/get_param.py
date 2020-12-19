@@ -23,8 +23,8 @@ def get_param(params, key, defaults_type):
         return params[key]
     else:
         if defaults_type == 'curved_slicing':
-            return compas_slicer.parameters.curved_slicing_param(key)
+            return compas_slicer.parameters.curved_slicing_default_param(key)
         elif defaults_type == 'gcode':
-            return compas_slicer.parameters.gcode_param(key)
+            return compas_slicer.parameters.gcode_default_param(key)
         else:
             raise ValueError('The specified parameter type : ' + str(defaults_type) + ' does not exist.')

@@ -30,6 +30,24 @@ class BasePrintOrganizer(object):
     def __repr__(self):
         return "<BasePrintOrganizer>"
 
+    ######################
+    # Abstract methods
+    ######################
+
+    @abstractmethod
+    def create_printpoints(self):
+        """To be implemented by the inheriting classes"""
+        pass
+
+    @abstractmethod
+    def check_printpoints_feasibility(self):
+        """To be implemented by the inheriting classes"""
+        pass
+
+    ######################
+    # Properties
+    ######################
+
     @property
     def total_number_of_points(self):
         """int: Total number of points in the PrintOrganizer."""
@@ -49,30 +67,9 @@ class BasePrintOrganizer(object):
         """int: Number of paths within a Layer of the PrintOrganizer."""
         return len(self.printpoints_dict['layer_%d' % layer_index])
 
-    @abstractmethod
-    def create_printpoints(self):
-        """To be implemented by the inheriting classes"""
-        pass
-
-    @abstractmethod
-    def check_printpoints_feasibility(self):
-        """To be implemented by the inheriting classes"""
-        pass
-
-    def output_printpoints_dict(self):
-        """Returns the PrintPoints as a dictionary."""
-        data = {}
-
-        count = 0
-        for layer_key in self.printpoints_dict:
-            for path_key in self.printpoints_dict[layer_key]:
-                self.remove_duplicate_points_in_path(layer_key, path_key)
-                for printpoint in self.printpoints_dict[layer_key][path_key]:
-                    data[count] = printpoint.to_data()
-
-                    count += 1
-        logger.info("Generated %d print points" % count)
-        return data
+    ######################
+    # Utils
+    ######################
 
     def remove_duplicate_points_in_path(self, layer_key, path_key, tolerance=0.0001):
         """Remove subsequent points that are within a certain tolerance.
@@ -152,7 +149,7 @@ class BasePrintOrganizer(object):
 
         for i in range(len(flat_dict)):
             curr = flat_dict[i]
-            prev = flat_dict[i-1]
+            prev = flat_dict[i - 1]
 
             if i > 0:
                 # calculate length of toolpath
@@ -161,7 +158,7 @@ class BasePrintOrganizer(object):
                 # get speed for every section and calculate time
                 if curr.velocity:
                     speed = curr.velocity
-                    time = length/speed
+                    time = length / speed
                     total_time += time
 
         min, sec = divmod(total_time, 60)
@@ -196,6 +193,45 @@ class BasePrintOrganizer(object):
 
         if visualize_printpoints:
             [viewer.add(pt, name="Point %d" % i) for i, pt in enumerate(all_pts)]
+
+    ######################
+    # Output data
+    ######################
+
+    def output_printpoints_dict(self):
+        """Creates a flattened PrintPoints as a dictionary.
+
+        Returns
+        ----------
+        dict, with printpoints that can be saved as json
+        """
+        data = {}
+
+        count = 0
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                self.remove_duplicate_points_in_path(layer_key, path_key)
+                for printpoint in self.printpoints_dict[layer_key][path_key]:
+                    data[count] = printpoint.to_data()
+
+                    count += 1
+        logger.info("Generated %d print points" % count)
+        return data
+
+    def output_gcode(self, parameters):
+        """ Gets a gcode text file using the function that creates gcode
+        Parameters
+        ----------
+        parameters: dict with gcode parameters
+
+        Returns
+        ----------
+        str, gcode text file
+        """
+        # check print organizer: Should have horizontal layers, ideally should be planar
+        # ...
+        gcode = compas_slicer.print_organization.create_gcode_text(self.printpoints_dict, parameters)
+        return gcode
 
 
 if __name__ == "__main__":
