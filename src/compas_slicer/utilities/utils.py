@@ -13,6 +13,7 @@ logger = logging.getLogger('logger')
 __all__ = ['get_output_directory',
            'save_to_json',
            'load_from_json',
+           'save_to_text_file',
            'flattened_list_of_dictionary',
            'interrupt',
            'point_list_to_dict',
@@ -29,8 +30,7 @@ __all__ = ['get_output_directory',
            'find_previous_printpoint',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
-           'get_all_files_with_name',
-           'get_param']
+           'get_all_files_with_name']
 
 
 def get_output_directory(path):
@@ -152,6 +152,26 @@ def load_from_json(filepath, name):
         data = json.load(f)
     logger.info("Loaded json: " + filename)
     return data
+
+
+#######################################
+#  text file
+
+def save_to_text_file(data, filepath, name):
+    """
+    Save the provided text on the filepath, with the given name
+
+    Parameters
+    ----------
+    data: str
+    filepath: str
+    name: str
+    """
+
+    filename = os.path.join(filepath, name)
+    logger.info("Saving to text file: " + filename)
+    with open(filename, 'w') as f:
+        f.write(data)
 
 
 #######################################
@@ -444,31 +464,6 @@ def find_previous_printpoint(pp_dict, layer_key, path_key, i, j, k):
                 last_path_key = len(pp_dict[layer_key]) - 1
                 prev_ppt = pp_dict['layer_%d' % (i - 1)]['path_%d' % (last_path_key)][-1]
     return prev_ppt
-
-
-#######################################
-#  parameters
-
-def get_param(params, key, default_value):
-    """
-    Function useful for accessing the params dictionary of curved slicing.
-    If the key is in the params dict, it returns its value,
-    otherwise it returns the default_value.
-
-    Parameters
-    ----------
-    params: dict
-    key: str
-    default_value: anything that can be saved in a dict
-
-    Returns
-    ----------
-    params[key] if key in params, otherwise default_value
-    """
-    if key in params:
-        return params[key]
-    else:
-        return default_value
 
 
 #######################################
