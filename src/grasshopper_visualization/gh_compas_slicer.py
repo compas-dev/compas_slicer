@@ -424,10 +424,13 @@ def missing_input():
     print('Please provide all the inputs')
 
 
-def load_json_file(path, folder_name, json_name):
+def load_json_file(path, folder_name, json_name, in_output_folder=True):
     """ Loads data from json. """
 
-    filename = os.path.join(os.path.join(path), folder_name, 'output', json_name)
+    if in_output_folder:
+        filename = os.path.join(os.path.join(path), folder_name, 'output', json_name)
+    else:
+        filename = os.path.join(os.path.join(path), folder_name, json_name)
     data = None
 
     if os.path.isfile(filename):
