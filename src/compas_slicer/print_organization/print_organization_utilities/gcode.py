@@ -25,6 +25,7 @@ def create_gcode_text(print_organizer, parameters):
     # get time stamp
     now = datetime.now()
     datetimestamp = now.strftime("%H:%M:%S - %d %B %Y")
+
     logger.info('Generating gcode')
     gcode = ''
 
