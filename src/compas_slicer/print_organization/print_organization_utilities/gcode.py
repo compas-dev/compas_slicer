@@ -24,6 +24,7 @@ def create_gcode_text(printpoints_dict, parameters):
     ----------
     str, gcode text file
     """
+    NL = chr(10)
     logger.info('Generating gcode')
     gcode = ''
 
@@ -57,9 +58,31 @@ def create_gcode_text(printpoints_dict, parameters):
     retraction_min_travel = get_param(parameters, key='retraction_min_travel', defaults_type='gcode')  #in mm
     ############################################ / get parmeters
     
-    
-    # ....
-
+    ############################################ 
+    # gcode header
+    gcode = ''
+    gcode += "Sliced with compas_slicer (Ioana Mitropolou mitropoulou@arch.ethz.ch @ioanna21; Joris Burger burger@arch.ethz.ch @joburger)" + NL
+    gcode += "Gcode generated with compas_slicer Andrei Jipa <mitropoulou@arch.ethz.ch>)" + NL
+    gcode += "T0                              ;set Tool" + NL # for printing with multiple nozzles this will become useful
+    gcode += "G21                             ;metric values" + NL
+    gcode += "G90                             ;absolute positioning" + NL
+    gcode += "M107                            ;start With the fan Off" + NL
+    gcode += "M140 S" + str(bed_temperature) + "                        ;Set Bed Temperature Fast" + NL
+    gcode += "M104 S" + str(extruder_temperature) + "                       ;Set Extruder Temperature Fast" + NL
+    gcode += "M109 S" + str(extruder_temperature) + "                       ;Set Extruder Temperature and Wait" + NL
+    gcode += "M190 S" + str(bed_temperature) + "                        ;Set Bed Temperature + wait" + NL
+    gcode += "G21                             ;metric values" + NL
+    gcode += "G90                             ;absolute positioning" + NL
+    gcode += "M83                             ;set E-values to relative while in absolute mode" + NL
+    gcode += "G28 X0 Y0                       ;home X and Y axes" + NL
+    gcode += "G28 Z0                          ;home Z axis independently" + NL
+    gcode += "G1 F4500                        ;set feedrate to 4,500 mm/min (75 mm/s)" + NL
+    gcode += "G1 Z15.0                        ;move nozzle up 15mm" + NL
+    gcode += "G1 F140 E29                     ;extruded slowly some filament (default: 29mm)" + NL
+    gcode += "G92 E0                          ;reset the extruded length to 0" + NL #this is redundant after M83, but should not be forgotten in case M83 is skipped
+    gcode += "G1 F6000                        ;set feedrate to 6000 mm/min (100 mm/s)" + NL
+    gcode += "M117 compas gcode print...      ;show up text on LCD" + NL
+    ############################################  / header
     
     
     # Iterate through the printpoints_dict and add information to the gcode str
