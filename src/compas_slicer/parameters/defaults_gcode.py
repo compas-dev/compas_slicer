@@ -13,8 +13,22 @@ def gcode_default_param(key):
 default_parameters = \
     {
         # These parameters are not thought-through! Feel free to change them as you see fit
-        'extruder_temperature': 200,
-        'bed_temperature': 60,
-        'z_hop': 0.5,
+    
+        # Physical parameters
+        'delta': False, #boolean for delta printers
+        'nozzle_diameter': 0.4, #in mm
+        'filament diameter': 1.75, #in mm, for calculating E
+    
+        # Dimensional parameters
+        'layer width': 0.6, #in mm
+    
+        # Temperature parameters
+        'extruder_temperature': 200, #in °C
+        'bed_temperature': 60, #in °C
+        'fan_speed': 255, #0-255
+        'fan_start_z': 0, #in mm; height at which the fan starts
+    
+    
+        'z_hop': 0.5, #in mm
         # add more parameters as you see fit
     }
