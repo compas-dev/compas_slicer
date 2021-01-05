@@ -9,11 +9,8 @@ def gcode_default_param(key):
         raise ValueError('The parameter with key : ' + str(key) +
                          ' does not exist in the defaults of gcode parameters. ')
 
-
 default_parameters = \
     {
-        # These parameters are not thought-through! Feel free to change them as you see fit
-    
         # Physical parameters
         'delta': False, #boolean for delta printers
         'nozzle_diameter': 0.4, #in mm
@@ -28,7 +25,16 @@ default_parameters = \
         'fan_speed': 255, #0-255
         'fan_start_z': 0, #in mm; height at which the fan starts
     
+        # Movement parameters
+        'feedrate': 3600, #in mm/s
+        'feedrate_travel': 4800, #in mm/s
+        'feedrate_low': 1800, #in mm/s
+        'feedrate_retraction': 3600, #in mm/s
+        # 'acceleration': 3600, #in mm/s²
+        # 'jerk': 3600, #in mm/s
     
+        # Retraction
         'z_hop': 0.5, #in mm
-        # add more parameters as you see fit
+        'retraction_length': 1, #in mm
+        'retraction_min_travel': 3, #in mm; below this value, retraction does not happen       
     }
