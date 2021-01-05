@@ -31,6 +31,7 @@ def create_gcode_text(print_organizer, parameters):
 
     #######################################################################
     # get all the necessary parameters:
+    # get all the necessary parameters:    
     # Physical parameters
     # nozzle_diameter = get_param(parameters, key='nozzle_diameter', defaults_type='gcode')  # in mm
     filament_diameter = get_param(parameters, key='filament diameter', defaults_type='gcode')  # in mm
@@ -175,5 +176,18 @@ def create_gcode_text(print_organizer, parameters):
     gcode += "M106 S0                     ;turn fan off" + n_l
     # ______________________________________________________________________/ footer
             # .... gcode += 'command'
-
+            
+            
+            
+    #######################################################################
+    #Footer 
+    gcode += "M106 S0                     ;set fan on to 200/255 speed" + NL
+    gcode += "M201 X500 Y500              ;Set acceleration To 500mm/s^2" + NL
+    gcode += "G1" & " F 1000              ;set travel speed to 1000 mm/min" + NL
+    gcode += "G1 X0 Y0                    ;Home X and Y" + NL
+    gcode += "M104 S0                     ;extruder heater Off" + NL
+    gcode += "M140 S0                     ;heated bed heater Off (If it exists)" + NL
+    gcode += "M84                         ;steppers off" + NL
+    #______________________________________________________________________/ footer
+        
     return gcode
