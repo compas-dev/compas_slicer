@@ -64,7 +64,7 @@ def create_gcode_text(print_organizer, parameters):
     # ######################################################################
     # gcode header
     gcode += ";Gcode with compas_slicer " + n_l
-    gcode += ";Ioana Mitropolou <mitropoulou@arch.ethz.ch> @ioanna21" + n_l
+    gcode += ";Ioana Mitropolou <mitropoulou@arch.ethz.ch> @ioannaMitropoulou" + n_l
     gcode += ";Joris Burger     <burger@arch.ethz.ch>      @joburger" + n_l
     gcode += ";Andrei Jipa      <jipa@arch.ethz.ch         @stratocaster>" + n_l
     gcode += ";MIT License" + n_l
@@ -173,5 +173,6 @@ def create_gcode_text(print_organizer, parameters):
     gcode += "M84                         ;turn steppers off" + n_l
     gcode += "M106 S0                     ;turn fan off" + n_l
     # ______________________________________________________________________/ footer
+            # .... gcode += 'command'
 
     return gcode
