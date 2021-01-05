@@ -12,6 +12,7 @@ def gcode_default_param(key):
 
 default_parameters = \
     {
+
         # Physical parameters
         'nozzle_diameter': 0.4,  # in mm
         'filament diameter': 1.75,  # in mm, for calculating E
@@ -45,4 +46,5 @@ default_parameters = \
         # Adhesion parameters
         'flow_over': 1,  # as fraction, usually > 1; overextrusion value for z < min_over_z, for better adhesion
         'min_over_z': 0,  # in mm; for z < min_over_z, the overextrusion factor applies
+
     }
