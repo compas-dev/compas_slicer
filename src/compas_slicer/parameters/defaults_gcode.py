@@ -9,7 +9,6 @@ def gcode_default_param(key):
         raise ValueError('The parameter with key : ' + str(key) +
                          ' does not exist in the defaults of gcode parameters. ')
 
-
 default_parameters = \
     {
 
@@ -46,5 +45,6 @@ default_parameters = \
         # Adhesion parameters
         'flow_over': 1,  # as fraction, usually > 1; overextrusion value for z < min_over_z, for better adhesion
         'min_over_z': 0,  # in mm; for z < min_over_z, the overextrusion factor applies
+
 
     }
