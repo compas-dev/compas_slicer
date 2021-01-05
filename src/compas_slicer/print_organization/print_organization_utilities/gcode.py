@@ -28,7 +28,7 @@ def create_gcode_text(printpoints_dict, parameters):
     logger.info('Generating gcode')
     gcode = ''
 
-    ############################################
+    #######################################################################
     # get all the necessary parameters:    
     # Physical parameters
     delta = get_param(parameters, key='delta', defaults_type='gcode') # boolean for delta printers
@@ -56,11 +56,10 @@ def create_gcode_text(printpoints_dict, parameters):
     z_hop = get_param(parameters, key='z_hop', defaults_type='gcode')  #in mm
     retraction_length = get_param(parameters, key='retraction_length', defaults_type='gcode')  #in mm
     retraction_min_travel = get_param(parameters, key='retraction_min_travel', defaults_type='gcode')  #in mm
-    ############################################ / get parmeters
+    #______________________________________________________________________/ get parmeters
     
-    ############################################ 
+    #######################################################################  
     # gcode header
-    gcode = ''
     gcode += "Sliced with compas_slicer (Ioana Mitropolou mitropoulou@arch.ethz.ch @ioanna21; Joris Burger burger@arch.ethz.ch @joburger)" + NL
     gcode += "Gcode generated with compas_slicer Andrei Jipa <mitropoulou@arch.ethz.ch>)" + NL
     gcode += "T0                              ;set Tool" + NL # for printing with multiple nozzles this will become useful
@@ -82,7 +81,7 @@ def create_gcode_text(printpoints_dict, parameters):
     gcode += "G92 E0                          ;reset the extruded length to 0" + NL #this is redundant after M83, but should not be forgotten in case M83 is skipped
     gcode += "G1 F6000                        ;set feedrate to 6000 mm/min (100 mm/s)" + NL
     gcode += "M117 compas gcode print...      ;show up text on LCD" + NL
-    ############################################  / header
+    #______________________________________________________________________/ header
     
     
     # Iterate through the printpoints_dict and add information to the gcode str
@@ -92,5 +91,18 @@ def create_gcode_text(printpoints_dict, parameters):
             gcode += 'this is a command %.4f %.4f %.4f \n' % (z_hop, extruder_temp, bed_temp)  # just remove this line
 
             # .... gcode += 'command'
-
+            
+            
+            
+    #######################################################################
+    #Footer 
+    gcode += "M106 S0                     ;set fan on to 200/255 speed" + NL
+    gcode += "M201 X500 Y500              ;Set acceleration To 500mm/s^2" + NL
+    gcode += "G1" & " F 1000              ;set travel speed to 1000 mm/min" + NL
+    gcode += "G1 X0 Y0                    ;Home X and Y" + NL
+    gcode += "M104 S0                     ;extruder heater Off" + NL
+    gcode += "M140 S0                     ;heated bed heater Off (If it exists)" + NL
+    gcode += "M84                         ;steppers off" + NL
+    #______________________________________________________________________/ footer
+        
     return gcode
