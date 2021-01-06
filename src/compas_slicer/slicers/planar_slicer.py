@@ -54,7 +54,7 @@ class PlanarSlicer(BaseSlicer):
         h4 = 475
         h5 = 775
         h6 = 825
-        mod_layer_height = 0.75
+        mod_layer_height = 1.00
 
         max_layers = 900
 
@@ -65,6 +65,7 @@ class PlanarSlicer(BaseSlicer):
                 plane_height += self.layer_height
             elif h1 - layer_range < plane_height < h1 + layer_range:
                 planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                print("Slicing layer ", i, "at a height of ", plane_height, "with a lh of", mod_layer_height)
                 plane_height += mod_layer_height
             # h2
             elif plane_height <= h2 - layer_range:
@@ -72,6 +73,7 @@ class PlanarSlicer(BaseSlicer):
                 plane_height += self.layer_height
             elif h2 - layer_range < plane_height < h2 + layer_range:
                 planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                print("Slicing layer ", i, "at a height of ", plane_height, "with a lh of", mod_layer_height)
                 plane_height += mod_layer_height
             # h3
             elif plane_height <= h3 - layer_range:
@@ -79,6 +81,7 @@ class PlanarSlicer(BaseSlicer):
                 plane_height += self.layer_height
             elif h3 - layer_range < plane_height < h3 + layer_range:
                 planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                print("Slicing layer ", i, "at a height of ", plane_height, "with a lh of", mod_layer_height)
                 plane_height += mod_layer_height
             # h4
             elif plane_height <= h4 - layer_range:
@@ -86,6 +89,7 @@ class PlanarSlicer(BaseSlicer):
                 plane_height += self.layer_height
             elif h4 - layer_range < plane_height < h4 + layer_range:
                 planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                print("Slicing layer ", i, "at a height of ", plane_height, "with a lh of", mod_layer_height)
                 plane_height += mod_layer_height
             # h5
             elif plane_height <= h5 - layer_range:
@@ -93,6 +97,7 @@ class PlanarSlicer(BaseSlicer):
                 plane_height += self.layer_height
             elif h5 - layer_range < plane_height < h5 + layer_range:
                 planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                print("Slicing layer ", i, "at a height of ", plane_height, "with a lh of", mod_layer_height)
                 plane_height += mod_layer_height
             # h6
             elif plane_height <= h6 - layer_range:
@@ -100,6 +105,7 @@ class PlanarSlicer(BaseSlicer):
                 plane_height += self.layer_height
             elif h6 - layer_range < plane_height < h6 + layer_range:
                 planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                print("Slicing layer ", i, "at a height of ", plane_height, "with a lh of", mod_layer_height)
                 plane_height += mod_layer_height
 
             elif i <= max_layers:
