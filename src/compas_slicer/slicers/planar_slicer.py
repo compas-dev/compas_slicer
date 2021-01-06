@@ -40,6 +40,77 @@ class PlanarSlicer(BaseSlicer):
         no_of_layers = int(d / self.layer_height) + 1
         normal = Vector(0, 0, 1)
         planes = [Plane(Point(0, 0, min_z + i * self.layer_height), normal) for i in range(no_of_layers)]
+
+        ################################
+        # INSERTED FOR PRINTING OPT BEAM
+        ################################
+        planes = []
+        plane_height = 0
+
+        layer_range = 5
+        h1 = 70
+        h2 = 125
+        h3 = 420
+        h4 = 475
+        h5 = 775
+        h6 = 825
+        mod_layer_height = 0.75
+
+        max_layers = 900
+
+        for i in range(1000):
+            # h1
+            if plane_height <= h1 - layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += self.layer_height
+            elif h1 - layer_range < plane_height < h1 + layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += mod_layer_height
+            # h2
+            elif plane_height <= h2 - layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += self.layer_height
+            elif h2 - layer_range < plane_height < h2 + layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += mod_layer_height
+            # h3
+            elif plane_height <= h3 - layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += self.layer_height
+            elif h3 - layer_range < plane_height < h3 + layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += mod_layer_height
+            # h4
+            elif plane_height <= h4 - layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += self.layer_height
+            elif h4 - layer_range < plane_height < h4 + layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += mod_layer_height
+            # h5
+            elif plane_height <= h5 - layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += self.layer_height
+            elif h5 - layer_range < plane_height < h5 + layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += mod_layer_height
+            # h6
+            elif plane_height <= h6 - layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += self.layer_height
+            elif h6 - layer_range < plane_height < h6 + layer_range:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += mod_layer_height
+
+            elif i <= max_layers:
+                planes.append(Plane(Point(0, 0, min_z + plane_height), normal))
+                plane_height += self.layer_height
+            else:
+                break
+        ################################
+        # INSERTED FOR PRINTING OPT BEAM
+        ################################
+
         planes.pop(0)  # remove planes that are on the print platform
 
         if self.slicer_type == "default":
