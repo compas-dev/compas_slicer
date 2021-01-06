@@ -22,6 +22,7 @@ Sorting
     seams_align
     seams_smooth
     sort_per_vertical_segment
+    order_vertical_segments
 
 Additional
 ==========
@@ -46,6 +47,7 @@ from .simplify_paths_rdp import *  # noqa: F401 E402 F403
 from .seams_align import *  # noqa: F401 E402 F403
 from .seams_smooth import *  # noqa: F401 E402 F403
 from .sort_paths_per_vertical_segment import *  # noqa: F401 E402 F403
+from .order_vertical_segments import *  # noqa: F401 E402 F403
 
 #  Orienting
 from .unify_paths_orientation import *  # noqa: F401 E402 F403
