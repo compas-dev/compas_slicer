@@ -1,10 +1,10 @@
 import logging
+import math
 from compas_slicer.parameters import get_param
 
 logger = logging.getLogger('logger')
 
 __all__ = ['create_gcode_text']
-
 
 def create_gcode_text(printpoints_dict, parameters):
     """ Creates a gcode text file
@@ -33,10 +33,10 @@ def create_gcode_text(printpoints_dict, parameters):
     # Physical parameters
     delta = get_param(parameters, key='delta', defaults_type='gcode') # boolean for delta printers
     nozzle_diameter = get_param(parameters, key='nozzle_diameter', defaults_type='gcode')  #in mm
-    filament diameter = get_param(parameters, key='filament diameter', defaults_type='gcode')  #in mm
+    filament_diameter = get_param(parameters, key='filament diameter', defaults_type='gcode')  #in mm
     
     # Dimensional parameters
-    layer_width = get_param(parameters, key='layer_width', defaults_type='gcode')  #in mm
+    path_width = get_param(parameters, key='layer_width', defaults_type='gcode')  #in mm
     
     # Temperature parameters
     extruder_temperature = get_param(parameters, key='extruder_temperature', defaults_type='gcode')  #in °C
@@ -52,10 +52,14 @@ def create_gcode_text(printpoints_dict, parameters):
     # acceleration = get_param(parameters, key='acceleration', defaults_type='gcode')  #in mm/s²   
     # jerk = get_param(parameters, key='jerk', defaults_type='gcode')  #in mm/s
     
-    # Retraction
+    # Retraction and hop parameters
     z_hop = get_param(parameters, key='z_hop', defaults_type='gcode')  #in mm
     retraction_length = get_param(parameters, key='retraction_length', defaults_type='gcode')  #in mm
     retraction_min_travel = get_param(parameters, key='retraction_min_travel', defaults_type='gcode')  #in mm
+    
+    # Adhesion parameters
+    flow_over = get_param(parameters, key='flow_over', defaults_type='gcode')  #  !!!!!!!!!!NOT SET YET
+    min_over_z = get_param(parameters, key='min_over_z', defaults_type='gcode')  #  !!!!!!!!!!NOT SET YET
     #______________________________________________________________________/ get parmeters
     
     #######################################################################  
@@ -80,19 +84,66 @@ def create_gcode_text(printpoints_dict, parameters):
     gcode += "G1 F140 E29                     ;extruded slowly some filament (default: 29mm)" + NL
     gcode += "G92 E0                          ;reset the extruded length to 0" + NL #this is redundant after M83, but should not be forgotten in case M83 is skipped
     gcode += "G1 F6000                        ;set feedrate to 6000 mm/min (100 mm/s)" + NL
+    gcode += "G1 F" + str(feedrate_low) + "                              ;set initial Feedrate" + NL
     gcode += "M117 compas gcode print...      ;show up text on LCD" + NL
     #______________________________________________________________________/ header
-    
-    
-    # Iterate through the printpoints_dict and add information to the gcode str
-    for layer_key in printpoints_dict:
-        for path_key in printpoints_dict[layer_key]:
+     
+    #######################################################################  
+    # global parameters        
+    retraction_on = True # boolean; is true when retraction is toggled
+    fan_on = False       # boolean; is true when fan is toggled
+    prev_point = [0,0,0]
+    layer_height = 0.4
+    #______________________________________________________________________/ global parameters     
+         
+    #######################################################################  
+    # iterate all layers, paths
+         
+    for i, layer_v in enumerate(printpoints_dict):
+       for j, path_v in enumerate(printpoints_dict[layer_v]):               
+           for k, point_v in enumerate(printpoints_dict[layer_v][path_v]):
+              # Calculate relative length
+              reL = ((point_v.x - prev_point.x) ** 2 + (point_v.y - prev_point.y) ** 2 + (point_v.z - prev_point.z) ** 2) ** 0.5                
+              if k == 0 : # 'First point
+                    #retract before moving to first point in path if necessary
+                    if retraction_min_travel < reL :
+                        gcode += "G1 F" + str(feedrate_retraction) + "    ;set ret sp" + NL
+                        gcode += "G1" + " E-" + str(retraction_length) + "    ;ret fil" + NL
+                        # ZHOP
+                        gcode += "G1" + " Z" + '{:.3f}'.format(prev_point.z + z_hop) + "    ;ZHop" + NL
+                        gcode += "G1" + " F" + feedrate_travel + "    ;set trav spd" + NL
+                        retraction_on = True
+                    else :
+                        retraction_on = False      
+                    if retraction_on : #TODO: combine this if clause in the min_Travel<reL above
+                        gcode += "G1 X" + '{:.3f}'.format(point_v.x) + " Y" + '{:.3f}'.format(point_v.y) + NL
+                        #reverse hop and retract after reaching the first point
+                        gcode += "G1 F" + str(feedrate_retraction) + "          ;set ret spd" + NL
+                        gcode += "G1" + " Z" + '{:.3f}'.format(point_v.z) + "    ;Rev ZHop" + NL
+                        gcode += "G1" + " E" + str(retraction_length) + "    ;rev fil ret" + NL
+                        gcode += "G1" + " F" + str(feedrate) + "    ;set extr spd" + NL
+                    else :
+                        if point_v.z != prev_point.z :
+                            gcode += "G1" + " Z" + '{:.3f}'.format(point_v.z) + "    ;Move in Z" + NL
+                        gcode += "G1 X" + '{:.3f}'.format(point_v.x) + " Y" + '{:.3f}'.format(point_v.y) + NL
+              else : #from 2nd poin onwards
+                    # tmpflow = myflow.Branch(b)(i) here we can set the flow multiplier
+                    # Calculate feedrate
+                    E_val = 4 * reL * layer_height * path_width / (math.pi * (filament_diameter ** 2))
+                    if point_v.z < min_over_z : #TODO: REPLACE WITH REPEAT... UNTIL for NXT VErison
+                        E_val *= flow_over
+                    gcode += "G1 X" + '{:.3f}'.format(point_v.x) + " Y" + '{:.3f}'.format(point_v.y) + " E" + '{:.3f}'.format(E_val) + NL  
+              prev_point = point_v
+       if fan_on == False :
+           if i*layer_height >= fan_start_z :        #'Fan On:
+               gcode += "M106 S" + fan_speed + "    ;set fan on to set speed" + NL            
 
-            gcode += 'this is a command %.4f %.4f %.4f \n' % (z_hop, extruder_temp, bed_temp)  # just remove this line
-
-            # .... gcode += 'command'
-            
-            
+    #'retract after last branch/contour
+    gcode += "G1 F" + str(feedrate_retraction) + "    ;set ret spd" + NL
+    gcode += "G1" + " E-" + str(retraction_length) + "    ;ret fil" + NL
+    gcode += "G1" + " Z" + '{:.3f}'.format(3*(prev_point.z + z_hop))  + "    ;ZHop" + NL
+    gcode += "G1 F" + str(feedrate_travel) + "    ;set ret spd" + NL
+    retraction_on = True    
             
     #######################################################################
     #Footer 
