@@ -9,6 +9,7 @@ def gcode_default_param(key):
         raise ValueError('The parameter with key : ' + str(key) +
                          ' does not exist in the defaults of gcode parameters. ')
 
+
 default_parameters = \
     {
 

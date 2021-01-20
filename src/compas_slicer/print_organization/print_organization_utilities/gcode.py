@@ -34,6 +34,7 @@ def create_gcode_text(print_organizer, parameters):
     # get all the necessary parameters:    
     # Physical parameters
     # nozzle_diameter = get_param(parameters, key='nozzle_diameter', defaults_type='gcode')  # in mm
+
     filament_diameter = get_param(parameters, key='filament diameter', defaults_type='gcode')  # in mm
 
     # Dimensional parameters
