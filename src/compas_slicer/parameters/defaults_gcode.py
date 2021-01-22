@@ -24,6 +24,12 @@ default_parameters = \
         # Dimensional parameters
         'layer_width': 0.6,  # in mm
 
+<<<<<<< HEAD
+=======
+        'flow_over': 0.0,
+        'min_over_z': 0.0,
+
+>>>>>>> beed405 (minor updates to comply with lint)
         # Temperature parameters
         'extruder_temperature': 200,  # in °C
         'bed_temperature': 60,  # in °C

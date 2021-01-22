@@ -175,6 +175,7 @@ def create_gcode_text(print_organizer, parameters):
     gcode += "M140 S0                     ;turn bed heater off (if it exists)" + n_l
     gcode += "M84                         ;turn steppers off" + n_l
     gcode += "M106 S0                     ;turn fan off" + n_l
+
     # ______________________________________________________________________/ footer
             # .... gcode += 'command'
         
