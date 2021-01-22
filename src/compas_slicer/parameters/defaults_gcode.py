@@ -20,8 +20,8 @@ default_parameters = \
         # Dimensional parameters
         'layer_width': 0.6,  # in mm
 
-        'flow_over' : 0.0,
-        'min_over_z' : 0.0,
+        'flow_over': 0.0,
+        'min_over_z': 0.0,
 
         # Temperature parameters
         'extruder_temperature': 200,  # in °C
