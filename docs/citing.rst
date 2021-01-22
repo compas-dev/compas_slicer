@@ -11,7 +11,7 @@ Citing
     @misc{compas-slicer,
         title  = {{COMPAS_SLICER}: Slicing functionality for COMPAS},
         author = {Ioanna Mitropoulou and Joris Burger},
-        note   = {https://dbt-ethz.github.io/compas_slicer/},
+        note   = {https://compas.dev/compas_slicer/},
         year   = {2020}
     }
 

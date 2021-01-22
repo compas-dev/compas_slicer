@@ -18,7 +18,7 @@ Overview
     COMPAS_SLICER is still in a very early, pre-release state and therefore could 
     contain bugs. In case you find bugs or would like to request additional 
     functionality, please submit an issue using the 
-    `Issue Tracker <https://github.com/dbt-ethz/compas_slicer/issues>`_.
+    `Issue Tracker <https://github.com/compas-dev/compas_slicer/issues>`_.
 
 
 Table of Contents

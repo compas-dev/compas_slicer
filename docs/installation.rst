@@ -31,7 +31,7 @@ Clone the repository and activate your environment.
 
 .. code-block:: bash
 
-    git clone https://github.com/dbt-ethz/compas_slicer.git
+    git clone https://github.com/compas-dev/compas_slicer.git
     conda activate compas_slicer
 
 Navigate to the folder where you cloned the compas_slicer repository and install compas_slicer using:
@@ -69,7 +69,7 @@ Troubleshooting
 ===============
 
 If you encounter a problem that is not described here, please file an issue 
-using the `Issue Tracker <https://github.com/dbt-ethz/compas_slicer/issues>`_.
+using the `Issue Tracker <https://github.com/compas-dev/compas_slicer/issues>`_.
 
 Installing Planarity
 --------------------
