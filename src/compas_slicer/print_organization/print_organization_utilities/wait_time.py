@@ -48,7 +48,7 @@ def set_wait_time(print_organizer, wait_type, wait_time):
                     elif wait_type == "wait_after_extrusion":
                         if printpoint.extruder_toggle is True and next_ppt.extruder_toggle is False:
                             next_ppt.wait_time = wait_time
-                    elif wait_type == "wait_after_and_before_extrusion":
+                    elif wait_type == "wait_before_and_after_extrusion":
                         if printpoint.extruder_toggle is False and next_ppt.extruder_toggle is True:
                             next_ppt.wait_time = wait_time
                         if printpoint.extruder_toggle is True and next_ppt.extruder_toggle is False:
