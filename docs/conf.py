@@ -36,8 +36,8 @@ show_authors = True
 add_module_names = True
 templates_path = ['_templates', ]
 extlinks = {
-    'issue': ('https://https://github.com/dbt-ethz/compas_slicer/issues/%s', '#'),
-    'pr': ('https://https://github.com/dbt-ethz/compas_slicer/pull/%s', 'PR #'),
+    'issue': ('https://https://github.com/compas-dev/compas_slicer/issues/%s', '#'),
+    'pr': ('https://https://github.com/compas-dev/compas_slicer/pull/%s', 'PR #'),
 }
 
 # intersphinx options
@@ -66,7 +66,7 @@ html_theme_options = {
     "package_name": 'compas_slicer',
     "package_title": project,
     "package_version": release,
-    "package_repo": 'https://https://github.com/dbt-ethz/compas_slicer',
+    "package_repo": 'https://https://github.com/compas-dev/compas_slicer',
 }
 
 html_split_index = False

@@ -1,6 +1,6 @@
 # compas_slicer
 
-[![Licence MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/dbt-ethz/compas_slicer/blob/master/LICENSE) [![Travis](https://travis-ci.org/dbt-ethz/compas_slicer.svg?branch=master)](https://travis-ci.org/dbt-ethz/compas_slicer)
+[![Licence MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/compas-dev/compas_slicer/blob/master/LICENSE) [![Travis](https://travis-ci.org/compas-dev/compas_slicer.svg?branch=master)](https://travis-ci.org/compas-dev/compas_slicer)
 
 Additive manufacturing package for the COMPAS framework.
 
@@ -32,7 +32,7 @@ conda install -c conda-forge igl
 
 - Clone the repository and activate your environment.
 ```bash
-git clone https://github.com/dbt-ethz/compas_slicer.git
+git clone https://github.com/compas-dev/compas_slicer.git
 conda activate compas_slicer
 ```
 - Navigate to the folder where you cloned the compas_slicer repository and install compas_slicer using:
@@ -62,7 +62,7 @@ Enjoy!
 Troubleshooting
 ---------------
 
-See here: https://dbt-ethz.github.io/compas_slicer/installation.html#troubleshooting-1
+See here: https://compas.dev/compas_slicer/installation.html#troubleshooting-1
 
 
 Contributions
