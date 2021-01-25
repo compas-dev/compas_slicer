@@ -25,10 +25,6 @@ def create_gcode_text(print_organizer, parameters):
     # get time stamp
     now = datetime.now()
     datetimestamp = now.strftime("%H:%M:%S - %d %B %Y")
-<<<<<<< HEAD
-
-=======
->>>>>>> f6c40c8 (minor updates to comply with lint)
     logger.info('Generating gcode')
     gcode = ''
 
@@ -36,13 +32,7 @@ def create_gcode_text(print_organizer, parameters):
     # get all the necessary parameters:
     # get all the necessary parameters:    
     # Physical parameters
-<<<<<<< HEAD
     # nozzle_diameter = get_param(parameters, key='nozzle_diameter', defaults_type='gcode')  # in mm
-
-=======
-    # delta = get_param(parameters, key='delta', defaults_type='gcode')  # boolean for delta printers, not implemented yet
-    # nozzle_diameter = get_param(parameters, key='nozzle_diameter', defaults_type='gcode')  # in mm
->>>>>>> f6c40c8 (minor updates to comply with lint)
     filament_diameter = get_param(parameters, key='filament diameter', defaults_type='gcode')  # in mm
 
     # Dimensional parameters
@@ -75,7 +65,6 @@ def create_gcode_text(print_organizer, parameters):
     # ######################################################################
     # gcode header
     gcode += ";Gcode with compas_slicer " + n_l
-<<<<<<< HEAD
     gcode += ";Ioana Mitropolou <mitropoulou@arch.ethz.ch> @ioannaMitropoulou" + n_l
     gcode += ";Joris Burger     <burger@arch.ethz.ch>      @joburger" + n_l
     gcode += ";Andrei Jipa      <jipa@arch.ethz.ch         @stratocaster>" + n_l
@@ -84,13 +73,6 @@ def create_gcode_text(print_organizer, parameters):
     gcode += ";generated " + datetimestamp + n_l
     gcode += ";" + n_l
     gcode += "T0                              ;set tool" + n_l  # for printing with multiple nozzles this will be useful
-=======
-    gcode += ";Ioana Mitropolou <mitropoulou@arch.ethz.ch> @ioanna21" + n_l
-    gcode += ";Joris Burger     <burger@arch.ethz.ch>      @joburger" + n_l
-    gcode += ";Andrei Jipa      <jipa@arch.ethz.ch         @stratocaster>" + n_l
-    gcode += ";gcode generated " + datetimestamp + n_l
-    gcode += "T0                              ;set Tool" + n_l  # for printing with multiple nozzles this will become useful
->>>>>>> f6c40c8 (minor updates to comply with lint)
     gcode += "G21                             ;metric values" + n_l
     gcode += "G90                             ;absolute positioning" + n_l
     gcode += "M107                            ;start with the fan off" + n_l
@@ -110,14 +92,8 @@ def create_gcode_text(print_organizer, parameters):
     gcode += "G1 F4500                        ;set feedrate to 4,500 mm/min (75 mm/s)" + n_l
     gcode += "G1 Z15.0                        ;move nozzle up 15mm" + n_l
     gcode += "G1 F140 E29                     ;extruded slowly some filament (default: 29mm)" + n_l
-<<<<<<< HEAD
     gcode += "G92 E0                          ;reset the extruded length" + n_l  # useless after M83, otherwise needed
     gcode += "G1 F" + str(feedrate_travel) + "                       ;set initial Feedrate" + n_l
-=======
-    gcode += "G92 E0                          ;reset the extruded length to 0" + n_l  # this is redundant after M83, but should not be forgotten in case M83 is skipped
-    gcode += "G1 F6000                        ;set feedrate to 6000 mm/min (100 mm/s)" + n_l
-    gcode += "G1 F" + str(feedrate_low) + "                        ;set initial Feedrate" + n_l
->>>>>>> f6c40c8 (minor updates to comply with lint)
     gcode += "M117 compas gcode print...      ;show up text on LCD" + n_l
     gcode += ";" + n_l
     # ______________________________________________________________________/ header
@@ -134,7 +110,6 @@ def create_gcode_text(print_organizer, parameters):
     # ######################################################################
     # iterate all layers, paths
     print('')
-<<<<<<< HEAD
     for point_v, i, j, k in print_organizer.printpoints_indices_iterator():
         layer_height = point_v.layer_height
         # Calculate relative length
@@ -160,43 +135,6 @@ def create_gcode_text(print_organizer, parameters):
                 gcode += "G1" + " E" + str(retraction_length) + "       ;reverse retraction" + n_l
             else:
                 if prev_point.pt.z != point_v.pt.z:
-=======
-    for i, layer_v in enumerate(printpoints_dict):
-        for j, path_v in enumerate(printpoints_dict[layer_v]):
-            for k, point_v in enumerate(printpoints_dict[layer_v][path_v]):
-                layer_height = point_v.layer_height
-                # Calculate relative length
-                re_l = ((point_v.pt.x - prev_point.pt.x) ** 2 + (point_v.pt.y - prev_point.pt.y) ** 2 + (
-                        point_v.pt.z - prev_point.pt.z) ** 2) ** 0.5
-                if k == 0:  # 'First point
-                    # retract before moving to first point in path if necessary
-                    if retraction_min_travel < re_l:
-                        gcode += "G1 F" + str(feedrate_retraction) + "    ;set ret sp" + n_l
-                        gcode += "G1" + " E-" + str(retraction_length) + "    ;ret fil" + n_l
-                        # ZHOP
-                        gcode += "G1" + " Z" + '{:.3f}'.format(prev_point.pt.z + z_hop) + "    ;ZHop" + n_l
-                        gcode += "G1" + " F" + str(feedrate_travel) + "     ;set trav spd" + n_l
-                        retraction_on = True
-                    else:
-                        retraction_on = False
-                    if retraction_on:  # TODO: combine this if clause in the min_Travel < re_l above
-                        gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
-                        # reverse hop and retract after reaching the first point
-                        gcode += "G1 F" + str(feedrate_retraction) + "     ;set ret spd" + n_l
-                        gcode += "G1" + " Z" + '{:.3f}'.format(point_v.pt.z) + "  ;Rev ZHop" + n_l
-                        gcode += "G1" + " E" + str(retraction_length) + "    ;rev fil ret" + n_l
-                        gcode += "G1" + " F" + str(feedrate) + "    ;set extr spd" + n_l
-                    else:
-                        if point_v.z != prev_point.z:
-                            gcode += "G1" + " Z" + '{:.3f}'.format(point_v.pt.z) + "    ;Move in Z" + n_l
-                        gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
-                else:  # from 2nd poin onwards
-                    # tmpflow = myflow.Branch(b)(i) here we can set the flow multiplier
-                    # Calculate feedrate
-                    e_val = 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
-                    if point_v.pt.z < min_over_z:  # TODO: REPLACE WITH REPEAT... UNTIL
-                        e_val *= flow_over
->>>>>>> f6c40c8 (minor updates to comply with lint)
                     gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
                         point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
                 else:
@@ -220,11 +158,7 @@ def create_gcode_text(print_organizer, parameters):
                 gcode += "M106 S" + str(fan_speed) + "     ;set fan on to set speed" + n_l
                 fan_on = True
 
-<<<<<<< HEAD
     # 'retract after last path
-=======
-                # 'retract after last branch/contour
->>>>>>> f6c40c8 (minor updates to comply with lint)
     gcode += "G1 F" + str(feedrate_retraction) + "     ;set ret spd" + n_l
     gcode += "G1" + " E-" + str(retraction_length) + "       ;ret fil" + n_l
     gcode += "G1" + " Z" + '{:.3f}'.format(3 * (prev_point.pt.z + z_hop)) + "  ;ZHop" + n_l
@@ -232,7 +166,6 @@ def create_gcode_text(print_organizer, parameters):
 
     #######################################################################
     # Footer
-<<<<<<< HEAD
     gcode += "M201 X500 Y500              ;set acceleration to 500mm/s^2" + n_l
     gcode += "G1" + " F 1000                   ;set feedrate to 1000 mm/min" + n_l
     gcode += "G1 X0 Y0                    ;home x and y axes" + n_l
@@ -240,16 +173,6 @@ def create_gcode_text(print_organizer, parameters):
     gcode += "M140 S0                     ;turn bed heater off (if it exists)" + n_l
     gcode += "M84                         ;turn steppers off" + n_l
     gcode += "M106 S0                     ;turn fan off" + n_l
-=======
-    gcode += "M106 S0                     ;set fan on to 200/255 speed" + n_l
-    gcode += "M201 X500 Y500              ;Set acceleration To 500mm/s^2" + n_l
-    gcode += "G1" + " F 1000                   ;set travel speed to 1000 mm/min" + n_l
-    gcode += "G1 X0 Y0                    ;Home X and Y" + n_l
-    gcode += "M104 S0                     ;extruder heater Off" + n_l
-    gcode += "M140 S0                     ;heated bed heater Off (If it exists)" + n_l
-    gcode += "M84                         ;steppers off" + n_l
-    # ______________________________________________________________________/ footer
->>>>>>> f6c40c8 (minor updates to comply with lint)
 
     # ______________________________________________________________________/ footer
             # .... gcode += 'command'
