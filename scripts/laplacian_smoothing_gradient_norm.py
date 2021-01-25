@@ -16,7 +16,7 @@ def laplacian_smoothing_gradient_norm(self, g_evaluation, iterations, strength):
     VG_norm = np.linalg.norm(VG, axis=1)
     utils.save_to_json(list(VG_norm), self.OUTPUT_PATH, 'n1.json')
 
-    L = utils.get_mesh_laplacian_matrix_igl(self.mesh, fix_boundaries=True)  # sparse (#V x #V)
+    L = utils.get_mesh_cotmatrix_igl(self.mesh, fix_boundaries=True)  # sparse (#V x #V)
     for _ in range(iterations):  # iterative smoothing
         vg_norm_prime = VG_norm + strength * L * VG_norm
         VG_norm = vg_norm_prime
@@ -35,7 +35,7 @@ def laplacian_smoothing_gradient_norm(self, g_evaluation, iterations, strength):
 
         X[j] = X[j] * norm
 
-    L = utils.get_mesh_laplacian_matrix_igl(self.mesh, fix_boundaries=False)  # sparse (#V x #V)
+    L = utils.get_mesh_cotmatrix_igl(self.mesh, fix_boundaries=False)  # sparse (#V x #V)
     cotans = utils.get_mesh_cotans_igl(self.mesh)  # (#Fx3) list of 1/2*cotangents corresponding angles
 
     u = get_scalar_field_from_gradient(self.mesh, X, L, cotans)

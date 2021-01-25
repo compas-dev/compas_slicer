@@ -90,7 +90,7 @@ class CompoundTarget:
                                  data[self.v_attr] == self.value]
         assert len(self.all_target_vkeys) > 0, "There are no vertices in the mesh with the attribute : " \
                                                + self.v_attr + ", value : %d" % self.value + " .Probably you made a " \
-                                               "mistake while creating the targets. "
+                                                                                             "mistake while creating the targets. "
         G = create_graph_from_mesh_vkeys(self.mesh, self.all_target_vkeys)
         assert len(list(G.nodes())) == len(self.all_target_vkeys)
         self.number_of_boundaries = len(list(nx.connected_components(G)))
@@ -143,12 +143,12 @@ class CompoundTarget:
         """
         if self.number_of_boundaries > 1:
             ds_avg_HIGH = self.get_boundaries_rel_dist_from_other_target(other_target)
-
+            max_param = max(ds_avg_HIGH)
             for i, d in enumerate(ds_avg_HIGH):  # offset all distances except the maximum one
-                if abs(d - max(ds_avg_HIGH)) > 0.01:  # if it isn't the max value
+                if abs(d - max_param) > 0.01:  # if it isn't the max value
                     ds_avg_HIGH[i] = d + self.offset
 
-            self.weight_max_per_cluster = [d / max(ds_avg_HIGH) for d in ds_avg_HIGH]
+            self.weight_max_per_cluster = [d / max_param for d in ds_avg_HIGH]
             logger.info('weight_max_per_cluster : ' + str(self.weight_max_per_cluster))
         else:
             logger.info("Did not compute_norm_of_gradient uneven boundaries, target consists of single component")
@@ -220,7 +220,7 @@ class CompoundTarget:
 
     def laplacian_smoothing(self, iterations, strength):
         """ Smooth the distances on the mesh, using iterative laplacian smoothing. """
-        L = utils.get_mesh_laplacian_matrix_igl(self.mesh, fix_boundaries=True)
+        L = utils.get_mesh_cotmatrix_igl(self.mesh, fix_boundaries=True)
         new_distances_lists = []
 
         logger.info('Laplacian smoothing of all distances')
@@ -258,7 +258,7 @@ class CompoundTarget:
 #  utils
 
 def blend_union_list(values, r):
-    """ Returns a smooth union of the elements of the list, with blend radius blend_radius. """
+    """ Returns a smooth union of all the elements in the list, with blend radius blend_radius. """
     d_result = 9999999  # very big number
     for d in values:
         d_result = blend_union(d_result, d, r)
@@ -271,12 +271,17 @@ def blend_union(da, db, r):
     return min(da, db) - e * e * 0.25 / r
 
 
-def champfer_union(da, db, r):
-    """ Returns a champfer union of the two elements da, db with blend radius blend_radius. """
-    m = min(da, db)
-    if m > (da ** 2 + db ** 2 - r ** 2) * math.sqrt(0.5):
-        print('here')
-    return min(m, (da ** 2 + db ** 2 - r ** 2) * math.sqrt(0.5))
+def chamfer_union(a, b, r):
+    """ Returns a chamfer union of the two elements da, db with radius r. """
+    return min(min(a, b), (a - r + b) * math.sqrt(0.5))
+
+
+def stairs_union(a, b, r, n):
+    """ Returns a stairs union of the two elements da, db with radius r. """
+    s = r / n
+    u = b - r
+    return min(min(a, b), 0.5 * (u + a + abs((mod(u - a + s, 2 * s)) - s)))
+
 
 
 if __name__ == "__main__":

@@ -108,7 +108,8 @@ class CurvedSlicingPreprocessor:
         Also, computes the gradient and gradient_norm and saves them to Json .
         """
         assert self.target_LOW.VN == target_1.VN, "Attention! Preprocessor does not match targets. "
-        g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, 0.1, target_1, target_2)
+        g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, weight=0.5, target_LOW=target_1,
+                                          target_HIGH=target_2)
         g_evaluation.compute_gradient()
         g_evaluation.compute_gradient_norm()
 
