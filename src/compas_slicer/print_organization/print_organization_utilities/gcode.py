@@ -3,6 +3,7 @@ import math
 from compas_slicer.parameters import get_param
 from compas.geometry import Point, Vector
 from compas_slicer.geometry import PrintPoint
+from datetime import datetime
 
 logger = logging.getLogger('logger')
 
@@ -27,15 +28,18 @@ def create_gcode_text(printpoints_dict, parameters):
     ----------
     str, gcode text file
     """
-    n_l = chr(10)
+    n_l = chr(10)  # new line
+    # get time stamp
+    now = datetime.now()
+    datetimestamp = now.strftime("%H:%M:%S - %d %B %Y")
     logger.info('Generating gcode')
     gcode = ''
 
     #######################################################################
     # get all the necessary parameters:
     # Physical parameters
-    delta = get_param(parameters, key='delta', defaults_type='gcode')  # boolean for delta printers
-    nozzle_diameter = get_param(parameters, key='nozzle_diameter', defaults_type='gcode')  # in mm
+    # delta = get_param(parameters, key='delta', defaults_type='gcode')  # boolean for delta printers, not implemented yet
+    # nozzle_diameter = get_param(parameters, key='nozzle_diameter', defaults_type='gcode')  # in mm
     filament_diameter = get_param(parameters, key='filament diameter', defaults_type='gcode')  # in mm
 
     # Dimensional parameters
@@ -67,8 +71,11 @@ def create_gcode_text(printpoints_dict, parameters):
 
     # ######################################################################
     # gcode header
-    gcode += "Sliced with compas_slicer (Ioana Mitropolou mitropoulou@arch.ethz.ch @ioanna21; Joris Burger burger@arch.ethz.ch @joburger)" + n_l
-    gcode += "Gcode generated with compas_slicer Andrei Jipa <mitropoulou@arch.ethz.ch>)" + n_l
+    gcode += ";Gcode with compas_slicer " + n_l
+    gcode += ";Ioana Mitropolou <mitropoulou@arch.ethz.ch> @ioanna21" + n_l
+    gcode += ";Joris Burger     <burger@arch.ethz.ch>      @joburger" + n_l
+    gcode += ";Andrei Jipa      <jipa@arch.ethz.ch         @stratocaster>" + n_l
+    gcode += ";gcode generated " + datetimestamp + n_l
     gcode += "T0                              ;set Tool" + n_l  # for printing with multiple nozzles this will become useful
     gcode += "G21                             ;metric values" + n_l
     gcode += "G90                             ;absolute positioning" + n_l
@@ -87,7 +94,7 @@ def create_gcode_text(printpoints_dict, parameters):
     gcode += "G1 F140 E29                     ;extruded slowly some filament (default: 29mm)" + n_l
     gcode += "G92 E0                          ;reset the extruded length to 0" + n_l  # this is redundant after M83, but should not be forgotten in case M83 is skipped
     gcode += "G1 F6000                        ;set feedrate to 6000 mm/min (100 mm/s)" + n_l
-    gcode += "G1 F" + str(feedrate_low) + "                              ;set initial Feedrate" + n_l
+    gcode += "G1 F" + str(feedrate_low) + "                        ;set initial Feedrate" + n_l
     gcode += "M117 compas gcode print...      ;show up text on LCD" + n_l
     # ______________________________________________________________________/ header
 
@@ -97,7 +104,7 @@ def create_gcode_text(printpoints_dict, parameters):
     fan_on = False  # boolean; is true when fan is toggled
     prev_point = PrintPoint(Point(0, 0, 0), layer_height=1.0,
                             mesh_normal=Vector(1.0, 0.0, 0.0))  # dummy print_point that is overwritten
-    layer_height = 1.0  # dummy value that is overwritten
+    layer_height = 0.2  # dummy value that is overwritten
     # ______________________________________________________________________/ global parameters
 
     # ######################################################################
@@ -107,7 +114,6 @@ def create_gcode_text(printpoints_dict, parameters):
         for j, path_v in enumerate(printpoints_dict[layer_v]):
             for k, point_v in enumerate(printpoints_dict[layer_v][path_v]):
                 layer_height = point_v.layer_height
-
                 # Calculate relative length
                 re_l = ((point_v.pt.x - prev_point.pt.x) ** 2 + (point_v.pt.y - prev_point.pt.y) ** 2 + (
                         point_v.pt.z - prev_point.pt.z) ** 2) ** 0.5
@@ -118,15 +124,15 @@ def create_gcode_text(printpoints_dict, parameters):
                         gcode += "G1" + " E-" + str(retraction_length) + "    ;ret fil" + n_l
                         # ZHOP
                         gcode += "G1" + " Z" + '{:.3f}'.format(prev_point.pt.z + z_hop) + "    ;ZHop" + n_l
-                        gcode += "G1" + " F" + str(feedrate_travel) + "    ;set trav spd" + n_l
+                        gcode += "G1" + " F" + str(feedrate_travel) + "     ;set trav spd" + n_l
                         retraction_on = True
                     else:
                         retraction_on = False
-                    if retraction_on:  # TODO: combine this if clause in the min_Travel<re_l above
+                    if retraction_on:  # TODO: combine this if clause in the min_Travel < re_l above
                         gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
                         # reverse hop and retract after reaching the first point
-                        gcode += "G1 F" + str(feedrate_retraction) + "          ;set ret spd" + n_l
-                        gcode += "G1" + " Z" + '{:.3f}'.format(point_v.pt.z) + "    ;Rev ZHop" + n_l
+                        gcode += "G1 F" + str(feedrate_retraction) + "     ;set ret spd" + n_l
+                        gcode += "G1" + " Z" + '{:.3f}'.format(point_v.pt.z) + "  ;Rev ZHop" + n_l
                         gcode += "G1" + " E" + str(retraction_length) + "    ;rev fil ret" + n_l
                         gcode += "G1" + " F" + str(feedrate) + "    ;set extr spd" + n_l
                     else:
@@ -137,19 +143,20 @@ def create_gcode_text(printpoints_dict, parameters):
                     # tmpflow = myflow.Branch(b)(i) here we can set the flow multiplier
                     # Calculate feedrate
                     e_val = 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
-                    if point_v.pt.z < min_over_z:  # TODO: REPLACE WITH REPEAT... UNTIL for NXT VErison
+                    if point_v.pt.z < min_over_z:  # TODO: REPLACE WITH REPEAT... UNTIL
                         e_val *= flow_over
                     gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
                         point_v.pt.y) + " E" + '{:.3f}'.format(e_val) + n_l
                 prev_point = point_v
         if fan_on is False:
             if i * layer_height >= fan_start_z:  # 'Fan On:
-                gcode += "M106 S" + str(fan_speed) + "    ;set fan on to set speed" + n_l
+                gcode += "M106 S" + str(fan_speed) + "     ;set fan on to set speed" + n_l
+                fan_on = True
 
                 # 'retract after last branch/contour
-    gcode += "G1 F" + str(feedrate_retraction) + "    ;set ret spd" + n_l
-    gcode += "G1" + " E-" + str(retraction_length) + "    ;ret fil" + n_l
-    gcode += "G1" + " Z" + '{:.3f}'.format(3 * (prev_point.pt.z + z_hop)) + "    ;ZHop" + n_l
+    gcode += "G1 F" + str(feedrate_retraction) + "     ;set ret spd" + n_l
+    gcode += "G1" + " E-" + str(retraction_length) + "       ;ret fil" + n_l
+    gcode += "G1" + " Z" + '{:.3f}'.format(3 * (prev_point.pt.z + z_hop)) + "  ;ZHop" + n_l
     gcode += "G1 F" + str(feedrate_travel) + "    ;set ret spd" + n_l
     retraction_on = True
 
@@ -157,7 +164,7 @@ def create_gcode_text(printpoints_dict, parameters):
     # Footer
     gcode += "M106 S0                     ;set fan on to 200/255 speed" + n_l
     gcode += "M201 X500 Y500              ;Set acceleration To 500mm/s^2" + n_l
-    gcode += "G1" + " F 1000              ;set travel speed to 1000 mm/min" + n_l
+    gcode += "G1" + " F 1000                   ;set travel speed to 1000 mm/min" + n_l
     gcode += "G1 X0 Y0                    ;Home X and Y" + n_l
     gcode += "M104 S0                     ;extruder heater Off" + n_l
     gcode += "M140 S0                     ;heated bed heater Off (If it exists)" + n_l
