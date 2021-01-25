@@ -38,7 +38,6 @@ def create_gcode_text(printpoints_dict, parameters):
     #######################################################################
     # get all the necessary parameters:
     # Physical parameters
-    # delta = get_param(parameters, key='delta', defaults_type='gcode')  # boolean for delta printers, not working yet
     # nozzle_diameter = get_param(parameters, key='nozzle_diameter', defaults_type='gcode')  # in mm
     filament_diameter = get_param(parameters, key='filament diameter', defaults_type='gcode')  # in mm
 
@@ -56,8 +55,8 @@ def create_gcode_text(printpoints_dict, parameters):
     feedrate_travel = get_param(parameters, key='feedrate_travel', defaults_type='gcode')  # in mm/s
     feedrate_low = get_param(parameters, key='feedrate_low', defaults_type='gcode')  # in mm/s, for z < min_over_z
     feedrate_retraction = get_param(parameters, key='feedrate_retraction', defaults_type='gcode')  # in mm/s
-    # acceleration = get_param(parameters, key='acceleration', defaults_type='gcode')  #in mm/s²
-    # jerk = get_param(parameters, key='jerk', defaults_type='gcode')  #in mm/s
+    acceleration = get_param(parameters, key='acceleration', defaults_type='gcode')  # in mm/s²; ignored if 0
+    jerk = get_param(parameters, key='jerk', defaults_type='gcode')  # in mm/s; if 0, the default driver value is used
 
     # Retraction and hop parameters
     z_hop = get_param(parameters, key='z_hop', defaults_type='gcode')  # in mm
@@ -65,8 +64,8 @@ def create_gcode_text(printpoints_dict, parameters):
     retraction_min_travel = get_param(parameters, key='retraction_min_travel', defaults_type='gcode')  # in mm
 
     # Adhesion parameters
-    flow_over = get_param(parameters, key='flow_over', defaults_type='gcode')  # !!!!!!!!!!NOT SET YET!!!
-    min_over_z = get_param(parameters, key='min_over_z', defaults_type='gcode')  # !!!!!!!!!!NOT SET YET!!!
+    flow_over = get_param(parameters, key='flow_over', defaults_type='gcode')  # as fraction > 1
+    min_over_z = get_param(parameters, key='min_over_z', defaults_type='gcode')  # in mm
     # ______________________________________________________________________/ get parmeters
 
     # ######################################################################
@@ -90,13 +89,17 @@ def create_gcode_text(printpoints_dict, parameters):
     gcode += "G21                             ;metric values" + n_l
     gcode += "G90                             ;absolute positioning" + n_l
     gcode += "M83                             ;set e-values to relative while in absolute mode" + n_l
+    if acceleration != 0:
+        gcode += "M201 X" + str(acceleration) + " Y" + str(acceleration) + "          ;set max acceleration in xy" + n_l
+    if jerk != 0:
+        gcode += "M207 X" + str(jerk) + "            ;set max jerk" + n_l  # TODO: check firmware compatibility of M207
     gcode += "G28 X0 Y0                       ;home x and y axes" + n_l
     gcode += "G28 Z0                          ;home z axis independently" + n_l
     gcode += "G1 F4500                        ;set feedrate to 4,500 mm/min (75 mm/s)" + n_l
     gcode += "G1 Z15.0                        ;move nozzle up 15mm" + n_l
     gcode += "G1 F140 E29                     ;extruded slowly some filament (default: 29mm)" + n_l
     gcode += "G92 E0                          ;reset the extruded length" + n_l  # useless after M83, otherwise needed
-    gcode += "G1 F" + str(feedrate_travel) + "                     ;set initial Feedrate" + n_l
+    gcode += "G1 F" + str(feedrate_travel) + "                       ;set initial Feedrate" + n_l
     gcode += "M117 compas gcode print...      ;show up text on LCD" + n_l
     gcode += ";" + n_l
     # ______________________________________________________________________/ header
@@ -124,35 +127,37 @@ def create_gcode_text(printpoints_dict, parameters):
                     # retract before moving to first point in path if necessary
                     if retraction_min_travel < re_l:
                         gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
-                        gcode += "G1" + " E-" + str(retraction_length) + "    ;retract" + n_l
+                        gcode += "G1" + " E-" + str(retraction_length) + "      ;retract" + n_l
                         # ZHOP
-                        gcode += "G1" + " Z" + '{:.3f}'.format(prev_point.pt.z + z_hop) + "    ;z-hop" + n_l
+                        gcode += "G1" + " Z" + '{:.3f}'.format(prev_point.pt.z + z_hop) + "  ;z-hop" + n_l
                         # move to first point in path:
-                        gcode += "G1" + " F" + str(feedrate_travel) + "     ;set travel feedrate" + n_l
-                        if prev_point.z != point_v.z:
+                        gcode += "G1" + " F" + str(feedrate_travel) + "    ;set travel feedrate" + n_l
+                        if prev_point.pt.z != point_v.pt.z:
                             gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
                         else:
                             gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
                         # reverse z-hop after reaching the first point
-                        gcode += "G1 F" + str(feedrate_retraction) + "     ;set retraction feedrate" + n_l
+                        gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
                         gcode += "G1" + " Z" + '{:.3f}'.format(point_v.pt.z) + "  ;reverse z-hop" + n_l
                         # reverse retract after reaching the first point
-                        gcode += "G1" + " E" + str(retraction_length) + "    ;reverse retraction" + n_l
+                        gcode += "G1" + " E" + str(retraction_length) + "       ;reverse retraction" + n_l
                     else:
-                        if prev_point.z != point_v.z:
+                        if prev_point.pt.z != point_v.pt.z:
                             gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
                                 point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
                         else:
                             gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
+                    # set extrusion feedrate: low for adhesion to bed and normal otherwise
+                    if point_v.pt.z < min_over_z:
+                        gcode += "G1" + " F" + str(feedrate_low) + "    ;set low feedrate" + n_l
+                    else:
+                        gcode += "G1" + " F" + str(feedrate) + "    ;set extrusion feedrate" + n_l
                 else:  # from 2nd point in each path onwards
                     # tmpflow = myflow.Branch(b)(i) here we can set the flow multiplier
                     # Calculate feedrate : TODO: just a basic formula for now, better ones in the future
                     e_val = 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
                     if point_v.pt.z < min_over_z:
                         e_val *= flow_over
-                        gcode += "G1" + " F" + str(feedrate_low) + "    ;set low feedrate" + n_l
-                    else:
-                        gcode += "G1" + " F" + str(feedrate) + "    ;set extrusion feedrate" + n_l
                     gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
                         point_v.pt.y) + " E" + '{:.3f}'.format(e_val) + n_l
                 prev_point = point_v

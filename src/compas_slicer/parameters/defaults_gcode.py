@@ -13,15 +13,15 @@ def gcode_default_param(key):
 default_parameters = \
     {
         # Physical parameters
-        'delta': False,  # boolean for delta printers
         'nozzle_diameter': 0.4,  # in mm
         'filament diameter': 1.75,  # in mm, for calculating E
+        'delta': False,  # boolean for delta printers
+        'print_volume_x': 300,  # in mm
+        'print_volume_y': 300,  # in mm
+        'print_volume_z': 600,  # in mm
 
         # Dimensional parameters
         'layer_width': 0.6,  # in mm
-
-        'flow_over': 0.0,
-        'min_over_z': 0.0,
 
         # Temperature parameters
         'extruder_temperature': 200,  # in °C
@@ -33,12 +33,16 @@ default_parameters = \
         'feedrate': 3600,  # in mm/s
         'feedrate_travel': 4800,  # in mm/s
         'feedrate_low': 1800,  # in mm/s
-        'feedrate_retraction': 3600,  # in mm/s
-        # 'acceleration': 3600, #in mm/s²
-        # 'jerk': 3600, #in mm/s
+        'feedrate_retraction': 2400,  # in mm/s
+        'acceleration': 0,  # in mm/s²; if set to 0, the default driver value will be used
+        'jerk': 0,  # in mm/s; if set to 0, the default driver value will be used
 
         # Retraction
         'z_hop': 0.5,  # in mm
         'retraction_length': 1,  # in mm
-        'retraction_min_travel': 3,  # in mm; below this value, retraction does not happen
+        'retraction_min_travel': 6,  # in mm; below this value, retraction does not happen
+
+        # Adhesion parameters
+        'flow_over': 1,  # as fraction, usually > 1; overextrusion value for z < min_over_z, for better adhesion
+        'min_over_z': 0,  # in mm; for z < min_over_z, the overextrusion factor applies
     }
