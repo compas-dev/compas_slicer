@@ -280,8 +280,7 @@ def stairs_union(a, b, r, n):
     """ Returns a stairs union of the two elements da, db with radius r. """
     s = r / n
     u = b - r
-    return min(min(a, b), 0.5 * (u + a + abs((mod(u - a + s, 2 * s)) - s)))
-
+    return min(min(a, b), 0.5 * (u + a + abs((u - a + s) % (2 * s)) - s))
 
 
 if __name__ == "__main__":
