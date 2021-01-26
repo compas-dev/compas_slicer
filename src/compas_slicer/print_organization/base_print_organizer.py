@@ -35,7 +35,7 @@ class BasePrintOrganizer(object):
     ######################
 
     @abstractmethod
-    def create_printpoints(self):
+    def create_printpoints(self, transfer_attributes=False):
         """To be implemented by the inheriting classes"""
         pass
 
@@ -104,6 +104,13 @@ class BasePrintOrganizer(object):
         if len(duplicate_ppts) > 0:
             for ppt in duplicate_ppts:
                 self.printpoints_dict[layer_key][path_key].remove(ppt)
+
+    def transfer_attributes_to_point(self, point):
+        # project point on mesh
+
+
+        attributes = {}
+        return attributes
 
     def get_printpoint_neighboring_items(self, layer_key, path_key, i):
         """

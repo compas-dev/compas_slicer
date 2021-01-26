@@ -32,8 +32,8 @@ class BaseBoundary:
 
         self.printpoints = [PrintPoint(pt=pt,  # Create fake print points
                                        layer_height=1.0,
-                                       mesh_normal=utils.get_closest_mesh_normal_to_pt(self.mesh, pt)) \
-                            for pt in self.points]
+                                       mesh_normal=utils.get_closest_mesh_normal_to_pt(self.mesh, pt),
+                                       attributes={}) for pt in self.points]
 
         for i, pp in enumerate(self.printpoints):
             pp.up_vector = self.up_vectors[i]

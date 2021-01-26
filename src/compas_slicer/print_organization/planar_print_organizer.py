@@ -25,7 +25,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
     def __repr__(self):
         return "<PlanarPrintOrganizer with %i layers>" % len(self.slicer.layers)
 
-    def create_printpoints(self):
+    def create_printpoints(self, transfer_attributes=False):
         """ Create the print points of the fabrication process """
         count = 0
         logger.info('Creating print points ...')
@@ -40,8 +40,9 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                     for k, point in enumerate(path.points):
                         normal = utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh)
 
+                        attributes = self.transfer_attributes_to_point(point) if transfer_attributes else {}
                         printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height,
-                                                mesh_normal=normal)
+                                                mesh_normal=normal, attributes=attributes)
 
                         self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
                         bar.update(count)

@@ -106,7 +106,7 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
             path_collection.compute()
             self.vertical_layers_print_data[i]['path_collection'] = path_collection
 
-    def create_printpoints(self):
+    def create_printpoints(self, transfer_attributes=False):
         """
         Create the print points of the fabrication process
         Based on the directed graph, select one topological order.
@@ -122,7 +122,7 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
             for j, path in enumerate(paths):
                 self.printpoints_dict['layer_0']['path_%d' % j] = \
                     [PrintPoint(pt=point, layer_height=self.slicer.layer_height,
-                     mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh))
+                     mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh), attributes={})
                      for k, point in enumerate(path.points)]
             current_layer_index += 1
 
