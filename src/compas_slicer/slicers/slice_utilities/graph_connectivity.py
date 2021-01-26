@@ -5,9 +5,7 @@ __all__ = ['create_graph_from_mesh_edges',
            'create_graph_from_mesh_vkeys']
 
 
-def create_graph_from_mesh_edges(mesh, intersected_edges,
-                                 intersection_points,
-                                 edge_point_index_relation):
+def create_graph_from_mesh_edges(mesh, intersection_data, edge_to_index):
     """
     Creates a graph with one node for every intersected edge.
     The connectivity of nodes (i.e. edges between them) is based on their neighboring on the mesh.
@@ -15,26 +13,22 @@ def create_graph_from_mesh_edges(mesh, intersected_edges,
     Parameters
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
-    intersected_edges: list, tupple (int, int)
-        The tupples represent edges which have a zero crossing.
-    intersection_points: list :class: 'compas.geometry.Point'
-        The zero crossings of the intersected edges.
-    edge_point_index_relation: dict
-        stores node_index and edge relationship
-        key: tupple (int, int) edge
+    intersection_data: dict, (ui,vi) : {'pt':[xi,yi,zi], 'attrs':{...}}
+        The keys-tuples are all the edges which have a zero crossing.
+    edge_to_index: dict
+        key: tuple (int, int) edge
         value: int, index of the intersection point
 
     Returns
     ----------
-    G: :class: 'networkx.Graph'
+    G: :class: 'networkx.Graph'. Node_indices > intersection indices. Node_attrs > their parent_edges (i.e. the keys of
+        the intersection_data dict)
     """
-
-    assert len(intersected_edges) == len(intersection_points), 'Wrong size of inputs'
 
     # create graph
     G = nx.Graph()
-    for i, parent_edge in enumerate(intersection_points):
-        G.add_node(i, mesh_edge=parent_edge)  # node, attribute
+    for i, edge in enumerate(intersection_data):
+        G.add_node(i, mesh_edge=edge)  # node, attribute
 
     for node_index, data in G.nodes(data=True):
         mesh_edge = data['mesh_edge']
@@ -46,13 +40,13 @@ def create_graph_from_mesh_edges(mesh, intersected_edges,
                 face_edges = mesh.face_halfedges(f)
                 for e in face_edges:
                     if (e != mesh_edge and tuple(reversed(e)) != mesh_edge) \
-                            and (e in intersected_edges or tuple(reversed(e)) in intersected_edges):
+                            and (e in intersection_data or tuple(reversed(e)) in intersection_data):
                         current_edge_connections.append(e)
 
         for e in current_edge_connections:
             # find other_node_index
-            other_node_index = edge_point_index_relation[e] if e in edge_point_index_relation \
-                else edge_point_index_relation[tuple(reversed(e))]
+            other_node_index = edge_to_index[e] if e in edge_to_index \
+                else edge_to_index[tuple(reversed(e))]
             # add edges to the graph (only if the edge doesn't exist already)
             if not G.has_edge(node_index, other_node_index) and not G.has_edge(other_node_index, node_index):
                 G.add_edge(node_index, other_node_index)
@@ -84,7 +78,7 @@ def create_graph_from_mesh_vkeys(mesh, v_keys):
     return G
 
 
-def sort_graph_connected_components(G, intersection_points):
+def sort_graph_connected_components(G):
     """
     For every connected component of the graph G:
     1) It finds a start node. For open paths it is on one of its ends, for closed paths it can be any of its points.
@@ -93,10 +87,7 @@ def sort_graph_connected_components(G, intersection_points):
 
     Parameters
     ----------
-    G: :class: 'networkx.Graph'
-    intersection_points: dict
-        key: tupple (int, int), The edge from which the intersection point originates.
-        value: :class: 'compas.geometry.Point', The zero-crossing point.
+    G: :class: 'networkx.Graph', Node_indices > intersection point indices. Node_attrs > parent_edges
 
     Returns
     ----------
@@ -105,11 +96,10 @@ def sort_graph_connected_components(G, intersection_points):
         value: list, :class: 'compas.geometry.Point', The sorted zero-crossing points.
     sorted_edge_clusters: dict
         key: int, The index of the connected component.
-        value: list, tupple (int, int), The sorted intersected edges.
+        value: list, tuple (int, int), The sorted intersected edges.
     """
 
-    sorted_point_clusters = {}
-    sorted_edge_clusters = {}
+    sorted_indices_dict = {}
 
     for j, cp in enumerate(nx.connected_components(G)):
         sorted_node_indices = []
@@ -125,6 +115,7 @@ def sort_graph_connected_components(G, intersection_points):
 
         # (2) sort nodes_indices with depth first graph traversal from start node
         for edge_of_node_indices in nx.dfs_edges(G, start_node):
+            # edge_of_node_indices: pair of neighboring graph nodes
             node_index_1 = edge_of_node_indices[0]
             node_index_2 = edge_of_node_indices[1]
             if node_index_1 not in sorted_node_indices:
@@ -134,15 +125,5 @@ def sort_graph_connected_components(G, intersection_points):
 
         assert len(sorted_node_indices) == len(cp), 'Attention. len(sorted_node_indices) != len(G.nodes())'
 
-        # (3) now transform them to the corresponding sorted lists
-        sorted_point_clusters[j] = []
-        sorted_edge_clusters[j] = []
-
-        for node_index in sorted_node_indices:
-            nodeDict = dict(G.nodes(data=True))
-            parent_edge = nodeDict[node_index]['mesh_edge']
-            sorted_edge_clusters[j].append(parent_edge)
-
-            p = intersection_points[parent_edge][0]
-            sorted_point_clusters[j].append(p)
-    return sorted_point_clusters, sorted_edge_clusters
+        sorted_indices_dict[j] = sorted_node_indices
+    return sorted_indices_dict

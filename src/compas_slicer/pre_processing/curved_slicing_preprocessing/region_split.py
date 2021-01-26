@@ -7,7 +7,7 @@ import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.curved_slicing_preprocessing import restore_mesh_attributes, save_vertex_attributes
 from compas.datastructures import Mesh
 from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertex
-from compas_slicer.pre_processing.curved_slicing_preprocessing import CurvedZeroCrossingContours
+from compas_slicer.slicers.slice_utilities import ScalarFieldContours
 from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertices
 from compas_slicer.pre_processing.curved_slicing_preprocessing import GradientEvaluation
 from compas.geometry import Line, distance_point_point_sqrd, project_point_line
@@ -107,7 +107,7 @@ class MeshSplitter:
 
             # --- (2) find zero-crossing points
             assign_distance_to_mesh_vertices(self.mesh, t, self.target_LOW, self.target_HIGH)
-            zero_contours = CurvedZeroCrossingContours(self.mesh)
+            zero_contours = ScalarFieldContours(self.mesh)
             zero_contours.compute()
             keys_of_clusters_to_keep = merge_clusters_saddle_point(zero_contours, saddle_vkeys=[vkey])
 
@@ -159,7 +159,7 @@ class MeshSplitter:
 
         Parameters
         ----------
-        zero_contours: :class: 'compas_slicer.pre_processing.CurvedZeroCrossingContours'
+        zero_contours: :class: 'compas_slicer.pre_processing.ScalarFieldContours'
         cut_index: int, the vertex attribute value data['cut'] of the current cut
         """
         for key in zero_contours.sorted_point_clusters:  # cluster_pair
@@ -354,7 +354,7 @@ def merge_clusters_saddle_point(zero_contours, saddle_vkeys):
 
     Parameters
     ----------
-    zero_contours: :class: 'compas_slicer.pre_processing.CurvedZeroCrossingContours'
+    zero_contours: :class: 'compas_slicer.pre_processing.ScalarFieldContours'
     saddle_vkeys: list, int, the vertex keys of the current saddle points.
     (Currently this can only be a single saddle point)
 
@@ -383,7 +383,7 @@ def cleanup_unrelated_isocontour_neighborhoods(zero_contours, keys_of_clusters_t
 
     Parameters
     ----------
-    zero_contours: :class: 'compas_slicer.pre_processing.CurvedZeroCrossingContours'
+    zero_contours: :class: 'compas_slicer.pre_processing.ScalarFieldContours'
     keys_of_clusters_to_keep: list, int. The index neighborhoods that are related to the saddle points.
     """
     if len(keys_of_clusters_to_keep) == 0:

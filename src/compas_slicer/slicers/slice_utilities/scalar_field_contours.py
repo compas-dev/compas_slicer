@@ -1,12 +1,12 @@
-from compas_slicer.slicers.slice_utilities import ZeroCrossingContoursBase
+from compas_slicer.slicers.slice_utilities import ContoursBase
 from compas.geometry import Vector, add_vectors, scale_vector
 
-__all__ = ['CurvedZeroCrossingContours']
+__all__ = ['ScalarFieldContours']
 
 
-class CurvedZeroCrossingContours(ZeroCrossingContoursBase):
+class ScalarFieldContours(ContoursBase):
     """
-    Finds the iso-contours of the function f(x) = vertex_data['distance']
+    Finds the iso-contours of the function f(x) = vertex_data['scalar_field']
     on the mesh.
 
     Attributes
@@ -14,7 +14,7 @@ class CurvedZeroCrossingContours(ZeroCrossingContoursBase):
     mesh: :class: 'compas.datastructures.Mesh'
     """
     def __init__(self, mesh):
-        ZeroCrossingContoursBase.__init__(self, mesh)  # initialize from parent class
+        ContoursBase.__init__(self, mesh)  # initialize from parent class
 
     def edge_is_intersected(self, u, v):
         """ Returns True if the edge u,v has a zero-crossing, False otherwise. """
@@ -25,7 +25,7 @@ class CurvedZeroCrossingContours(ZeroCrossingContoursBase):
         else:
             return True
 
-    def find_zero_crossing_point(self, u, v):
+    def find_zero_crossing_data(self, u, v):
         """ Finds the position of the zero-crossing on the edge u,v. """
         dist_a, dist_b = self.mesh.vertex[u]['scalar_field'], self.mesh.vertex[v]['scalar_field']
         if abs(dist_a) + abs(dist_b) > 0:

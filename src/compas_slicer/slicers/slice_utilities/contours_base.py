@@ -6,10 +6,10 @@ from abc import abstractmethod
 
 logger = logging.getLogger('logger')
 
-__all__ = ['ZeroCrossingContoursBase']
+__all__ = ['ContoursBase']
 
 
-class ZeroCrossingContoursBase(object):
+class ContoursBase(object):
     """
     This is meant to be extended by all classes that generate isocontours of a scalar function on a mesh.
     This class handles the two steps of iso-contouring of a triangular mesh consists of two steps;
@@ -26,30 +26,33 @@ class ZeroCrossingContoursBase(object):
 
     def __init__(self, mesh):
         self.mesh = mesh
-        self.intersected_edges = []  # list of tupples (int, int)
-        self.intersection_points = {}  # dict
-        # key: tupple (int, int), The edge from which the intersection point originates.
+        self.intersection_data = {}  # dict: (ui,vi) : {'pt':[xi,yi,zi], 'attrs':{...}}
+        # key: tuple (int, int), The edge from which the intersection point originates.
         # value: :class: 'compas.geometry.Point', The zero-crossing point.
-        self.edge_point_index_relation = {}  # dict that stores node_index and edge relationship
-        # key: tupple (int, int) edge
+        self.edge_to_index = {}  # dict that stores node_index and edge relationship
+        # key: tuple (int, int) edge
         # value: int, index of the intersection point
         self.sorted_point_clusters = {}  # dict
         # key: int, The index of the connected component
         # value: list, :class: 'compas.geometry.Point', The sorted zero-crossing points.
         self.sorted_edge_clusters = {}  # dict
         # key: int, The index of the connected component.
-        # value: list, tupple (int, int), The sorted intersected edges.
+        # value: list, tuple (int, int), The sorted intersected edges.
         self.closed_paths_booleans = {}  # dict
         # key: int, The index of the connected component.
         # value: bool, True if path is closed, False otherwise.
 
     def compute(self):
-        self.find_intersected_edges()
-        G = create_graph_from_mesh_edges(self.mesh, self.intersected_edges,
-                                         self.intersection_points,
-                                         self.edge_point_index_relation)
-        self.sorted_point_clusters, self.sorted_edge_clusters = \
-            sort_graph_connected_components(G, self.intersection_points)
+        self.find_intersections()
+        G = create_graph_from_mesh_edges(self.mesh, self.intersection_data, self.edge_to_index)
+        sorted_indices_dict = sort_graph_connected_components(G)
+
+        nodeDict = dict(G.nodes(data=True))
+        for key in sorted_indices_dict:
+            sorted_indices = sorted_indices_dict[key]
+            self.sorted_edge_clusters[key] = [nodeDict[node_index]['mesh_edge'] for node_index in sorted_indices]
+            self.sorted_point_clusters[key] = [self.intersection_data[e]['pt'] for e in self.sorted_edge_clusters[key]]
+
         self.label_closed_paths()
 
     def label_closed_paths(self):
@@ -59,19 +62,23 @@ class ZeroCrossingContoursBase(object):
             u, v = first_edge
             self.closed_paths_booleans[key] = u in last_edge or v in last_edge
 
-    def find_intersected_edges(self):
+    def find_intersections(self):
+        """
+        Fills in the
+        dict self.intersection_data: key=(ui,vi) : [xi,yi,zi],
+        dict self.edge_to_index: key=(u1,v1) : point_index. """
         for edge in list(self.mesh.edges()):
             if self.edge_is_intersected(edge[0], edge[1]):
-                point = self.find_zero_crossing_point(edge[0], edge[1])
+                point = self.find_zero_crossing_data(edge[0], edge[1])
                 if point:  # Sometimes the result can be None
-                    if edge not in self.intersected_edges and tuple(reversed(edge)) not in self.intersected_edges:
-                        self.intersected_edges.append(edge)
+                    if edge not in self.intersection_data and tuple(reversed(edge)) not in self.intersection_data:
                         # create [edge - point] dictionary
-                        self.intersection_points[edge] = Point(point[0], point[1], point[2]),
+                        self.intersection_data[edge] = {}
+                        self.intersection_data[edge]['pt'] = Point(point[0], point[1], point[2])
 
             # create [edge - point] dictionary
-            for i, e in enumerate(self.intersection_points):
-                self.edge_point_index_relation[e] = i
+            for i, e in enumerate(self.intersection_data):
+                self.edge_to_index[e] = i
 
     def save_point_clusters_as_polylines_to_json(self, DATA_PATH, name):
         all_points = {}
@@ -87,7 +94,7 @@ class ZeroCrossingContoursBase(object):
         pass
 
     @abstractmethod
-    def find_zero_crossing_point(self, u, v):
+    def find_zero_crossing_data(self, u, v):
         """ Finds the position of the zero-crossing on the edge u,v. """
         # to be implemented by the inheriting classes
         pass

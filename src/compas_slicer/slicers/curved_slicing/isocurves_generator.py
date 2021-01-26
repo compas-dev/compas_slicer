@@ -4,7 +4,7 @@ from compas_slicer.geometry import VerticalLayer, Path
 import logging
 import progressbar
 from compas_slicer.pre_processing import assign_distance_to_mesh_vertices
-from compas_slicer.pre_processing import CurvedZeroCrossingContours
+from compas_slicer.slicers.slice_utilities import ScalarFieldContours
 from compas_slicer.post_processing.sort_paths_per_vertical_segment import get_segments_centroids_list
 
 logger = logging.getLogger('logger')
@@ -47,7 +47,7 @@ class IsocurvesGenerator:
         with progressbar.ProgressBar(max_value=len(weights_list)) as bar:
             for i, weight in enumerate(weights_list):
                 assign_distance_to_mesh_vertices(self.mesh, weight, self.target_LOW, self.target_HIGH)
-                zero_contours = CurvedZeroCrossingContours(self.mesh)
+                zero_contours = ScalarFieldContours(self.mesh)
                 zero_contours.compute()
 
                 for j, key in enumerate(zero_contours.sorted_point_clusters):
