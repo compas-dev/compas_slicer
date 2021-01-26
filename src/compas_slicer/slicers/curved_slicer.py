@@ -19,7 +19,7 @@ class CurvedSlicer(BaseSlicer):
     mesh : :class: 'compas.datastructures.Mesh'
         Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
         Note that the topology of the mesh matters, irregular tesselation can lead to undesired results.
-        WE recommend to 1)retopologize, 2) triangulate, and 3) weld your mesh in advance.
+        We recommend to 1)re-topologize, 2) triangulate, and 3) weld your mesh in advance.
     preprocessor : :class: 'compas_slicer.pre_processing.CurvedSlicingPreprocessor'
     parameters : dict
     """

@@ -48,7 +48,7 @@ def main():
                                                      target_2=preprocessor.target_HIGH)
     preprocessor.find_critical_points(g_eval, output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
 
-    ## --- slicing
+    # --- slicing
     slicer = CurvedSlicer(mesh, preprocessor, parameters)
     slicer.slice_model()  # compute_norm_of_gradient contours
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=5)
@@ -64,11 +64,11 @@ def main():
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
 
-    ### --- Save printpoints dictionary to json file
+    # --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()
     utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
-    ### ----- Visualize
+    # ----- Visualize
     viewer = ObjectViewer()
     # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
     print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)

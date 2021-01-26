@@ -95,7 +95,8 @@ def get_face_gradient_from_scalar_field(mesh, u, use_igl=True):
             vc0 = np.array(mesh.vertex_coordinates(v0))
             vc1 = np.array(mesh.vertex_coordinates(v1))
             vc2 = np.array(mesh.vertex_coordinates(v2))
-            grad_u = -1 * ((u1-u0) * np.cross(vc0-vc2, N) + (u2-u0) * np.cross(vc1-vc0, N)) / (2 * A)
+            # grad_u = -1 * ((u1-u0) * np.cross(vc0-vc2, N) + (u2-u0) * np.cross(vc1-vc0, N)) / (2 * A)
+            grad_u = ((u1-u0) * np.cross(vc0-vc2, N) + (u2-u0) * np.cross(vc1-vc0, N)) / (2 * A)
             # grad_u = (np.cross(N, edge_0) * u2 +
             #           np.cross(N, edge_1) * u0 +
             #           np.cross(N, edge_2) * u1) / (2 * A)
@@ -155,7 +156,7 @@ def get_scalar_field_from_gradient(mesh, X, C, cotans):
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
     X: np.array, (dimensions: #F x 3), per face gradient
-    L: 'scipy.sparse.csr_matrix',
+    C: 'scipy.sparse.csr_matrix',
         sparse matrix (dimensions: #V x #V), cotmatrix, each row i corresponding to v(i, :)
     cotans: np.array, (dimensions: #F x 3), 1/2*cotangents corresponding angles
 
@@ -165,12 +166,10 @@ def get_scalar_field_from_gradient(mesh, X, C, cotans):
     """
     div_X = get_per_face_divergence(mesh, X, cotans)
     u = scipy.sparse.linalg.spsolve(C, div_X)
-    print('Linear system error |A*x - b| = ', np.linalg.norm(C * u - div_X))
+    logger.info('Solved Δ(u) = div(X). Linear system error |Δ(u) - div(X)| = ' + str(np.linalg.norm(C * u - div_X)))
     u = u - np.amin(u)  # make start value equal 0
     u = 2*u
     return u
-
-# def get_scalar_field_from
 
 
 if __name__ == "__main__":

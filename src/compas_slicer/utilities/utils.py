@@ -17,9 +17,10 @@ __all__ = ['get_output_directory',
            'flattened_list_of_dictionary',
            'interrupt',
            'point_list_to_dict',
+           'point_list_from_dict',
            'get_closest_mesh_vkey_to_pt',
            'get_closest_mesh_normal_to_pt',
-           'get_mesh_laplacian_matrix_igl',
+           'get_mesh_cotmatrix_igl',
            'get_mesh_cotans_igl',
            'get_closest_pt_index',
            'get_closest_pt',
@@ -309,14 +310,14 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
 #######################################
 # igl utils
 
-def get_mesh_laplacian_matrix_igl(mesh, fix_boundaries=True):
+def get_mesh_cotmatrix_igl(mesh, fix_boundaries=True):
     """
     Gets the laplace operator of the mesh
 
     Parameters
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
-    fix_boundaries: bool
+    fix_boundaries : bool
 
     Returns
     ----------
@@ -324,18 +325,17 @@ def get_mesh_laplacian_matrix_igl(mesh, fix_boundaries=True):
         sparse matrix (dimensions: #V x #V), laplace operator, each row i corresponding to v(i, :)
     """
     import igl
-    logger.info('Getting laplacian matrix, fix boundaries : ' + str(fix_boundaries))
     v, f = mesh.to_vertices_and_faces()
-    L = igl.cotmatrix(np.array(v), np.array(f))
+    C = igl.cotmatrix(np.array(v), np.array(f))
 
     if fix_boundaries:
         # fix boundaries by putting the corresponding columns of the sparse matrix to 0
-        L_dense = L.toarray()
+        C_dense = C.toarray()
         for i, (vkey, data) in enumerate(mesh.vertices(data=True)):
             if data['boundary'] > 0:
-                L_dense[i][:] = np.zeros(len(v))
-        L = scipy.sparse.csr_matrix(L_dense)
-    return L
+                C_dense[i][:] = np.zeros(len(v))
+        C = scipy.sparse.csr_matrix(C_dense)
+    return C
 
 
 def get_mesh_cotans_igl(mesh):
@@ -379,21 +379,36 @@ def plot_networkx_graph(G):
 
 def point_list_to_dict(pts_list):
     """
-    Turns a list of compas.geometry.Point into a dictionary, so that it can be saved to Json.
+    Turns a list of compas.geometry.Point into a dictionary, so that it can be saved to Json. Works identically for
+    3D vectors.
 
     Parameters
     ----------
-    pts_list: list, :class:`compas.geometry.Point`
+    pts_list: list, :class:`compas.geometry.Point` / :class:`compas.geometry.Vector`
 
     Returns
     ----------
-    dict
+    dict: The dictionary of pts in the form { key=index : [x,y,z] }
     """
-
     data = {}
     for i in range(len(pts_list)):
         data[i] = list(pts_list[i])
     return data
+
+
+def point_list_from_dict(data):
+    """
+    Turns a dictionary of pts to a list of Compas.geometry.Point. Works identically for 3D vectors.
+
+    Parameters
+    ----------
+    dict: The dictionary of pts in the form { key=index : [x,y,z] }
+
+    Returns
+    ----------
+    2D list,  [[x1, y1, z1], ... , [xn, yn, zn]]
+    """
+    return [[data[i][0], data[i][1], data[i][2]] for i in data]
 
 
 #  --- Flattened list of dictionary
@@ -409,7 +424,6 @@ def flattened_list_of_dictionary(dictionary):
     ----------
     list
     """
-
     flattened_list = []
     for key in dictionary:
         [flattened_list.append(item) for item in dictionary[key]]
