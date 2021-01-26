@@ -26,7 +26,7 @@ class ContoursBase(object):
 
     def __init__(self, mesh):
         self.mesh = mesh
-        self.intersection_data = {}  # dict: (ui,vi) : {'pt':[xi,yi,zi], 'attrs':{...}}
+        self.intersection_data = {}  # dict: (ui,vi) : {compas.Point}
         # key: tuple (int, int), The edge from which the intersection point originates.
         # value: :class: 'compas.geometry.Point', The zero-crossing point.
         self.edge_to_index = {}  # dict that stores node_index and edge relationship
@@ -51,7 +51,7 @@ class ContoursBase(object):
         for key in sorted_indices_dict:
             sorted_indices = sorted_indices_dict[key]
             self.sorted_edge_clusters[key] = [nodeDict[node_index]['mesh_edge'] for node_index in sorted_indices]
-            self.sorted_point_clusters[key] = [self.intersection_data[e]['pt'] for e in self.sorted_edge_clusters[key]]
+            self.sorted_point_clusters[key] = [self.intersection_data[e] for e in self.sorted_edge_clusters[key]]
 
         self.label_closed_paths()
 
@@ -74,7 +74,7 @@ class ContoursBase(object):
                     if edge not in self.intersection_data and tuple(reversed(edge)) not in self.intersection_data:
                         # create [edge - point] dictionary
                         self.intersection_data[edge] = {}
-                        self.intersection_data[edge]['pt'] = Point(point[0], point[1], point[2])
+                        self.intersection_data[edge] = Point(point[0], point[1], point[2])
 
             # create [edge - point] dictionary
             for i, e in enumerate(self.intersection_data):
