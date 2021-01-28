@@ -2,7 +2,7 @@ attrs>=19.2.0
 rdp==0.8
 meshcut==0.2.1
 pyclipper==1.2.0
-compas~=0.16.7
+compas>=1.0.0
 numpy~=1.19.1
 networkx~=2.5
 progressbar2==3.53.1
