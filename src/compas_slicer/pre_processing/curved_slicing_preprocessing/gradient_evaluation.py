@@ -1,34 +1,35 @@
 import numpy as np
 import logging
 import compas_slicer.utilities as utils
-from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertices, \
+from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_interpolation_distance_to_mesh_vertices, \
     get_face_gradient_from_scalar_field
 from compas_slicer.pre_processing.curved_slicing_preprocessing import get_vertex_gradient_from_face_gradient
 
 logger = logging.getLogger('logger')
+
 __all__ = ['GradientEvaluation']
 
 
-class GradientEvaluation:
-    """ Evaluation of the gradient of the scalar function of the mesh.
+class GradientEvaluation(object):
+    """
+    Evaluation of the gradient of the scalar function of the mesh.
+    The scalar function should be stored as a vertex attribute on every vertex, with key='scalar_field'
 
     Attributes
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
     DATA_PATH: str, path to the data folder
-    weight:
-    target_LOW: :class: 'compas_slicer.pre_processor.CompoundTarget'
-    target_HIGH: :class: 'compas_slicer.pre_processor.CompoundTarget'
-    """
 
-    def __init__(self, mesh, DATA_PATH, weight=0.5, target_LOW=None, target_HIGH=None):
+    """
+    def __init__(self, mesh, DATA_PATH):
+        for v_key, data in mesh.vertices(data=True):
+            assert 'scalar_field' in data, "Vertex %d does not have the attribute 'scalar_field'"
+
         print('')
         logger.info('Gradient evaluation')
         self.mesh = mesh
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
-        self.target_LOW = target_LOW
-        self.target_HIGH = target_HIGH
 
         self.minima, self.maxima, self.saddles = [], [], []
 
@@ -36,16 +37,6 @@ class GradientEvaluation:
         self.vertex_gradient = []
         self.face_gradient_norm = []
         self.vertex_gradient_norm = []
-
-        assign_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH)
-
-    @property
-    def assigned_distances(self):
-        """ Returns the distance values that have been assigned to the vertices for the evaluation. """
-        return [data['scalar_field'] for vkey, data in self.mesh.vertices(data=True)]
-
-    #####################################
-    # --- Distance speed scalar evaluation
 
     def compute_gradient(self):
         """ Computes the gradient on the faces and the vertices. """
@@ -60,9 +51,6 @@ class GradientEvaluation:
         v_g = np.array([self.vertex_gradient[i] for i, vkey in enumerate(self.mesh.vertices())])
         self.face_gradient_norm = list(np.linalg.norm(f_g, axis=1))
         self.vertex_gradient_norm = list(np.linalg.norm(v_g, axis=1))
-
-    #####################################
-    # --- Critical Points
 
     def find_critical_points(self):
         """ Finds minima, maxima and saddle points of the scalar function on the mesh. """
@@ -91,6 +79,7 @@ class GradientEvaluation:
 
 #####################################
 # --- Helpers
+
 
 def count_sign_changes(values):
     """ Returns the number of sign changes in a list of values. """

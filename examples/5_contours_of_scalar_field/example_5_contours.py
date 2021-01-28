@@ -6,7 +6,7 @@ import compas_slicer.utilities as slicer_utils
 from compas_slicer.slicers import ScalarFieldSlicer
 from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances
 import compas_slicer.utilities as utils
-import math
+from compas_slicer.pre_processing.curved_slicing_preprocessing import GradientEvaluation
 from compas_slicer.print_organization import ScalarFieldPrintOrganizer
 
 logger = logging.getLogger('logger')
@@ -25,10 +25,16 @@ if __name__ == '__main__':
     v_coords = [mesh.vertex_coordinates(v_key, axes='xyz') for v_key in mesh.vertices()]
     u = [distance_point_plane(v, plane) for v in v_coords]
 
+
+    g_evaluation = GradientEvaluation(mesh, DATA_PATH)
+
+
     # generate contours of scalar field
     contours = ScalarFieldSlicer(mesh, u, no_of_isocurves=20)
     contours.slice_model()
     slicer_utils.save_to_json(contours.to_data(), OUTPUT_PATH, 'isocontours.json')
+
+
 
 
 
