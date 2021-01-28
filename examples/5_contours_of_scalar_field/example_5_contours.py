@@ -7,7 +7,7 @@ from compas_slicer.slicers import ScalarFieldSlicer
 from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances
 import compas_slicer.utilities as utils
 import math
-from compas_slicer.print_organization import PlanarPrintOrganizer
+from compas_slicer.print_organization import ScalarFieldPrintOrganizer
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
@@ -30,14 +30,16 @@ if __name__ == '__main__':
     contours.slice_model()
     slicer_utils.save_to_json(contours.to_data(), OUTPUT_PATH, 'isocontours.json')
 
-    print_organizer = PlanarPrintOrganizer(contours)
+
+
+    print_organizer = ScalarFieldPrintOrganizer(contours, parameters={}, DATA_PATH=DATA_PATH)
     print_organizer.create_printpoints()
 
-    print_organizer.transfer_attributes_to_printpoints()
-
-    for i, layer in enumerate(print_organizer.slicer.layers):
-        layer_key = 'layer_%d' % i
-        for j, path in enumerate(layer.paths):
-            path_key = 'path_%d' % j
-            for pp in print_organizer.printpoints_dict[layer_key][path_key]:
-                print (pp.attributes)
+    # print_organizer.transfer_attributes_to_printpoints()
+    #
+    # for i, layer in enumerate(print_organizer.slicer.layers):
+    #     layer_key = 'layer_%d' % i
+    #     for j, path in enumerate(layer.paths):
+    #         path_key = 'path_%d' % j
+    #         for pp in print_organizer.printpoints_dict[layer_key][path_key]:
+    #             print (pp.attributes)

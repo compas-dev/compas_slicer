@@ -40,8 +40,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                     for k, point in enumerate(path.points):
                         normal = utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh)
 
-                        printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height,
-                                                mesh_normal=normal)
+                        printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height, mesh_normal=normal)
 
                         self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
                         bar.update(count)
