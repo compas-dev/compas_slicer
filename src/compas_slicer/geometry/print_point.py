@@ -32,7 +32,7 @@ class PrintPoint(object):
         Time in seconds to wait at this PrintPoint.
     """
 
-    def __init__(self, pt, layer_height, mesh_normal, attributes):
+    def __init__(self, pt, layer_height, mesh_normal):
         assert isinstance(pt, compas.geometry.Point)
         assert isinstance(mesh_normal, compas.geometry.Vector)
 
@@ -44,7 +44,8 @@ class PrintPoint(object):
         self.up_vector = Vector(0, 0, 1)  # default value that can be updated
         self.frame = self.get_frame()  # compas.geometry.Frame
 
-        self.attributes = attributes  # dict
+        #  --- attributes transfered from the mesh (meshe's vertex / face attributes)
+        self.attributes = {}  # dict. To fill this in,
 
         #  --- print_organization related attributes
         self.extruder_toggle = None  # bool

@@ -1,5 +1,6 @@
 import compas_slicer
 import logging
+from compas_slicer.print_organization.print_organization_utilities import transfer_mesh_attributes_to_point
 from compas.geometry import Polyline, distance_point_point
 import numpy as np
 from abc import abstractmethod
@@ -35,7 +36,7 @@ class BasePrintOrganizer(object):
     ######################
 
     @abstractmethod
-    def create_printpoints(self, transfer_attributes=False):
+    def create_printpoints(self):
         """To be implemented by the inheriting classes"""
         pass
 
@@ -105,12 +106,11 @@ class BasePrintOrganizer(object):
             for ppt in duplicate_ppts:
                 self.printpoints_dict[layer_key][path_key].remove(ppt)
 
-    def transfer_attributes_to_point(self, point):
-        # project point on mesh
-
-
-        attributes = {}
-        return attributes
+    def transfer_attributes_to_printpoints(self):
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                for ppt in self.printpoints_dict[layer_key][path_key]:
+                    ppt.attributes = transfer_mesh_attributes_to_point(self.slicer.mesh, ppt.pt)
 
     def get_printpoint_neighboring_items(self, layer_key, path_key, i):
         """

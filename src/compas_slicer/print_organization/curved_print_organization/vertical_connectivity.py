@@ -62,8 +62,7 @@ class VerticalConnectivity:
         """ Initializes printpoints in a list, without filling in their attributes. """
         for i, path in enumerate(self.paths):
             self.printpoints[i] = [PrintPoint(pt=p, layer_height=None,
-                                              mesh_normal=utils.get_closest_mesh_normal_to_pt(self.mesh, p),
-                                              attributes={})  # TODO!
+                                              mesh_normal=utils.get_closest_mesh_normal_to_pt(self.mesh, p))
                                    for p in path.points]
 
     def fill_in_printpoints_information(self):

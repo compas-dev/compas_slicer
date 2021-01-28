@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from compas.geometry import Point, distance_point_point_sqrd, normalize_vector
-from compas.geometry import Vector, closest_point_in_cloud, length_vector
+from compas.geometry import Vector, length_vector, closest_point_in_cloud
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np

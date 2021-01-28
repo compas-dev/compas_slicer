@@ -7,6 +7,7 @@ from compas_slicer.slicers import ScalarFieldSlicer
 from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances
 import compas_slicer.utilities as utils
 import math
+from compas_slicer.print_organization import PlanarPrintOrganizer
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
@@ -19,28 +20,24 @@ if __name__ == '__main__':
     # load mesh
     mesh = Mesh.from_obj(os.path.join(DATA_PATH, MODEL))
 
-    # ### --- Load targets (boundaries)
-    # low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
-    # high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
-    # d1 = get_igl_EXACT_geodesic_distances(mesh, low_boundary_vs)
-    # d2 = get_igl_EXACT_geodesic_distances(mesh, high_boundary_vs)
-    # u = [0.0 for _ in mesh.vertices()]
-    # for i, _ in enumerate(mesh.vertices()):
-    #     d = min(d1[i], d2[i])
-    #     D = max(d1[i], d2[i])
-    #     u[i] = d , d - D
-    #     # if d1[i] < d2[i]:
-    #     #     u[i] += 1.0
-    # utils.save_to_json(u, OUTPUT_PATH, 'u.json')
-
     # Create scalar field
     plane = Plane(Point(0, 0, -30), Vector(0.0, 0.5, 0.5))
     v_coords = [mesh.vertex_coordinates(v_key, axes='xyz') for v_key in mesh.vertices()]
     u = [distance_point_plane(v, plane) for v in v_coords]
 
     # generate contours of scalar field
-    contours = ScalarFieldSlicer(mesh, u, no_of_isocurves=40)
+    contours = ScalarFieldSlicer(mesh, u, no_of_isocurves=20)
     contours.slice_model()
     slicer_utils.save_to_json(contours.to_data(), OUTPUT_PATH, 'isocontours.json')
 
-    # PRINT ORGANIZATION DOES NOT WORK YET FOR SCALAR FIELD CONTOURS
+    print_organizer = PlanarPrintOrganizer(contours)
+    print_organizer.create_printpoints()
+
+    print_organizer.transfer_attributes_to_printpoints()
+
+    for i, layer in enumerate(print_organizer.slicer.layers):
+        layer_key = 'layer_%d' % i
+        for j, path in enumerate(layer.paths):
+            path_key = 'path_%d' % j
+            for pp in print_organizer.printpoints_dict[layer_key][path_key]:
+                print (pp.attributes)
