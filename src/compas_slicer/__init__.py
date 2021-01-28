@@ -25,11 +25,11 @@ import os
 import compas
 
 
-__author__ = ["Mathias Bernhard"]
-__copyright__ = ""
-__license__ = "MIT License"
-__email__ = "bernhard@arch.ethz.ch"
-__version__ = "0.1.0"
+__author__ = ['Ioanna Mitropoulou and Joris Burger']
+__copyright__ = 'copyright 2020 ETH'
+__license__ = 'MIT License'
+__email__ = 'mitropoulou@arch.ethz.ch'
+__version__ = '0.1.0'
 
 
 HERE = os.path.dirname(__file__)
