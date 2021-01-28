@@ -4,6 +4,7 @@ from compas_slicer.print_organization.print_organization_utilities import transf
 from compas.geometry import Polyline, distance_point_point
 import numpy as np
 from abc import abstractmethod
+import progressbar
 
 logger = logging.getLogger('logger')
 
@@ -107,10 +108,15 @@ class BasePrintOrganizer(object):
                 self.printpoints_dict[layer_key][path_key].remove(ppt)
 
     def transfer_attributes_to_printpoints(self):
-        for layer_key in self.printpoints_dict:
-            for path_key in self.printpoints_dict[layer_key]:
-                for ppt in self.printpoints_dict[layer_key][path_key]:
-                    ppt.attributes = transfer_mesh_attributes_to_point(self.slicer.mesh, ppt.pt)
+        logger.info('Transferring mesh attributes to the printpoints.')
+        count = 0
+        with progressbar.ProgressBar(max_value=self.total_number_of_points) as bar:
+            for layer_key in self.printpoints_dict:
+                for path_key in self.printpoints_dict[layer_key]:
+                    for ppt in self.printpoints_dict[layer_key][path_key]:
+                        ppt.attributes = transfer_mesh_attributes_to_point(self.slicer.mesh, ppt.pt)
+                        count += 1
+                        bar.update(count)
 
     def get_printpoint_neighboring_items(self, layer_key, path_key, i):
         """
