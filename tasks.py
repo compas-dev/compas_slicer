@@ -127,7 +127,7 @@ def check(ctx):
 
     with chdir(BASE_FOLDER):
         log.write('Checking MANIFEST.in...')
-        ctx.run('check-manifest --ignore-bad-ideas=test.so,fd.so,smoothing.so,drx_c.so')
+        ctx.run('check-manifest')
 
         log.write('Checking metadata...')
         ctx.run('python setup.py check --strict --metadata')
@@ -163,17 +163,25 @@ def lint(ctx):
 @task
 def prepare_changelog(ctx):
     """Prepare changelog for next release."""
-    UNRELEASED_CHANGELOG_TEMPLATE = '## Unreleased\n\n### Added\n\n### Changed\n\n### Removed\n\n\n## '
+    UNRELEASED_CHANGELOG_TEMPLATE = '\nUnreleased\n----------\n\n**Added**\n\n**Changed**\n\n**Fixed**\n\n**Deprecated**\n\n**Removed**\n'
 
     with chdir(BASE_FOLDER):
         # Preparing changelog for next release
-        with open('CHANGELOG.md', 'r+') as changelog:
+        with open('CHANGELOG.rst', 'r+') as changelog:
             content = changelog.read()
-            changelog.seek(0)
-            changelog.write(content.replace(
-                '## ', UNRELEASED_CHANGELOG_TEMPLATE, 1))
+            start_index = content.index('----------')
+            start_index = content.rindex('\n', 0, start_index - 1)
+            last_version = content[start_index:start_index + 11].strip()
 
-        ctx.run('git add CHANGELOG.md && git commit -m "Prepare changelog for next release"')
+            if last_version == 'Unreleased':
+                log.write('Already up-to-date')
+                return
+
+            changelog.seek(0)
+            changelog.write(content[0:start_index] + UNRELEASED_CHANGELOG_TEMPLATE + content[start_index:])
+
+        ctx.run('git add CHANGELOG.rst && git commit -m "Prepare changelog for next release"')
+
 
 
 
@@ -188,24 +196,22 @@ def release(ctx, release_type):
     ctx.run('invoke check test')
 
     # Bump version and git tag it
-    ctx.run('bumpversion %s --verbose' % release_type)
+    ctx.run('bump2version %s --verbose' % release_type)
 
     # Build project
     ctx.run('python setup.py clean --all sdist bdist_wheel')
 
+    # Prepare changelog for next release
+    prepare_changelog(ctx)
+
+    # Clean up local artifacts
+    clean(ctx)
+
     # Upload to pypi
-    if confirm('You are about to upload the release to pypi.org. Are you sure? [y/N]'):
-        files = ['dist/*.whl', 'dist/*.gz', 'dist/*.zip']
-        dist_files = ' '.join([pattern for f in files for pattern in glob.glob(f)])
-
-        if len(dist_files):
-            ctx.run('twine upload --skip-existing %s' % dist_files)
-
-            prepare_changelog(ctx)
-        else:
-            raise Exit('No files found to release')
+    if confirm('Everything is ready. You are about to push to git which will trigger a release to pypi.org. Are you sure? [y/N]'):
+        ctx.run('git push --tags && git push')
     else:
-        raise Exit('Aborted release')
+        raise Exit('You need to manually revert the tag/commits created.')
 
 
 @contextlib.contextmanager
