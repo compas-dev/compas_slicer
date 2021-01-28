@@ -33,10 +33,10 @@ class GradientEvaluation(object):
 
         self.minima, self.maxima, self.saddles = [], [], []
 
-        self.face_gradient = []
-        self.vertex_gradient = []
-        self.face_gradient_norm = []
-        self.vertex_gradient_norm = []
+        self.face_gradient = []  # np.array (#F x 3) one gradient vector per face.
+        self.vertex_gradient = []  # np.array (#V x 3) one gradient vector per vertex.
+        self.face_gradient_norm = []  # list (#F x 1)
+        self.vertex_gradient_norm = []  # list (#V x 1)
 
     def compute_gradient(self):
         """ Computes the gradient on the faces and the vertices. """
