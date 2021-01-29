@@ -1,12 +1,11 @@
-from compas.geometry import closest_point_in_cloud, closest_point_on_plane, barycentric_coordinates
+from compas.geometry import closest_point_on_plane, barycentric_coordinates
 import logging
-from compas.datastructures import trimesh_pull_points_numpy
-import compas_slicer.utilities.utils as utils
+import progressbar
 import numpy as np
 import scipy
 
 logger = logging.getLogger('logger')
-import progressbar
+
 
 __all__ = ['transfer_mesh_attributes_to_printpoints']
 
