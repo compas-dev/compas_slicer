@@ -156,4 +156,5 @@ def test_planar_set_blend_radius_for_horizontal_layers():
 
 
 if __name__ == '__main__':
-    pass
+    test_planar_set_extruder_toggle_for_horizontal_layers()
+    test_planar_add_safety_printpoints_for_horizontal_layers()
