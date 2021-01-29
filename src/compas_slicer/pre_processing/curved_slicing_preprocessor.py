@@ -105,7 +105,7 @@ class CurvedSlicingPreprocessor:
     def create_gradient_evaluation(self, target_1, target_2=None, save_output=True,
                                    norm_filename='gradient_norm.json', g_filename='gradient.json'):
         """
-        Creates a compas_slicer.pre_processing.GradientEvaluationIF that is stored in self.g_evaluation
+        Creates a compas_slicer.pre_processing.GradientEvaluation that is stored in self.g_evaluation
         Also, computes the gradient and gradient_norm and saves them to Json .
         """
         assert self.target_LOW.VN == target_1.VN, "Attention! Preprocessor does not match targets. "
