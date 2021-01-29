@@ -42,8 +42,7 @@ class BaseSlicer(object):
                     % (len(list(self.mesh.vertices())), len(list(self.mesh.faces()))))
 
         self.layer_height = None
-        self.layers = []  # any class inheriting from SortedPathCollection, i.e.  Layer(horizontal sorting)
-        # or VerticalLayer (vertical sorting)
+        self.layers = []  # any class inheriting from Layer(horizontal sorting)
 
     ##############################
     #  --- Properties

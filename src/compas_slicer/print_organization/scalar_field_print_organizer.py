@@ -46,7 +46,7 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
         """ Create the print points of the fabrication process """
         count = 0
         logger.info('Creating print points ...')
-        with progressbar.ProgressBar(max_value=self.slicer.number_of_printpoints) as bar:
+        with progressbar.ProgressBar(max_value=self.slicer.number_of_points) as bar:
 
             for i, layer in enumerate(self.slicer.layers):
                 self.printpoints_dict['layer_%d' % i] = {}
