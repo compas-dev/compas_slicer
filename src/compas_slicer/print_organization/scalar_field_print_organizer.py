@@ -1,14 +1,11 @@
-import logging
+from compas.geometry import Vector, normalize_vector
 from compas_slicer.print_organization import BasePrintOrganizer
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintPoint
 import progressbar
 import logging
-from compas.geometry import Point
-from compas_slicer.pre_processing.curved_slicing_preprocessing import topological_sorting as topo_sort
-from compas_slicer.print_organization.curved_print_organization import BaseBoundary
-from compas_slicer.print_organization.curved_print_organization import VerticalConnectivity
-from compas_slicer.parameters import get_param
+from compas_slicer.pre_processing.curved_slicing_preprocessing import GradientEvaluation
+from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
 
 logger = logging.getLogger('logger')
 
@@ -40,6 +37,8 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
             assert self.horizontal_layers[0].is_brim, "Only one brim horizontal layer is currently supported."
             logger.info('Slicer has one horizontal brim layer.')
 
+        self.g_evaluation = self.add_gradient_to_vertices()
+
     def __repr__(self):
         return "<ScalarFieldPrintOrganizer with %i layers>" % len(self.slicer.layers)
 
@@ -63,6 +62,37 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
                         self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
                         bar.update(count)
                         count += 1
+
+        # transfer gradient information to printpoints
+        transfer_mesh_attributes_to_printpoints(self.slicer.mesh, self.printpoints_dict)
+
+        # add non-planar print data to printpoints
+        for i, layer in enumerate(self.slicer.layers):
+            layer_key = 'layer_%d' % i
+            for j, path in enumerate(layer.paths):
+                path_key = 'path_%d' % j
+                for pp in self.printpoints_dict[layer_key][path_key]:
+                    grad_norm = pp.attributes['gradient_norm']
+                    grad = pp.attributes['gradient']
+                    pp.distance_to_support = grad_norm
+                    pp.layer_height = grad_norm
+                    pp.up_vector = Vector(*normalize_vector(grad))
+                    pp.frame = pp.get_frame()
+
+    def add_gradient_to_vertices(self):
+        g_evaluation = GradientEvaluation(self.slicer.mesh, self.DATA_PATH)
+        g_evaluation.compute_gradient()
+        g_evaluation.compute_gradient_norm()
+
+        utils.save_to_json(g_evaluation.vertex_gradient_norm, self.OUTPUT_PATH, 'gradient_norm.json')
+        utils.save_to_json(utils.point_list_to_dict(g_evaluation.vertex_gradient), self.OUTPUT_PATH, 'gradient.json')
+
+        self.slicer.mesh.update_default_vertex_attributes({'gradient': 0.0})
+        self.slicer.mesh.update_default_vertex_attributes({'gradient_norm': 0.0})
+        for i, (v_key, data) in enumerate(self.slicer.mesh.vertices(data=True)):
+            data['gradient'] = g_evaluation.vertex_gradient[i]
+            data['gradient_norm'] = g_evaluation.vertex_gradient_norm[i]
+        return g_evaluation
 
     def check_printpoints_feasibility(self):
         """ Check the feasibility of the print points """

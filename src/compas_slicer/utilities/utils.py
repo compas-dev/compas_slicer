@@ -13,6 +13,7 @@ logger = logging.getLogger('logger')
 __all__ = ['get_output_directory',
            'save_to_json',
            'load_from_json',
+           'is_jsonable',
            'save_to_text_file',
            'flattened_list_of_dictionary',
            'interrupt',
@@ -154,6 +155,14 @@ def load_from_json(filepath, name):
     logger.info("Loaded json: " + filename)
     return data
 
+
+def is_jsonable(x):
+    """ Returns True if x can be json-serialized, False otherwise. """
+    try:
+        json.dumps(x)
+        return True
+    except TypeError:
+        return False
 
 #######################################
 #  text file

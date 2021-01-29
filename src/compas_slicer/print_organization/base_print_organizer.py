@@ -1,10 +1,8 @@
 import compas_slicer
 import logging
-from compas_slicer.print_organization.print_organization_utilities import transfer_mesh_attributes_to_point
 from compas.geometry import Polyline, distance_point_point
 import numpy as np
 from abc import abstractmethod
-import progressbar
 
 logger = logging.getLogger('logger')
 
@@ -107,17 +105,6 @@ class BasePrintOrganizer(object):
             for ppt in duplicate_ppts:
                 self.printpoints_dict[layer_key][path_key].remove(ppt)
 
-    def transfer_attributes_to_printpoints(self):
-        logger.info('Transferring mesh attributes to the printpoints.')
-        count = 0
-        with progressbar.ProgressBar(max_value=self.total_number_of_points) as bar:
-            for layer_key in self.printpoints_dict:
-                for path_key in self.printpoints_dict[layer_key]:
-                    for ppt in self.printpoints_dict[layer_key][path_key]:
-                        ppt.attributes = transfer_mesh_attributes_to_point(self.slicer.mesh, ppt.pt)
-                        count += 1
-                        bar.update(count)
-
     def get_printpoint_neighboring_items(self, layer_key, path_key, i):
         """
         layer_key: str
@@ -177,10 +164,17 @@ class BasePrintOrganizer(object):
         min, sec = divmod(total_time, 60)
         hour, min = divmod(min, 60)
 
+        ppts_attributes = {}
+        for key in self.printpoints_dict['layer_0']['path_0'][0].attributes:
+            ppts_attributes[key] = str(type(self.printpoints_dict['layer_0']['path_0'][0].attributes[key]))
+
         print("\n---- PrintOrganizer Info ----")
         print("Number of layers: %d" % layers)
         print("Number of paths: %d" % paths)
         print("Number of PrintPoints: %d" % total_number_of_pts)
+        print("PrintPoints attributes: ")
+        for key in ppts_attributes:
+            print('     % s : % s' % (str(key), ppts_attributes[key]))
         print("Toolpath length: %d mm" % total_length)
         print("Printing time: %d hours, %02d min, %02d sec" % (hour, min, sec))
         print("")
