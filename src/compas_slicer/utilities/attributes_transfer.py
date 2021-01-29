@@ -1,5 +1,9 @@
 from compas.geometry import closest_point_in_cloud, closest_point_on_plane, barycentric_coordinates
 import logging
+from compas.datastructures import trimesh_pull_points_numpy
+import compas_slicer.utilities.utils as utils
+import numpy as np
+import scipy
 
 logger = logging.getLogger('logger')
 import progressbar
@@ -25,20 +29,24 @@ def transfer_mesh_attributes_to_printpoints(mesh, printpoints_dict):
     """
     logger.info('Transferring mesh attributes to the printpoints.')
 
-    total_number_of_pts = 0
+    all_pts = []
     for layer_key in printpoints_dict:
         for path_key in printpoints_dict[layer_key]:
-            for _ in printpoints_dict[layer_key][path_key]:
-                total_number_of_pts += 1
+            for ppt in printpoints_dict[layer_key][path_key]:
+                all_pts.append(ppt.pt)
 
-    count = 0
-    with progressbar.ProgressBar(max_value=total_number_of_pts) as bar:
+    closest_fks, projected_pts = pull_pts_to_mesh_faces(mesh, all_pts)
+
+    i = 0
+    with progressbar.ProgressBar(max_value=len(all_pts)) as bar:
         for layer_key in printpoints_dict:
             for path_key in printpoints_dict[layer_key]:
                 for ppt in printpoints_dict[layer_key][path_key]:
-                    ppt.attributes = transfer_mesh_attributes_to_point(mesh, ppt.pt)
-                    count += 1
-                    bar.update(count)
+                    fkey = closest_fks[i]
+                    proj_pt = projected_pts[i]
+                    ppt.attributes = transfer_mesh_attributes_to_point(mesh, fkey, proj_pt)
+                    i += 1
+                    bar.update(i)
 
 
 def is_reserved_attribute(attr):
@@ -48,7 +56,17 @@ def is_reserved_attribute(attr):
     return attr in taken_attributes
 
 
-def transfer_mesh_attributes_to_point(mesh, point):
+def pull_pts_to_mesh_faces(mesh, points):
+    points = np.array(points, dtype=np.float64).reshape((-1, 3))
+    fi_fk = {index: fkey for index, fkey in enumerate(mesh.faces())}
+    f_centroids = np.array([mesh.face_centroid(fkey) for fkey in mesh.faces()], dtype=np.float64)
+    closest_fis = np.argmin(scipy.spatial.distance_matrix(points, f_centroids), axis=1)
+    closest_fks = [fi_fk[fi] for fi in closest_fis]
+    projected_pts = [closest_point_on_plane(point, mesh.face_plane(fi)) for point, fi in zip(points, closest_fis)]
+    return closest_fks, projected_pts
+
+
+def transfer_mesh_attributes_to_point(mesh, fkey, proj_pt):
     """
     It projects the point on the closest face of the mesh. Then if finds
     all the vertex and face attributes of the face and its attributes and transfers them to the point.
@@ -57,34 +75,32 @@ def transfer_mesh_attributes_to_point(mesh, point):
     Parameters
     ----------
     mesh: compas.datastructures.Mesh
-    point: 'compas.geometry.Point
+    fkey: face key
+    proj_pt: list [x,y,z], point projected on the plane of the face fkey
 
     Returns
     -------
-    dict that contains all the attributes
+    dict that contains all the attributes that correspond to the printpoints position
     """
-    # project point on mesh
-    f_centers = [mesh.face_centroid(fkey) for fkey in mesh.faces()]
-    f_closest = closest_point_in_cloud(point, f_centers)[2]
-    pt, vec = mesh.face_plane(f_closest)
-    projection = closest_point_on_plane(point, (pt, vec))
+
+    vs = mesh.face_vertices(fkey)
+    bar_coords = barycentric_coordinates(proj_pt, triangle=(mesh.vertex_coordinates(vs[0]),
+                                                            mesh.vertex_coordinates(vs[1]),
+                                                            mesh.vertex_coordinates(vs[2])))
 
     # get face attributes
-    face_attrs = mesh.face_attributes(f_closest)
+    face_attrs = mesh.face_attributes(fkey)
     keys_to_remove = [attr for attr in face_attrs if is_reserved_attribute(attr)]
     for key in keys_to_remove:
         del face_attrs[key]  # remove from face_attrs dictionary
 
     # get vertex attributes using barycentric coordinates
-    vs = mesh.face_vertices(f_closest)
-    bar_coords = barycentric_coordinates(projection, triangle=(mesh.vertex_coordinates(vs[0]),
-                                                               mesh.vertex_coordinates(vs[1]),
-                                                               mesh.vertex_coordinates(vs[2])))
+    vs = mesh.face_vertices(fkey)
     vertex_attrs = {}
     checked_attrs = []
     for attr in mesh.vertex_attributes(vs[0]):
         if not is_reserved_attribute(attr):
-            if not(attr in checked_attrs):
+            if not (attr in checked_attrs):
                 check_that_attribute_can_be_multiplied(attr, mesh.vertex_attributes(vs[0])[attr])
                 checked_attrs.append(attr)
             vertex_attrs[attr] = 0

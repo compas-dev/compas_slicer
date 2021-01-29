@@ -1,14 +1,14 @@
 import logging
+import os
 from compas.geometry import Point, Vector, distance_point_plane, normalize_vector
 from compas.datastructures import Mesh
-import os
 import compas_slicer.utilities as slicer_utils
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.slicers import PlanarSlicer
+import compas_slicer.utilities.utils as utils
 from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
 from compas_slicer.print_organization import PlanarPrintOrganizer
 import numpy as np
-from compas.datastructures import trimesh_pull_points_numpy
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     mesh.update_default_face_attributes({'positive_y_axis': False})
     for f_key, data in mesh.faces(data=True):
         face_normal = mesh.face_normal(f_key, unitized=True)
-        is_positive_y = Vector(0.0, 1.0, 0.0).dot(face_normal) > 0 # boolean value
+        is_positive_y = Vector(0.0, 1.0, 0.0).dot(face_normal) > 0  # boolean value
         data['positive_y_axis'] = is_positive_y
 
     # distance from plane - Scalar value (per vertex)
@@ -61,9 +61,22 @@ if __name__ == '__main__':
     # --------------- Create printpoints
     print_organizer = PlanarPrintOrganizer(slicer)
     print_organizer.create_printpoints()
+    printpoints_data = print_organizer.output_printpoints_dict()
+    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
     # --------------- Transfer mesh attributes to printpoints
     transfer_mesh_attributes_to_printpoints(mesh, print_organizer.printpoints_dict)
 
     # --------------- Print the info to see the attributes of the printpoints (you can also visualize them on gh)
     print_organizer.printout_info()
+
+    # --------------- Save printpoints attributes for visualization
+    overhangs_list = print_organizer.get_printpoints_attribute(attr_name='overhang')
+    positive_y_axis_list = print_organizer.get_printpoints_attribute(attr_name='positive_y_axis')
+    dist_from_plane_list = print_organizer.get_printpoints_attribute(attr_name='dist_from_plane')
+    direction_to_pt_list = print_organizer.get_printpoints_attribute(attr_name='direction_to_pt')
+
+    utils.save_to_json(overhangs_list, OUTPUT_PATH, 'overhangs_list.json')
+    utils.save_to_json(positive_y_axis_list, OUTPUT_PATH, 'positive_y_axis_list.json')
+    utils.save_to_json(dist_from_plane_list, OUTPUT_PATH, 'dist_from_plane_list.json')
+    utils.save_to_json(utils.point_list_to_dict(direction_to_pt_list), OUTPUT_PATH, 'direction_to_pt_list.json')

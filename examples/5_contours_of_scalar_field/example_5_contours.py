@@ -30,7 +30,7 @@ if __name__ == '__main__':
         data['scalar_field'] = u[i]
 
     # generate contours of scalar field
-    slicer = ScalarFieldSlicer(mesh, u, no_of_isocurves=20)
+    slicer = ScalarFieldSlicer(mesh, u, no_of_isocurves=30)
     slicer.slice_model()
     slicer_utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'isocontours.json')
     simplify_paths_rdp(slicer, threshold=0.8)
@@ -41,3 +41,18 @@ if __name__ == '__main__':
     print_organizer.printout_info()
     printpoints_data = print_organizer.output_printpoints_dict()
     utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
+
+    # grad_norms = []
+    # grads = []
+    # for layer_key in print_organizer.printpoints_dict:
+    #     for path_key in print_organizer.printpoints_dict[layer_key]:
+    #         for ppt in print_organizer.printpoints_dict[layer_key][path_key]:
+    #             grad_norm = ppt.attributes['gradient_norm']
+    #             grad = ppt.attributes['gradient']
+    #             grad_norms.append(grad_norm)
+    #             grads.append(grad)
+    #
+    # utils.save_to_json(grad_norms, OUTPUT_PATH, 'reconstructed_gradient_norm.json')
+    # utils.save_to_json(utils.point_list_to_dict(grads), OUTPUT_PATH, 'reconstructed_gradient.json')
+
+

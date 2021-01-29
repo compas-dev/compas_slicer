@@ -245,27 +245,28 @@ class BaseSlicer(object):
             The slicer's data.
 
         """
-
-        # remove any non-serializable attributes from mesh (by checking a random face and a random vertex, assuming
+        # To avoid errors when saving to Json, create a copy of the self.mesh and remove from it
+        # any non-serializable attributes (by checking a random face and a random vertex, assuming
         # that all faces and vertices share the same types of attributes).
-        v_key = self.mesh.get_any_vertex()
-        v_attrs = self.mesh.vertex_attributes(v_key)
+        mesh = self.mesh.copy()
+        v_key = mesh.get_any_vertex()
+        v_attrs = mesh.vertex_attributes(v_key)
         for attr_key in v_attrs:
             if not utils.is_jsonable(v_attrs[attr_key]):
                 logger.error('vertex : ' + attr_key + str(v_attrs[attr_key]))
-                for v in self.mesh.vertices():
-                    self.mesh.unset_vertex_attribute(v, attr_key)
+                for v in mesh.vertices():
+                    mesh.unset_vertex_attribute(v, attr_key)
 
-        f_key = self.mesh.get_any_face()
-        f_attrs = self.mesh.face_attributes(f_key)
+        f_key = mesh.get_any_face()
+        f_attrs = mesh.face_attributes(f_key)
         for attr_key in f_attrs:
             if not utils.is_jsonable(f_attrs[attr_key]):
                 logger.error('face : ' + attr_key, f_attrs[attr_key])
-                self.mesh.update_default_face_attributes({attr_key: 0.0})  # just set all to 0.0
+                mesh.update_default_face_attributes({attr_key: 0.0})  # just set all to 0.0
 
         # fill data dictionary with slicer info
         data = {'layers': self.get_layers_dict(),
-                'mesh': self.mesh.to_data(),
+                'mesh': mesh.to_data(),
                 'layer_height': self.layer_height}
         return data
 

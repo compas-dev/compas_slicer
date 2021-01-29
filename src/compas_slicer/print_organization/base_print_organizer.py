@@ -54,7 +54,7 @@ class BasePrintOrganizer(object):
         total_number_of_pts = 0
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
-                for printpoint in self.printpoints_dict[layer_key][path_key]:
+                for _ in self.printpoints_dict[layer_key][path_key]:
                     total_number_of_pts += 1
         return total_number_of_pts
 
@@ -134,7 +134,6 @@ class BasePrintOrganizer(object):
 
         layers = 0
         paths = 0
-        total_number_of_pts = 0
         total_time = 0
         total_length = 0
         flat_dict = []
@@ -143,9 +142,6 @@ class BasePrintOrganizer(object):
             layers += 1
             for path_key in self.printpoints_dict[layer_key]:
                 paths += 1
-                for printpoint in self.printpoints_dict[layer_key][path_key]:
-                    flat_dict.append(printpoint)
-                    total_number_of_pts += 1
 
         for i in range(len(flat_dict)):
             curr = flat_dict[i]
@@ -169,9 +165,9 @@ class BasePrintOrganizer(object):
             ppts_attributes[key] = str(type(self.printpoints_dict['layer_0']['path_0'][0].attributes[key]))
 
         print("\n---- PrintOrganizer Info ----")
-        print("Number of layers: %d" % layers)
+        print("Number of layers: %d" % self.number_of_layers)
         print("Number of paths: %d" % paths)
-        print("Number of PrintPoints: %d" % total_number_of_pts)
+        print("Number of PrintPoints: %d" % self.total_number_of_points)
         print("PrintPoints attributes: ")
         for key in ppts_attributes:
             print('     % s : % s' % (str(key), ppts_attributes[key]))
@@ -239,6 +235,27 @@ class BasePrintOrganizer(object):
         # ...
         gcode = compas_slicer.print_organization.create_gcode_text(self.printpoints_dict, parameters)
         return gcode
+
+    def get_printpoints_attribute(self, attr_name):
+        """
+        Returns a list of printpoint attributes that have key=attr_name.
+
+        Parameters
+        ----------
+        attr_name: str
+
+        Returns
+        -------
+        list of size len(ppts) with whatever type the ppts.attribute[attr_name] is.
+        """
+        attr_values = []
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                for ppt in self.printpoints_dict[layer_key][path_key]:
+                    assert attr_name in ppt.attributes, \
+                        "The attribute '%s' is not in the printpoint.attributes" % attr_name
+                    attr_values.append(ppt.attributes[attr_name])
+        return attr_values
 
 
 if __name__ == "__main__":

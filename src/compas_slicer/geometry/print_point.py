@@ -71,6 +71,8 @@ class PrintPoint(object):
     #  --- To data , from data
     def to_data(self):
         """Returns a dictionary of structured data representing the data structure.
+        TODO: The attributes of the printpoints are not saved in the dictionary because they can be non-Json
+        serializable. Find a solution for this.
 
         Returns
         -------
