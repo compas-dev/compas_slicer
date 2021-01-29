@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>compas_slicer - BasePrintOrganizer.get_printpoint_neighboring_items</title>
+  <title>compas_slicer - BasePrintOrganizer.get_printpoints_attribute</title>
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -17,11 +17,11 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="BasePrintOrganizer.get_printpoints_attribute" href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute.html" />
+    <link rel="next" title="BasePrintOrganizer.number_of_paths_on_layer" href="compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer.html" />
   
 
   
-    <link rel="prev" title="BasePrintOrganizer.create_printpoints" href="compas_slicer.print_organization.BasePrintOrganizer.create_printpoints.html" />
+    <link rel="prev" title="BasePrintOrganizer.get_printpoint_neighboring_items" href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -79,29 +79,25 @@
             
               <li class="breadcrumb-item"><a href="compas_slicer.print_organization.BasePrintOrganizer.html">BasePrintOrganizer</a></li>
             
-            <li class="breadcrumb-item active" aria-current="page">BasePrintOrganizer.get_printpoint_neighboring_items</li>
+            <li class="breadcrumb-item active" aria-current="page">BasePrintOrganizer.get_printpoints_attribute</li>
           </ol>
         </nav>
         
 
         
         
-        <div class="detail section" id="baseprintorganizer-get-printpoint-neighboring-items">
-<h1>BasePrintOrganizer.get_printpoint_neighboring_items</h1>
+        <div class="detail section" id="baseprintorganizer-get-printpoints-attribute">
+<h1>BasePrintOrganizer.get_printpoints_attribute</h1>
 <dl class="py method">
-<dt id="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items">
-<code class="sig-prename descclassname">BasePrintOrganizer.</code><code class="sig-name descname">get_printpoint_neighboring_items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">layer_key</span></em>, <em class="sig-param"><span class="n">path_key</span></em>, <em class="sig-param"><span class="n">i</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/base_print_organizer.html#BasePrintOrganizer.get_printpoint_neighboring_items"><span class="viewcode-link">[source]</span></a></dt>
-<dd><dl class="simple">
-<dt>layer_key: str</dt><dd><p>They key of the layer the current printpoint belongs to.</p>
-</dd>
-<dt>path_key: str</dt><dd><p>They key of the path the current printpoint belongs to.</p>
-</dd>
-<dt>i: int</dt><dd><p>The index of the current printpoint.</p>
-</dd>
-</dl>
+<dt id="compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute">
+<code class="sig-prename descclassname">BasePrintOrganizer.</code><code class="sig-name descname">get_printpoints_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/base_print_organizer.html#BasePrintOrganizer.get_printpoints_attribute"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a list of printpoint attributes that have key=attr_name.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>list,</strong> (<em>class:  ‘compas_slicer.geometry.PrintPoint’</em>)</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attr_name</strong> (<em>str</em>)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of size len(ppts) with whatever type the ppts.attribute[attr_name] is.</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -154,7 +150,7 @@
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">BasePrintOrganizer.get_printpoint_neighboring_items</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">BasePrintOrganizer.get_printpoints_attribute</a></li>
 </ul>
 
       </div>
@@ -166,20 +162,20 @@
   <footer class="compas-footer">
     <nav class="nav p-2">
       
-        <a href="compas_slicer.print_organization.BasePrintOrganizer.create_printpoints.html" title="BasePrintOrganizer.create_printpoints" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+        <a href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items.html" title="BasePrintOrganizer.get_printpoint_neighboring_items" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
           <div class="nav-title flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Previous</div>
-            BasePrintOrganizer.create_printpoints
+            BasePrintOrganizer.get_printpoint_neighboring_items
           </div>
         </a>
       
 
       
-        <a href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute.html" title="BasePrintOrganizer.get_printpoints_attribute" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+        <a href="compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer.html" title="BasePrintOrganizer.number_of_paths_on_layer" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
           <div class="nav-title footer-link flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Next</div>
-            BasePrintOrganizer.get_printpoints_attribute
+            BasePrintOrganizer.number_of_paths_on_layer
           </div>
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
         </a>

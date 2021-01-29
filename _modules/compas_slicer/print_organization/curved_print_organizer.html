@@ -106,7 +106,6 @@
 
 <div class="viewcode-block" id="CurvedPrintOrganizer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.CurvedPrintOrganizer.__init__.html#compas_slicer.print_organization.CurvedPrintOrganizer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slicer</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">DATA_PATH</span><span class="p">):</span>
         <span class="n">BasePrintOrganizer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
-        <span class="c1"># assert isinstance(slicer.layers[0], VerticalLayer)  # curved printing only works with vertical layers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">DATA_PATH</span> <span class="o">=</span> <span class="n">DATA_PATH</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">OUTPUT_PATH</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_output_directory</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>

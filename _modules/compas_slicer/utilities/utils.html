@@ -81,7 +81,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">distance_point_point_sqrd</span><span class="p">,</span> <span class="n">normalize_vector</span>
-<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">closest_point_in_cloud</span><span class="p">,</span> <span class="n">length_vector</span>
+<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">length_vector</span><span class="p">,</span> <span class="n">closest_point_in_cloud</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -92,6 +92,7 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;get_output_directory&#39;</span><span class="p">,</span>
            <span class="s1">&#39;save_to_json&#39;</span><span class="p">,</span>
            <span class="s1">&#39;load_from_json&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;is_jsonable&#39;</span><span class="p">,</span>
            <span class="s1">&#39;save_to_text_file&#39;</span><span class="p">,</span>
            <span class="s1">&#39;flattened_list_of_dictionary&#39;</span><span class="p">,</span>
            <span class="s1">&#39;interrupt&#39;</span><span class="p">,</span>
@@ -232,6 +233,15 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded json: &quot;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span></div>
+
+
+<span class="k">def</span> <span class="nf">is_jsonable</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Returns True if x can be json-serialized, False otherwise. &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
 
 <span class="c1">#######################################</span>

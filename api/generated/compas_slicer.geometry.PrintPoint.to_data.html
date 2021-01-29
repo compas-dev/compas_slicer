@@ -91,7 +91,9 @@
 <dl class="py method">
 <dt id="compas_slicer.geometry.PrintPoint.to_data">
 <code class="sig-prename descclassname">PrintPoint.</code><code class="sig-name descname">to_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/geometry/print_point.html#PrintPoint.to_data"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns a dictionary of structured data representing the data structure.</p>
+<dd><p>Returns a dictionary of structured data representing the data structure.
+TODO: The attributes of the printpoints are not saved in the dictionary because they can be non-Json
+serializable. Find a solution for this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><em>dict</em> – The PrintPoints’s data.</p>

@@ -121,17 +121,40 @@
                     <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">())),</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">()))))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># any class inheriting from SortedPathCollection, i.e.  Layer(horizontal sorting)</span></div>
-        <span class="c1"># or VerticalLayer (vertical sorting)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># any class inheriting from Layer(horizontal sorting)</span></div>
+
+    <span class="c1">##############################</span>
+    <span class="c1">#  --- Properties</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">total_number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;int: Total number of points in the slicer.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns int: Total number of points in the slicer.&quot;&quot;&quot;</span>
         <span class="n">total_number_of_pts</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
                 <span class="n">total_number_of_pts</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">total_number_of_pts</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_of_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns int: Total number of layers.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_of_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns tuple (int, int, int): Total number of paths, number of open paths, number of closed paths. &quot;&quot;&quot;</span>
+        <span class="n">total_number_of_paths</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">closed_paths</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">open_paths</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">total_number_of_paths</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>
+                    <span class="n">closed_paths</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">open_paths</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">total_number_of_paths</span><span class="p">,</span> <span class="n">closed_paths</span><span class="p">,</span> <span class="n">open_paths</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">vertical_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -167,7 +190,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close_paths</span><span class="p">()</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created </span><span class="si">%d</span><span class="s2"> Layers with </span><span class="si">%d</span><span class="s2"> total number of points&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_number_of_points</span><span class="p">))</span></div>
+                    <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_points</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.close_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.close_paths.html#compas_slicer.slicers.BaseSlicer.close_paths">[docs]</a>    <span class="k">def</span> <span class="nf">close_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; For paths that are labeled as closed, it makes sure that the first and the last point are identical. &quot;&quot;&quot;</span>
@@ -229,26 +252,12 @@
 
 <div class="viewcode-block" id="BaseSlicer.printout_info"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.printout_info.html#compas_slicer.slicers.BaseSlicer.printout_info">[docs]</a>    <span class="k">def</span> <span class="nf">printout_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Prints out information from the slicing process.&quot;&quot;&quot;</span>
-
-        <span class="n">open_paths</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">closed_paths</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">total_number_of_pts</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">number_of_path_collections</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
-            <span class="n">number_of_path_collections</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
-                <span class="n">total_number_of_pts</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>
-                    <span class="n">closed_paths</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">open_paths</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">no_of_paths</span><span class="p">,</span> <span class="n">closed_paths</span><span class="p">,</span> <span class="n">open_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_paths</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">---- Slicer Info ----&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of layers: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">number_of_path_collections</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of paths: </span><span class="si">%d</span><span class="s2">, open paths: </span><span class="si">%d</span><span class="s2">, closed paths: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-            <span class="n">open_paths</span> <span class="o">+</span> <span class="n">closed_paths</span><span class="p">,</span> <span class="n">open_paths</span><span class="p">,</span> <span class="n">closed_paths</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of sampling printpoints on layers: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">total_number_of_pts</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of layers: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_layers</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of paths: </span><span class="si">%d</span><span class="s2">, open paths: </span><span class="si">%d</span><span class="s2">, closed paths: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">no_of_paths</span><span class="p">,</span> <span class="n">open_paths</span><span class="p">,</span> <span class="n">closed_paths</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of sampling printpoints on layers: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_points</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.visualize_on_viewer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.visualize_on_viewer.html#compas_slicer.slicers.BaseSlicer.visualize_on_viewer">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_on_viewer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_mesh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">visualize_paths</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -321,11 +330,31 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
-<span class="sd">            The slicers&#39;s data.</span>
+<span class="sd">            The slicer&#39;s data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># To avoid errors when saving to Json, create a copy of the self.mesh and remove from it</span>
+        <span class="c1"># any non-serializable attributes (by checking a random face and a random vertex, assuming</span>
+        <span class="c1"># that all faces and vertices share the same types of attributes).</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">v_key</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">get_any_vertex</span><span class="p">()</span>
+        <span class="n">v_attrs</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertex_attributes</span><span class="p">(</span><span class="n">v_key</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr_key</span> <span class="ow">in</span> <span class="n">v_attrs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_jsonable</span><span class="p">(</span><span class="n">v_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;vertex : &#39;</span> <span class="o">+</span> <span class="n">attr_key</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">():</span>
+                    <span class="n">mesh</span><span class="o">.</span><span class="n">unset_vertex_attribute</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">attr_key</span><span class="p">)</span>
+
+        <span class="n">f_key</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">get_any_face</span><span class="p">()</span>
+        <span class="n">f_attrs</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">face_attributes</span><span class="p">(</span><span class="n">f_key</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr_key</span> <span class="ow">in</span> <span class="n">f_attrs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_jsonable</span><span class="p">(</span><span class="n">f_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;face : &#39;</span> <span class="o">+</span> <span class="n">attr_key</span><span class="p">,</span> <span class="n">f_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">])</span>
+                <span class="n">mesh</span><span class="o">.</span><span class="n">update_default_face_attributes</span><span class="p">({</span><span class="n">attr_key</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">})</span>  <span class="c1"># just set all to 0.0</span>
+
+        <span class="c1"># fill data dictionary with slicer info</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;layers&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_layers_dict</span><span class="p">(),</span>
-                <span class="s1">&#39;mesh&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span>
+                <span class="s1">&#39;mesh&#39;</span><span class="p">:</span> <span class="n">mesh</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span>
                 <span class="s1">&#39;layer_height&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">data</span></div>
 

@@ -80,6 +80,7 @@
 <span></span><span class="kn">import</span> <span class="nn">compas_slicer</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polyline</span><span class="p">,</span> <span class="n">distance_point_point</span>
+<span class="kn">from</span> <span class="nn">compas.utilities</span> <span class="kn">import</span> <span class="n">pairwise</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 
@@ -128,19 +129,38 @@
     <span class="c1">######################</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">total_number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">number_of_printpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;int: Total number of points in the PrintOrganizer.&quot;&quot;&quot;</span>
         <span class="n">total_number_of_pts</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
-                <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
                     <span class="n">total_number_of_pts</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">total_number_of_pts</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_of_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">total_number_of_paths</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
+                <span class="n">total_number_of_paths</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">total_number_of_paths</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">number_of_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;int: Number of layers in the PrintOrganizer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">total_length_of_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the total length of all paths. Does not consider extruder toggle. &quot;&quot;&quot;</span>
+        <span class="n">total_length</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">prev</span><span class="p">,</span> <span class="n">curr</span> <span class="ow">in</span> <span class="n">pairwise</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]):</span>
+                    <span class="n">length</span> <span class="o">=</span> <span class="n">distance_point_point</span><span class="p">(</span><span class="n">prev</span><span class="o">.</span><span class="n">pt</span><span class="p">,</span> <span class="n">curr</span><span class="o">.</span><span class="n">pt</span><span class="p">)</span>
+                    <span class="n">total_length</span> <span class="o">+=</span> <span class="n">length</span>
+        <span class="k">return</span> <span class="n">total_length</span>
 
 <div class="viewcode-block" id="BasePrintOrganizer.number_of_paths_on_layer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer.html#compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer">[docs]</a>    <span class="k">def</span> <span class="nf">number_of_paths_on_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;int: Number of paths within a Layer of the PrintOrganizer.&quot;&quot;&quot;</span>
@@ -210,45 +230,18 @@
 
 <div class="viewcode-block" id="BasePrintOrganizer.printout_info"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.printout_info.html#compas_slicer.print_organization.BasePrintOrganizer.printout_info">[docs]</a>    <span class="k">def</span> <span class="nf">printout_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Prints out information from the PrintOrganizer&quot;&quot;&quot;</span>
-
-        <span class="n">layers</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">paths</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">total_number_of_pts</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">total_length</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">flat_dict</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
-            <span class="n">layers</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
-                <span class="n">paths</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
-                    <span class="n">flat_dict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">printpoint</span><span class="p">)</span>
-                    <span class="n">total_number_of_pts</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flat_dict</span><span class="p">)):</span>
-            <span class="n">curr</span> <span class="o">=</span> <span class="n">flat_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">prev</span> <span class="o">=</span> <span class="n">flat_dict</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-
-            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1"># calculate length of toolpath</span>
-                <span class="n">length</span> <span class="o">=</span> <span class="n">distance_point_point</span><span class="p">(</span><span class="n">prev</span><span class="o">.</span><span class="n">pt</span><span class="p">,</span> <span class="n">curr</span><span class="o">.</span><span class="n">pt</span><span class="p">)</span>
-                <span class="n">total_length</span> <span class="o">+=</span> <span class="n">length</span>
-                <span class="c1"># get speed for every section and calculate time</span>
-                <span class="k">if</span> <span class="n">curr</span><span class="o">.</span><span class="n">velocity</span><span class="p">:</span>
-                    <span class="n">speed</span> <span class="o">=</span> <span class="n">curr</span><span class="o">.</span><span class="n">velocity</span>
-                    <span class="n">time</span> <span class="o">=</span> <span class="n">length</span> <span class="o">/</span> <span class="n">speed</span>
-                    <span class="n">total_time</span> <span class="o">+=</span> <span class="n">time</span>
-
-        <span class="nb">min</span><span class="p">,</span> <span class="n">sec</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">total_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
-        <span class="n">hour</span><span class="p">,</span> <span class="nb">min</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="n">ppts_attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_0&#39;</span><span class="p">][</span><span class="s1">&#39;path_0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="n">ppts_attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_0&#39;</span><span class="p">][</span><span class="s1">&#39;path_0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">---- PrintOrganizer Info ----&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of layers: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">layers</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of paths: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">paths</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of PrintPoints: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">total_number_of_pts</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Toolpath length: </span><span class="si">%d</span><span class="s2"> mm&quot;</span> <span class="o">%</span> <span class="n">total_length</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Printing time: </span><span class="si">%d</span><span class="s2"> hours, </span><span class="si">%02d</span><span class="s2"> min, </span><span class="si">%02d</span><span class="s2"> sec&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hour</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="n">sec</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of layers: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_layers</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of paths: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_paths</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of PrintPoints: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_printpoints</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PrintPoints attributes: &quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ppts_attributes</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;     </span><span class="si">% s</span><span class="s1"> : </span><span class="si">% s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">ppts_attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Toolpath length: </span><span class="si">%d</span><span class="s2"> mm&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_length_of_paths</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.visualize_on_viewer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer.html#compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_on_viewer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_polyline</span><span class="p">,</span> <span class="n">visualize_printpoints</span><span class="p">):</span>
@@ -310,7 +303,28 @@
         <span class="c1"># check print organizer: Should have horizontal layers, ideally should be planar</span>
         <span class="c1"># ...</span>
         <span class="n">gcode</span> <span class="o">=</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">print_organization</span><span class="o">.</span><span class="n">create_gcode_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">gcode</span></div></div>
+        <span class="k">return</span> <span class="n">gcode</span></div>
+
+<div class="viewcode-block" id="BasePrintOrganizer.get_printpoints_attribute"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_printpoints_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of printpoint attributes that have key=attr_name.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attr_name: str</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of size len(ppts) with whatever type the ppts.attribute[attr_name] is.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">attr_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">ppt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
+                    <span class="k">assert</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">ppt</span><span class="o">.</span><span class="n">attributes</span><span class="p">,</span> \
+                        <span class="s2">&quot;The attribute &#39;</span><span class="si">%s</span><span class="s2">&#39; is not in the printpoint.attributes&quot;</span> <span class="o">%</span> <span class="n">attr_name</span>
+                    <span class="n">attr_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ppt</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">attr_name</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">attr_values</span></div></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

@@ -123,6 +123,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">up_vector</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># default value that can be updated</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_frame</span><span class="p">()</span>  <span class="c1"># compas.geometry.Frame</span>
 
+        <span class="c1">#  --- attributes transfered from the mesh (meshe&#39;s vertex / face attributes)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict. To fill this in,</span>
+
         <span class="c1">#  --- print_organization related attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># bool</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># float (mm/s)</span>
@@ -147,6 +150,8 @@
     <span class="c1">#  --- To data , from data</span>
 <div class="viewcode-block" id="PrintPoint.to_data"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.PrintPoint.to_data.html#compas_slicer.geometry.PrintPoint.to_data">[docs]</a>    <span class="k">def</span> <span class="nf">to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns a dictionary of structured data representing the data structure.</span>
+<span class="sd">        TODO: The attributes of the printpoints are not saved in the dictionary because they can be non-Json</span>
+<span class="sd">        serializable. Find a solution for this.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
