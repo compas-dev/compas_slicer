@@ -12,8 +12,11 @@ __all__ = ['sort_per_vertical_segment',
 
 
 def sort_per_vertical_segment(slicer, dist_threshold=30.0, max_layers_per_segment=None, ):
-    """Sorts in vertical vertical_layers_print_data the contours that are stored in the horizontal layers.
-    This is done by grouping the centroids of the paths based on proximity.
+    """Sorts the paths from horizontal layers into Vertical Layers.
+
+    Vertical Layers are layers at different heights that are grouped together by proximity
+    of their center points. Can be useful for reducing travel time in a robotic printing
+    process.
 
     Parameters
     ----------
@@ -27,9 +30,9 @@ def sort_per_vertical_segment(slicer, dist_threshold=30.0, max_layers_per_segmen
         If None, then the segment has unlimited number of layers
 
     """
-    logger.info("Sorting per segment")
+    logger.info("Sorting into Vertical Layers")
 
-    vertical_segments = [VerticalLayer(id=0)]  # vertical_layers_print_data that contain isocurves
+    vertical_segments = [VerticalLayer(id=0)]  # vertical_layers that contain isocurves
     for layer in slicer.layers:
         for path in layer.paths:
             current_segment = None
@@ -55,9 +58,13 @@ def sort_per_vertical_segment(slicer, dist_threshold=30.0, max_layers_per_segmen
             #  Assign contour to current segment
             current_segment.append_(path)
 
-    logger.info("Number of vertical_layers_print_data : %d" % len(vertical_segments))
+    logger.info("Number of vertical_layers: %d" % len(vertical_segments))
     slicer.layers = vertical_segments
 
+    # Updates min_max_z_height attributes
+    for vert_layer in slicer.layers:
+        min_max_z = (vert_layer.paths[0].points[0][2], vert_layer.paths[len(vert_layer.paths)-1].points[0][2])
+        vert_layer.min_max_z_height = min_max_z
 
 def get_segments_centroids_list(segments):
     """ Returns a list with points that are the centroids of the heads of all vertical_layers_print_data. The head
