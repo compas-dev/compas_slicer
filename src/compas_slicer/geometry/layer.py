@@ -19,6 +19,12 @@ class Layer(object):
     ----------
     paths : list
         :class:`compas_slicer.geometry.Path`
+    is_brim : bool
+        True if this layer is a brim layer.
+    number_of_brim_offsets : int
+        The number of brim offsets this layer has (None if no brim).
+    z_height : float
+        Z height of the layer.
     """
 
     def __init__(self, paths):
@@ -29,8 +35,13 @@ class Layer(object):
             assert isinstance(paths[0], compas_slicer.geometry.Path)
         self.paths = paths
 
+        # brim
         self.is_brim = False
         self.number_of_brim_offsets = None
+
+        # gets z height of layer by checking first point
+        if paths:
+            self.z_height = paths[0].points[0][2]
 
     def __repr__(self):
         no_of_paths = len(self.paths) if self.paths else 0
@@ -91,13 +102,17 @@ class VerticalLayer(Layer):
 
     Attributes
     ----------
-    id: int, identifier of vertical layer
+    id: int
+        Identifier of vertical layer.
+    min_max_z_height : tuple
+        Tuple containing the minimum and maximum z height of the VerticalLayer.
     """
 
     def __init__(self, id=0, paths=None):
         Layer.__init__(self, paths=paths)
         self.id = id
         self.head_centroid = None
+        self.min_max_z_height = None
 
     def __repr__(self):
         no_of_paths = len(self.paths) if self.paths else 0
