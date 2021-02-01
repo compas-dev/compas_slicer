@@ -83,6 +83,18 @@ class BasePrintOrganizer(object):
                     total_length += length
         return total_length
 
+    @property
+    def total_print_time(self):
+        """ If the print speed is defined, it returns the total time of the print, else returns None"""
+        if self.printpoints_dict['layer_0']['path_0'][0].velocity is not None: # we assume that all ppts are set or none
+            total_time = 0
+            for layer_key in self.printpoints_dict:
+                for path_key in self.printpoints_dict[layer_key]:
+                    for prev, curr in pairwise(self.printpoints_dict[layer_key][path_key]):
+                        length = distance_point_point(prev.pt, curr.pt)
+                        total_time += length * curr.velocity * 0.001
+            return total_time
+
     def number_of_paths_on_layer(self, layer_index):
         """int: Number of paths within a Layer of the PrintOrganizer."""
         return len(self.printpoints_dict['layer_%d' % layer_index])
@@ -163,6 +175,10 @@ class BasePrintOrganizer(object):
         for key in ppts_attributes:
             print('     % s : % s' % (str(key), ppts_attributes[key]))
         print("Toolpath length: %d mm" % self.total_length_of_paths)
+
+        minutes, sec = divmod(self.total_print_time, 60)
+        hour, minutes = divmod(minutes, 60)
+        print("Total print time: %d hours, %d minutes, %d seconds" % (hour, minutes, sec))
         print("")
 
     def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
