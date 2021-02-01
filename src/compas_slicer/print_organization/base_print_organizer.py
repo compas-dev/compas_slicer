@@ -86,7 +86,7 @@ class BasePrintOrganizer(object):
     @property
     def total_print_time(self):
         """ If the print speed is defined, it returns the total time of the print, else returns None"""
-        if self.printpoints_dict['layer_0']['path_0'][0].velocity is not None: # we assume that all ppts are set or none
+        if self.printpoints_dict['layer_0']['path_0'][0].velocity is not None:  # assume that all ppts are set or none
             total_time = 0
             for layer_key in self.printpoints_dict:
                 for path_key in self.printpoints_dict[layer_key]:
