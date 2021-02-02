@@ -14,9 +14,9 @@ class Path(object):
 
     Attributes
     ----------
-    points : list
+    points: list
         :class:`compas.geometry.Point`
-    is_closed : bool
+    is_closed: bool
         True if the Path is a closed curve, False if the Path is open.
         If the path is closed, the first and the last point are identical.
     """

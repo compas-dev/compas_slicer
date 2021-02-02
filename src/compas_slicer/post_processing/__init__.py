@@ -22,6 +22,7 @@ Sorting
     seams_align
     seams_smooth
     sort_into_vertical_layers
+    reorder_vertical_layers
 
 Additional
 ==========
@@ -46,7 +47,7 @@ from .simplify_paths_rdp import *  # noqa: F401 E402 F403
 from .seams_align import *  # noqa: F401 E402 F403
 from .seams_smooth import *  # noqa: F401 E402 F403
 from .sort_into_vertical_layers import *  # noqa: F401 E402 F403
-from .reorder_vertical_layers import *  # noqa: F401 E402 F403 
+from .reorder_vertical_layers import *  # noqa: F401 E402 F403
 
 #  Orienting
 from .unify_paths_orientation import *  # noqa: F401 E402 F403
