@@ -16,7 +16,6 @@ def reorder_vertical_layers(slicer, align_with):
     slicer: :class:`compas_slicer.slicers.BaseSlicer`
         An instance of one of the compas_slicer.slicers classes.
     align_with: str or :class:`compas.geometry.Point`
-        Direction to orient the seams in.
         x_axis       = reorders the vertical layers starting from the positive x-axis
         y_axis       = reorders the vertical layers starting from the positive y-axis
         Point(x,y,z) = reorders the vertical layers starting from a given Point
