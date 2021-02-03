@@ -3,11 +3,11 @@ from compas_slicer.pre_processing.curved_slicing_preprocessing import blend_unio
 
 logger = logging.getLogger('logger')
 
-__all__ = ['assign_distance_to_mesh_vertices',
-           'assign_distance_to_mesh_vertex']
+__all__ = ['assign_interpolation_distance_to_mesh_vertices',
+           'assign_interpolation_distance_to_mesh_vertex']
 
 
-def assign_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
+def assign_interpolation_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
     """
     Fills in the 'get_distance' attribute of every vertex of the mesh.
 
@@ -22,11 +22,11 @@ def assign_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
         The upper compound target.
     """
     for i, vkey in enumerate(mesh.vertices()):
-        d = assign_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH)
+        d = assign_interpolation_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH)
         mesh.vertex[vkey]['scalar_field'] = d
 
 
-def assign_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH):
+def assign_interpolation_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH):
     """
     Fills in the 'get_distance' attribute for a single vertex with vkey.
 

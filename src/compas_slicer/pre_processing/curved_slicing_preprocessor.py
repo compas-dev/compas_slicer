@@ -9,6 +9,7 @@ from compas_slicer.pre_processing import get_existing_cut_indices, get_vertices_
     replace_mesh_vertex_attribute
 import compas_slicer.utilities as utils
 from compas_slicer.parameters import get_param
+from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_interpolation_distance_to_mesh_vertices
 
 logger = logging.getLogger('logger')
 
@@ -108,8 +109,9 @@ class CurvedSlicingPreprocessor:
         Also, computes the gradient and gradient_norm and saves them to Json .
         """
         assert self.target_LOW.VN == target_1.VN, "Attention! Preprocessor does not match targets. "
-        g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, weight=0.5, target_LOW=target_1,
-                                          target_HIGH=target_2)
+        assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=0.5,
+                                                       target_LOW=self.target_LOW, target_HIGH=self.target_HIGH)
+        g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH)
         g_evaluation.compute_gradient()
         g_evaluation.compute_gradient_norm()
 

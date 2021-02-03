@@ -112,7 +112,7 @@ def test_planar_add_safety_printpoints_for_horizontal_layers():
         pp_dict = print_organizer.printpoints_dict
 
         # (1) find total number of ppts and interruptions before addition of safety ppts
-        initial_ppts_number = print_organizer.total_number_of_points
+        initial_ppts_number = print_organizer.number_of_printpoints
 
         all_extruder_toggles = []
         for i, layer_key in enumerate(pp_dict):
@@ -125,7 +125,7 @@ def test_planar_add_safety_printpoints_for_horizontal_layers():
         add_safety_printpoints(print_organizer, z_hop=10.0)
 
         # (3) find resulting number of ppts
-        resulting_ppts_number = print_organizer.total_number_of_points
+        resulting_ppts_number = print_organizer.number_of_printpoints
 
         assert initial_ppts_number + 2 * total_interruptions == resulting_ppts_number, \
             "Wrong number of safety points added on file : " + str(filename)
@@ -156,4 +156,5 @@ def test_planar_set_blend_radius_for_horizontal_layers():
 
 
 if __name__ == '__main__':
-    pass
+    test_planar_set_extruder_toggle_for_horizontal_layers()
+    test_planar_add_safety_printpoints_for_horizontal_layers()

@@ -3,7 +3,7 @@ from compas_slicer.geometry import Layer
 import logging
 import progressbar
 from compas.geometry import intersection_segment_plane
-from compas_slicer.slicers.slice_utilities import ZeroCrossingContoursBase
+from compas_slicer.slicers.slice_utilities import ContoursBase
 
 logger = logging.getLogger('logger')
 
@@ -44,7 +44,7 @@ def create_planar_paths(mesh, planes):
     return layers
 
 
-class IntersectionCurveMeshPlane(ZeroCrossingContoursBase):
+class IntersectionCurveMeshPlane(ContoursBase):
     """
     Finds the iso-contours of the function f(x) = vertex_coords.z - plane.z
     on the mesh.
@@ -56,7 +56,7 @@ class IntersectionCurveMeshPlane(ZeroCrossingContoursBase):
     """
     def __init__(self, mesh, plane):
         self.plane = plane
-        ZeroCrossingContoursBase.__init__(self, mesh)  # initialize from parent class
+        ContoursBase.__init__(self, mesh)  # initialize from parent class
 
     def edge_is_intersected(self, u, v):
         """ Returns True if the edge u,v has a zero-crossing, False otherwise. """
@@ -65,7 +65,7 @@ class IntersectionCurveMeshPlane(ZeroCrossingContoursBase):
         z = [a[2], b[2]]  # check if the plane.z is withing the range of [a.z, b.z]
         return min(z) <= self.plane.point[2] < max(z)
 
-    def find_zero_crossing_point(self, u, v):
+    def find_zero_crossing_data(self, u, v):
         """ Finds the position of the zero-crossing on the edge u,v. """
         a = self.mesh.vertex_attributes(u, 'xyz')
         b = self.mesh.vertex_attributes(v, 'xyz')

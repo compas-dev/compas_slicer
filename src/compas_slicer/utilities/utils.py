@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from compas.geometry import Point, distance_point_point_sqrd, normalize_vector
-from compas.geometry import Vector, closest_point_in_cloud, length_vector
+from compas.geometry import Vector, length_vector, closest_point_in_cloud
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
@@ -13,6 +13,7 @@ logger = logging.getLogger('logger')
 __all__ = ['get_output_directory',
            'save_to_json',
            'load_from_json',
+           'is_jsonable',
            'save_to_text_file',
            'flattened_list_of_dictionary',
            'interrupt',
@@ -153,6 +154,15 @@ def load_from_json(filepath, name):
         data = json.load(f)
     logger.info("Loaded json: " + filename)
     return data
+
+
+def is_jsonable(x):
+    """ Returns True if x can be json-serialized, False otherwise. """
+    try:
+        json.dumps(x)
+        return True
+    except TypeError:
+        return False
 
 
 #######################################

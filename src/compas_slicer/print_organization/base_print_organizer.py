@@ -1,6 +1,7 @@
 import compas_slicer
 import logging
 from compas.geometry import Polyline, distance_point_point
+from compas.utilities import pairwise
 import numpy as np
 from abc import abstractmethod
 
@@ -49,19 +50,50 @@ class BasePrintOrganizer(object):
     ######################
 
     @property
-    def total_number_of_points(self):
+    def number_of_printpoints(self):
         """int: Total number of points in the PrintOrganizer."""
         total_number_of_pts = 0
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
-                for printpoint in self.printpoints_dict[layer_key][path_key]:
+                for _ in self.printpoints_dict[layer_key][path_key]:
                     total_number_of_pts += 1
         return total_number_of_pts
+
+    @property
+    def number_of_paths(self):
+        total_number_of_paths = 0
+        for layer_key in self.printpoints_dict:
+            for _ in self.printpoints_dict[layer_key]:
+                total_number_of_paths += 1
+        return total_number_of_paths
 
     @property
     def number_of_layers(self):
         """int: Number of layers in the PrintOrganizer."""
         return len(self.printpoints_dict)
+
+    @property
+    def total_length_of_paths(self):
+        """ Returns the total length of all paths. Does not consider extruder toggle. """
+        total_length = 0
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                for prev, curr in pairwise(self.printpoints_dict[layer_key][path_key]):
+                    length = distance_point_point(prev.pt, curr.pt)
+                    total_length += length
+        return total_length
+
+    @property
+    def total_print_time(self):
+        """ If the print speed is defined, it returns the total time of the print, else returns None"""
+        if self.printpoints_dict['layer_0']['path_0'][0].velocity is not None:  # assume that all ppts are set or none
+            total_time = 0
+            for layer_key in self.printpoints_dict:
+                for path_key in self.printpoints_dict[layer_key]:
+                    for prev, curr in pairwise(self.printpoints_dict[layer_key][path_key]):
+                        length = distance_point_point(prev.pt, curr.pt)
+                        total_time += length * curr.velocity * 0.001
+            return total_time
 
     def number_of_paths_on_layer(self, layer_index):
         """int: Number of paths within a Layer of the PrintOrganizer."""
@@ -131,45 +163,22 @@ class BasePrintOrganizer(object):
 
     def printout_info(self):
         """Prints out information from the PrintOrganizer"""
-
-        layers = 0
-        paths = 0
-        total_number_of_pts = 0
-        total_time = 0
-        total_length = 0
-        flat_dict = []
-
-        for layer_key in self.printpoints_dict:
-            layers += 1
-            for path_key in self.printpoints_dict[layer_key]:
-                paths += 1
-                for printpoint in self.printpoints_dict[layer_key][path_key]:
-                    flat_dict.append(printpoint)
-                    total_number_of_pts += 1
-
-        for i in range(len(flat_dict)):
-            curr = flat_dict[i]
-            prev = flat_dict[i - 1]
-
-            if i > 0:
-                # calculate length of toolpath
-                length = distance_point_point(prev.pt, curr.pt)
-                total_length += length
-                # get speed for every section and calculate time
-                if curr.velocity:
-                    speed = curr.velocity
-                    time = length / speed
-                    total_time += time
-
-        min, sec = divmod(total_time, 60)
-        hour, min = divmod(min, 60)
+        ppts_attributes = {}
+        for key in self.printpoints_dict['layer_0']['path_0'][0].attributes:
+            ppts_attributes[key] = str(type(self.printpoints_dict['layer_0']['path_0'][0].attributes[key]))
 
         print("\n---- PrintOrganizer Info ----")
-        print("Number of layers: %d" % layers)
-        print("Number of paths: %d" % paths)
-        print("Number of PrintPoints: %d" % total_number_of_pts)
-        print("Toolpath length: %d mm" % total_length)
-        print("Printing time: %d hours, %02d min, %02d sec" % (hour, min, sec))
+        print("Number of layers: %d" % self.number_of_layers)
+        print("Number of paths: %d" % self.number_of_paths)
+        print("Number of PrintPoints: %d" % self.number_of_printpoints)
+        print("PrintPoints attributes: ")
+        for key in ppts_attributes:
+            print('     % s : % s' % (str(key), ppts_attributes[key]))
+        print("Toolpath length: %d mm" % self.total_length_of_paths)
+
+        minutes, sec = divmod(self.total_print_time, 60)
+        hour, minutes = divmod(minutes, 60)
+        print("Total print time: %d hours, %d minutes, %d seconds" % (hour, minutes, sec))
         print("")
 
     def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
@@ -232,6 +241,27 @@ class BasePrintOrganizer(object):
         # ...
         gcode = compas_slicer.print_organization.create_gcode_text(self.printpoints_dict, parameters)
         return gcode
+
+    def get_printpoints_attribute(self, attr_name):
+        """
+        Returns a list of printpoint attributes that have key=attr_name.
+
+        Parameters
+        ----------
+        attr_name: str
+
+        Returns
+        -------
+        list of size len(ppts) with whatever type the ppts.attribute[attr_name] is.
+        """
+        attr_values = []
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                for ppt in self.printpoints_dict[layer_key][path_key]:
+                    assert attr_name in ppt.attributes, \
+                        "The attribute '%s' is not in the printpoint.attributes" % attr_name
+                    attr_values.append(ppt.attributes[attr_name])
+        return attr_values
 
 
 if __name__ == "__main__":

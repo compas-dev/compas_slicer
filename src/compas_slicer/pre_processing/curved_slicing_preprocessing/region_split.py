@@ -6,9 +6,9 @@ import compas
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.curved_slicing_preprocessing import restore_mesh_attributes, save_vertex_attributes
 from compas.datastructures import Mesh
-from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertex
-from compas_slicer.pre_processing.curved_slicing_preprocessing import CurvedZeroCrossingContours
-from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_distance_to_mesh_vertices
+from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_interpolation_distance_to_mesh_vertex
+from compas_slicer.slicers.slice_utilities import ScalarFieldContours
+from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_interpolation_distance_to_mesh_vertices
 from compas_slicer.pre_processing.curved_slicing_preprocessing import GradientEvaluation
 from compas.geometry import Line, distance_point_point_sqrd, project_point_line
 
@@ -56,7 +56,9 @@ class MeshSplitter:
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.target_LOW, self.target_HIGH = target_LOW, target_HIGH
 
-        g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, 0.5, self.target_LOW, self.target_HIGH)
+        assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=0.5, target_LOW=self.target_LOW,
+                                                       target_HIGH=self.target_HIGH)
+        g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH)
         g_evaluation.find_critical_points()  # First estimation of saddle points with weight = 0.5
         self.saddles = g_evaluation.saddles
         self.cut_indices = []
@@ -95,8 +97,10 @@ class MeshSplitter:
 
             # --- (1) More exact estimation of intersecting weight. Recompute gradient evaluation.
             # Find exact saddle point and the weight that intersects it.
-            g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH, param_first_estimation, self.target_LOW,
-                                              self.target_HIGH)
+
+            assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=param_first_estimation,
+                                                           target_LOW=self.target_LOW, target_HIGH=self.target_HIGH)
+            g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH)
             g_evaluation.find_critical_points()
             saddles_ds_tupples = [(vkey, abs(g_evaluation.mesh.vertex_attribute(vkey, 'scalar_field'))) for vkey in
                                   g_evaluation.saddles]
@@ -106,8 +110,8 @@ class MeshSplitter:
             logger.info('vkey_exact : %d , t_exact : %.6f' % (vkey, t))
 
             # --- (2) find zero-crossing points
-            assign_distance_to_mesh_vertices(self.mesh, t, self.target_LOW, self.target_HIGH)
-            zero_contours = CurvedZeroCrossingContours(self.mesh)
+            assign_interpolation_distance_to_mesh_vertices(self.mesh, t, self.target_LOW, self.target_HIGH)
+            zero_contours = ScalarFieldContours(self.mesh)
             zero_contours.compute()
             keys_of_clusters_to_keep = merge_clusters_saddle_point(zero_contours, saddle_vkeys=[vkey])
 
@@ -159,7 +163,7 @@ class MeshSplitter:
 
         Parameters
         ----------
-        zero_contours: :class: 'compas_slicer.pre_processing.CurvedZeroCrossingContours'
+        zero_contours: :class: 'compas_slicer.pre_processing.ScalarFieldContours'
         cut_index: int, the vertex attribute value data['cut'] of the current cut
         """
         for key in zero_contours.sorted_point_clusters:  # cluster_pair
@@ -237,8 +241,8 @@ class MeshSplitter:
         weight_list = get_weights_list(n=resolution, start=0.001, end=0.999)
         # TODO: save next d to avoid re-evaluating
         for i, weight in enumerate(weight_list[:-1]):
-            current_d = assign_distance_to_mesh_vertex(vkey, weight, self.target_LOW, self.target_HIGH)
-            next_d = assign_distance_to_mesh_vertex(vkey, weight_list[i + 1], self.target_LOW, self.target_HIGH)
+            current_d = assign_interpolation_distance_to_mesh_vertex(vkey, weight, self.target_LOW, self.target_HIGH)
+            next_d = assign_interpolation_distance_to_mesh_vertex(vkey, weight_list[i + 1], self.target_LOW, self.target_HIGH)
             if abs(current_d) < abs(next_d) and current_d < threshold:
                 return weight
         raise ValueError('Could NOT find param for saddle vkey %d!' % vkey)
@@ -354,7 +358,7 @@ def merge_clusters_saddle_point(zero_contours, saddle_vkeys):
 
     Parameters
     ----------
-    zero_contours: :class: 'compas_slicer.pre_processing.CurvedZeroCrossingContours'
+    zero_contours: :class: 'compas_slicer.pre_processing.ScalarFieldContours'
     saddle_vkeys: list, int, the vertex keys of the current saddle points.
     (Currently this can only be a single saddle point)
 
@@ -383,7 +387,7 @@ def cleanup_unrelated_isocontour_neighborhoods(zero_contours, keys_of_clusters_t
 
     Parameters
     ----------
-    zero_contours: :class: 'compas_slicer.pre_processing.CurvedZeroCrossingContours'
+    zero_contours: :class: 'compas_slicer.pre_processing.ScalarFieldContours'
     keys_of_clusters_to_keep: list, int. The index neighborhoods that are related to the saddle points.
     """
     if len(keys_of_clusters_to_keep) == 0:

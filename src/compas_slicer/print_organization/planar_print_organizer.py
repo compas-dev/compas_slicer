@@ -29,7 +29,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
         """ Create the print points of the fabrication process """
         count = 0
         logger.info('Creating print points ...')
-        with progressbar.ProgressBar(max_value=self.slicer.total_number_of_points) as bar:
+        with progressbar.ProgressBar(max_value=self.slicer.number_of_points) as bar:
 
             for i, layer in enumerate(self.slicer.layers):
                 self.printpoints_dict['layer_%d' % i] = {}
@@ -40,8 +40,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                     for k, point in enumerate(path.points):
                         normal = utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh)
 
-                        printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height,
-                                                mesh_normal=normal)
+                        printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height, mesh_normal=normal)
 
                         self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
                         bar.update(count)

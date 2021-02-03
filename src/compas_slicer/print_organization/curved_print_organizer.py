@@ -27,7 +27,6 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
 
     def __init__(self, slicer, parameters, DATA_PATH):
         BasePrintOrganizer.__init__(self, slicer)
-        # assert isinstance(slicer.layers[0], VerticalLayer)  # curved printing only works with vertical layers
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.parameters = parameters

@@ -42,17 +42,40 @@ class BaseSlicer(object):
                     % (len(list(self.mesh.vertices())), len(list(self.mesh.faces()))))
 
         self.layer_height = None
-        self.layers = []  # any class inheriting from SortedPathCollection, i.e.  Layer(horizontal sorting)
-        # or VerticalLayer (vertical sorting)
+        self.layers = []  # any class inheriting from Layer(horizontal sorting)
+
+    ##############################
+    #  --- Properties
 
     @property
-    def total_number_of_points(self):
-        """int: Total number of points in the slicer."""
+    def number_of_points(self):
+        """ Returns int: Total number of points in the slicer."""
         total_number_of_pts = 0
         for layer in self.layers:
             for path in layer.paths:
                 total_number_of_pts += len(path.points)
         return total_number_of_pts
+
+    @property
+    def number_of_layers(self):
+        """ Returns int: Total number of layers."""
+        return len(self.layers)
+
+    @property
+    def number_of_paths(self):
+        """ Returns tuple (int, int, int): Total number of paths, number of open paths, number of closed paths. """
+        total_number_of_paths = 0
+        closed_paths = 0
+        open_paths = 0
+        for layer in self.layers:
+            total_number_of_paths += len(layer.paths)
+            for path in layer.paths:
+                if path.is_closed:
+                    closed_paths += 1
+                else:
+                    open_paths += 1
+
+        return total_number_of_paths, closed_paths, open_paths
 
     @property
     def vertical_layers(self):
@@ -88,7 +111,7 @@ class BaseSlicer(object):
         self.close_paths()
 
         logger.info("Created %d Layers with %d total number of points"
-                    % (len(self.layers), self.total_number_of_points))
+                    % (len(self.layers), self.number_of_points))
 
     def close_paths(self):
         """ For paths that are labeled as closed, it makes sure that the first and the last point are identical. """
@@ -150,26 +173,12 @@ class BaseSlicer(object):
 
     def printout_info(self):
         """Prints out information from the slicing process."""
-
-        open_paths = 0
-        closed_paths = 0
-        total_number_of_pts = 0
-        number_of_path_collections = 0
-
-        for layer in self.layers:
-            number_of_path_collections += 1
-            for path in layer.paths:
-                total_number_of_pts += len(path.points)
-                if path.is_closed:
-                    closed_paths += 1
-                else:
-                    open_paths += 1
+        no_of_paths, closed_paths, open_paths = self.number_of_paths
 
         print("\n---- Slicer Info ----")
-        print("Number of layers: %d" % number_of_path_collections)
-        print("Number of paths: %d, open paths: %d, closed paths: %d" % (
-            open_paths + closed_paths, open_paths, closed_paths))
-        print("Number of sampling printpoints on layers: %d" % total_number_of_pts)
+        print("Number of layers: %d" % self.number_of_layers)
+        print("Number of paths: %d, open paths: %d, closed paths: %d" % (no_of_paths, open_paths, closed_paths))
+        print("Number of sampling printpoints on layers: %d" % self.number_of_points)
         print("")
 
     def visualize_on_viewer(self, viewer, visualize_mesh=False, visualize_paths=True):
@@ -242,11 +251,31 @@ class BaseSlicer(object):
         Returns
         -------
         dict
-            The slicers's data.
+            The slicer's data.
 
         """
+        # To avoid errors when saving to Json, create a copy of the self.mesh and remove from it
+        # any non-serializable attributes (by checking a random face and a random vertex, assuming
+        # that all faces and vertices share the same types of attributes).
+        mesh = self.mesh.copy()
+        v_key = mesh.get_any_vertex()
+        v_attrs = mesh.vertex_attributes(v_key)
+        for attr_key in v_attrs:
+            if not utils.is_jsonable(v_attrs[attr_key]):
+                logger.error('vertex : ' + attr_key + str(v_attrs[attr_key]))
+                for v in mesh.vertices():
+                    mesh.unset_vertex_attribute(v, attr_key)
+
+        f_key = mesh.get_any_face()
+        f_attrs = mesh.face_attributes(f_key)
+        for attr_key in f_attrs:
+            if not utils.is_jsonable(f_attrs[attr_key]):
+                logger.error('face : ' + attr_key, f_attrs[attr_key])
+                mesh.update_default_face_attributes({attr_key: 0.0})  # just set all to 0.0
+
+        # fill data dictionary with slicer info
         data = {'layers': self.get_layers_dict(),
-                'mesh': self.mesh.to_data(),
+                'mesh': mesh.to_data(),
                 'layer_height': self.layer_height}
         return data
 

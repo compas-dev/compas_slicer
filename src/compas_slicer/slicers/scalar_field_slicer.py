@@ -1,15 +1,15 @@
 import numpy as np
 from compas_slicer.slicers import BaseSlicer
 import logging
-from compas_slicer.pre_processing import CurvedZeroCrossingContours
+from compas_slicer.slicers.slice_utilities import ScalarFieldContours
 from compas_slicer.geometry import VerticalLayer, Path
 
 logger = logging.getLogger('logger')
 
-__all__ = ['ScalarFieldContours']
+__all__ = ['ScalarFieldSlicer']
 
 
-class ScalarFieldContours(BaseSlicer):
+class ScalarFieldSlicer(BaseSlicer):
     """
     Generates the isocontours of a scalar field defined on the mesh vertices.
 
@@ -26,7 +26,7 @@ class ScalarFieldContours(BaseSlicer):
     def __init__(self, mesh, scalar_field, no_of_isocurves):
         BaseSlicer.__init__(self, mesh)
         self.no_of_isocurves = no_of_isocurves
-        logger.info('ScalarFieldContours')
+        logger.info('ScalarFieldSlicer')
         self.scalar_field = list(np.array(scalar_field) - np.max(np.array(scalar_field)))
         mesh.update_default_vertex_attributes({'scalar_field': 0})
 
@@ -40,7 +40,7 @@ class ScalarFieldContours(BaseSlicer):
             for vkey, data in self.mesh.vertices(data=True):
                 data['scalar_field'] = self.scalar_field[vkey] + i * step
 
-            zero_contours = CurvedZeroCrossingContours(self.mesh)
+            zero_contours = ScalarFieldContours(self.mesh)
             zero_contours.compute()
 
             for key in zero_contours.sorted_point_clusters:
