@@ -105,18 +105,30 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;reorder_vertical_layers&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="reorder_vertical_layers"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.reorder_vertical_layers.html#compas_slicer.post_processing.reorder_vertical_layers">[docs]</a><span class="k">def</span> <span class="nf">reorder_vertical_layers</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">align_pt</span><span class="p">):</span>
+<div class="viewcode-block" id="reorder_vertical_layers"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.reorder_vertical_layers.html#compas_slicer.post_processing.reorder_vertical_layers">[docs]</a><span class="k">def</span> <span class="nf">reorder_vertical_layers</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">align_with</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Re-orders the vertical layers in a specific way</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    slicer: :class:`compas_slicer.slicers.BaseSlicer`</span>
 <span class="sd">        An instance of one of the compas_slicer.slicers classes.</span>
-<span class="sd">    align_pt: :class:`compas.geometry.Point`</span>
-<span class="sd">        xx</span>
+<span class="sd">    align_with: str or :class:`compas.geometry.Point`</span>
+<span class="sd">        Direction to orient the seams in.</span>
+<span class="sd">        x_axis       = reorders the vertical layers starting from the positive x-axis</span>
+<span class="sd">        y_axis       = reorders the vertical layers starting from the positive y-axis</span>
+<span class="sd">        Point(x,y,z) = reorders the vertical layers starting from a given Point</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Re-ordering vertical layers to start with the vertical layer closest to the align_pt&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">align_with</span> <span class="o">==</span> <span class="s2">&quot;x_axis&quot;</span><span class="p">:</span>
+        <span class="n">align_pt</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">align_with</span> <span class="o">==</span> <span class="s2">&quot;y_axis&quot;</span><span class="p">:</span>
+        <span class="n">align_pt</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">align_with</span><span class="p">,</span> <span class="n">Point</span><span class="p">):</span>
+        <span class="n">align_pt</span> <span class="o">=</span> <span class="n">align_with</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;Unknown align_with : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">align_with</span><span class="p">))</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Re-ordering vertical layers to start with the vertical layer closest to: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">align_with</span><span class="p">)</span>
 
     <span class="c1"># group vertical layers based on the min_max_z_height</span>
     <span class="n">grouped_iter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">min_max_z_height</span><span class="p">)</span>

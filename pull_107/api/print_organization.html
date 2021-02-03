@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   
-  <title>compas_slicer - &lt;no title&gt;</title>
+  <title>compas_slicer - print_organization</title>
   
 
   <meta charset="utf-8" />
@@ -19,7 +19,11 @@
   <link rel="stylesheet" type="text/css" href="../_static/css/compas-reference.css" />
 
   
+    <link rel="next" title="BasePrintOrganizer" href="generated/compas_slicer.print_organization.BasePrintOrganizer.html" />
+  
 
+  
+    <link rel="prev" title="CurvedSlicer.visualize_on_viewer" href="generated/compas_slicer.slicers.CurvedSlicer.visualize_on_viewer.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -85,14 +89,81 @@
           <ol class="breadcrumb mb-3 bg-white px-0">
             <li class="breadcrumb-item"><a href="../index.html">docs</a></li>
             
-            <li class="breadcrumb-item active" aria-current="page">&lt;no title&gt;</li>
+              <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+            
+              <li class="breadcrumb-item"><a href="compas_slicer.html">compas_slicer</a></li>
+            
+            <li class="breadcrumb-item active" aria-current="page">print_organization</li>
           </ol>
         </nav>
         
 
         
         
-        
+        <span class="target" id="module-compas_slicer.print_organization"></span><div class="section" id="print-organization">
+<h1>print_organization</h1>
+<div class="section" id="classes">
+<h2>Classes</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.print_organization.BasePrintOrganizer.html#compas_slicer.print_organization.BasePrintOrganizer" title="compas_slicer.print_organization.BasePrintOrganizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BasePrintOrganizer</span></code></a></p></td>
+<td><p>Base class for organizing the printing process.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="baseprintorganizer">
+<h3>BasePrintOrganizer</h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.print_organization.CurvedPrintOrganizer.html#compas_slicer.print_organization.CurvedPrintOrganizer" title="compas_slicer.print_organization.CurvedPrintOrganizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CurvedPrintOrganizer</span></code></a></p></td>
+<td><p>Organizing the printing process for the realization of non-planar contours.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="functions">
+<h2>Functions</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.print_organization.set_extruder_toggle.html#compas_slicer.print_organization.set_extruder_toggle" title="compas_slicer.print_organization.set_extruder_toggle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_extruder_toggle</span></code></a></p></td>
+<td><p>Sets the extruder_toggle value for the printpoints.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_slicer.print_organization.override_extruder_toggle.html#compas_slicer.print_organization.override_extruder_toggle" title="compas_slicer.print_organization.override_extruder_toggle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">override_extruder_toggle</span></code></a></p></td>
+<td><p>Overrides the extruder_toggle value for the printpoints with a user-defined value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.print_organization.set_linear_velocity.html#compas_slicer.print_organization.set_linear_velocity" title="compas_slicer.print_organization.set_linear_velocity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_linear_velocity</span></code></a></p></td>
+<td><p>Sets the linear velocity parameter of the printpoints depending on the selected type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_slicer.print_organization.set_blend_radius.html#compas_slicer.print_organization.set_blend_radius" title="compas_slicer.print_organization.set_blend_radius"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_blend_radius</span></code></a></p></td>
+<td><p>Sets the blend radius (filleting) for the robotic motion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.print_organization.add_safety_printpoints.html#compas_slicer.print_organization.add_safety_printpoints" title="compas_slicer.print_organization.add_safety_printpoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_safety_printpoints</span></code></a></p></td>
+<td><p>Generates a safety print point at the interruptions of the print paths.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_slicer.print_organization.set_wait_time.html#compas_slicer.print_organization.set_wait_time" title="compas_slicer.print_organization.set_wait_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_wait_time</span></code></a></p></td>
+<td><p>Automatically sets a wait time for the printpoints.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.print_organization.override_wait_time.html#compas_slicer.print_organization.override_wait_time" title="compas_slicer.print_organization.override_wait_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">override_wait_time</span></code></a></p></td>
+<td><p>Overrides the wait_time value for the printpoints with a user-defined value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
         
       </main>
       <!-- content -->
@@ -109,12 +180,23 @@
         
         
           <div id="compas-navigation" class="collapse compas-navigation">
-          <ul class="nav flex-column">
+          <ul class="nav flex-column active">
 <li class="nav-item"><a class="nav-link reference internal" href="../index.html">Overview</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../installation.html">Installation</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../tutorials.html">Tutorials</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../examples.html">Examples</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../api.html">API Reference</a></li>
+<li class="nav-item active"><a class="nav-link reference internal" href="../api.html">API Reference</a><ul class="nav flex-column active">
+<li class="nav-item active"><a class="nav-link reference internal" href="compas_slicer.html">compas_slicer</a><ul class="nav flex-column active">
+<li class="nav-item"><a class="nav-link reference internal" href="geometry.html">geometry</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="slicers.html">slicers</a></li>
+<li class="nav-item active"><a class="nav-link active current reference internal" href="#">print_organization</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="pre_processing.html">pre_processing</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="post_processing.html">post_processing</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="utilities.html">utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="nav-item"><a class="nav-link reference internal" href="../devguide.html">Developer Guide</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../license.html">License</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../citing.html">Citing</a></li>
@@ -127,7 +209,15 @@
       <!-- toc -->
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
-        <ul class="simple">
+        <ul class="nav flex-column" id="compas-toc">
+<li class="nav-item"><a class="nav-link reference internal" href="#">print_organization</a><ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="#classes">Classes</a><ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="#baseprintorganizer">BasePrintOrganizer</a></li>
+</ul>
+</li>
+<li class="nav-item"><a class="nav-link reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
 </ul>
 
       </div>
@@ -139,7 +229,23 @@
   <footer class="compas-footer">
     <nav class="nav p-2">
       
+        <a href="generated/compas_slicer.slicers.CurvedSlicer.visualize_on_viewer.html" title="CurvedSlicer.visualize_on_viewer" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+          <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
+          <div class="nav-title flex-grow-1 align-self-center">
+            <div class="nav-direction small font-weight-light">Previous</div>
+            CurvedSlicer.visualize_on_viewer
+          </div>
+        </a>
+      
 
+      
+        <a href="generated/compas_slicer.print_organization.BasePrintOrganizer.html" title="BasePrintOrganizer" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+          <div class="nav-title footer-link flex-grow-1 align-self-center">
+            <div class="nav-direction small font-weight-light">Next</div>
+            BasePrintOrganizer
+          </div>
+          <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
+        </a>
       
     </nav>  
   </footer>
