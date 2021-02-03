@@ -17,13 +17,13 @@ class Layer(object):
 
     Attributes
     ----------
-    paths : list
+    paths: list
         :class:`compas_slicer.geometry.Path`
-    is_brim : bool
+    is_brim: bool
         True if this layer is a brim layer.
-    number_of_brim_offsets : int
+    number_of_brim_offsets: int
         The number of brim offsets this layer has (None if no brim).
-    z_height : float
+    z_height: float
         Z height of the layer.
     """
 
@@ -104,7 +104,7 @@ class VerticalLayer(Layer):
     ----------
     id: int
         Identifier of vertical layer.
-    min_max_z_height : tuple
+    min_max_z_height: tuple
         Tuple containing the minimum and maximum z height of the VerticalLayer.
     """
 

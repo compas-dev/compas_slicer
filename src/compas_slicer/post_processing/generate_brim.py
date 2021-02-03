@@ -24,11 +24,8 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
         (typically the width of a layer)
     number_of_brim_offsets: int
         Number of brim paths to add.
-
-    Returns
-    -------
-    None
     """
+
     logger.info(
         "Generating brim with layer width: %.2f mm, consisting of %d layers" % (layer_width, number_of_brim_offsets))
 
