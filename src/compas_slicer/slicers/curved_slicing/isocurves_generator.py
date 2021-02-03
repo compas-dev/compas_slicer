@@ -5,7 +5,7 @@ import logging
 import progressbar
 from compas_slicer.pre_processing import assign_interpolation_distance_to_mesh_vertices
 from compas_slicer.slicers.slice_utilities import ScalarFieldContours
-from compas_slicer.post_processing.sort_paths_per_vertical_segment import get_segments_centroids_list
+from compas_slicer.post_processing.sort_into_vertical_layers import get_vertical_layers_centroids_list
 
 logger = logging.getLogger('logger')
 

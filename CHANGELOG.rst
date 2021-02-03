@@ -19,6 +19,31 @@ Unreleased
 
 **Removed**
 
+2021-02-03
+----------
+
+**Added**
+
+* Reorder vertical layers functionality
+
+* Added z_height attribute to Layer and min_max_z_height to VerticalLayer
+
+**Changed**
+
+* Extension of CHANGELOG
+
+* Changed naming of *sort_per_vertical_segment* to *sort_into_vertical_layers*
+
+* Changed naming of *get_segments_centroids_list* to *get_vertical_layers_centroids_list*
+
+**Fixed**
+
+* Typo in wait time
+
+**Deprecated**
+
+**Removed**
+
 2021-01-25
 ----------
 

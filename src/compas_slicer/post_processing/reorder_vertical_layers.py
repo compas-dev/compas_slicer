@@ -8,18 +8,30 @@ logger = logging.getLogger('logger')
 __all__ = ['reorder_vertical_layers']
 
 
-def reorder_vertical_layers(slicer, align_pt):
+def reorder_vertical_layers(slicer, align_with):
     """Re-orders the vertical layers in a specific way
 
     Parameters
     ----------
     slicer: :class:`compas_slicer.slicers.BaseSlicer`
         An instance of one of the compas_slicer.slicers classes.
-    align_pt: :class:`compas.geometry.Point`
-        xx
+    align_with: str or :class:`compas.geometry.Point`
+        Direction to orient the seams in.
+        x_axis       = reorders the vertical layers starting from the positive x-axis
+        y_axis       = reorders the vertical layers starting from the positive y-axis
+        Point(x,y,z) = reorders the vertical layers starting from a given Point
     """
 
-    logger.info("Re-ordering vertical layers to start with the vertical layer closest to the align_pt")
+    if align_with == "x_axis":
+        align_pt = Point(2 ** 32, 0, 0)
+    elif align_with == "y_axis":
+        align_pt = Point(0, 2 ** 32, 0)
+    elif isinstance(align_with, Point):
+        align_pt = align_with
+    else:
+        raise NameError("Unknown align_with : " + str(align_with))
+
+    logger.info("Re-ordering vertical layers to start with the vertical layer closest to: %s" % align_with)
 
     # group vertical layers based on the min_max_z_height
     grouped_iter = itertools.groupby(slicer.layers, lambda x: x.min_max_z_height)
