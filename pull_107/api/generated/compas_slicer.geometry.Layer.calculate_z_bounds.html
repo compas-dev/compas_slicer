@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   
-  <title>compas_slicer - Layer</title>
+  <title>compas_slicer - Layer.calculate_z_bounds</title>
   
 
   <meta charset="utf-8" />
@@ -19,11 +19,11 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="Layer.__init__" href="compas_slicer.geometry.Layer.__init__.html" />
+    <link rel="next" title="Layer.from_data" href="compas_slicer.geometry.Layer.from_data.html" />
   
 
   
-    <link rel="prev" title="geometry" href="../geometry.html" />
+    <link rel="prev" title="Layer.__init__" href="compas_slicer.geometry.Layer.__init__.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -95,82 +95,21 @@
             
               <li class="breadcrumb-item"><a href="../geometry.html">geometry</a></li>
             
-            <li class="breadcrumb-item active" aria-current="page">Layer</li>
+              <li class="breadcrumb-item"><a href="compas_slicer.geometry.Layer.html">Layer</a></li>
+            
+            <li class="breadcrumb-item active" aria-current="page">Layer.calculate_z_bounds</li>
           </ol>
         </nav>
         
 
         
         
-        <div class="detail section" id="layer">
-<h1>Layer</h1>
-<dl class="py class">
-<dt id="compas_slicer.geometry.Layer">
-<em class="property">class </em><code class="sig-prename descclassname">compas_slicer.geometry.</code><code class="sig-name descname">Layer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">paths</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/geometry/layer.html#Layer"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>A Layer stores a group of ordered paths that are generated when a geometry is sliced.
-Layers are typically organized horizontally, but can also be organized vertically (see VerticalLayer).
-A Layer consists of one, or multiple Paths (depending on the geometry).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>paths</strong> (<em>list</em>) – <a class="reference internal" href="compas_slicer.geometry.Path.html#compas_slicer.geometry.Path" title="compas_slicer.geometry.Path"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.geometry.Path</span></code></a></p></li>
-<li><p><strong>is_brim</strong> (<em>bool</em>) – True if this layer is a brim layer.</p></li>
-<li><p><strong>number_of_brim_offsets</strong> (<em>int</em>) – The number of brim offsets this layer has (None if no brim).</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_number_of_points</span></code></p></td>
-<td><p>Returns the total number of points within the layer.</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Inherited Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-</tbody>
-</table>
-<p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.geometry.Layer.__init__.html#compas_slicer.geometry.Layer.__init__" title="compas_slicer.geometry.Layer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(paths)</p></td>
-<td><p>Initialize self.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.geometry.Layer.calculate_z_bounds.html#compas_slicer.geometry.Layer.calculate_z_bounds" title="compas_slicer.geometry.Layer.calculate_z_bounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_z_bounds</span></code></a>()</p></td>
-<td><p>Fills in the attribute self.min_max_z_height.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.geometry.Layer.from_data.html#compas_slicer.geometry.Layer.from_data" title="compas_slicer.geometry.Layer.from_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_data</span></code></a>(data)</p></td>
-<td><p>Construct a layer from its data representation.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.geometry.Layer.to_data.html#compas_slicer.geometry.Layer.to_data" title="compas_slicer.geometry.Layer.to_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_data</span></code></a>()</p></td>
-<td><p>Returns a dictionary of structured data representing the data structure.</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Inherited Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-</tbody>
-</table>
+        <div class="detail section" id="layer-calculate-z-bounds">
+<h1>Layer.calculate_z_bounds</h1>
+<dl class="py method">
+<dt id="compas_slicer.geometry.Layer.calculate_z_bounds">
+<code class="sig-prename descclassname">Layer.</code><code class="sig-name descname">calculate_z_bounds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/geometry/layer.html#Layer.calculate_z_bounds"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Fills in the attribute self.min_max_z_height.</p>
 </dd></dl>
 
 </div>
@@ -221,7 +160,7 @@ A Layer consists of one, or multiple Paths (depending on the geometry).</p>
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">Layer</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">Layer.calculate_z_bounds</a></li>
 </ul>
 
       </div>
@@ -233,20 +172,20 @@ A Layer consists of one, or multiple Paths (depending on the geometry).</p>
   <footer class="compas-footer">
     <nav class="nav p-2">
       
-        <a href="../geometry.html" title="geometry" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+        <a href="compas_slicer.geometry.Layer.__init__.html" title="Layer.__init__" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
           <div class="nav-title flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Previous</div>
-            geometry
+            Layer.__init__
           </div>
         </a>
       
 
       
-        <a href="compas_slicer.geometry.Layer.__init__.html" title="Layer.__init__" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+        <a href="compas_slicer.geometry.Layer.from_data.html" title="Layer.from_data" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
           <div class="nav-title footer-link flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Next</div>
-            Layer.__init__
+            Layer.from_data
           </div>
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
         </a>

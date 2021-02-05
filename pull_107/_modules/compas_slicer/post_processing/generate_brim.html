@@ -186,6 +186,7 @@
             <span class="n">brim_layer</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
 
     <span class="n">brim_layer</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># go from outside towards the object</span>
+    <span class="n">brim_layer</span><span class="o">.</span><span class="n">calculate_z_bounds</span><span class="p">()</span>
 
     <span class="c1"># (4) --- Add the brim layer to the slicer</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_vertical_layers</span><span class="p">:</span>

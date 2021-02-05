@@ -129,6 +129,11 @@
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Re-ordering vertical layers to start with the vertical layer closest to: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">align_with</span><span class="p">)</span>
 
+    <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">layer</span><span class="o">.</span><span class="n">min_max_z_height</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">layer</span><span class="o">.</span><span class="n">min_max_z_height</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> \
+            <span class="s2">&quot;To use the &#39;reorder_vertical_layers function you need first to calculate the layers&#39; z_bounds. To do &quot;</span> \
+            <span class="s2">&quot;that use the function &#39;Layer.calculate_z_bounds()&#39;&quot;</span>
+
     <span class="c1"># group vertical layers based on the min_max_z_height</span>
     <span class="n">grouped_iter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">min_max_z_height</span><span class="p">)</span>
     <span class="n">grouped_layer_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">group</span><span class="p">)</span> <span class="k">for</span> <span class="n">_key</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">grouped_iter</span><span class="p">]</span>
@@ -138,7 +143,7 @@
     <span class="k">for</span> <span class="n">grouped_layers</span> <span class="ow">in</span> <span class="n">grouped_layer_list</span><span class="p">:</span>
         <span class="n">distances</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">vert_layer</span> <span class="ow">in</span> <span class="n">grouped_layers</span><span class="p">:</span>
-            <span class="c1"># recrate head_centroid_pt as compas.Point</span>
+            <span class="c1"># recreate head_centroid_pt as compas.Point</span>
             <span class="n">head_centroid_pt</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">vert_layer</span><span class="o">.</span><span class="n">head_centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vert_layer</span><span class="o">.</span><span class="n">head_centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">vert_layer</span><span class="o">.</span><span class="n">head_centroid</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
             <span class="c1"># measure distance</span>
             <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance_point_point</span><span class="p">(</span><span class="n">head_centroid_pt</span><span class="p">,</span> <span class="n">align_pt</span><span class="p">))</span>

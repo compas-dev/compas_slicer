@@ -120,8 +120,6 @@
 <span class="sd">        True if this layer is a brim layer.</span>
 <span class="sd">    number_of_brim_offsets: int</span>
 <span class="sd">        The number of brim offsets this layer has (None if no brim).</span>
-<span class="sd">    z_height: float</span>
-<span class="sd">        Z height of the layer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Layer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.__init__.html#compas_slicer.geometry.Layer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paths</span><span class="p">):</span>
@@ -132,13 +130,13 @@
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="n">paths</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_max_z_height</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># Tuple containing the min and max z height of the layer.</span>
+        <span class="k">if</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_z_bounds</span><span class="p">()</span>
+
         <span class="c1"># brim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_brim</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_brim_offsets</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="c1"># gets z height of layer by checking first point</span>
-        <span class="k">if</span> <span class="n">paths</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">z_height</span> <span class="o">=</span> <span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_brim_offsets</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">no_of_paths</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="k">else</span> <span class="mi">0</span>
@@ -151,6 +149,17 @@
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
             <span class="n">num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">printpoints</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">num</span>
+
+<div class="viewcode-block" id="Layer.calculate_z_bounds"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.calculate_z_bounds.html#compas_slicer.geometry.Layer.calculate_z_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_z_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Fills in the attribute self.min_max_z_height. &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;You cannot calculate z_bounds because the list of paths is empty.&quot;</span>
+        <span class="n">z_min</span> <span class="o">=</span> <span class="mi">9999999</span>  <span class="c1"># very big number</span>
+        <span class="n">z_max</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999999</span>  <span class="c1"># very small number</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
+                <span class="n">z_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">z_min</span><span class="p">,</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">z_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">z_max</span><span class="p">,</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_max_z_height</span> <span class="o">=</span> <span class="p">(</span><span class="n">z_min</span><span class="p">,</span> <span class="n">z_max</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Layer.from_data"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.from_data.html#compas_slicer.geometry.Layer.from_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
@@ -172,6 +181,7 @@
         <span class="n">layer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">paths</span><span class="p">)</span>
         <span class="n">layer</span><span class="o">.</span><span class="n">is_brim</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;is_brim&#39;</span><span class="p">]</span>
         <span class="n">layer</span><span class="o">.</span><span class="n">number_of_brim_offsets</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;number_of_brim_offsets&#39;</span><span class="p">]</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">min_max_z_height</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;min_max_z_height&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">layer</span></div>
 
 <div class="viewcode-block" id="Layer.to_data"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.to_data.html#compas_slicer.geometry.Layer.to_data">[docs]</a>    <span class="k">def</span> <span class="nf">to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -186,7 +196,8 @@
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;paths&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">))},</span>
                 <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;horizontal_layer&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;is_brim&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_brim</span><span class="p">,</span>
-                <span class="s1">&#39;number_of_brim_offsets&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_brim_offsets</span><span class="p">}</span>
+                <span class="s1">&#39;number_of_brim_offsets&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_brim_offsets</span><span class="p">,</span>
+                <span class="s1">&#39;min_max_z_height&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_max_z_height</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
             <span class="n">data</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">data</span></div></div>
@@ -201,15 +212,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    id: int</span>
 <span class="sd">        Identifier of vertical layer.</span>
-<span class="sd">    min_max_z_height: tuple</span>
-<span class="sd">        Tuple containing the minimum and maximum z height of the VerticalLayer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">Layer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="n">paths</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head_centroid</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">min_max_z_height</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">no_of_paths</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="k">else</span> <span class="mi">0</span>
@@ -219,6 +227,7 @@
         <span class="sd">&quot;&quot;&quot; Add path to self.paths list. &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compute_head_centroid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_z_bounds</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">compute_head_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Find the centroid of all the points of the last path in the self.paths list&quot;&quot;&quot;</span>
@@ -240,6 +249,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;paths&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">))},</span>
+                <span class="s1">&#39;min_max_z_height&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_max_z_height</span><span class="p">,</span>
                 <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;vertical_layer&#39;</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
             <span class="n">data</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
@@ -264,6 +274,7 @@
         <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">paths_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">paths_data</span><span class="p">]</span>
         <span class="n">layer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">layer</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="n">paths</span>
+        <span class="n">layer</span><span class="o">.</span><span class="n">min_max_z_height</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;min_max_z_height&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">layer</span>
 
 
