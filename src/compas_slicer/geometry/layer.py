@@ -17,10 +17,13 @@ class Layer(object):
 
     Attributes
     ----------
-    paths : list
+    paths: list
         :class:`compas_slicer.geometry.Path`
+    is_brim: bool
+        True if this layer is a brim layer.
+    number_of_brim_offsets: int
+        The number of brim offsets this layer has (None if no brim).
     """
-
     def __init__(self, paths):
         # check input
         if paths is None:
@@ -29,6 +32,11 @@ class Layer(object):
             assert isinstance(paths[0], compas_slicer.geometry.Path)
         self.paths = paths
 
+        self.min_max_z_height = (None, None)  # Tuple containing the min and max z height of the layer.
+        if paths:
+            self.calculate_z_bounds()
+
+        # brim
         self.is_brim = False
         self.number_of_brim_offsets = None
 
@@ -44,6 +52,17 @@ class Layer(object):
             num += len(path.printpoints)
         return num
 
+    def calculate_z_bounds(self):
+        """ Fills in the attribute self.min_max_z_height. """
+        assert len(self.paths) > 0, "You cannot calculate z_bounds because the list of paths is empty."
+        z_min = 9999999  # very big number
+        z_max = -9999999  # very small number
+        for path in self.paths:
+            for pt in path.points:
+                z_min = min(z_min, pt[2])
+                z_max = max(z_max, pt[2])
+        self.min_max_z_height = (z_min, z_max)
+
     @classmethod
     def from_data(cls, data):
         """Construct a layer from its data representation.
@@ -57,13 +76,13 @@ class Layer(object):
         -------
         layer
             The constructed layer.
-
         """
         paths_data = data['paths']
         paths = [Path.from_data(paths_data[key]) for key in paths_data]
         layer = cls(paths=paths)
         layer.is_brim = data['is_brim']
         layer.number_of_brim_offsets = data['number_of_brim_offsets']
+        layer.min_max_z_height = data['min_max_z_height']
         return layer
 
     def to_data(self):
@@ -72,13 +91,13 @@ class Layer(object):
         Returns
         -------
         dict
-            The layers's data.
-
+            The layer's data.
         """
         data = {'paths': {i: [] for i in range(len(self.paths))},
                 'layer_type': 'horizontal_layer',
                 'is_brim': self.is_brim,
-                'number_of_brim_offsets': self.number_of_brim_offsets}
+                'number_of_brim_offsets': self.number_of_brim_offsets,
+                'min_max_z_height': self.min_max_z_height}
         for i, path in enumerate(self.paths):
             data['paths'][i] = path.to_data()
         return data
@@ -91,9 +110,9 @@ class VerticalLayer(Layer):
 
     Attributes
     ----------
-    id: int, identifier of vertical layer
+    id: int
+        Identifier of vertical layer.
     """
-
     def __init__(self, id=0, paths=None):
         Layer.__init__(self, paths=paths)
         self.id = id
@@ -107,6 +126,7 @@ class VerticalLayer(Layer):
         """ Add path to self.paths list. """
         self.paths.append(path)
         self.compute_head_centroid()
+        self.calculate_z_bounds()
 
     def compute_head_centroid(self):
         """ Find the centroid of all the points of the last path in the self.paths list"""
@@ -124,10 +144,10 @@ class VerticalLayer(Layer):
         Returns
         -------
         dict
-            The vertical layers's data.
-
+            The vertical layer's data.
         """
         data = {'paths': {i: [] for i in range(len(self.paths))},
+                'min_max_z_height': self.min_max_z_height,
                 'layer_type': 'vertical_layer'}
         for i, path in enumerate(self.paths):
             data['paths'][i] = path.to_data()
@@ -146,12 +166,12 @@ class VerticalLayer(Layer):
         -------
         layer
             The constructed vertical layer.
-
         """
         paths_data = data['paths']
         paths = [Path.from_data(paths_data[key]) for key in paths_data]
         layer = cls(id=None)
         layer.paths = paths
+        layer.min_max_z_height = data['min_max_z_height']
         return layer
 
 

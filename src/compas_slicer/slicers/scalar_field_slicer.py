@@ -15,11 +15,11 @@ class ScalarFieldSlicer(BaseSlicer):
 
     Attributes
     ----------
-    mesh : :class: 'compas.datastructures.Mesh'
+    mesh: :class: 'compas.datastructures.Mesh'
         Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
         Note that the topology of the mesh matters, irregular tesselation can lead to undesired results.
         We recommend to 1)re-topologize, 2) triangulate, and 3) weld your mesh in advance.
-    scalar_field : list, Vx1 (one float per vertex that represents the scalar field)
+    scalar_field: list, Vx1 (one float per vertex that represents the scalar field)
     no_of_isocurves: int, how many isocontours to be generated
     """
 

@@ -25,19 +25,19 @@ class CompoundTarget:
 
     Attributes
     ----------
-    mesh : :class:`compas.datastructures.Mesh`
+    mesh: :class:`compas.datastructures.Mesh`
     v_attr : str
         The key of the attribute dict to be checked.
-    value : int
+    value: int
         The value of the attribute dict with key=v_attr. If in a vertex data[v_attr]==value then the vertex is part of
         this target.
-    DATA_PATH : str
+    DATA_PATH: str
     has_blend_union: bool
     blend_radius : float
-    geodesics_method : str
+    geodesics_method: str
         'exact_igl'  exact igl geodesic distances
         'heat'   custom heat geodesic distances
-    anisotropic_scaling : bool
+    anisotropic_scaling: bool
         This is not yet implemented
     """
 

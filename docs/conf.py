@@ -36,8 +36,8 @@ show_authors = True
 add_module_names = True
 templates_path = ['_templates', ]
 extlinks = {
-    'issue': ('https://https://github.com/dbt-ethz/compas_slicer/issues/%s', '#'),
-    'pr': ('https://https://github.com/dbt-ethz/compas_slicer/pull/%s', 'PR #'),
+    'issue': ('https://https://github.com/compas-dev/compas_slicer/issues/%s', '#'),
+    'pr': ('https://https://github.com/compas-dev/compas_slicer/pull/%s', 'PR #'),
 }
 
 # intersphinx options
@@ -58,6 +58,14 @@ autodoc_member_order = 'alphabetical'
 # autosummary options
 autosummary_generate = True
 
+package_docs_root = 'https://compas.dev/compas_slicer/'
+
+with open(os.path.join(os.path.dirname(__file__), 'doc_versions.txt'), 'r') as f:
+    version_names = [version.strip() for version in f.readlines()]
+    package_docs_versions = [(version, '{}{}'.format(package_docs_root, version))
+                             for version in version_names if version]
+
+
 # # on_rtd is whether we are on readthedocs.org
 # on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 html_theme = 'compaspkg'
@@ -66,7 +74,9 @@ html_theme_options = {
     "package_name": 'compas_slicer',
     "package_title": project,
     "package_version": release,
-    "package_repo": 'https://https://github.com/dbt-ethz/compas_slicer',
+    "package_repo": 'https://https://github.com/compas-dev/compas_slicer',
+    "package_docs": package_docs_root,
+    "package_old_versions": package_docs_versions
 }
 
 html_split_index = False

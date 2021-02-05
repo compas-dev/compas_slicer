@@ -24,11 +24,8 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
         (typically the width of a layer)
     number_of_brim_offsets: int
         Number of brim paths to add.
-
-    Returns
-    -------
-    None
     """
+
     logger.info(
         "Generating brim with layer width: %.2f mm, consisting of %d layers" % (layer_width, number_of_brim_offsets))
 
@@ -92,6 +89,7 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
             brim_layer.paths.append(new_path)
 
     brim_layer.paths.reverse()  # go from outside towards the object
+    brim_layer.calculate_z_bounds()
 
     # (4) --- Add the brim layer to the slicer
     if not has_vertical_layers:

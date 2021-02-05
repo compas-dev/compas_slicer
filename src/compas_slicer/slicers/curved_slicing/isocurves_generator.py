@@ -5,7 +5,7 @@ import logging
 import progressbar
 from compas_slicer.pre_processing import assign_interpolation_distance_to_mesh_vertices
 from compas_slicer.slicers.slice_utilities import ScalarFieldContours
-from compas_slicer.post_processing.sort_paths_per_vertical_segment import get_segments_centroids_list
+from compas_slicer.post_processing.sort_into_vertical_layers import get_vertical_layers_centroids_list
 
 logger = logging.getLogger('logger')
 
@@ -60,7 +60,7 @@ class IsocurvesGenerator:
                             current_segment = self.segments[0]
                         else:  # find the candidate segment for new isocurve
                             centroid = np.mean(np.array(pts), axis=0)
-                            other_centroids = get_segments_centroids_list(self.segments)
+                            other_centroids = get_vertical_layers_centroids_list(self.segments)
                             candidate_segment = self.segments[utils.get_closest_pt_index(centroid, other_centroids)]
                             threshold_max_centroid_dist = 15
                             if np.linalg.norm(candidate_segment.head_centroid - centroid) < threshold_max_centroid_dist:

@@ -12,7 +12,7 @@ def spiralize_contours(slicer):
 
     Parameters
     ----------
-    slicer : :class: 'compas_slicer.slicers.PlanarSlicer'
+    slicer: :class: 'compas_slicer.slicers.PlanarSlicer'
         An instance of the compas_slicer.slicers.PlanarSlicer class.
     """
     # retrieves layer height by subtracting z of first point of layer 1 from layer 0
