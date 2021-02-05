@@ -11,7 +11,7 @@ __all__ = ['sort_into_vertical_layers',
            'get_vertical_layers_centroids_list']
 
 
-def sort_into_vertical_layers(slicer, dist_threshold=30.0, max_paths_per_vertical_layer=None, ):
+def sort_into_vertical_layers(slicer, dist_threshold=30.0, max_paths_per_vertical_layer=None):
     """Sorts the paths from horizontal layers into Vertical Layers.
 
     Vertical Layers are layers at different heights that are grouped together by proximity
@@ -60,11 +60,6 @@ def sort_into_vertical_layers(slicer, dist_threshold=30.0, max_paths_per_vertica
 
     logger.info("Number of vertical_layers: %d" % len(vertical_layers))
     slicer.layers = vertical_layers
-
-    # Updates min_max_z_height attributes
-    for vert_layer in slicer.layers:
-        min_max_z = (vert_layer.paths[0].points[0][2], vert_layer.paths[len(vert_layer.paths)-1].points[0][2])
-        vert_layer.min_max_z_height = min_max_z
 
 
 def get_vertical_layers_centroids_list(vert_layers):

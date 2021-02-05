@@ -32,6 +32,11 @@ def reorder_vertical_layers(slicer, align_with):
 
     logger.info("Re-ordering vertical layers to start with the vertical layer closest to: %s" % align_with)
 
+    for layer in slicer.layers:
+        assert layer.min_max_z_height[0] is not None and layer.min_max_z_height[1] is not None, \
+            "To use the 'reorder_vertical_layers function you need first to calculate the layers' z_bounds. To do " \
+            "that use the function 'Layer.calculate_z_bounds()'"
+
     # group vertical layers based on the min_max_z_height
     grouped_iter = itertools.groupby(slicer.layers, lambda x: x.min_max_z_height)
     grouped_layer_list = [list(group) for _key, group in grouped_iter]
@@ -41,7 +46,7 @@ def reorder_vertical_layers(slicer, align_with):
     for grouped_layers in grouped_layer_list:
         distances = []
         for vert_layer in grouped_layers:
-            # recrate head_centroid_pt as compas.Point
+            # recreate head_centroid_pt as compas.Point
             head_centroid_pt = Point(vert_layer.head_centroid[0], vert_layer.head_centroid[1], vert_layer.head_centroid[2])
             # measure distance
             distances.append(distance_point_point(head_centroid_pt, align_pt))

@@ -47,7 +47,7 @@ def main():
     sort_into_vertical_layers(slicer, max_paths_per_vertical_layer=5)
     reorder_vertical_layers(slicer, align_with="x_axis")
 
-    # Post-procesing
+    # Post-processing
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=5)
     simplify_paths_rdp(slicer, threshold=0.7)
     seams_smooth(slicer, smooth_distance=10)
