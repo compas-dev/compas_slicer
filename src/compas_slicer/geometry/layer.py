@@ -24,7 +24,6 @@ class Layer(object):
     number_of_brim_offsets: int
         The number of brim offsets this layer has (None if no brim).
     """
-
     def __init__(self, paths):
         # check input
         if paths is None:
@@ -77,7 +76,6 @@ class Layer(object):
         -------
         layer
             The constructed layer.
-
         """
         paths_data = data['paths']
         paths = [Path.from_data(paths_data[key]) for key in paths_data]
@@ -93,8 +91,7 @@ class Layer(object):
         Returns
         -------
         dict
-            The layers's data.
-
+            The layer's data.
         """
         data = {'paths': {i: [] for i in range(len(self.paths))},
                 'layer_type': 'horizontal_layer',
@@ -116,7 +113,6 @@ class VerticalLayer(Layer):
     id: int
         Identifier of vertical layer.
     """
-
     def __init__(self, id=0, paths=None):
         Layer.__init__(self, paths=paths)
         self.id = id
@@ -148,8 +144,7 @@ class VerticalLayer(Layer):
         Returns
         -------
         dict
-            The vertical layers's data.
-
+            The vertical layer's data.
         """
         data = {'paths': {i: [] for i in range(len(self.paths))},
                 'min_max_z_height': self.min_max_z_height,
@@ -171,7 +166,6 @@ class VerticalLayer(Layer):
         -------
         layer
             The constructed vertical layer.
-
         """
         paths_data = data['paths']
         paths = [Path.from_data(paths_data[key]) for key in paths_data]
