@@ -39,8 +39,8 @@ class CurvedSlicer(BaseSlicer):
         self.n_multiplier = 1.0
 
     def generate_paths(self):
-        """ Generates curved paths-polylines. """
-        assert self.preprocessor, 'You need to provide a pre-prosessor in order to generate paths.'
+        """ Generates curved paths. """
+        assert self.preprocessor, 'You need to provide a pre-processor in order to generate paths.'
 
         avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='curved_slicing')
         n = find_no_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH, avg_layer_height)
@@ -57,13 +57,7 @@ class CurvedSlicer(BaseSlicer):
                                                                self.preprocessor.target_HIGH)
                 contours = ScalarFieldContours(self.mesh)
                 contours.compute()
-
-                for key in contours.sorted_point_clusters:
-                    pts = contours.sorted_point_clusters[key]
-                    if len(pts) > 2:  # discard curves that are too small
-                        path = Path(pts, is_closed=contours.closed_paths_booleans[key])
-
-                        vertical_layers_manager.add(path)
+                contours.add_to_vertical_layers_manager(vertical_layers_manager)
 
                 bar.update(i)  # advance progress bar
 

@@ -52,14 +52,12 @@ class ScalarFieldSlicer(BaseSlicer):
 
                 contours = ScalarFieldContours(self.mesh)
                 contours.compute()
-
-                for key in contours.sorted_point_clusters:
-                    pts = contours.sorted_point_clusters[key]
-                    if len(pts) > 2:  # discard curves that are too small
-                        path = Path(pts, is_closed=contours.closed_paths_booleans[key])
-
-                        vertical_layers_manager.add(path)
+                contours.add_to_vertical_layers_manager(vertical_layers_manager)
 
                 bar.update(i)  # advance progress bar
 
         self.layers = vertical_layers_manager.layers
+
+
+if __name__ == "__main__":
+    pass
