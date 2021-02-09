@@ -92,7 +92,7 @@ class BasePrintOrganizer(object):
                 for path_key in self.printpoints_dict[layer_key]:
                     for prev, curr in pairwise(self.printpoints_dict[layer_key][path_key]):
                         length = distance_point_point(prev.pt, curr.pt)
-                        total_time += length * curr.velocity * 0.001
+                        total_time += length / curr.velocity
             return total_time
 
     def number_of_paths_on_layer(self, layer_index):
