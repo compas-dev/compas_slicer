@@ -6,7 +6,7 @@ import progressbar
 from compas_slicer.parameters import get_param
 from compas_slicer.pre_processing import assign_interpolation_distance_to_mesh_vertices
 from compas_slicer.slicers.slice_utilities import ScalarFieldContours
-from compas_slicer.slicers.slice_utilities import VerticalLayersManager
+from compas_slicer.geometry import VerticalLayersManager
 
 logger = logging.getLogger('logger')
 

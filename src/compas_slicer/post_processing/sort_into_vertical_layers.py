@@ -1,4 +1,4 @@
-from compas_slicer.slicers.slice_utilities import VerticalLayersManager
+from compas_slicer.geometry import VerticalLayersManager
 import logging
 
 logger = logging.getLogger('logger')
