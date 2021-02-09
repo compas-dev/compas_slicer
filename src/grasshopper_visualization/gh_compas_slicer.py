@@ -5,6 +5,7 @@ from compas.datastructures import Mesh
 import Rhino.Geometry as rg
 from compas_ghpython.artists import MeshArtist
 from compas.geometry import Frame
+from compas_ghpython.utilities import list_to_ghtree
 
 
 #######################################
@@ -15,7 +16,7 @@ def load_slicer(path, folder_name, json_name):
     data = load_json_file(path, folder_name, json_name)
 
     mesh = None
-    paths = []
+    paths_nested_list = []
     are_closed = []
     all_points = []
 
@@ -32,6 +33,7 @@ def load_slicer(path, folder_name, json_name):
             layers_data = data['layers']
 
             for i in range(len(layers_data)):
+                paths_nested_list.append([])  # save each layer on a different list
                 layer_data = layers_data[str(i)]
                 paths_data = layer_data['paths']
 
@@ -46,20 +48,22 @@ def load_slicer(path, folder_name, json_name):
                         pt = rs.AddPoint(pt[0], pt[1], pt[2])  # re-create points
                         pts.append(pt)
                     all_points.extend(pts)
-                    # path = rs.AddPolyline(pts)
+                    path = rs.AddPolyline(pts)
 
-                    # create contour per layer
-                    try:
-                        path = rs.AddPolyline(pts)
-                    except:
-                        print('Attention! Could not add polyline at layer %d, path %d with %d points ' % (
-                            i, j, len(path_data['points'])))
+                    # # create contour per layer
+                    # try:
+                    #     path = rs.AddPolyline(pts)
+                    # except:
+                    #     print('Attention! Could not add polyline at layer %d, path %d with %d points ' % (
+                    #         i, j, len(path_data['points'])))
 
-                    paths.append(path)
+                    paths_nested_list[-1].append(path)
         else:
             print('No layers have been saved in the json file. Is this the correct json?')
 
-    return mesh, paths, are_closed, all_points
+    print('The slicer contains %d layers. ' % len(paths_nested_list))
+    paths_nested_list = list_to_ghtree(paths_nested_list)
+    return mesh, paths_nested_list, are_closed, all_points
 
 
 #######################################

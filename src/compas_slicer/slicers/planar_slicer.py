@@ -23,6 +23,7 @@ class PlanarSlicer(BaseSlicer):
         Distance between layers (slices).
     """
     def __init__(self, mesh, slicer_type="default", layer_height=2.0):
+        logger.info('PlanarSlicer')
         BaseSlicer.__init__(self, mesh)
 
         self.layer_height = layer_height
