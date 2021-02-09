@@ -32,7 +32,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .curved_slicing import *  # noqa: F401 E402 F403
 from .base_slicer import *  # noqa: F401 E402 F403
 from .planar_slicer import *  # noqa: F401 E402 F403
 from .curved_slicer import *  # noqa: F401 E402 F403

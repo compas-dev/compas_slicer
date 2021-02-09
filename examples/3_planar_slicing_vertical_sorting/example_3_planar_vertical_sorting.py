@@ -44,7 +44,7 @@ def main():
     slicer.slice_model()
 
     # Sorting into vertical layers and reordering
-    sort_into_vertical_layers(slicer, max_paths_per_vertical_layer=5)
+    sort_into_vertical_layers(slicer, max_paths_per_layer=10)
     reorder_vertical_layers(slicer, align_with="x_axis")
 
     # Post-processing

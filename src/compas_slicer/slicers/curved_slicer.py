@@ -1,9 +1,12 @@
+import numpy as np
 from compas_slicer.slicers import BaseSlicer
-
-from compas_slicer.slicers.curved_slicing import find_desired_number_of_isocurves
+from compas_slicer.geometry import Path
 import logging
-from compas_slicer.slicers.curved_slicing import IsocurvesGenerator
+import progressbar
 from compas_slicer.parameters import get_param
+from compas_slicer.pre_processing import assign_interpolation_distance_to_mesh_vertices
+from compas_slicer.slicers.slice_utilities import ScalarFieldContours
+from compas_slicer.slicers.slice_utilities import VerticalLayersManager
 
 logger = logging.getLogger('logger')
 
@@ -26,8 +29,7 @@ class CurvedSlicer(BaseSlicer):
 
     def __init__(self, mesh, preprocessor=None, parameters=None):
         BaseSlicer.__init__(self, mesh)
-        if preprocessor:
-            # make sure the mesh of the preprocessor and the mesh of the slicer match
+        if preprocessor:  # make sure the mesh of the preprocessor and the mesh of the slicer match
             assert len(list(mesh.vertices())) == len(list(preprocessor.mesh.vertices()))
 
         self.parameters = parameters
@@ -40,13 +42,49 @@ class CurvedSlicer(BaseSlicer):
         assert self.parameters, 'You need to provide a parameters dict in order to generate paths.'
 
         avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='curved_slicing')
-        n = find_desired_number_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH,
-                                             avg_layer_height)
+        n = find_no_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH, avg_layer_height)
+        params_list = get_interpolation_parameters_list(n)
         logger.info('%d paths will be generated' % n)
 
-        isocurves_generator = IsocurvesGenerator(self.mesh, self.preprocessor.target_LOW,
-                                                 self.preprocessor.target_HIGH, n * self.n_multiplier)
-        self.layers = isocurves_generator.segments
+        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='curved_slicing')
+        vertical_layers_manager = VerticalLayersManager(max_dist)
+
+        # create paths + layers
+        with progressbar.ProgressBar(max_value=len(params_list)) as bar:
+            for i, param in enumerate(params_list):
+                assign_interpolation_distance_to_mesh_vertices(self.mesh, param, self.preprocessor.target_LOW,
+                                                               self.preprocessor.target_HIGH)
+                contours = ScalarFieldContours(self.mesh)
+                contours.compute()
+
+                for key in contours.sorted_point_clusters:
+                    pts = contours.sorted_point_clusters[key]
+                    if len(pts) > 2:  # discard curves that are too small
+                        path = Path(pts, is_closed=contours.closed_paths_booleans[key])
+
+                        vertical_layers_manager.add(path)
+
+                bar.update(i)  # advance progress bar
+
+        self.layers = vertical_layers_manager.layers
+
+
+def find_no_of_isocurves(target_0, target_1, avg_layer_height=1.1):
+    """ Returns the average number of isocurves that can cover the get_distance from target_0 to target_1. """
+    extreme_ds0 = target_0.get_extreme_distances_from_other_target(target_1)
+    extreme_ds1 = target_1.get_extreme_distances_from_other_target(target_0)
+    number_of_curves = max(max(extreme_ds0), max(extreme_ds1)) / avg_layer_height
+    return max(1, int(number_of_curves))
+
+
+def get_interpolation_parameters_list(number_of_curves):
+    """ Returns a list of #number_of_curves floats from 0.001 to 0.997. """
+    t_list = [0.001]
+    a = list(np.arange(number_of_curves + 1) / (number_of_curves + 1))
+    a.pop(0)
+    t_list.extend(a)
+    t_list.append(0.997)
+    return t_list
 
 
 if __name__ == "__main__":

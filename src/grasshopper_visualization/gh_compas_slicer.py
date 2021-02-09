@@ -46,14 +46,14 @@ def load_slicer(path, folder_name, json_name):
                         pt = rs.AddPoint(pt[0], pt[1], pt[2])  # re-create points
                         pts.append(pt)
                     all_points.extend(pts)
-                    path = rs.AddPolyline(pts)
+                    # path = rs.AddPolyline(pts)
 
-                    # # create contour per layer
-                    # try:
-                    #     path = rs.AddPolyline(pts)
-                    # except:
-                    #     print('Attention! Could not add polyline at layer %d, path %d with %d points ' % (
-                    #         i, j, len(path_data['points'])))
+                    # create contour per layer
+                    try:
+                        path = rs.AddPolyline(pts)
+                    except:
+                        print('Attention! Could not add polyline at layer %d, path %d with %d points ' % (
+                            i, j, len(path_data['points'])))
 
                     paths.append(path)
         else:
@@ -256,7 +256,7 @@ def create_targets(mesh, targets, resolution_mult, path, folder_name, json_name)
         closest_vi = get_closest_point_index(p, vs)
         if closest_vi not in vertex_indices:
             ds_from_targets = [distance_of_pt_from_crv(vs[closest_vi], target) for target in targets]
-            if min(ds_from_targets) < 1:  # hardcoded threshold value
+            if min(ds_from_targets) < 0.1:  # hardcoded threshold value
                 vertices.append(vs[closest_vi])
                 vertex_indices.append(closest_vi)
 

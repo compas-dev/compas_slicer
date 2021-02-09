@@ -70,6 +70,7 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
             #  iterate through a list of brim paths
             clipper_points_per_brim_path = []
 
+
             #  gets result
             result = scale_from_clipper(pco.Execute((i) * layer_width * SCALING_FACTOR), SCALING_FACTOR)
 

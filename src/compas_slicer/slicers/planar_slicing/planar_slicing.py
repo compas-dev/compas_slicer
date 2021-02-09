@@ -27,7 +27,7 @@ def create_planar_paths(mesh, planes):
     with progressbar.ProgressBar(max_value=len(planes)) as bar:
         for i, plane in enumerate(planes):
 
-            intersection = IntersectionCurveMeshPlane(mesh, plane)
+            intersection = PlanarContours(mesh, plane)
             intersection.compute()
 
             paths = []
@@ -44,7 +44,7 @@ def create_planar_paths(mesh, planes):
     return layers
 
 
-class IntersectionCurveMeshPlane(ContoursBase):
+class PlanarContours(ContoursBase):
     """
     Finds the iso-contours of the function f(x) = vertex_coords.z - plane.z
     on the mesh.
