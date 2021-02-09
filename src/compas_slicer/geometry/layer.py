@@ -58,8 +58,8 @@ class Layer(object):
     def calculate_z_bounds(self):
         """ Fills in the attribute self.min_max_z_height. """
         assert len(self.paths) > 0, "You cannot calculate z_bounds because the list of paths is empty."
-        z_min = 9999999  # very big number
-        z_max = -9999999  # very small number
+        z_min = 2 ** 32  # very big number
+        z_max = -2 ** 32  # very small number
         for path in self.paths:
             for pt in path.points:
                 z_min = min(z_min, pt[2])
