@@ -22,5 +22,5 @@ default_parameters = \
         'uneven_upper_targets_offset': 0,
         'layer_heights_smoothing': [False, 5, 0.2],
         'up_vectors_smoothing': [True, 2, 0.2],
-        'vertical_layers_max_centroid_dist': 15.0
+        'vertical_layers_max_centroid_dist': 25.0
     }

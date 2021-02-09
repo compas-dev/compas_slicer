@@ -193,7 +193,7 @@ class VerticalLayersManager:
         If None, then the vertical layer has an unlimited number of layers.
     """
 
-    def __init__(self, threshold_max_centroid_dist=15.0, max_paths_per_layer=None):
+    def __init__(self, threshold_max_centroid_dist=25.0, max_paths_per_layer=None):
         self.layers = [VerticalLayer(id=0)]  # vertical_layers_print_data that contain isocurves (compas_slicer.Path)
         self.threshold_max_centroid_dist = threshold_max_centroid_dist
         self.max_paths_per_layer = max_paths_per_layer
