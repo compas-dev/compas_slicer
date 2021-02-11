@@ -25,6 +25,8 @@ class Layer(object):
         True if this layer is a brim layer.
     number_of_brim_offsets: int
         The number of brim offsets this layer has (None if no brim).
+    is_raft: bool
+        True if this layer is a raft layer.
     """
 
     def __init__(self, paths):
@@ -42,6 +44,9 @@ class Layer(object):
         # brim
         self.is_brim = False
         self.number_of_brim_offsets = None
+
+        # raft
+        self.is_raft = False
 
     def __repr__(self):
         no_of_paths = len(self.paths) if self.paths else 0

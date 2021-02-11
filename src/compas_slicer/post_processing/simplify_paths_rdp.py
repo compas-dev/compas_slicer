@@ -31,11 +31,12 @@ def simplify_paths_rdp(slicer, threshold):
 
     with progressbar.ProgressBar(max_value=len(slicer.layers)) as bar:
         for i, layer in enumerate(slicer.layers):
-            for path in layer.paths:
-                pts_rdp = rdp.rdp(np.array(path.points), epsilon=threshold)
-                path.points = [Point(pt[0], pt[1], pt[2]) for pt in pts_rdp]
-                remaining_pts_num += len(path.points)
-                bar.update(i)
+            if not layer.is_raft:  # no simplification necessary for raft layer
+                for path in layer.paths:
+                    pts_rdp = rdp.rdp(np.array(path.points), epsilon=threshold)
+                    path.points = [Point(pt[0], pt[1], pt[2]) for pt in pts_rdp]
+                    remaining_pts_num += len(path.points)
+                    bar.update(i)
         logger.info('%d Points remaining after rdp simplification' % remaining_pts_num)
 
 
