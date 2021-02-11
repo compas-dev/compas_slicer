@@ -95,20 +95,15 @@
         
         
         <h1>Source code for compas_slicer.post_processing.sort_into_vertical_layers</h1><div class="highlight"><pre><code>
-<span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">distance_point_point</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.geometry</span> <span class="kn">import</span> <span class="n">VerticalLayer</span>
-<span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
+<span></span><span class="kn">from</span> <span class="nn">compas_slicer.geometry</span> <span class="kn">import</span> <span class="n">VerticalLayersManager</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_into_vertical_layers&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;get_vertical_layers_centroids_list&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sort_into_vertical_layers&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="sort_into_vertical_layers"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.sort_into_vertical_layers.html#compas_slicer.post_processing.sort_into_vertical_layers">[docs]</a><span class="k">def</span> <span class="nf">sort_into_vertical_layers</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">max_paths_per_vertical_layer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="sort_into_vertical_layers"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.sort_into_vertical_layers.html#compas_slicer.post_processing.sort_into_vertical_layers">[docs]</a><span class="k">def</span> <span class="nf">sort_into_vertical_layers</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">max_paths_per_layer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Sorts the paths from horizontal layers into Vertical Layers.</span>
 
 <span class="sd">    Vertical Layers are layers at different heights that are grouped together by proximity</span>
@@ -120,52 +115,22 @@
 <span class="sd">    slicer: :class:`compas_slicer.slicers.BaseSlicer`</span>
 <span class="sd">        An instance of one of the compas_slicer.slicers classes.</span>
 <span class="sd">    dist_threshold: float</span>
-<span class="sd">        The maximum get_distance that the centroids of two successive paths can have to belong in the same group</span>
+<span class="sd">        The maximum get_distance that the centroids of two successive paths can have to belong in the same VerticalLayer</span>
 <span class="sd">        Recommended value, slightly bigger than the layer height</span>
-<span class="sd">    max_layers_per_segment: int</span>
-<span class="sd">        Maximum number of layers that a vertical layer can consist of</span>
-<span class="sd">        If None, then the vertical layer has an unlimited number of layers</span>
-
+<span class="sd">    max_paths_per_layer: int</span>
+<span class="sd">        Maximum number of layers that a vertical layer can consist of.</span>
+<span class="sd">        If None, then the vertical layer has an unlimited number of layers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Sorting into Vertical Layers&quot;</span><span class="p">)</span>
 
-    <span class="n">vertical_layers</span> <span class="o">=</span> <span class="p">[</span><span class="n">VerticalLayer</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>  <span class="c1"># vertical_layers that contain isocurves</span>
+    <span class="n">vertical_layers_manager</span> <span class="o">=</span> <span class="n">VerticalLayersManager</span><span class="p">(</span><span class="n">dist_threshold</span><span class="p">,</span> <span class="n">max_paths_per_layer</span><span class="p">)</span>
+
     <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
-            <span class="n">current_segment</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">vertical_layers_manager</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
-            <span class="c1">#  Find an eligible segment for contour (called current_segment)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertical_layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># first contour</span>
-                <span class="n">current_segment</span> <span class="o">=</span> <span class="n">vertical_layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>  <span class="c1"># find the candidate segment for new isocurve</span>
-                <span class="n">contour_centroid</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
-                <span class="n">other_centroids</span> <span class="o">=</span> <span class="n">get_vertical_layers_centroids_list</span><span class="p">(</span><span class="n">vertical_layers</span><span class="p">)</span>
-                <span class="n">candidate_segment</span> <span class="o">=</span> <span class="n">vertical_layers</span><span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">get_closest_pt_index</span><span class="p">(</span><span class="n">contour_centroid</span><span class="p">,</span> <span class="n">other_centroids</span><span class="p">)]</span>
-                <span class="k">if</span> <span class="n">distance_point_point</span><span class="p">(</span><span class="n">candidate_segment</span><span class="o">.</span><span class="n">head_centroid</span><span class="p">,</span> <span class="n">contour_centroid</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dist_threshold</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">max_paths_per_vertical_layer</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_segment</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_paths_per_vertical_layer</span><span class="p">:</span>
-                            <span class="n">current_segment</span> <span class="o">=</span> <span class="n">candidate_segment</span>
-                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># then no restriction in the number of layers</span>
-                        <span class="n">current_segment</span> <span class="o">=</span> <span class="n">candidate_segment</span>
-
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">current_segment</span><span class="p">:</span>  <span class="c1"># then create new segment</span>
-                    <span class="n">current_segment</span> <span class="o">=</span> <span class="n">VerticalLayer</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">vertical_layers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">vertical_layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_segment</span><span class="p">)</span>
-
-            <span class="c1">#  Assign contour to current segment</span>
-            <span class="n">current_segment</span><span class="o">.</span><span class="n">append_</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of vertical_layers: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertical_layers</span><span class="p">))</span>
-    <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">vertical_layers</span></div>
-
-
-<span class="k">def</span> <span class="nf">get_vertical_layers_centroids_list</span><span class="p">(</span><span class="n">vert_layers</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Returns a list with points that are the centroids of the heads of all vertical_layers_print_data. The head</span>
-<span class="sd">    of a vertical_layer is its last path. &quot;&quot;&quot;</span>
-    <span class="n">head_centroids</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">vert_layer</span> <span class="ow">in</span> <span class="n">vert_layers</span><span class="p">:</span>
-        <span class="n">head_centroids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vert_layer</span><span class="o">.</span><span class="n">head_centroid</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">head_centroids</span>
+    <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">vertical_layers_manager</span><span class="o">.</span><span class="n">layers</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of vertical_layers: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">))</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

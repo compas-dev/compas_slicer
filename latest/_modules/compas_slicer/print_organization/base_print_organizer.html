@@ -111,7 +111,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for organizing the printing process.</span>
 <span class="sd">    This class is meant to be extended for the implementation of the various print organizers.</span>
-<span class="sd">    Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or CurvedPrintOrganizer.</span>
+<span class="sd">    Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or InterpolationPrintOrganizer.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -273,9 +273,13 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;     </span><span class="si">% s</span><span class="s1"> : </span><span class="si">% s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">ppts_attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Toolpath length: </span><span class="si">%d</span><span class="s2"> mm&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_length_of_paths</span><span class="p">)</span>
 
-        <span class="n">minutes</span><span class="p">,</span> <span class="n">sec</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_print_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
-        <span class="n">hour</span><span class="p">,</span> <span class="n">minutes</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">minutes</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total print time: </span><span class="si">%d</span><span class="s2"> hours, </span><span class="si">%d</span><span class="s2"> minutes, </span><span class="si">%d</span><span class="s2"> seconds&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hour</span><span class="p">,</span> <span class="n">minutes</span><span class="p">,</span> <span class="n">sec</span><span class="p">))</span>
+        <span class="n">print_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_print_time</span>
+        <span class="k">if</span> <span class="n">print_time</span><span class="p">:</span>
+            <span class="n">minutes</span><span class="p">,</span> <span class="n">sec</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_print_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+            <span class="n">hour</span><span class="p">,</span> <span class="n">minutes</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">minutes</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total print time: </span><span class="si">%d</span><span class="s2"> hours, </span><span class="si">%d</span><span class="s2"> minutes, </span><span class="si">%d</span><span class="s2"> seconds&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hour</span><span class="p">,</span> <span class="n">minutes</span><span class="p">,</span> <span class="n">sec</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Print Velocity has not been assigned, thus print time is not calculated.&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.visualize_on_viewer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer.html#compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_on_viewer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_polyline</span><span class="p">,</span> <span class="n">visualize_printpoints</span><span class="p">):</span>

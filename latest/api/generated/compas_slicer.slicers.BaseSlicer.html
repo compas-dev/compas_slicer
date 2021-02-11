@@ -109,9 +109,9 @@
 <em class="property">class </em><code class="sig-prename descclassname">compas_slicer.slicers.</code><code class="sig-name descname">BaseSlicer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mesh</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/base_slicer.html#BaseSlicer"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>This is an organizational class that holds all the information for the slice process.
-Do not use this class directly in your python code. Instead use PlanarSlicer or CurvedSlicer.
+Do not use this class directly in your python code. Instead use PlanarSlicer or InterpolationSlicer.
 This class is meant to be extended for the implementation of the various slicers.
-See <code class="xref py py-class docutils literal notranslate"><span class="pre">compas.slicer.slicers.PlanarSlicer</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">compas.slicer.slicers.CurvedSlicer</span></code> as examples.</p>
+See <code class="xref py py-class docutils literal notranslate"><span class="pre">compas.slicer.slicers.PlanarSlicer</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">compas.slicer.slicers.InterpolationSlicer</span></code> as examples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><p><strong>mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">compas.datastructures.Mesh</span></code>) – Input mesh, has to be a triangular mesh (i.e. no quads or n-gons allowed)</p>

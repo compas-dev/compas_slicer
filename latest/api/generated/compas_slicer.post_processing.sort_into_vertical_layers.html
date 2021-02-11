@@ -106,7 +106,7 @@
 <h1>sort_into_vertical_layers</h1>
 <dl class="py function">
 <dt id="compas_slicer.post_processing.sort_into_vertical_layers">
-<code class="sig-prename descclassname">compas_slicer.post_processing.</code><code class="sig-name descname">sort_into_vertical_layers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">slicer</span></em>, <em class="sig-param"><span class="n">dist_threshold</span><span class="o">=</span><span class="default_value">30.0</span></em>, <em class="sig-param"><span class="n">max_paths_per_vertical_layer</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/post_processing/sort_into_vertical_layers.html#sort_into_vertical_layers"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">compas_slicer.post_processing.</code><code class="sig-name descname">sort_into_vertical_layers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">slicer</span></em>, <em class="sig-param"><span class="n">dist_threshold</span><span class="o">=</span><span class="default_value">25.0</span></em>, <em class="sig-param"><span class="n">max_paths_per_layer</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/post_processing/sort_into_vertical_layers.html#sort_into_vertical_layers"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Sorts the paths from horizontal layers into Vertical Layers.</p>
 <p>Vertical Layers are layers at different heights that are grouped together by proximity
 of their center points. Can be useful for reducing travel time in a robotic printing
@@ -115,10 +115,10 @@ process.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>slicer</strong> (<a class="reference internal" href="compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer" title="compas_slicer.slicers.BaseSlicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.BaseSlicer</span></code></a>) – An instance of one of the compas_slicer.slicers classes.</p></li>
-<li><p><strong>dist_threshold</strong> (<em>float</em>) – The maximum get_distance that the centroids of two successive paths can have to belong in the same group
+<li><p><strong>dist_threshold</strong> (<em>float</em>) – The maximum get_distance that the centroids of two successive paths can have to belong in the same VerticalLayer
 Recommended value, slightly bigger than the layer height</p></li>
-<li><p><strong>max_layers_per_segment</strong> (<em>int</em>) – Maximum number of layers that a vertical layer can consist of
-If None, then the vertical layer has an unlimited number of layers</p></li>
+<li><p><strong>max_paths_per_layer</strong> (<em>int</em>) – Maximum number of layers that a vertical layer can consist of.
+If None, then the vertical layer has an unlimited number of layers.</p></li>
 </ul>
 </dd>
 </dl>
