@@ -11,19 +11,6 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 
 **Added**
 
-**Changed**
-
-**Fixed**
-
-**Deprecated**
-
-**Removed**
-
-2021-02-12
-----------
-
-**Added**
-
 * Generate raft functionality
 
 * is_raft parameter to the Layer
