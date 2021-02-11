@@ -20,9 +20,9 @@ __all__ = ['BaseSlicer']
 class BaseSlicer(object):
     """
     This is an organizational class that holds all the information for the slice process.
-    Do not use this class directly in your python code. Instead use PlanarSlicer or CurvedSlicer.
+    Do not use this class directly in your python code. Instead use PlanarSlicer or InterpolationSlicer.
     This class is meant to be extended for the implementation of the various slicers.
-    See :class:`compas.slicer.slicers.PlanarSlicer` and :class:`compas.slicer.slicers.CurvedSlicer` as examples.
+    See :class:`compas.slicer.slicers.PlanarSlicer` and :class:`compas.slicer.slicers.InterpolationSlicer` as examples.
 
     Attributes
     ----------

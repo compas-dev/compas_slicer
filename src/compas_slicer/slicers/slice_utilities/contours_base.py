@@ -3,6 +3,7 @@ from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_edges, 
 import compas_slicer.utilities as utils
 import logging
 from abc import abstractmethod
+from compas_slicer.geometry import Path
 
 logger = logging.getLogger('logger')
 
@@ -98,3 +99,11 @@ class ContoursBase(object):
         """ Finds the position of the zero-crossing on the edge u,v. """
         # to be implemented by the inheriting classes
         pass
+
+    def add_to_vertical_layers_manager(self, vertical_layers_manager):
+        for key in self.sorted_point_clusters:
+            pts = self.sorted_point_clusters[key]
+            if len(pts) > 3:  # discard curves that are too small
+                path = Path(pts, is_closed=self.closed_paths_booleans[key])
+
+                vertical_layers_manager.add(path)

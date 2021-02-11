@@ -14,7 +14,7 @@ class BasePrintOrganizer(object):
     """
     Base class for organizing the printing process.
     This class is meant to be extended for the implementation of the various print organizers.
-    Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or CurvedPrintOrganizer.
+    Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or InterpolationPrintOrganizer.
 
     Attributes
     ----------
@@ -176,9 +176,13 @@ class BasePrintOrganizer(object):
             print('     % s : % s' % (str(key), ppts_attributes[key]))
         print("Toolpath length: %d mm" % self.total_length_of_paths)
 
-        minutes, sec = divmod(self.total_print_time, 60)
-        hour, minutes = divmod(minutes, 60)
-        print("Total print time: %d hours, %d minutes, %d seconds" % (hour, minutes, sec))
+        print_time = self.total_print_time
+        if print_time:
+            minutes, sec = divmod(self.total_print_time, 60)
+            hour, minutes = divmod(minutes, 60)
+            print("Total print time: %d hours, %d minutes, %d seconds" % (hour, minutes, sec))
+        else:
+            print("Print Velocity has not been assigned, thus print time is not calculated.")
         print("")
 
     def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):

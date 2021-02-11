@@ -22,9 +22,13 @@ def get_param(params, key, defaults_type):
     if key in params:
         return params[key]
     else:
-        if defaults_type == 'curved_slicing':
-            return compas_slicer.parameters.curved_slicing_default_param(key)
+        if defaults_type == 'interpolation_slicing':
+            return compas_slicer.parameters.interpolation_slicing_default_param(key)
         elif defaults_type == 'gcode':
+            return compas_slicer.parameters.gcode_default_param(key)
+        elif defaults_type == 'layers':
+            return compas_slicer.parameters.layers_default_param(key)
+        elif defaults_type == 'print_organization':
             return compas_slicer.parameters.gcode_default_param(key)
         else:
             raise ValueError('The specified parameter type : ' + str(defaults_type) + ' does not exist.')

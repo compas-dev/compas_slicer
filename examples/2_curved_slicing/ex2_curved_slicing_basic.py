@@ -2,13 +2,13 @@ import os
 from compas.datastructures import Mesh
 import logging
 import compas_slicer.utilities as utils
-from compas_slicer.slicers import CurvedSlicer
+from compas_slicer.slicers import InterpolationSlicer
 from compas_slicer.post_processing import simplify_paths_rdp
-from compas_slicer.pre_processing import CurvedSlicingPreprocessor
+from compas_slicer.pre_processing import InterpolationSlicingPreprocessor
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.pre_processing import create_mesh_boundary_attributes
-from compas_slicer.print_organization import CurvedPrintOrganizer
+from compas_slicer.print_organization import InterpolationPrintOrganizer
 from compas_slicer.post_processing import seams_smooth
 from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.post_processing import generate_brim
@@ -41,7 +41,7 @@ def main():
         'up_vectors_smoothing': [True, 5, 0.2]  # boolean, iterations, strength
     }
 
-    preprocessor = CurvedSlicingPreprocessor(mesh, parameters, DATA_PATH)
+    preprocessor = InterpolationSlicingPreprocessor(mesh, parameters, DATA_PATH)
     preprocessor.create_compound_targets()
     g_eval = preprocessor.create_gradient_evaluation(norm_filename='gradient_norm.json', g_filename='gradient.json',
                                                      target_1=preprocessor.target_LOW,
@@ -49,7 +49,7 @@ def main():
     preprocessor.find_critical_points(g_eval, output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
 
     # --- slicing
-    slicer = CurvedSlicer(mesh, preprocessor, parameters)
+    slicer = InterpolationSlicer(mesh, preprocessor, parameters)
     slicer.slice_model()  # compute_norm_of_gradient contours
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=5)
     seams_smooth(slicer, smooth_distance=10)
@@ -59,7 +59,7 @@ def main():
     utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer.json')
 
     # ### --- Print organizer
-    print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
+    print_organizer = InterpolationPrintOrganizer(slicer, parameters, DATA_PATH)
     print_organizer.create_printpoints()
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)

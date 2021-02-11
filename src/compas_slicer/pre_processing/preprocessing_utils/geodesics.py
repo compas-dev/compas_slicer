@@ -2,7 +2,7 @@ import numpy as np
 import logging
 import compas_slicer.utilities as utils
 from compas.plugins import PluginNotInstalledError
-from compas_slicer.pre_processing.curved_slicing_preprocessing.gradient import get_scalar_field_from_gradient, \
+from compas_slicer.pre_processing.preprocessing_utils.gradient import get_scalar_field_from_gradient, \
     get_face_gradient_from_scalar_field, normalize_gradient
 import scipy
 import math

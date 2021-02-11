@@ -4,12 +4,12 @@ import numpy as np
 import copy
 import compas
 import compas_slicer.utilities as utils
-from compas_slicer.pre_processing.curved_slicing_preprocessing import restore_mesh_attributes, save_vertex_attributes
+from compas_slicer.pre_processing.preprocessing_utils import restore_mesh_attributes, save_vertex_attributes
 from compas.datastructures import Mesh
-from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_interpolation_distance_to_mesh_vertex
+from compas_slicer.pre_processing.preprocessing_utils import assign_interpolation_distance_to_mesh_vertex
 from compas_slicer.slicers.slice_utilities import ScalarFieldContours
-from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_interpolation_distance_to_mesh_vertices
-from compas_slicer.pre_processing.curved_slicing_preprocessing import GradientEvaluation
+from compas_slicer.pre_processing.preprocessing_utils import assign_interpolation_distance_to_mesh_vertices
+from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
 from compas.geometry import Line, distance_point_point_sqrd, project_point_line
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()

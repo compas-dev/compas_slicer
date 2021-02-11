@@ -19,6 +19,35 @@ Unreleased
 
 **Removed**
 
+
+2021-02-11
+----------
+
+**Added**
+
+* UVcontours, UVslicer
+
+* VerticalLayersManager
+
+**Changed**
+
+* Renamed the curved_slicer and all processes named after that (i.e. curved_preprocessor, curved_slicing_parameters, curved_print_organizer etc) to interpolation_slicer. These changes make this PR a breaking change.
+
+* Reorganized the parameters folder. A lot of parameters where considered 'curved_slicing_parameters' although they were more general. So I broke those down into separate files. More parameters will be added in the future to those files.
+**Fixed**
+
+* Some documentation
+
+* Slicer printout_info bug
+
+**Deprecated**
+
+**Removed**
+
+* folder slicers.curved_slicing and all its contents.
+
+
+
 2021-02-03
 ----------
 

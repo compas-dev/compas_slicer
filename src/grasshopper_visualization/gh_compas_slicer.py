@@ -5,6 +5,7 @@ from compas.datastructures import Mesh
 import Rhino.Geometry as rg
 from compas_ghpython.artists import MeshArtist
 from compas.geometry import Frame
+from compas_ghpython.utilities import list_to_ghtree
 
 
 #######################################
@@ -15,7 +16,7 @@ def load_slicer(path, folder_name, json_name):
     data = load_json_file(path, folder_name, json_name)
 
     mesh = None
-    paths = []
+    paths_nested_list = []
     are_closed = []
     all_points = []
 
@@ -32,6 +33,7 @@ def load_slicer(path, folder_name, json_name):
             layers_data = data['layers']
 
             for i in range(len(layers_data)):
+                paths_nested_list.append([])  # save each layer on a different list
                 layer_data = layers_data[str(i)]
                 paths_data = layer_data['paths']
 
@@ -55,11 +57,13 @@ def load_slicer(path, folder_name, json_name):
                     #     print('Attention! Could not add polyline at layer %d, path %d with %d points ' % (
                     #         i, j, len(path_data['points'])))
 
-                    paths.append(path)
+                    paths_nested_list[-1].append(path)
         else:
             print('No layers have been saved in the json file. Is this the correct json?')
 
-    return mesh, paths, are_closed, all_points
+    print('The slicer contains %d layers. ' % len(paths_nested_list))
+    paths_nested_list = list_to_ghtree(paths_nested_list)
+    return mesh, paths_nested_list, are_closed, all_points
 
 
 #######################################
@@ -256,7 +260,7 @@ def create_targets(mesh, targets, resolution_mult, path, folder_name, json_name)
         closest_vi = get_closest_point_index(p, vs)
         if closest_vi not in vertex_indices:
             ds_from_targets = [distance_of_pt_from_crv(vs[closest_vi], target) for target in targets]
-            if min(ds_from_targets) < 1:  # hardcoded threshold value
+            if min(ds_from_targets) < 0.1:  # hardcoded threshold value
                 vertices.append(vs[closest_vi])
                 vertex_indices.append(closest_vi)
 

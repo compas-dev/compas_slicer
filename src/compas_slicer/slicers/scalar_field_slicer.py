@@ -2,7 +2,9 @@ import numpy as np
 from compas_slicer.slicers import BaseSlicer
 import logging
 from compas_slicer.slicers.slice_utilities import ScalarFieldContours
-from compas_slicer.geometry import VerticalLayer, Path
+import progressbar
+from compas_slicer.geometry import VerticalLayersManager
+from compas_slicer.parameters import get_param
 
 logger = logging.getLogger('logger')
 
@@ -23,11 +25,14 @@ class ScalarFieldSlicer(BaseSlicer):
     no_of_isocurves: int, how many isocontours to be generated
     """
 
-    def __init__(self, mesh, scalar_field, no_of_isocurves):
-        BaseSlicer.__init__(self, mesh)
-        self.no_of_isocurves = no_of_isocurves
+    def __init__(self, mesh, scalar_field, no_of_isocurves, parameters=None):
         logger.info('ScalarFieldSlicer')
+        BaseSlicer.__init__(self, mesh)
+
+        self.no_of_isocurves = no_of_isocurves
         self.scalar_field = list(np.array(scalar_field) - np.max(np.array(scalar_field)))
+        self.parameters = parameters if parameters else {}
+
         mesh.update_default_vertex_attributes({'scalar_field': 0})
 
     def generate_paths(self):
@@ -35,16 +40,23 @@ class ScalarFieldSlicer(BaseSlicer):
         start_domain, end_domain = min(self.scalar_field), max(self.scalar_field)
         step = (end_domain - start_domain) / (self.no_of_isocurves + 1)
 
-        paths = []
-        for i in range(1, self.no_of_isocurves + 1):
-            for vkey, data in self.mesh.vertices(data=True):
-                data['scalar_field'] = self.scalar_field[vkey] + i * step
+        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='layers')
+        vertical_layers_manager = VerticalLayersManager(max_dist)
 
-            zero_contours = ScalarFieldContours(self.mesh)
-            zero_contours.compute()
+        # create paths + layers
+        with progressbar.ProgressBar(max_value=self.no_of_isocurves) as bar:
+            for i in range(1, self.no_of_isocurves + 1):
+                for vkey, data in self.mesh.vertices(data=True):
+                    data['scalar_field'] = self.scalar_field[vkey] + i * step
 
-            for key in zero_contours.sorted_point_clusters:
-                pts = zero_contours.sorted_point_clusters[key]
-                paths.append(Path(pts, is_closed=zero_contours.closed_paths_booleans[key]))
+                contours = ScalarFieldContours(self.mesh)
+                contours.compute()
+                contours.add_to_vertical_layers_manager(vertical_layers_manager)
 
-        self.layers.append(VerticalLayer(paths=paths))
+                bar.update(i)  # advance progress bar
+
+        self.layers = vertical_layers_manager.layers
+
+
+if __name__ == "__main__":
+    pass

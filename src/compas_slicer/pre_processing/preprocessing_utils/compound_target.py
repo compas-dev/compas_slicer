@@ -5,7 +5,7 @@ import compas_slicer.utilities as utils
 import logging
 import networkx as nx
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
-from compas_slicer.pre_processing.curved_slicing_preprocessing.geodesics import get_igl_EXACT_geodesic_distances, \
+from compas_slicer.pre_processing.preprocessing_utils.geodesics import get_igl_EXACT_geodesic_distances, \
     get_custom_HEAT_geodesic_distances
 
 import statistics

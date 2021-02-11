@@ -4,7 +4,7 @@ import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintPoint
 import progressbar
 import logging
-from compas_slicer.pre_processing.curved_slicing_preprocessing import GradientEvaluation
+from compas_slicer.pre_processing import GradientEvaluation
 from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
 
 logger = logging.getLogger('logger')

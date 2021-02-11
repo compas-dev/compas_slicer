@@ -3,11 +3,11 @@ from compas.datastructures import Mesh
 import logging
 from compas.geometry import Point
 import compas_slicer.utilities as utils
-from compas_slicer.slicers import CurvedSlicer, BaseSlicer
+from compas_slicer.slicers import InterpolationSlicer, BaseSlicer
 from compas_slicer.post_processing import simplify_paths_rdp
-from compas_slicer.pre_processing import CurvedSlicingPreprocessor
+from compas_slicer.pre_processing import InterpolationSlicingPreprocessor
 from compas_slicer.pre_processing import create_mesh_boundary_attributes
-from compas_slicer.print_organization import CurvedPrintOrganizer
+from compas_slicer.print_organization import InterpolationPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.post_processing import generate_brim
@@ -48,7 +48,7 @@ def main():
     create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)
 
     # --- Create pre-processor
-    preprocessor = CurvedSlicingPreprocessor(mesh, parameters, DATA_PATH)
+    preprocessor = InterpolationSlicingPreprocessor(mesh, parameters, DATA_PATH)
     preprocessor.create_compound_targets()
     preprocessor.targets_laplacian_smoothing(iterations=4, strength=0.05)
 
@@ -70,14 +70,14 @@ def main():
         filenames = utils.get_all_files_with_name('split_mesh_', '.json', OUTPUT_PATH)
         split_meshes = [Mesh.from_json(os.path.join(OUTPUT_PATH, filename)) for filename in filenames]
         for i, split_mesh in enumerate(split_meshes):
-            preprocessor_split = CurvedSlicingPreprocessor(split_mesh, parameters, DATA_PATH)
+            preprocessor_split = InterpolationSlicingPreprocessor(split_mesh, parameters, DATA_PATH)
             preprocessor_split.create_compound_targets()
             preprocessor_split.create_gradient_evaluation(norm_filename='gradient_norm_%d.json' % i,
                                                           g_filename='gradient_%d.json' % i,
                                                           target_1=preprocessor_split.target_LOW,
                                                           target_2=preprocessor_split.target_HIGH)
 
-            slicer = CurvedSlicer(split_mesh, preprocessor_split, parameters)
+            slicer = InterpolationSlicer(split_mesh, preprocessor_split, parameters)
             if i == 3:
                 slicer.n_multiplier = 0.85
             slicer.slice_model()
@@ -98,7 +98,7 @@ def main():
         slicers = [BaseSlicer.from_data(utils.load_from_json(OUTPUT_PATH, filename)) for filename in filenames]
         for i, slicer in enumerate(slicers):
 
-            print_organizer = CurvedPrintOrganizer(slicer, parameters, DATA_PATH)
+            print_organizer = InterpolationPrintOrganizer(slicer, parameters, DATA_PATH)
             print_organizer.create_printpoints()
             set_extruder_toggle(print_organizer, slicer)
             add_safety_printpoints(print_organizer, z_hop=10.0)
