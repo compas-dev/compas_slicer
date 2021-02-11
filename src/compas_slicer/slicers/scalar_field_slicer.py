@@ -40,7 +40,7 @@ class ScalarFieldSlicer(BaseSlicer):
         start_domain, end_domain = min(self.scalar_field), max(self.scalar_field)
         step = (end_domain - start_domain) / (self.no_of_isocurves + 1)
 
-        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='interpolation_slicing')
+        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='layers')
         vertical_layers_manager = VerticalLayersManager(max_dist)
 
         # create paths + layers

@@ -41,12 +41,12 @@ class InterpolationSlicer(BaseSlicer):
         """ Generates curved paths. """
         assert self.preprocessor, 'You need to provide a pre-processor in order to generate paths.'
 
-        avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='interpolation_slicing')
+        avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='layers')
         n = find_no_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH, avg_layer_height)
         params_list = get_interpolation_parameters_list(n)
         logger.info('%d paths will be generated' % n)
 
-        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='interpolation_slicing')
+        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='layers')
         vertical_layers_manager = VerticalLayersManager(max_dist)
 
         # create paths + layers

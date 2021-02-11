@@ -49,7 +49,7 @@ class UVSlicer(BaseSlicer):
         paths_type = 'flat'  # 'spiral' # 'zigzag'
         v_left, v_right = 0.0, 1.0 - 1e-5
 
-        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='interpolation_slicing')
+        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='layers')
         vertical_layers_manager = VerticalLayersManager(max_dist)
 
         # create paths + layers

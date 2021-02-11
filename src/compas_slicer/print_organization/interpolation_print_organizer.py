@@ -58,7 +58,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         """ When the print consists of various paths, this function initializes a class that creates
         a directed graph with all these parts, with the connectivity of each part reflecting which
         other parts it lies on, and which other parts lie on it."""
-        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='interpolation_slicing')
+        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='layers')
         self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.vertical_layers,
                                                                max_layer_height, DATA_PATH=self.DATA_PATH)
 
@@ -145,8 +145,8 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
 
     def check_printpoints_feasibility(self):
         """ Checks if the get_distance to the closest support of every layer height is within the admissible limits. """
-        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='interpolation_slicing')
-        min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='interpolation_slicing')
+        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='layers')
+        min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='layers')
 
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:

@@ -1,7 +1,7 @@
-__all__ = ['interpolation_slicing_default_param']
+__all__ = ['print_organization_default_param']
 
 
-def interpolation_slicing_default_param(key):
+def print_organization_default_param(key):
     """ Returns the default parameters with the specified key. """
     if key in default_parameters:
         return default_parameters[key]
@@ -12,9 +12,6 @@ def interpolation_slicing_default_param(key):
 
 default_parameters = \
     {
-        'target_LOW_smooth_union': [False, 0],
-        'target_LOW_geodesics_method': 'exact_igl',
-        'target_HIGH_smooth_union': [False, 0],
-        'target_HIGH_geodesics_method': 'exact_igl',
-        'uneven_upper_targets_offset': 0,
+        'layer_heights_smoothing': [False, 5, 0.2],
+        'up_vectors_smoothing': [True, 2, 0.2],
     }
