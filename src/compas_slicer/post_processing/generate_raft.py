@@ -1,8 +1,6 @@
 import logging
 import math
 
-from compas.geometry._core import distance
-
 import compas_slicer
 from compas_slicer.geometry import Layer
 from compas_slicer.geometry import Path
@@ -174,6 +172,7 @@ def generate_raft(slicer,
         raft_layer.is_raft = True
         # insert raft layer in the correct position into the slicer
         slicer.layers.insert(i, raft_layer)
+
 
 if __name__ == "__main__":
     pass
