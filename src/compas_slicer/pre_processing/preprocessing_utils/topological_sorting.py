@@ -3,7 +3,7 @@ from compas.geometry import distance_point_point_sqrd
 import compas_slicer.utilities as utils
 import logging
 import copy
-from compas_slicer.pre_processing.curved_slicing_preprocessing import get_existing_cut_indices, \
+from compas_slicer.pre_processing.preprocessing_utils import get_existing_cut_indices, \
     get_existing_boundary_indices
 from abc import abstractmethod
 

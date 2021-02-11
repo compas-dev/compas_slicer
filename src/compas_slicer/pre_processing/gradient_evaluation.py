@@ -1,8 +1,8 @@
 import numpy as np
 import logging
 import compas_slicer.utilities as utils
-from compas_slicer.pre_processing.curved_slicing_preprocessing import get_face_gradient_from_scalar_field
-from compas_slicer.pre_processing.curved_slicing_preprocessing import get_vertex_gradient_from_face_gradient
+from compas_slicer.pre_processing.preprocessing_utils import get_face_gradient_from_scalar_field
+from compas_slicer.pre_processing.preprocessing_utils import get_vertex_gradient_from_face_gradient
 
 logger = logging.getLogger('logger')
 

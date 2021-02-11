@@ -1,5 +1,5 @@
 import logging
-from compas_slicer.pre_processing.curved_slicing_preprocessing import blend_union_list
+from compas_slicer.pre_processing.preprocessing_utils import blend_union_list
 
 logger = logging.getLogger('logger')
 

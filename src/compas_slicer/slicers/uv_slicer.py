@@ -1,8 +1,7 @@
 from compas_slicer.slicers import BaseSlicer
 import logging
 from compas_slicer.slicers.slice_utilities import UVContours
-from compas_slicer.geometry import VerticalLayer, Path
-
+import numpy as np
 
 import progressbar
 from compas_slicer.geometry import VerticalLayersManager
@@ -14,6 +13,19 @@ __all__ = ['UVSlicer']
 
 
 class UVSlicer(BaseSlicer):
+    """
+    Generates the contours on the mesh that correspond to straight lines on the plane,
+    using on a UV map (from 3D space to the plane) defined on the mesh vertices.
+
+    Attributes
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
+        Note that the topology of the mesh matters, irregular tesselation can lead to undesired results.
+        We recommend to 1)re-topologize, 2) triangulate, and 3) weld your mesh in advance.
+    vkey_to_uv: dict {vkey : tuple (u,v)}. U,V coordinates should be in the domain [0,1]. The U coordinate
+    no_of_isocurves: int, how many levels to be generated
+    """
 
     def __init__(self, mesh, vkey_to_uv, no_of_isocurves, parameters=None):
         logger.info('UVSlicer')
@@ -23,17 +35,21 @@ class UVSlicer(BaseSlicer):
         self.no_of_isocurves = no_of_isocurves
         self.parameters = parameters if parameters else {}
 
+        u = [self.vkey_to_uv[vkey][0] for vkey in mesh.vertices()]
+        v = [self.vkey_to_uv[vkey][1] for vkey in mesh.vertices()]
+        u = np.array(u) * float(no_of_isocurves + 1)
+        vkey_to_i = self.mesh.key_index()
+
         mesh.update_default_vertex_attributes({'uv': 0})
         for vkey in mesh.vertices():
-            mesh.vertex_attribute(vkey, 'uv', self.vkey_to_uv[vkey])
+            mesh.vertex_attribute(vkey, 'uv', (u[vkey_to_i[vkey]], v[vkey_to_i[vkey]]))
 
     def generate_paths(self):
         """ Generates isocontours. """
-        paths_type = 'flat'  # 'spiral' # 'zigzag' or 'zigzag'
-        v_left, v_right = 0.0, 1.0 - 1e-4
-        du = 1.0 / float(self.no_of_isocurves + 1)
+        paths_type = 'flat'  # 'spiral' # 'zigzag'
+        v_left, v_right = 0.0, 1.0 - 1e-5
 
-        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='curved_slicing')
+        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='interpolation_slicing')
         vertical_layers_manager = VerticalLayersManager(max_dist)
 
         # create paths + layers
@@ -41,12 +57,12 @@ class UVSlicer(BaseSlicer):
             for i in range(1, self.no_of_isocurves + 1):
 
                 if paths_type == 'spiral':
-                    u1, u2 = i * du, i * du + du
+                    u1, u2 = i, i + 1.0
                 elif paths_type == 'zigzag':
-                    u1 = i * du if i % 2 == 0 else i * du + du
-                    u2 = i * du + du if i % 2 == 0 else i * du
+                    u1 = i if i % 2 == 0 else i + 1.0
+                    u2 = i + 1.0 if i % 2 == 0 else i
                 else:  # 'flat'
-                    u1 = u2 = i * du
+                    u1 = u2 = i
 
                 p1 = (u1, v_left)
                 p2 = (u2, v_right)

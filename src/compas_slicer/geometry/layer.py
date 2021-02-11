@@ -26,6 +26,7 @@ class Layer(object):
     number_of_brim_offsets: int
         The number of brim offsets this layer has (None if no brim).
     """
+
     def __init__(self, paths):
         # check input
         if paths is None:
@@ -115,6 +116,7 @@ class VerticalLayer(Layer):
     id: int
         Identifier of vertical layer.
     """
+
     def __init__(self, id=0, paths=None):
         Layer.__init__(self, paths=paths)
         self.id = id
@@ -231,6 +233,7 @@ def get_vertical_layers_centroids_list(vert_layers):
     for vert_layer in vert_layers:
         head_centroids.append(vert_layer.head_centroid)
     return head_centroids
+
 
 if __name__ == "__main__":
     pass

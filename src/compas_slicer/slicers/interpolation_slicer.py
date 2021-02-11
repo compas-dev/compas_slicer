@@ -1,6 +1,5 @@
 import numpy as np
 from compas_slicer.slicers import BaseSlicer
-from compas_slicer.geometry import Path
 import logging
 import progressbar
 from compas_slicer.parameters import get_param
@@ -10,10 +9,10 @@ from compas_slicer.geometry import VerticalLayersManager
 
 logger = logging.getLogger('logger')
 
-__all__ = ['CurvedSlicer']
+__all__ = ['InterpolationSlicer']
 
 
-class CurvedSlicer(BaseSlicer):
+class InterpolationSlicer(BaseSlicer):
     """
     Generates non-planar contours that interpolate user-defined boundaries.
 
@@ -23,12 +22,12 @@ class CurvedSlicer(BaseSlicer):
         Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
         Note that the topology of the mesh matters, irregular tesselation can lead to undesired results.
         We recommend to 1)re-topologize, 2) triangulate, and 3) weld your mesh in advance.
-    preprocessor: :class: 'compas_slicer.pre_processing.CurvedSlicingPreprocessor'
+    preprocessor: :class: 'compas_slicer.pre_processing.InterpolationSlicingPreprocessor'
     parameters: dict
     """
 
     def __init__(self, mesh, preprocessor=None, parameters=None):
-        logger.info('CurvedSlicer')
+        logger.info('InterpolationSlicer')
         BaseSlicer.__init__(self, mesh)
 
         if preprocessor:  # make sure the mesh of the preprocessor and the mesh of the slicer match
@@ -42,12 +41,12 @@ class CurvedSlicer(BaseSlicer):
         """ Generates curved paths. """
         assert self.preprocessor, 'You need to provide a pre-processor in order to generate paths.'
 
-        avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='curved_slicing')
+        avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='interpolation_slicing')
         n = find_no_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH, avg_layer_height)
         params_list = get_interpolation_parameters_list(n)
         logger.info('%d paths will be generated' % n)
 
-        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='curved_slicing')
+        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='interpolation_slicing')
         vertical_layers_manager = VerticalLayersManager(max_dist)
 
         # create paths + layers

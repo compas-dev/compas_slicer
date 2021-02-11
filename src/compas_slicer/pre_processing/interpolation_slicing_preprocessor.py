@@ -1,24 +1,24 @@
 from compas_slicer.pre_processing import CompoundTarget
-from compas_slicer.pre_processing import GradientEvaluation
+from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
 import logging
 import os
 from compas.datastructures import Mesh
-from compas_slicer.pre_processing.curved_slicing_preprocessing import region_split as rs, \
+from compas_slicer.pre_processing.preprocessing_utils import region_split as rs, \
     topological_sorting as topo_sort
 from compas_slicer.pre_processing import get_existing_cut_indices, get_vertices_that_belong_to_cuts, \
     replace_mesh_vertex_attribute
 import compas_slicer.utilities as utils
 from compas_slicer.parameters import get_param
-from compas_slicer.pre_processing.curved_slicing_preprocessing import assign_interpolation_distance_to_mesh_vertices
+from compas_slicer.pre_processing.preprocessing_utils import assign_interpolation_distance_to_mesh_vertices
 
 logger = logging.getLogger('logger')
 
-__all__ = ['CurvedSlicingPreprocessor']
+__all__ = ['InterpolationSlicingPreprocessor']
 
 
-class CurvedSlicingPreprocessor:
+class InterpolationSlicingPreprocessor:
     """
-    Takes care of all the pre-processing that is (or might be) needed before the curved slicing process.
+    Takes care of all the pre-processing that is (or might be) needed before the interpolation slicing process.
     Not all the functionality needs to be run every time, depending on the characteristics of the inputs.
 
     Attributes
@@ -47,19 +47,19 @@ class CurvedSlicingPreprocessor:
         """ Creates the target_LOW and the target_HIGH and computes the geodesic distances. """
 
         # --- low target
-        target_blending = get_param(self.parameters, key='target_LOW_smooth_union', defaults_type='curved_slicing')
+        target_blending = get_param(self.parameters, key='target_LOW_smooth_union', defaults_type='interpolation_slicing')
         smooth, r = target_blending[0], target_blending[1]
-        geodesics_method = get_param(self.parameters, key='target_LOW_geodesics_method', defaults_type='curved_slicing')
+        geodesics_method = get_param(self.parameters, key='target_LOW_geodesics_method', defaults_type='interpolation_slicing')
         self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH,
                                          has_blend_union=smooth,
                                          blend_radius=r,
                                          geodesics_method=geodesics_method)
 
         # --- high target
-        target_blending = get_param(self.parameters, key='target_HIGH_smooth_union', defaults_type='curved_slicing')
+        target_blending = get_param(self.parameters, key='target_HIGH_smooth_union', defaults_type='interpolation_slicing')
         smooth, r = target_blending[0], target_blending[1]
         geodesics_method = get_param(self.parameters, key='target_HIGH_geodesics_method',
-                                     defaults_type='curved_slicing')
+                                     defaults_type='interpolation_slicing')
         self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH,
                                           has_blend_union=smooth,
                                           blend_radius=r,
@@ -67,7 +67,7 @@ class CurvedSlicingPreprocessor:
 
         # --- uneven boundaries of high target
         self.target_HIGH.offset = get_param(self.parameters, key='uneven_upper_targets_offset',
-                                            defaults_type='curved_slicing')
+                                            defaults_type='interpolation_slicing')
         self.target_HIGH.compute_uneven_boundaries_weight_max(self.target_LOW)
 
         #  --- save intermediary get_distance outputs
@@ -205,7 +205,7 @@ class CurvedSlicingPreprocessor:
     def cleanup_mesh_attributes_based_on_selected_order(self, selected_order, graph):
         """
         Based on the selected order of split meshes, it rearranges their attributes, so that they can then be used
-        with a curved slicer that requires data['boundary'] to be filled for every vertex.
+        with an interpolation slicer that requires data['boundary'] to be filled for every vertex.
         The vertices that originated from cuts have data['cut']=cut_index. This is replaced
         by data['boundary'] = 1 or 2 depending on connectivity of mesh.
 

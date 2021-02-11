@@ -2,7 +2,6 @@ import numpy as np
 from compas_slicer.slicers import BaseSlicer
 import logging
 from compas_slicer.slicers.slice_utilities import ScalarFieldContours
-from compas_slicer.geometry import Path
 import progressbar
 from compas_slicer.geometry import VerticalLayersManager
 from compas_slicer.parameters import get_param
@@ -41,7 +40,7 @@ class ScalarFieldSlicer(BaseSlicer):
         start_domain, end_domain = min(self.scalar_field), max(self.scalar_field)
         step = (end_domain - start_domain) / (self.no_of_isocurves + 1)
 
-        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='curved_slicing')
+        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='interpolation_slicing')
         vertical_layers_manager = VerticalLayersManager(max_dist)
 
         # create paths + layers

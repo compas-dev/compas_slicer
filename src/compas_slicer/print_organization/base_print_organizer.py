@@ -14,7 +14,7 @@ class BasePrintOrganizer(object):
     """
     Base class for organizing the printing process.
     This class is meant to be extended for the implementation of the various print organizers.
-    Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or CurvedPrintOrganizer.
+    Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or InterpolationPrintOrganizer.
 
     Attributes
     ----------

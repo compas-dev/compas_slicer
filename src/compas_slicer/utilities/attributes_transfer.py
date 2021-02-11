@@ -50,7 +50,7 @@ def transfer_mesh_attributes_to_printpoints(mesh, printpoints_dict):
 
 def is_reserved_attribute(attr):
     """ Returns True if the attribute name is a reserved, false otherwise. """
-    taken_attributes = ['x', 'y', 'z',
+    taken_attributes = ['x', 'y', 'z', 'uv',
                         'scalar_field']
     return attr in taken_attributes
 

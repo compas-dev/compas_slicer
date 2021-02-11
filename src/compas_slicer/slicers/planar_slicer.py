@@ -10,7 +10,7 @@ __all__ = ['PlanarSlicer']
 
 class PlanarSlicer(BaseSlicer):
     """
-    Generates planar contours on a mesh.
+    Generates planar contours on a mesh that are parallel to the xy plane.
 
     Attributes
     ----------

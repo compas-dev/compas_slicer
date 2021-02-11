@@ -47,11 +47,11 @@ class VerticalConnectivity:
         self.initialize_printpoints()
         self.fill_in_printpoints_information()
 
-        h_smoothing = get_param(self.parameters, key='layer_heights_smoothing', defaults_type='curved_slicing')
+        h_smoothing = get_param(self.parameters, key='layer_heights_smoothing', defaults_type='interpolation_slicing')
         if h_smoothing[0]:
             logger.info('Layer heights smoothing using horizontal neighbors')
             self.smooth_printpoints_layer_heights(iterations=h_smoothing[1], strength=h_smoothing[2])
-        v_smoothing = get_param(self.parameters, key='up_vectors_smoothing', defaults_type='curved_slicing')
+        v_smoothing = get_param(self.parameters, key='up_vectors_smoothing', defaults_type='interpolation_slicing')
         if v_smoothing[0]:
             logger.info('Up vectors smoothing using horizontal neighbors')
             self.smooth_up_vectors(iterations=v_smoothing[1], strength=v_smoothing[2])
@@ -67,8 +67,8 @@ class VerticalConnectivity:
 
     def fill_in_printpoints_information(self):
         """ Fills in the attributes of previously initialized printpoints. """
-        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='curved_slicing')
-        min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='curved_slicing')
+        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='interpolation_slicing')
+        min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='interpolation_slicing')
 
         crv_to_check = Path(self.base_boundary.points, True)  # creation of fake path for the lower boundary
         with progressbar.ProgressBar(max_value=len(self.paths)) as bar:

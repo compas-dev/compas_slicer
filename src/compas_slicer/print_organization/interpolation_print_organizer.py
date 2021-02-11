@@ -1,7 +1,7 @@
 import logging
 from compas.geometry import Point
 from compas_slicer.print_organization import BasePrintOrganizer
-from compas_slicer.pre_processing.curved_slicing_preprocessing import topological_sorting as topo_sort
+from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
 import compas_slicer.utilities as utils
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
 from compas_slicer.print_organization.curved_print_organization import VerticalConnectivity
@@ -10,10 +10,10 @@ from compas_slicer.parameters import get_param
 
 logger = logging.getLogger('logger')
 
-__all__ = ['CurvedPrintOrganizer']
+__all__ = ['InterpolationPrintOrganizer']
 
 
-class CurvedPrintOrganizer(BasePrintOrganizer):
+class InterpolationPrintOrganizer(BasePrintOrganizer):
     """
     Organizing the printing process for the realization of non-planar contours.
 
@@ -52,13 +52,13 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
         self.create_vertical_connectivity()
 
     def __repr__(self):
-        return "<CurvedPrintOrganizer with %i vertical_layers_print_data>" % len(self.vertical_layers_print_data)
+        return "<InterpolationPrintOrganizer with %i vertical_layers_print_data>" % len(self.vertical_layers_print_data)
 
     def topological_sorting(self):
         """ When the print consists of various paths, this function initializes a class that creates
         a directed graph with all these parts, with the connectivity of each part reflecting which
         other parts it lies on, and which other parts lie on it."""
-        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='curved_slicing')
+        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='interpolation_slicing')
         self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.vertical_layers,
                                                                max_layer_height, DATA_PATH=self.DATA_PATH)
 
@@ -145,8 +145,8 @@ class CurvedPrintOrganizer(BasePrintOrganizer):
 
     def check_printpoints_feasibility(self):
         """ Checks if the get_distance to the closest support of every layer height is within the admissible limits. """
-        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='curved_slicing')
-        min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='curved_slicing')
+        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='interpolation_slicing')
+        min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='interpolation_slicing')
 
         for layer_key in self.printpoints_dict:
             for path_key in self.printpoints_dict[layer_key]:
