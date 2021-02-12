@@ -45,13 +45,15 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.1.0
+            0.1.1
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.1">0.1.1</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.0">0.1.0</a>
             
@@ -128,11 +130,12 @@
 
     <span class="k">with</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">max_value</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">))</span> <span class="k">as</span> <span class="n">bar</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
-                <span class="n">pts_rdp</span> <span class="o">=</span> <span class="n">rdp</span><span class="o">.</span><span class="n">rdp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
-                <span class="n">path</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">pts_rdp</span><span class="p">]</span>
-                <span class="n">remaining_pts_num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
-                <span class="n">bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">layer</span><span class="o">.</span><span class="n">is_raft</span><span class="p">:</span>  <span class="c1"># no simplification necessary for raft layer</span>
+                <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+                    <span class="n">pts_rdp</span> <span class="o">=</span> <span class="n">rdp</span><span class="o">.</span><span class="n">rdp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">pts_rdp</span><span class="p">]</span>
+                    <span class="n">remaining_pts_num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+                    <span class="n">bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> Points remaining after rdp simplification&#39;</span> <span class="o">%</span> <span class="n">remaining_pts_num</span><span class="p">)</span></div>
 
 
@@ -223,7 +226,7 @@
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.1.0',
+  VERSION           : '0.1.1',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',

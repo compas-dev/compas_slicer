@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   
-  <title>compas_slicer - PlanarSlicer.to_data</title>
+  <title>compas_slicer - generate_raft</title>
   
 
   <meta charset="utf-8" />
@@ -19,11 +19,11 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="PlanarSlicer.to_json" href="compas_slicer.slicers.PlanarSlicer.to_json.html" />
+    <link rel="next" title="spiralize_contours" href="compas_slicer.post_processing.spiralize_contours.html" />
   
 
   
-    <link rel="prev" title="PlanarSlicer.slice_model" href="compas_slicer.slicers.PlanarSlicer.slice_model.html" />
+    <link rel="prev" title="generate_brim" href="compas_slicer.post_processing.generate_brim.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -95,26 +95,33 @@
             
               <li class="breadcrumb-item"><a href="../compas_slicer.html">compas_slicer</a></li>
             
-              <li class="breadcrumb-item"><a href="../slicers.html">slicers</a></li>
+              <li class="breadcrumb-item"><a href="../post_processing.html">post_processing</a></li>
             
-              <li class="breadcrumb-item"><a href="compas_slicer.slicers.PlanarSlicer.html">PlanarSlicer</a></li>
-            
-            <li class="breadcrumb-item active" aria-current="page">PlanarSlicer.to_data</li>
+            <li class="breadcrumb-item active" aria-current="page">generate_raft</li>
           </ol>
         </nav>
         
 
         
         
-        <div class="detail section" id="planarslicer-to-data">
-<h1>PlanarSlicer.to_data</h1>
-<dl class="py method">
-<dt id="compas_slicer.slicers.PlanarSlicer.to_data">
-<code class="sig-prename descclassname">PlanarSlicer.</code><code class="sig-name descname">to_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>Returns a dictionary of structured data representing the data structure.</p>
+        <div class="detail section" id="generate-raft">
+<h1>generate_raft</h1>
+<dl class="py function">
+<dt id="compas_slicer.post_processing.generate_raft">
+<code class="sig-prename descclassname">compas_slicer.post_processing.</code><code class="sig-name descname">generate_raft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">slicer</span></em>, <em class="sig-param"><span class="n">raft_offset</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">distance_between_paths</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">direction</span><span class="o">=</span><span class="default_value">'xy_diagonal'</span></em>, <em class="sig-param"><span class="n">raft_layers</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">raft_layer_height</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/post_processing/generate_raft.html#generate_raft"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Creates a raft.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>dict</em> – The slicer’s data.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slicer</strong> (<a class="reference internal" href="compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer" title="compas_slicer.slicers.BaseSlicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.BaseSlicer</span></code></a>) – An instance of one of the compas_slicer.slicers.BaseSlicer classes.</p></li>
+<li><p><strong>raft_offset</strong> (<em>float</em>) – Distance (in mm) that the raft should be offsetted from the first layer. Defaults to 10mm</p></li>
+<li><p><strong>distance_between_paths</strong> (<em>float</em>) – Distance (in mm) between the printed lines of the raft. Defaults to 10mm</p></li>
+<li><p><strong>direction</strong> (<em>str</em>) – x_axis: Create a raft aligned with the x_axis
+y_axis: Create a raft aligned with the y_axis
+xy_diagonal: Create a raft int the diagonal direction in the xy_plane</p></li>
+<li><p><strong>raft_layers</strong> (<em>int</em>) – Number of raft layers to add. Defaults to 1</p></li>
+<li><p><strong>raft_layer_height</strong> (<em>float</em>) – Layer height of the raft layers. Defaults to same value as used in the slicer.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -145,10 +152,10 @@
 <li class="nav-item active"><a class="nav-link reference internal" href="../../api.html">API Reference</a><ul class="nav flex-column active">
 <li class="nav-item active"><a class="nav-link reference internal" href="../compas_slicer.html">compas_slicer</a><ul class="nav flex-column active">
 <li class="nav-item"><a class="nav-link reference internal" href="../geometry.html">geometry</a></li>
-<li class="nav-item active"><a class="nav-link reference internal" href="../slicers.html">slicers</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../slicers.html">slicers</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../print_organization.html">print_organization</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../pre_processing.html">pre_processing</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../post_processing.html">post_processing</a></li>
+<li class="nav-item active"><a class="nav-link reference internal" href="../post_processing.html">post_processing</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../utilities.html">utilities</a></li>
 </ul>
 </li>
@@ -167,7 +174,7 @@
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">PlanarSlicer.to_data</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">generate_raft</a></li>
 </ul>
 
       </div>
@@ -179,20 +186,20 @@
   <footer class="compas-footer">
     <nav class="nav p-2">
       
-        <a href="compas_slicer.slicers.PlanarSlicer.slice_model.html" title="PlanarSlicer.slice_model" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+        <a href="compas_slicer.post_processing.generate_brim.html" title="generate_brim" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
           <div class="nav-title flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Previous</div>
-            PlanarSlicer.slice_model
+            generate_brim
           </div>
         </a>
       
 
       
-        <a href="compas_slicer.slicers.PlanarSlicer.to_json.html" title="PlanarSlicer.to_json" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+        <a href="compas_slicer.post_processing.spiralize_contours.html" title="spiralize_contours" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
           <div class="nav-title footer-link flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Next</div>
-            PlanarSlicer.to_json
+            spiralize_contours
           </div>
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
         </a>

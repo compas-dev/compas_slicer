@@ -45,13 +45,15 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.1.0
+            0.1.1
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.1">0.1.1</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.0">0.1.0</a>
             
@@ -122,6 +124,8 @@
 <span class="sd">        True if this layer is a brim layer.</span>
 <span class="sd">    number_of_brim_offsets: int</span>
 <span class="sd">        The number of brim offsets this layer has (None if no brim).</span>
+<span class="sd">    is_raft: bool</span>
+<span class="sd">        True if this layer is a raft layer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Layer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.__init__.html#compas_slicer.geometry.Layer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paths</span><span class="p">):</span>
@@ -138,7 +142,10 @@
 
         <span class="c1"># brim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_brim</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_brim_offsets</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_brim_offsets</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># raft</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_raft</span> <span class="o">=</span> <span class="kc">False</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">no_of_paths</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="k">else</span> <span class="mi">0</span>
@@ -155,8 +162,8 @@
 <div class="viewcode-block" id="Layer.calculate_z_bounds"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.calculate_z_bounds.html#compas_slicer.geometry.Layer.calculate_z_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_z_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Fills in the attribute self.min_max_z_height. &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;You cannot calculate z_bounds because the list of paths is empty.&quot;</span>
-        <span class="n">z_min</span> <span class="o">=</span> <span class="mi">9999999</span>  <span class="c1"># very big number</span>
-        <span class="n">z_max</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999999</span>  <span class="c1"># very small number</span>
+        <span class="n">z_min</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">32</span>  <span class="c1"># very big number</span>
+        <span class="n">z_max</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">32</span>  <span class="c1"># very small number</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
                 <span class="n">z_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">z_min</span><span class="p">,</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
@@ -419,7 +426,7 @@
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.1.0',
+  VERSION           : '0.1.1',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',

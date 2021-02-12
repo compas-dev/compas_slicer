@@ -49,13 +49,15 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.1.0
+            0.1.1
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.1">0.1.1</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.0">0.1.0</a>
             
@@ -117,6 +119,7 @@ A Layer consists of one, or multiple Paths (depending on the geometry).</p>
 <li><p><strong>paths</strong> (<em>list</em>) – <a class="reference internal" href="compas_slicer.geometry.Path.html#compas_slicer.geometry.Path" title="compas_slicer.geometry.Path"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.geometry.Path</span></code></a></p></li>
 <li><p><strong>is_brim</strong> (<em>bool</em>) – True if this layer is a brim layer.</p></li>
 <li><p><strong>number_of_brim_offsets</strong> (<em>int</em>) – The number of brim offsets this layer has (None if no brim).</p></li>
+<li><p><strong>is_raft</strong> (<em>bool</em>) – True if this layer is a raft layer.</p></li>
 </ul>
 </dd>
 </dl>
@@ -289,7 +292,7 @@ A Layer consists of one, or multiple Paths (depending on the geometry).</p>
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.1.0',
+  VERSION           : '0.1.1',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',
