@@ -120,7 +120,7 @@
 <div class="viewcode-block" id="generate_raft"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.generate_raft.html#compas_slicer.post_processing.generate_raft">[docs]</a><span class="k">def</span> <span class="nf">generate_raft</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span>
                   <span class="n">raft_offset</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
                   <span class="n">distance_between_paths</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                  <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span>
+                  <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;xy_diagonal&quot;</span><span class="p">,</span>
                   <span class="n">raft_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                   <span class="n">raft_layer_height</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates a raft.</span>
@@ -134,9 +134,9 @@
 <span class="sd">    distance_between_paths: float</span>
 <span class="sd">        Distance (in mm) between the printed lines of the raft. Defaults to 10mm</span>
 <span class="sd">    direction: str</span>
-<span class="sd">        horizontal: Create a raft in the horizontal direction</span>
-<span class="sd">        vertical: Create a raft in the vertical direction</span>
-<span class="sd">        diagonal: Create a raft int the diagonal direction</span>
+<span class="sd">        x_axis: Create a raft aligned with the x_axis</span>
+<span class="sd">        y_axis: Create a raft aligned with the y_axis</span>
+<span class="sd">        xy_diagonal: Create a raft int the diagonal direction in the xy_plane</span>
 <span class="sd">    raft_layers: int</span>
 <span class="sd">        Number of raft layers to add. Defaults to 1</span>
 <span class="sd">    raft_layer_height: float</span>
@@ -183,7 +183,7 @@
     <span class="n">raft_start_pt</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">bb_xy_offset</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">bb_xy_offset</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">bb_xy_offset</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
 
     <span class="c1"># create starting line for diagonal direction</span>
-    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;diagonal&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;xy_diagonal&quot;</span><span class="p">:</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">distance_between_paths</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
         <span class="n">pt1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">,</span> <span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
@@ -202,11 +202,11 @@
         <span class="n">raft_points</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># create raft points depending on the chosen direction</span>
-        <span class="k">while</span> <span class="kc">True</span> <span class="ow">and</span> <span class="nb">iter</span> <span class="o">&lt;</span> <span class="mi">9999</span><span class="p">:</span>  <span class="c1"># to avoid infinite while loop in case something is not correct</span>
+        <span class="k">while</span> <span class="nb">iter</span> <span class="o">&lt;</span> <span class="mi">9999</span><span class="p">:</span>  <span class="c1"># to avoid infinite while loop in case something is not correct</span>
             <span class="c1"># ===============</span>
             <span class="c1"># VERTICAL RAFT</span>
             <span class="c1"># ===============</span>
-            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;vertical&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;y_axis&quot;</span><span class="p">:</span>
                 <span class="n">raft_pt1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">iter</span><span class="o">*</span><span class="n">distance_between_paths</span><span class="p">,</span> <span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="n">raft_layer_height</span><span class="p">)</span>
                 <span class="n">raft_pt2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">iter</span><span class="o">*</span><span class="n">distance_between_paths</span><span class="p">,</span> <span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">y_range</span><span class="p">,</span> <span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="n">raft_layer_height</span><span class="p">)</span>
 
@@ -216,7 +216,7 @@
             <span class="c1"># ===============</span>
             <span class="c1"># HORIZONTAL RAFT</span>
             <span class="c1"># ===============</span>
-            <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;x_axis&quot;</span><span class="p">:</span>
                 <span class="n">raft_pt1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">iter</span><span class="o">*</span><span class="n">distance_between_paths</span><span class="p">,</span> <span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="n">raft_layer_height</span><span class="p">)</span>
                 <span class="n">raft_pt2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x_range</span><span class="p">,</span> <span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">iter</span><span class="o">*</span><span class="n">distance_between_paths</span><span class="p">,</span> <span class="n">raft_start_pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="n">raft_layer_height</span><span class="p">)</span>
 
@@ -226,7 +226,7 @@
             <span class="c1"># ===============</span>
             <span class="c1"># DIAGONAL RAFT</span>
             <span class="c1"># ===============</span>
-            <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;diagonal&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;xy_diagonal&quot;</span><span class="p">:</span>
                 <span class="c1"># create offset of the initial diagonal line</span>
                 <span class="n">offset_l</span> <span class="o">=</span> <span class="n">offset_line</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="nb">iter</span><span class="o">*</span><span class="n">distance_between_paths</span><span class="p">,</span> <span class="n">Vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 

@@ -108,7 +108,7 @@
 <h1>generate_raft</h1>
 <dl class="py function">
 <dt id="compas_slicer.post_processing.generate_raft">
-<code class="sig-prename descclassname">compas_slicer.post_processing.</code><code class="sig-name descname">generate_raft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">slicer</span></em>, <em class="sig-param"><span class="n">raft_offset</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">distance_between_paths</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">direction</span><span class="o">=</span><span class="default_value">'horizontal'</span></em>, <em class="sig-param"><span class="n">raft_layers</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">raft_layer_height</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/post_processing/generate_raft.html#generate_raft"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">compas_slicer.post_processing.</code><code class="sig-name descname">generate_raft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">slicer</span></em>, <em class="sig-param"><span class="n">raft_offset</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">distance_between_paths</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">direction</span><span class="o">=</span><span class="default_value">'xy_diagonal'</span></em>, <em class="sig-param"><span class="n">raft_layers</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">raft_layer_height</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/post_processing/generate_raft.html#generate_raft"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Creates a raft.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -116,9 +116,9 @@
 <li><p><strong>slicer</strong> (<a class="reference internal" href="compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer" title="compas_slicer.slicers.BaseSlicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.BaseSlicer</span></code></a>) – An instance of one of the compas_slicer.slicers.BaseSlicer classes.</p></li>
 <li><p><strong>raft_offset</strong> (<em>float</em>) – Distance (in mm) that the raft should be offsetted from the first layer. Defaults to 10mm</p></li>
 <li><p><strong>distance_between_paths</strong> (<em>float</em>) – Distance (in mm) between the printed lines of the raft. Defaults to 10mm</p></li>
-<li><p><strong>direction</strong> (<em>str</em>) – horizontal: Create a raft in the horizontal direction
-vertical: Create a raft in the vertical direction
-diagonal: Create a raft int the diagonal direction</p></li>
+<li><p><strong>direction</strong> (<em>str</em>) – x_axis: Create a raft aligned with the x_axis
+y_axis: Create a raft aligned with the y_axis
+xy_diagonal: Create a raft int the diagonal direction in the xy_plane</p></li>
 <li><p><strong>raft_layers</strong> (<em>int</em>) – Number of raft layers to add. Defaults to 1</p></li>
 <li><p><strong>raft_layer_height</strong> (<em>float</em>) – Layer height of the raft layers. Defaults to same value as used in the slicer.</p></li>
 </ul>
