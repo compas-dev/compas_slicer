@@ -25,6 +25,8 @@ class Layer(object):
         True if this layer is a brim layer.
     number_of_brim_offsets: int
         The number of brim offsets this layer has (None if no brim).
+    is_raft: bool
+        True if this layer is a raft layer.
     """
 
     def __init__(self, paths):
@@ -43,6 +45,9 @@ class Layer(object):
         self.is_brim = False
         self.number_of_brim_offsets = None
 
+        # raft
+        self.is_raft = False
+
     def __repr__(self):
         no_of_paths = len(self.paths) if self.paths else 0
         return "<Layer object with %i paths>" % no_of_paths
@@ -58,8 +63,8 @@ class Layer(object):
     def calculate_z_bounds(self):
         """ Fills in the attribute self.min_max_z_height. """
         assert len(self.paths) > 0, "You cannot calculate z_bounds because the list of paths is empty."
-        z_min = 9999999  # very big number
-        z_max = -9999999  # very small number
+        z_min = 2 ** 32  # very big number
+        z_max = -2 ** 32  # very small number
         for path in self.paths:
             for pt in path.points:
                 z_min = min(z_min, pt[2])

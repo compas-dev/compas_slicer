@@ -6,6 +6,7 @@ import compas_slicer.utilities as utils
 from compas_slicer.pre_processing import move_mesh_to_point
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.post_processing import generate_brim
+from compas_slicer.post_processing import generate_raft
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import PlanarPrintOrganizer
@@ -56,9 +57,16 @@ def main():
     slicer.slice_model()
 
     # ==========================================================================
-    # Generate brim
+    # Generate brim / raft
     # ==========================================================================
+    # NOTE: Typically you would want to use either a brim OR a raft, 
+    # however, in this example both are used to explain the functionality
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
+    generate_raft(slicer,
+                  raft_offset=20,
+                  distance_between_paths=5,
+                  direction="diagonal",
+                  raft_layers=1)
 
     # ==========================================================================
     # Simplify the paths by removing points with a certain threshold

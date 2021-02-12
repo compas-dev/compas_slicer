@@ -6,18 +6,25 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_
 and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 
-Unreleased
+0.1.1
 ----------
 
 **Added**
 
+* Generate raft functionality
+
+* is_raft parameter to the Layer
+
 **Changed**
+
+* Simplify paths to exclude simplification of raft layers
+
+* Error raised when brim is attempted to be applied to a raft layer.
 
 **Fixed**
 
-**Deprecated**
+* Small bug in print time calculation
 
-**Removed**
 
 
 2021-02-11
@@ -34,6 +41,7 @@ Unreleased
 * Renamed the curved_slicer and all processes named after that (i.e. curved_preprocessor, curved_slicing_parameters, curved_print_organizer etc) to interpolation_slicer. These changes make this PR a breaking change.
 
 * Reorganized the parameters folder. A lot of parameters where considered 'curved_slicing_parameters' although they were more general. So I broke those down into separate files. More parameters will be added in the future to those files.
+
 **Fixed**
 
 * Some documentation

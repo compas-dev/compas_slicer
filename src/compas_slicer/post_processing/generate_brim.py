@@ -34,6 +34,9 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
     #  see: https://github.com/fonttools/pyclipper/wiki/Deprecating-SCALING_FACTOR
     SCALING_FACTOR = 2 ** 32
 
+    if slicer.layers[0].is_raft:
+        raise NameError("Raft found: cannot apply brim when raft is used, choose one")
+
     # (1) --- find if slicer has vertical or horizontal layers, and select which paths are to be offset.
     if isinstance(slicer.layers[0], compas_slicer.geometry.VerticalLayer):  # Vertical layers
         # then find all paths that lie on the print platform and make them brim.
