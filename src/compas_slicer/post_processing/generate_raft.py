@@ -21,7 +21,7 @@ __all__ = ['generate_raft']
 def generate_raft(slicer,
                   raft_offset=10,
                   distance_between_paths=10,
-                  direction="horizontal",
+                  direction="xy_diagonal",
                   raft_layers=1,
                   raft_layer_height=None):
     """Creates a raft.
@@ -35,9 +35,9 @@ def generate_raft(slicer,
     distance_between_paths: float
         Distance (in mm) between the printed lines of the raft. Defaults to 10mm
     direction: str
-        horizontal: Create a raft in the horizontal direction
-        vertical: Create a raft in the vertical direction
-        diagonal: Create a raft int the diagonal direction
+        x_axis: Create a raft aligned with the x_axis
+        y_axis: Create a raft aligned with the y_axis
+        xy_diagonal: Create a raft int the diagonal direction in the xy_plane
     raft_layers: int
         Number of raft layers to add. Defaults to 1
     raft_layer_height: float
@@ -84,7 +84,7 @@ def generate_raft(slicer,
     raft_start_pt = Point(bb_xy_offset[0][0], bb_xy_offset[0][1], bb_xy_offset[0][2])
 
     # create starting line for diagonal direction
-    if direction == "diagonal":
+    if direction == "xy_diagonal":
         c = math.sqrt(2*(distance_between_paths**2))
 
         pt1 = Point(raft_start_pt[0] + c, raft_start_pt[1], raft_start_pt[2])
@@ -103,11 +103,11 @@ def generate_raft(slicer,
         raft_points = []
 
         # create raft points depending on the chosen direction
-        while True and iter < 9999:  # to avoid infinite while loop in case something is not correct
+        while iter < 9999:  # to avoid infinite while loop in case something is not correct
             # ===============
             # VERTICAL RAFT
             # ===============
-            if direction == "vertical":
+            if direction == "y_axis":
                 raft_pt1 = Point(raft_start_pt[0] + iter*distance_between_paths, raft_start_pt[1], raft_start_pt[2] + i*raft_layer_height)
                 raft_pt2 = Point(raft_start_pt[0] + iter*distance_between_paths, raft_start_pt[1] + y_range, raft_start_pt[2] + i*raft_layer_height)
 
@@ -117,7 +117,7 @@ def generate_raft(slicer,
             # ===============
             # HORIZONTAL RAFT
             # ===============
-            elif direction == "horizontal":
+            elif direction == "x_axis":
                 raft_pt1 = Point(raft_start_pt[0], raft_start_pt[1] + iter*distance_between_paths, raft_start_pt[2] + i*raft_layer_height)
                 raft_pt2 = Point(raft_start_pt[0] + x_range, raft_start_pt[1] + iter*distance_between_paths, raft_start_pt[2] + i*raft_layer_height)
 
@@ -127,7 +127,7 @@ def generate_raft(slicer,
             # ===============
             # DIAGONAL RAFT
             # ===============
-            elif direction == "diagonal":
+            elif direction == "xy_diagonal":
                 # create offset of the initial diagonal line
                 offset_l = offset_line(line, iter*distance_between_paths, Vector(0, 0, -1))
 
