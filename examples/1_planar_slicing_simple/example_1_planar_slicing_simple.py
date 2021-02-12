@@ -66,8 +66,7 @@ def main():
                   raft_offset=20,
                   distance_between_paths=5,
                   direction="diagonal",
-                  raft_layers=1,
-                  raft_layer_height="default")
+                  raft_layers=1)
 
     # ==========================================================================
     # Simplify the paths by removing points with a certain threshold

@@ -23,7 +23,7 @@ def generate_raft(slicer,
                   distance_between_paths=10,
                   direction="horizontal",
                   raft_layers=1,
-                  raft_layer_height="default"):
+                  raft_layer_height=None):
     """Creates a raft.
 
     Parameters
@@ -45,7 +45,7 @@ def generate_raft(slicer,
     """
 
     # check if a raft_layer_height is specified, if not, use the slicer.layer_height value
-    if raft_layer_height == "default":
+    if not raft_layer_height:
         raft_layer_height = slicer.layer_height
 
     logger.info("Generating raft")
