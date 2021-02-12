@@ -49,7 +49,7 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
         # then replace the first layer with a brim layer.
         paths_to_offset = slicer.layers[0].paths
         has_vertical_layers = False
-    
+
     # (2) --- create new empty brim_layer
     brim_layer = Layer(paths=[])
     brim_layer.is_brim = True
