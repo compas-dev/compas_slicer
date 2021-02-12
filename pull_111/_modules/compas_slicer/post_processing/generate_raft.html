@@ -122,7 +122,7 @@
                   <span class="n">distance_between_paths</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
                   <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span>
                   <span class="n">raft_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                  <span class="n">raft_layer_height</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
+                  <span class="n">raft_layer_height</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates a raft.</span>
 
 <span class="sd">    Parameters</span>
@@ -144,7 +144,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># check if a raft_layer_height is specified, if not, use the slicer.layer_height value</span>
-    <span class="k">if</span> <span class="n">raft_layer_height</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">raft_layer_height</span><span class="p">:</span>
         <span class="n">raft_layer_height</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">layer_height</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generating raft&quot;</span><span class="p">)</span>
