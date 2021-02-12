@@ -5,6 +5,7 @@ import logging
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing import move_mesh_to_point
 from compas_slicer.slicers import PlanarSlicer
+from compas_slicer.post_processing import generate_brim
 from compas_slicer.post_processing import generate_raft
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.post_processing import seams_smooth
@@ -30,7 +31,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 # ==============================================================================
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
-MODEL = 'distorted_a_closed_mid_res.obj'
+MODEL = 'simple_vase_open_low_res.obj'
 
 
 def main():
@@ -52,14 +53,22 @@ def main():
     #          'cgal':    Very fast. Only for closed paths.
     #                     Requires additional installation (compas_cgal).
     # ==========================================================================
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=15)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
     slicer.slice_model()
 
     # ==========================================================================
-    # Generate brim
+    # Generate brim / raft
     # ==========================================================================
-    generate_raft(slicer)
-    
+    # NOTE: Typically you would want to use either a brim OR a raft, 
+    # however, in this example both are used to explain the functionality
+    generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
+    generate_raft(slicer,
+                  raft_offset=20,
+                  distance_between_paths=5,
+                  direction="diagonal",
+                  raft_layers=1,
+                  raft_layer_height="default")
+
     # ==========================================================================
     # Simplify the paths by removing points with a certain threshold
     # change the threshold value to remove more or less points
@@ -119,7 +128,7 @@ def main():
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
-    
+
 
 if __name__ == "__main__":
     main()

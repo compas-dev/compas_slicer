@@ -19,6 +19,8 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 
 * Simplify paths to exclude simplification of raft layers
 
+* Error raised when brim is attempted to be applied to a raft layer.
+
 **Fixed**
 
 * Small bug in print time calculation
