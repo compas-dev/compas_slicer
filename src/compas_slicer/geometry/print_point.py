@@ -35,6 +35,7 @@ class PrintPoint(object):
     def __init__(self, pt, layer_height, mesh_normal):
         assert isinstance(pt, compas.geometry.Point)
         assert isinstance(mesh_normal, compas.geometry.Vector)
+        assert layer_height
 
         #  --- basic printpoint
         self.pt = pt

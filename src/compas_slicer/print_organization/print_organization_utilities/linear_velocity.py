@@ -38,7 +38,7 @@ def set_linear_velocity_per_layer(print_organizer, per_layer_velocities):
         printpoint.velocity = per_layer_velocities[i]
 
 
-def set_linear_velocity_by_range(print_organizer, get_param_func, parameter_range, velocity_range,
+def set_linear_velocity_by_range(print_organizer, param_func, parameter_range, velocity_range,
                                  bound_remapping=True):
     """
     Sets the linear velocity parameter of the printpoints depending on the selected type.
@@ -46,7 +46,7 @@ def set_linear_velocity_by_range(print_organizer, get_param_func, parameter_rang
     Parameters
     ----------
     print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
-    get_param_func: function that takes as argument a :class: 'compas_slicer.geometry.Printpoint': get_param_func(pp)
+    param_func: function that takes as argument a :class: 'compas_slicer.geometry.Printpoint': get_param_func(pp)
         and returns the parameter value that will be used for the remapping
     parameter_range: tuple
         An example of a parameter that can be used is the overhang angle, or the layer height.
@@ -57,7 +57,9 @@ def set_linear_velocity_by_range(print_organizer, get_param_func, parameter_rang
     """
     logger.info("Setting linear velocity based on parameter range")
     for printpoint, layer_key, path_key in print_organizer.printpoints_keys_iterator():
-        param = get_param_func(printpoint)
+        param = param_func(printpoint)
+        assert param, 'The param_func does not return any value for calculating the velocity range.'
+
         if bound_remapping:
             v = remap(param, parameter_range[0], parameter_range[1], velocity_range[0], velocity_range[1])
         else:
@@ -79,9 +81,9 @@ def set_linear_velocity_by_overhang(print_organizer, overhang_range, velocity_ra
     velocity_range: tuple
     bound_remapping: bool
     """
-    def get_param_func(ppt): return dot_vectors(ppt.mesh_normal, Vector(0.0, 0.0, 1.0))
+    def param_func(ppt): return dot_vectors(ppt.mesh_normal, Vector(0.0, 0.0, 1.0))
     # returns values from 0.0 (no overhang) to 1.0 (horizontal overhang)
-    set_linear_velocity_by_range(print_organizer, get_param_func, overhang_range, velocity_range, bound_remapping)
+    set_linear_velocity_by_range(print_organizer, param_func, overhang_range, velocity_range, bound_remapping)
 
 
 if __name__ == "__main__":

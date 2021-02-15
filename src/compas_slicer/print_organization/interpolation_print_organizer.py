@@ -120,7 +120,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             paths = self.horizontal_layers[0].paths
             for j, path in enumerate(paths):
                 self.printpoints_dict['layer_0']['path_%d' % j] = \
-                    [PrintPoint(pt=point, layer_height=self.slicer.layer_height,
+                    [PrintPoint(pt=point, layer_height=get_param(self.parameters, 'avg_layer_height', 'layers'),
                      mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh))
                      for k, point in enumerate(path.points)]
             current_layer_index += 1

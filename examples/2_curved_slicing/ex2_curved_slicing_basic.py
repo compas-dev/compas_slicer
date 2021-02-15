@@ -5,7 +5,7 @@ import compas_slicer.utilities as utils
 from compas_slicer.slicers import InterpolationSlicer
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.pre_processing import InterpolationSlicingPreprocessor
-from compas_slicer.print_organization import set_extruder_toggle
+from compas_slicer.print_organization import set_extruder_toggle, set_linear_velocity_by_range
 from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import InterpolationPrintOrganizer
@@ -33,8 +33,10 @@ def main():
     high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
     create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)
 
+    avg_layer_height = 15.0
+
     parameters = {
-        'avg_layer_height': 15.0,  # controls number of curves that will be generated
+        'avg_layer_height': avg_layer_height,  # controls number of curves that will be generated
         'min_layer_height': 0.1,
         'max_layer_height': 50.0,  # 2.0,
         'layer_heights_smoothing': [False, 5, 0.2],  # boolean, iterations, strength
@@ -61,6 +63,10 @@ def main():
     # ### --- Print organizer
     print_organizer = InterpolationPrintOrganizer(slicer, parameters, DATA_PATH)
     print_organizer.create_printpoints()
+
+    set_linear_velocity_by_range(print_organizer, param_func=lambda ppt: ppt.layer_height,
+                                 parameter_range=[avg_layer_height*0.5, avg_layer_height*2.0],
+                                 velocity_range=[150, 70], bound_remapping=False)
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
 
@@ -68,12 +74,12 @@ def main():
     printpoints_data = print_organizer.output_printpoints_dict()
     utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
-    # ----- Visualize
-    viewer = ObjectViewer()
-    # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
-    print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
-    viewer.update()
-    viewer.show()
+    # # ----- Visualize
+    # viewer = ObjectViewer()
+    # # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
+    # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
+    # viewer.update()
+    # viewer.show()
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")

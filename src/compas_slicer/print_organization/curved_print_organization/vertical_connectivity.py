@@ -69,7 +69,8 @@ class VerticalConnectivity:
         for i, path in enumerate(self.paths):
             self.printpoints[i] = []
             for pt in path.points:
-                self.printpoints[i].append(PrintPoint(pt=pt, layer_height=None, mesh_normal=normals[count]))
+                avg_layer_height = get_param(self.parameters, 'avg_layer_height', 'layers')
+                self.printpoints[i].append(PrintPoint(pt=pt, layer_height=avg_layer_height, mesh_normal=normals[count]))
                 count += 1
 
     def fill_in_printpoints_information(self):
