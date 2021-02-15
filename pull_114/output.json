@@ -112,10 +112,10 @@
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.point_list_to_dict", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.save_to_json", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.smooth_vectors", "info": ""}
+{"filename": "api/generated/compas_slicer.post_processing.simplify_paths_rdp.rst", "lineno": 1, "status": "working", "code": 0, "uri": "https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm", "info": ""}
 {"filename": "api/generated/compas_slicer.geometry.Layer.rst", "lineno": 1, "status": "working", "code": 0, "uri": "https://docs.python.org/3/library/functions.html#object", "info": ""}
 {"filename": "index.rst", "lineno": 10, "status": "working", "code": 0, "uri": "https://compas.dev/", "info": ""}
-{"filename": "api/generated/compas_slicer.post_processing.simplify_paths_rdp.rst", "lineno": 1, "status": "working", "code": 0, "uri": "https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm", "info": ""}
-{"filename": "index.rst", "lineno": 18, "status": "working", "code": 0, "uri": "https://github.com/compas-dev/compas_slicer/issues", "info": ""}
-{"filename": "installation.rst", "lineno": 49, "status": "working", "code": 0, "uri": "https://github.com/compas-dev/compas_viewers", "info": ""}
 {"filename": "installation.rst", "lineno": 95, "status": "working", "code": 0, "uri": "https://www.scivision.dev/python-windows-visual-c-14-required/", "info": ""}
+{"filename": "installation.rst", "lineno": 49, "status": "working", "code": 0, "uri": "https://github.com/compas-dev/compas_viewers", "info": ""}
+{"filename": "index.rst", "lineno": 18, "status": "working", "code": 0, "uri": "https://github.com/compas-dev/compas_slicer/issues", "info": ""}
 {"filename": "installation.rst", "lineno": 51, "status": "working", "code": 0, "uri": "https://www.lfd.uci.edu/~gohlke/pythonlibs/", "info": ""}
