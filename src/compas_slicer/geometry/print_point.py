@@ -1,4 +1,4 @@
-from compas.geometry import Point, Frame, Vector
+from compas.geometry import Point, Frame, Vector, cross_vectors
 import compas
 
 __all__ = ['PrintPoint']
@@ -44,7 +44,7 @@ class PrintPoint(object):
         self.up_vector = Vector(0, 0, 1)  # default value that can be updated
         self.frame = self.get_frame()  # compas.geometry.Frame
 
-        #  --- attributes transfered from the mesh (meshe's vertex / face attributes)
+        #  --- attributes transferred from the mesh (vertex / face attributes)
         self.attributes = {}  # dict. To fill this in,
 
         #  --- print_organization related attributes
@@ -65,7 +65,8 @@ class PrintPoint(object):
 
     def get_frame(self):
         """ Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal. """
-        return Frame(self.pt, self.up_vector, self.mesh_normal)
+        c = cross_vectors(self.up_vector, self.mesh_normal)
+        return Frame(self.pt, c, self.mesh_normal)
 
     #################################
     #  --- To data , from data
@@ -77,7 +78,7 @@ class PrintPoint(object):
         Returns
         -------
         dict
-            The PrintPoints's data.
+            The PrintPoints' data.
 
         """
         point = {

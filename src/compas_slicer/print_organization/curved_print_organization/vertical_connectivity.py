@@ -92,11 +92,13 @@ class VerticalConnectivity:
             self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.layer_height,
                                                   set_attr_value=set_printpoint_height)
 
-    def smooth_up_vectors(self, iterations, strength):
+    def smooth_up_vectors(self, iterations, strength):  # TODO: ATTENTION TO THE ATTRIBUTES THAT NEED TO BE RECOMPUTED
         """ Smooth printpoints up_vectors based on neighboring. """
         for i, path in enumerate(self.paths):
             self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.up_vector,
                                                   set_attr_value=set_printpoint_up_vec)
+            for pp in self.printpoints[i]:  # recompute frames
+                pp.frame = pp.get_frame()
 
     def smooth_path_printpoint_attribute(self, path_index, iterations, strength, get_attr_value, set_attr_value):
 
