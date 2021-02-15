@@ -49,6 +49,33 @@ class BasePrintOrganizer(object):
     # Properties
     ######################
 
+    def printpoints_keys_iterator(self):
+        """Iterate over the vertices of the mesh.
+        Yields
+        ------
+        printpoint: :class: 'compas_slicer.geometry.Printpoint'
+        layer_key: str
+        path_key: str
+        """
+        for layer_key in self.printpoints_dict:
+            for path_key in self.printpoints_dict[layer_key]:
+                for printpoint in self.printpoints_dict[layer_key][path_key]:
+                    yield printpoint, layer_key, path_key
+
+    def printpoints_indices_iterator(self):
+        """Iterate over the vertices of the mesh.
+        Yields
+        ------
+        printpoint: :class: 'compas_slicer.geometry.Printpoint'
+        i: int, layer index
+        j: int, path index
+        k: int, printpoint index
+        """
+        for i, layer_key in enumerate(self.printpoints_dict):
+            for j, path_key in enumerate(self.printpoints_dict[layer_key]):
+                for k, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
+                    yield printpoint, i, j, k
+
     @property
     def number_of_printpoints(self):
         """int: Total number of points in the PrintOrganizer."""

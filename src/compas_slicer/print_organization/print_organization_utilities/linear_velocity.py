@@ -1,134 +1,88 @@
 import math
-from compas.geometry import Vector, angle_vectors
-from compas_slicer.utilities import get_closest_mesh_normal_to_pt
+from compas.geometry import Vector, angle_vectors, dot_vectors
+from compas_slicer.utilities import get_closest_mesh_normal_to_pt, remap, remap_unbound
 import logging
 
 logger = logging.getLogger('logger')
 
-__all__ = ['set_linear_velocity']
+__all__ = ['set_linear_velocity_constant',
+           'set_linear_velocity_per_layer',
+           'set_linear_velocity_by_range',
+           'set_linear_velocity_by_overhang']
 
 
-def set_linear_velocity(print_organizer,
-                        velocity_type,
-                        v=25.0,
-                        per_layer_velocities=None,
-                        angle_range=(None, None),
-                        speed_range=(None, None)):
+def set_linear_velocity_constant(print_organizer, v=25.0):
     """ Sets the linear velocity parameter of the printpoints depending on the selected type.
 
     Parameters
     ----------
     print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
-    velocity_type: str
-        Determines how to add linear velocity to the printpoints.
-
-        'constant':              one value used for all printpoints
-        'per_layer':             different values used for every layer
-        'by_layer_height':       set velocity in accordance to layer height (beta, to be improved)
-        'by_overhang':           set velocity in accordance to the overhang (beta, to be improved)
-    v: float
-        Velocity value (in mm/s) to set for printpoints. Defaults to 25 mm/s.
-    per_layer_velocities: list of floats
-        If setting velocity per layer, provide a list of floats with equal length to the number of layers.
-    angle_range: tuple
-        Two angles (in degrees) that give the minimum and maximum value to map the speed_range to.
-        For example, (10, 50) will assign the maximum speed to overhang angles of 10 degrees
-        or less, and the minimum speed to points with an overhang angle of 50 degrees and above.
-    speed_range: tuple
-        xxx
-    """
-    logger.info("Setting linear velocity with type : " + str(velocity_type))
-
-    if not (velocity_type == "constant"
-            or velocity_type == "per_layer"
-            or velocity_type == "by_layer_height"
-            or velocity_type == "by_overhang"):
-        raise ValueError("Velocity method doesn't exist")
-
-    pp_dict = print_organizer.printpoints_dict
-
-    for i, layer_key in enumerate(pp_dict):
-        for path_key in pp_dict[layer_key]:
-            path_printpoints = pp_dict[layer_key][path_key]
-            for printpoint in path_printpoints:
-
-                if velocity_type == "constant":
-                    printpoint.velocity = v
-
-                elif velocity_type == "per_layer":
-                    assert per_layer_velocities, "You need to provide one velocity value per layer"
-                    assert len(per_layer_velocities) == print_organizer.number_of_layers, \
-                        'Wrong number of velocity values. You need to provide one velocity value per layer, ' \
-                        'on the "per_layer_velocities" list.'
-                    printpoint.velocity = per_layer_velocities[i]
-
-                # ----- TODO: these two methods are trying to do the same thing. They should be merged!
-                elif velocity_type == "by_layer_height":
-                    printpoint.velocity = calculate_linear_velocity_based_on_layer_height(printpoint)
-                elif velocity_type == "by_overhang":
-                    mesh = print_organizer.slicer.mesh
-                    printpoint.velocity = calculate_linear_velocity_based_on_overhang(printpoint, mesh,
-                                                                                      angle_range, speed_range)
+    v:  float. Velocity value (in mm/s) to set for printpoints. Defaults to 25 mm/s. """
+    logger.info("Setting constant linear velocity")
+    for printpoint, layer_key, path_key in print_organizer.printpoints_keys_iterator():
+        printpoint.velocity = v
 
 
-# --------  Nozzle linear velocity based on layer height
-
-# TODO: These parameters should NOT be hardcoded! Instead they should be passed as a dictionary of parameters.
-motor_omega = 2 * math.pi  # 1 revolution / sec = 2*pi rad/sec
-motor_r = 4.0  # 4.25 #mm
-motor_linear_speed = motor_omega * motor_r
-D_filament = 2.75  # mm
-filament_area = math.pi * (D_filament / 2.0) ** 2  # pi*r^2
-multiplier = 0.25  # arbitrary value! You might have to change this
-
-
-def calculate_linear_velocity_based_on_layer_height(printpoint):
-    """
-    Calculates the linear velocity during the print of a printpoint, so that the volume of extrusion matches the
-    volume of the desired path cross-section
-    path_area * robot_linear_speed = filament_area * motor_linear_speed
+def set_linear_velocity_per_layer(print_organizer, per_layer_velocities):
+    """ Sets the linear velocity parameter of the printpoints depending on the selected type.
 
     Parameters
     ----------
-    printpoint: :class: 'compas_slicer.geometry.PrintPoint'
+    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
+    per_layer_velocities: list
+        A list of velocities (floats) with equal length to the number of layers.
     """
-    layer_width = max(printpoint.layer_height, 0.4)
-    path_area = layer_width * printpoint.layer_height
-    linear_speed = (filament_area * motor_linear_speed) / path_area
-    return linear_speed * multiplier
+    logger.info("Setting per-layer linear velocity")
+    assert len(per_layer_velocities) == print_organizer.number_of_layers, 'Wrong number of velocity values. You need \
+        to provide one velocity value per layer, on the "per_layer_velocities" list.'
+    for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
+        printpoint.velocity = per_layer_velocities[i]
 
 
-# --------  Nozzle linear velocity based on overhang
-def calculate_linear_velocity_based_on_overhang(printpoint, mesh, angle_range, speed_range):
+def set_linear_velocity_by_range(print_organizer, get_param_func, parameter_range, velocity_range,
+                                 bound_remapping=True):
     """
-    Calculates the linear velocity during the print of a printpoint, so that it is slower on large overhangs.
+    Sets the linear velocity parameter of the printpoints depending on the selected type.
 
     Parameters
     ----------
-    printpoint: :class: 'compas_slicer.geometry.PrintPoint'
-    mesh: :class: 'compas.datastructures.Mesh'
-    angle_range: tupple
-    speed_range: tupple
-
+    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
+    get_param_func: function that takes as argument a :class: 'compas_slicer.geometry.Printpoint': get_param_func(pp)
+        and returns the parameter value that will be used for the remapping
+    parameter_range: tuple
+        An example of a parameter that can be used is the overhang angle, or the layer height.
+    velocity_range: tuple
+        The range of velocities where the parameter will be remapped
+    bound_remapping: bool
+        If True, the remapping is bound in the domain velocity_range, else it is unbound.
     """
-    # get mesh normal and calculate overhang angle
-    mesh_normal = get_closest_mesh_normal_to_pt(mesh, printpoint.pt)
-    vect_angle = angle_vectors(mesh_normal, Vector(0.0, 0.0, 1.0), deg=True)
-    overhang_angle = abs(90 - vect_angle)
+    logger.info("Setting linear velocity based on parameter range")
+    for printpoint, layer_key, path_key in print_organizer.printpoints_keys_iterator():
+        param = get_param_func(printpoint)
+        if bound_remapping:
+            v = remap(param, parameter_range[0], parameter_range[1], velocity_range[0], velocity_range[1])
+        else:
+            v = remap_unbound(param, parameter_range[0], parameter_range[1], velocity_range[0], velocity_range[1])
+        printpoint.velocity = v
 
-    # remap values
-    min_speed, max_speed = speed_range
-    min_angle, max_angle = angle_range
-    old_range = max_angle - min_angle
-    new_range = max_speed - min_speed
 
-    if overhang_angle <= min_angle:
-        return max_speed
-    elif min_angle < overhang_angle <= max_angle:
-        velocity = (((overhang_angle - min_angle) * new_range) / old_range) + min_speed
-        return new_range - (velocity - new_range)
-    else:  # overhang_angle > max_angle:
-        return min_speed
+def set_linear_velocity_by_overhang(print_organizer, overhang_range, velocity_range, bound_remapping=True):
+    """
+    An example function for how to use the 'set_linear_velocity_by_range'. In this case the parameter that controls the
+    velocity is the overhang, measured as a dot product with the horizontal direction.
+
+    Parameters
+    ----------
+    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
+    overhang_range: tuple:
+        should be within [0.0, 1.0]. For example a reasonable value would be [0.0, 0.5], that would
+        be remapping overhangs up to 45 degrees
+    velocity_range: tuple
+    bound_remapping: bool
+    """
+    def get_param_func(ppt): return dot_vectors(ppt.mesh_normal, Vector(0.0, 0.0, 1.0))
+    # returns values from 0.0 (no overhang) to 1.0 (horizontal overhang)
+    set_linear_velocity_by_range(print_organizer, get_param_func, overhang_range, velocity_range, bound_remapping)
 
 
 if __name__ == "__main__":

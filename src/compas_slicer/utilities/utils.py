@@ -10,7 +10,9 @@ import scipy
 
 logger = logging.getLogger('logger')
 
-__all__ = ['get_output_directory',
+__all__ = ['remap',
+           'remap_unbound',
+           'get_output_directory',
            'save_to_json',
            'load_from_json',
            'is_jsonable',
@@ -33,6 +35,30 @@ __all__ = ['get_output_directory',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
            'get_all_files_with_name']
+
+
+def remap(input_val, in_from, in_to, out_from, out_to):
+    """ Bounded remap. """
+    if input_val <= in_from:
+        return out_from
+    elif input_val >= in_to:
+        return out_to
+    else:
+        return remap_unbound(input_val, in_from, in_to, out_from, out_to)
+
+
+def remap_unbound(input_val, in_from, in_to, out_from, out_to):
+    """
+    Remaps input_val from source domain to target domain.
+    No clamping is performed, the result can be outside of the target domain
+    if the input is outside of the source domain.
+    """
+    out_range = out_to - out_from
+    in_range = in_to - in_from
+    in_val = input_val - in_from
+    val = (float(in_val) / in_range) * out_range
+    out_val = out_from + val
+    return out_val
 
 
 def get_output_directory(path):
