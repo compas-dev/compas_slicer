@@ -49,13 +49,15 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.1.1
+            0.1.2
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.2">0.1.2</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.1">0.1.1</a>
             
@@ -99,12 +101,12 @@
         
         
         <div class="section" id="installation">
-<h1>Installation</h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p class="lead">COMPAS_SLICER can be easily installed on multiple platforms.</p>
 <div class="section" id="basic-installation-steps">
-<h2>Basic installation steps</h2>
+<h2>Basic installation steps<a class="headerlink" href="#basic-installation-steps" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="step-1-install-compas">
-<h3>Step 1: Install compas</h3>
+<h3>Step 1: Install compas<a class="headerlink" href="#step-1-install-compas" title="Permalink to this headline">¶</a></h3>
 <p>Create a new environment (you can replace ‘compas_slicer’ with your own environment name),
 and install compas, compas_cgal, and libigl.</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda create -n compas_slicer <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.7
@@ -116,7 +118,7 @@ conda install -c conda-forge igl
 </div>
 </div>
 <div class="section" id="step-2-install-compas-slicer">
-<h3>Step 2: Install compas_slicer</h3>
+<h3>Step 2: Install compas_slicer<a class="headerlink" href="#step-2-install-compas-slicer" title="Permalink to this headline">¶</a></h3>
 <p>Clone the repository and activate your environment.</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>git clone https://github.com/compas-dev/compas_slicer.git
 conda activate compas_slicer
@@ -129,7 +131,7 @@ conda activate compas_slicer
 <p>You should get the message ‘Successfully installed compas-slicer’ (amongst other packages)</p>
 </div>
 <div class="section" id="step-3-install-compas-viewers">
-<h3>Step 3. Install compas_viewers</h3>
+<h3>Step 3. Install compas_viewers<a class="headerlink" href="#step-3-install-compas-viewers" title="Permalink to this headline">¶</a></h3>
 <p>Install compas_viewers (<a class="reference external" href="https://github.com/compas-dev/compas_viewers">https://github.com/compas-dev/compas_viewers</a>).</p>
 <p>Download the wheel file from here: <a class="reference external" href="https://www.lfd.uci.edu/~gohlke/pythonlibs/">https://www.lfd.uci.edu/~gohlke/pythonlibs/</a></p>
 <p>To install on an existing environment with python=3.7, use:</p>
@@ -141,16 +143,16 @@ pip install &lt;path/to/compas_viewers&gt;
 </div>
 </div>
 <div class="section" id="step-4-test-if-the-library-works">
-<h3>Step 4. Test if the library works</h3>
+<h3>Step 4. Test if the library works<a class="headerlink" href="#step-4-test-if-the-library-works" title="Permalink to this headline">¶</a></h3>
 <p>Run the file examples/1_versions_check.py</p>
 </div>
 </div>
 <div class="section" id="troubleshooting">
-<h2>Troubleshooting</h2>
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
 <p>If you encounter a problem that is not described here, please file an issue
 using the <a class="reference external" href="https://github.com/compas-dev/compas_slicer/issues">Issue Tracker</a>.</p>
 <div class="section" id="installing-planarity">
-<h3>Installing Planarity</h3>
+<h3>Installing Planarity<a class="headerlink" href="#installing-planarity" title="Permalink to this headline">¶</a></h3>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>ModuleNotFoundError: No module named <span class="s1">&#39;Cython&#39;</span>
 </code></pre></div>
 </div>
@@ -161,7 +163,7 @@ In that case, install cython using pip (or conda) and then run the installation 
 </div>
 </div>
 <div class="section" id="microsoft-visual-c-build-tools">
-<h3>Microsoft Visual C++ Build Tools</h3>
+<h3>Microsoft Visual C++ Build Tools<a class="headerlink" href="#microsoft-visual-c-build-tools" title="Permalink to this headline">¶</a></h3>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>error: Microsoft Visual C++ <span class="m">14</span>.0 or greater is required. Get it with <span class="s2">&quot;Microsoft C++ Build Tools&quot;</span>: https://visualstudio.microsoft.com/visual-cpp-build-tools/
 </code></pre></div>
 </div>
@@ -171,7 +173,7 @@ To install the Microsoft Visual C++ Build Tools choose one of the options provid
 Then run the pip installation commands again.</p>
 </div>
 <div class="section" id="numpy-error">
-<h3>Numpy error</h3>
+<h3>Numpy error<a class="headerlink" href="#numpy-error" title="Permalink to this headline">¶</a></h3>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>RuntimeError: The current Numpy installation <span class="o">(</span><span class="s1">&#39;C:\\Users\\&lt;username&gt;\\.conda\\envs\\compas_slicer\\lib\\site-packages\\numpy\\__init__.py&#39;</span><span class="o">)</span> fails to pass a sanity check due to a bug <span class="k">in</span> the windows runtime. See this issue <span class="k">for</span> more information: https://tinyurl.com/y3dm3h86
 </code></pre></div>
 </div>
@@ -302,7 +304,7 @@ Make sure you are in the correct environment and type:</p>
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.1.1',
+  VERSION           : '0.1.2',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',
