@@ -1,8 +1,7 @@
 from compas.geometry import closest_point_on_plane, barycentric_coordinates
 import logging
 import progressbar
-import numpy as np
-import scipy
+from compas_slicer.utilities.utils import pull_pts_to_mesh_faces
 
 logger = logging.getLogger('logger')
 
@@ -53,16 +52,6 @@ def is_reserved_attribute(attr):
     taken_attributes = ['x', 'y', 'z', 'uv',
                         'scalar_field']
     return attr in taken_attributes
-
-
-def pull_pts_to_mesh_faces(mesh, points):
-    points = np.array(points, dtype=np.float64).reshape((-1, 3))
-    fi_fk = {index: fkey for index, fkey in enumerate(mesh.faces())}
-    f_centroids = np.array([mesh.face_centroid(fkey) for fkey in mesh.faces()], dtype=np.float64)
-    closest_fis = np.argmin(scipy.spatial.distance_matrix(points, f_centroids), axis=1)
-    closest_fks = [fi_fk[fi] for fi in closest_fis]
-    projected_pts = [closest_point_on_plane(point, mesh.face_plane(fi)) for point, fi in zip(points, closest_fis)]
-    return closest_fks, projected_pts
 
 
 def transfer_mesh_attributes_to_point(mesh, fkey, proj_pt):

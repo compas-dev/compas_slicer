@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from compas.geometry import Point, distance_point_point_sqrd, normalize_vector
-from compas.geometry import Vector, length_vector, closest_point_in_cloud
+from compas.geometry import Vector, length_vector, closest_point_in_cloud, closest_point_on_plane
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
@@ -22,11 +22,11 @@ __all__ = ['remap',
            'point_list_to_dict',
            'point_list_from_dict',
            'get_closest_mesh_vkey_to_pt',
-           'get_closest_mesh_normal_to_pt',
            'get_mesh_cotmatrix_igl',
            'get_mesh_cotans_igl',
            'get_closest_pt_index',
            'get_closest_pt',
+           'pull_pts_to_mesh_faces',
            'plot_networkx_graph',
            'get_mesh_vertex_coords_with_attribute',
            'get_dict_key_from_value',
@@ -117,6 +117,29 @@ def get_closest_pt(pt, pts):
     """
     ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
     return pts[ci]
+
+
+def pull_pts_to_mesh_faces(mesh, points):
+    """
+    Very fast method for projecting a list of points on a mesh, and finding their closest face keys.
+
+    Parameters
+    ----------
+    mesh: :class: compas.datastructures.Mesh
+    points: list, compas.geometry.Point
+
+    Returns
+    -------
+    closest_fks: a list of the closest face keys
+    projected_pts: a list of the projected points on the mesh
+    """
+    points = np.array(points, dtype=np.float64).reshape((-1, 3))
+    fi_fk = {index: fkey for index, fkey in enumerate(mesh.faces())}
+    f_centroids = np.array([mesh.face_centroid(fkey) for fkey in mesh.faces()], dtype=np.float64)
+    closest_fis = np.argmin(scipy.spatial.distance_matrix(points, f_centroids), axis=1)
+    closest_fks = [fi_fk[fi] for fi in closest_fis]
+    projected_pts = [closest_point_on_plane(point, mesh.face_plane(fi)) for point, fi in zip(points, closest_fis)]
+    return closest_fks, projected_pts
 
 
 def smooth_vectors(vectors, strength, iterations):
@@ -250,27 +273,6 @@ def get_closest_mesh_vkey_to_pt(mesh, pt):
     vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(pt, v_tupple[1]))
     closest_vkey = vertex_tupples[0][0]
     return closest_vkey
-
-
-def get_closest_mesh_normal_to_pt(mesh, pt):
-    """
-    Finds the closest vertex normal to the point.
-
-    Parameters
-    ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-    pt: :class: 'compas.geometry.Point'
-
-    Returns
-    ----------
-    :class: 'compas.geometry.Vector'
-        The closest normal of the mesh.
-
-    """
-
-    closest_vkey = get_closest_mesh_vkey_to_pt(mesh, pt)
-    v = mesh.vertex_normal(closest_vkey)
-    return Vector(v[0], v[1], v[2])
 
 
 def get_mesh_vertex_coords_with_attribute(mesh, attr, value):

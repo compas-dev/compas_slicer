@@ -1,6 +1,5 @@
-import math
-from compas.geometry import Vector, angle_vectors, dot_vectors
-from compas_slicer.utilities import get_closest_mesh_normal_to_pt, remap, remap_unbound
+from compas.geometry import Vector, dot_vectors
+from compas_slicer.utilities import remap, remap_unbound
 import logging
 
 logger = logging.getLogger('logger')
