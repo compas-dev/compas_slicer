@@ -1,5 +1,6 @@
-from compas.geometry import Vector, dot_vectors
-from compas_slicer.utilities import remap, remap_unbound
+import math
+from compas.geometry import Vector, angle_vectors, dot_vectors
+from compas_slicer.utilities import get_closest_mesh_normal_to_pt, remap, remap_unbound
 import logging
 
 logger = logging.getLogger('logger')
@@ -59,7 +60,6 @@ def set_linear_velocity_by_range(print_organizer, param_func, parameter_range, v
     for printpoint in print_organizer.printpoints_iterator():
         param = param_func(printpoint)
         assert param, 'The param_func does not return any value for calculating the velocity range.'
-
         if bound_remapping:
             v = remap(param, parameter_range[0], parameter_range[1], velocity_range[0], velocity_range[1])
         else:
