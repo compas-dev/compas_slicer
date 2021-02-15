@@ -65,7 +65,7 @@ def main():
     generate_raft(slicer,
                   raft_offset=20,
                   distance_between_paths=5,
-                  direction="diagonal",
+                  direction="xy_diagonal",
                   raft_layers=1)
 
     # ==========================================================================
