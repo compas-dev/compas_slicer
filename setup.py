@@ -28,13 +28,13 @@ optional_requirements = {}
 
 setup(
     name="compas_slicer",
-    version="0.1.0",
-    description="additive manufacturing package for the compas framework",
+    version="0.1.2",
+    description="Additive manufacturing package for the COMPAS framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/compas-dev/compas_slicer",
-    author="Mathias Bernhard",
-    author_email="bernhard@arch.ethz.ch",
+    author="Ioanna Mitropoulou and Joris Burger",
+    author_email="mitropoulou@arch.ethz.ch",
     license="MIT license",
     classifiers=[
         "Development Status :: 4 - Beta",
