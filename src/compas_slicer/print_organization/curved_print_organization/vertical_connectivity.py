@@ -37,5 +37,6 @@ class VerticalConnectivity:
         self.parameters = parameters
         self.printpoints = {}  # dict with pne list of printpoints per path
 
+
 if __name__ == "__main__":
     pass
