@@ -1,8 +1,10 @@
 # compas_slicer
 
-[![Licence MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/compas-dev/compas_slicer/blob/master/LICENSE) [![Travis](https://travis-ci.org/compas-dev/compas_slicer.svg?branch=master)](https://travis-ci.org/compas-dev/compas_slicer)
+[![build](https://github.com/compas-dev/compas_slicer/workflows/build/badge.svg)](https://github.com/compas-dev/compas_slicer/actions)
+[![GitHub - License](https://img.shields.io/github/license/compas-dev/compas_slicer.svg)](https://github.com/compas-dev/compas_slicer/blob/master/LICENSE) 
+[![PyPI - Latest Release](https://img.shields.io/pypi/v/COMPAS-SLICER.svg)](https://pypi.python.org/project/COMPAS-SLICER)
 
-Additive manufacturing package for the COMPAS framework.
+Slicing package for FDM 3D Printing with COMPAS.
 
 
 Main features

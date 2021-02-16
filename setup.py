@@ -28,8 +28,8 @@ optional_requirements = {}
 
 setup(
     name="compas_slicer",
-    version="0.1.2",
-    description="Additive manufacturing package for the COMPAS framework",
+    version="0.1.3",
+    description="Slicing package for FDM 3D Printing with COMPAS",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/compas-dev/compas_slicer",
