@@ -71,36 +71,6 @@ class BasePrintOrganizer(object):
                     yield printpoint, i, j, k
 
     ######################
-    # Iterators
-    ######################
-    def printpoints_iterator(self):
-        """Iterate over the printpoints of the print organizer.
-        Yields
-        ------
-        printpoint: :class: 'compas_slicer.geometry.Printpoint'
-        """
-        assert len(self.printpoints_dict) > 0, 'No printpoints have been created.'
-        for layer_key in self.printpoints_dict:
-            for path_key in self.printpoints_dict[layer_key]:
-                for printpoint in self.printpoints_dict[layer_key][path_key]:
-                    yield printpoint
-
-    def printpoints_indices_iterator(self):
-        """ Iterate over the printpoints of the print organizer.
-        Yields
-        ------
-        printpoint: :class: 'compas_slicer.geometry.Printpoint'
-        i: int, layer index. To get the layer key use: layer_key = 'layer_%d' % i
-        j: int, path index. To get the path key use: path_key = 'path_%d' % j
-        k: int, printpoint index
-        """
-        assert len(self.printpoints_dict) > 0, 'No printpoints have been created.'
-        for i, layer_key in enumerate(self.printpoints_dict):
-            for j, path_key in enumerate(self.printpoints_dict[layer_key]):
-                for k, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
-                    yield printpoint, i, j, k
-
-    ######################
     # Properties
     ######################
 

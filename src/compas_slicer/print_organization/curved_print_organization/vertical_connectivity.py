@@ -43,47 +43,40 @@ class VerticalConnectivity:
     ######################
     # Main
     def compute(self):
-        """ Run the segment connectivity process. """
-        self.initialize_printpoints()
-        self.fill_in_printpoints_information()
-
-    ######################
-    # Utilities
-    def initialize_printpoints(self):
-        """ Initializes printpoints in a list, without filling in their attributes. """
-
-        all_pts = [pt for path in self.paths for pt in path.points]
-        closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.mesh, all_pts)
-        normals = [Vector(*self.mesh.face_normal(fkey)) for fkey in closest_fks]
-
-        count = 0
-        for i, path in enumerate(self.paths):
-            self.printpoints[i] = []
-            for pt in path.points:
-                avg_layer_height = get_param(self.parameters, 'avg_layer_height', 'layers')
-                self.printpoints[i].append(PrintPoint(pt=pt, layer_height=avg_layer_height, mesh_normal=normals[count]))
-                count += 1
-
-    def fill_in_printpoints_information(self):
-        """ Fills in the attributes of previously initialized printpoints. """
-        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='layers')
-        min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='layers')
-
-        crv_to_check = Path(self.base_boundary.points, True)  # creation of fake path for the lower boundary
-        with progressbar.ProgressBar(max_value=len(self.paths)) as bar:
-            for i, path in enumerate(self.paths):
-                for j, p in enumerate(path.points):
-                    cp = closest_point_on_polyline(p, Polyline(crv_to_check.points))
-                    d = distance_point_point(cp, p)
-
-                    self.printpoints[i][j].closest_support_pt = Point(*cp)
-                    self.printpoints[i][j].distance_to_support = d
-                    self.printpoints[i][j].layer_height = max(min(d, max_layer_height), min_layer_height)
-                    self.printpoints[i][j].up_vector = Vector(*normalize_vector(Vector.from_start_end(cp, p)))
-                    self.printpoints[i][j].frame = self.printpoints[i][j].get_frame()
-
-                bar.update(i)
-                crv_to_check = path
+        pass
+        # max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='layers')
+        # min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='layers')
+        #
+        # all_pts = [pt for path in self.paths for pt in path.points]
+        # closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.mesh, all_pts)
+        # normals = [Vector(*self.mesh.face_normal(fkey)) for fkey in closest_fks]
+        #
+        #
+        # with progressbar.ProgressBar(max_value=len(self.paths)) as bar:
+        #
+        #     count = 0
+        #     crv_to_check = Path(self.base_boundary.points, True)  # creation of fake path for the lower boundary
+        #     for i, path in enumerate(self.paths):
+        #         self.printpoints[i] = []
+        #         for p in path.points:
+        #             avg_layer_height = get_param(self.parameters, 'avg_layer_height', 'layers')
+        #             cp = closest_point_on_polyline(p, Polyline(crv_to_check.points))
+        #             d = distance_point_point(cp, p)
+        #
+        #             ppt = PrintPoint(pt=p, layer_height=avg_layer_height, mesh_normal=normals[count])
+        #
+        #             ppt.closest_support_pt = Point(*cp)
+        #             ppt.distance_to_support = d
+        #             ppt.layer_height = max(min(d, max_layer_height), min_layer_height)
+        #             ppt.up_vector = Vector(*normalize_vector(Vector.from_start_end(cp, p)))
+        #             ppt.frame = ppt.get_frame()
+        #
+        #             self.printpoints[i].append(ppt)
+        #             count += 1
+        #
+        #         crv_to_check = path
+        #
+        #     bar.update(i)
 
 
 if __name__ == "__main__":

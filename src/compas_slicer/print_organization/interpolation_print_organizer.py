@@ -6,7 +6,13 @@ import logging
 from compas_slicer.geometry import Path, PrintPoint
 import compas_slicer.utilities as utils
 from compas_slicer.parameters import get_param
+import compas
 import compas_slicer
+from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, normalize_vector, Point
+import logging
+from compas_slicer.geometry import Path, PrintPoint
+import compas_slicer.utilities as utils
+from compas_slicer.parameters import get_param
 
 logger = logging.getLogger('logger')
 
