@@ -18,7 +18,7 @@ def set_linear_velocity_constant(print_organizer, v=25.0):
     print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
     v:  float. Velocity value (in mm/s) to set for printpoints. Defaults to 25 mm/s. """
     logger.info("Setting constant linear velocity")
-    for printpoint, layer_key, path_key in print_organizer.printpoints_keys_iterator():
+    for printpoint in print_organizer.printpoints_iterator():
         printpoint.velocity = v
 
 
@@ -56,7 +56,7 @@ def set_linear_velocity_by_range(print_organizer, param_func, parameter_range, v
         If True, the remapping is bound in the domain velocity_range, else it is unbound.
     """
     logger.info("Setting linear velocity based on parameter range")
-    for printpoint, layer_key, path_key in print_organizer.printpoints_keys_iterator():
+    for printpoint in print_organizer.printpoints_iterator():
         param = param_func(printpoint)
         assert param, 'The param_func does not return any value for calculating the velocity range.'
 
