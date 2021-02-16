@@ -47,15 +47,6 @@ class VerticalConnectivity:
         self.initialize_printpoints()
         self.fill_in_printpoints_information()
 
-        h_smoothing = get_param(self.parameters, key='layer_heights_smoothing', defaults_type='print_organization')
-        if h_smoothing[0]:
-            logger.info('Layer heights smoothing using horizontal neighbors')
-            self.smooth_printpoints_layer_heights(iterations=h_smoothing[1], strength=h_smoothing[2])
-        v_smoothing = get_param(self.parameters, key='up_vectors_smoothing', defaults_type='print_organization')
-        if v_smoothing[0]:
-            logger.info('Up vectors smoothing using horizontal neighbors')
-            self.smooth_up_vectors(iterations=v_smoothing[1], strength=v_smoothing[2])
-
     ######################
     # Utilities
     def initialize_printpoints(self):
@@ -93,56 +84,6 @@ class VerticalConnectivity:
 
                 bar.update(i)
                 crv_to_check = path
-
-    def smooth_printpoints_layer_heights(self, iterations, strength):
-        """ Smooth printpoints heights based on neighboring. """
-        for i, path in enumerate(self.paths):
-            self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.layer_height,
-                                                  set_attr_value=set_printpoint_height)
-
-    def smooth_up_vectors(self, iterations, strength):  # TODO: ATTENTION TO THE ATTRIBUTES THAT NEED TO BE RECOMPUTED
-        """ Smooth printpoints up_vectors based on neighboring. """
-        for i, path in enumerate(self.paths):
-            self.smooth_path_printpoint_attribute(i, iterations, strength, get_attr_value=lambda pp: pp.up_vector,
-                                                  set_attr_value=set_printpoint_up_vec)
-            for pp in self.printpoints[i]:  # recompute frames
-                pp.frame = pp.get_frame()
-
-    def smooth_path_printpoint_attribute(self, path_index, iterations, strength, get_attr_value, set_attr_value):
-
-        """General description.
-        Parameters
-        ----------
-        path_index: int
-        iterations: int
-        strength: float
-        get_attr_value: function that returns an attribute of a printpoint, get_attr_value(pp)
-        set_attr_value: function that sets an attribute of a printpoint, set_attr_value(pp, new_value)
-        """
-        for _ in range(iterations):
-            attributes = [get_attr_value(pp) for pp in self.printpoints[path_index]]
-
-            if self.paths[path_index].is_closed:
-                for j, v in enumerate(attributes):
-                    mid = (attributes[j - 1] + attributes[(j + 1) % len(attributes)]) / 2
-                    new_value = mid * strength + v * (1 - strength)
-                    set_attr_value(self.printpoints[path_index][j], new_value)
-            else:
-                for j, v in enumerate(attributes):
-                    if 0 < j < len(attributes) - 1:
-                        mid = (attributes[j - 1] + attributes[(j + 1)]) / 2
-                        new_value = mid * strength + v * (1 - strength)
-                        set_attr_value(self.printpoints[path_index][j], new_value)
-
-
-def set_printpoint_up_vec(pp, v):
-    """ Set printpoint.up_vector = v. """
-    pp.up_vector = v
-
-
-def set_printpoint_height(pp, h):
-    """ Set printpoint.layer_height = h. """
-    pp.layer_height = h
 
 
 if __name__ == "__main__":

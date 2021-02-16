@@ -12,6 +12,4 @@ def print_organization_default_param(key):
 
 default_parameters = \
     {
-        'layer_heights_smoothing': [False, 5, 0.2],
-        'up_vectors_smoothing': [True, 2, 0.2],
     }
