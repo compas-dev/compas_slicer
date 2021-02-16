@@ -7,6 +7,14 @@ from compas_slicer.print_organization.curved_print_organization import BaseBound
 from compas_slicer.print_organization.curved_print_organization import VerticalConnectivity
 from compas_slicer.geometry import PrintPoint
 from compas_slicer.parameters import get_param
+import compas
+import compas_slicer
+from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, normalize_vector, Point
+import logging
+from compas_slicer.geometry import Path, PrintPoint
+import compas_slicer.utilities as utils
+import progressbar
+from compas_slicer.parameters import get_param
 
 logger = logging.getLogger('logger')
 
@@ -46,13 +54,11 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             self.topological_sorting()
         self.selected_order = None
 
-        self.vertical_layers_print_data = {}  # one segment per vertical layer
-        self.create_vertical_layers_dict()
-        self.create_base_boundaries()  # creation of one base boundary per vertical_layer
-        self.create_vertical_connectivity()
+        # creation of one base boundary per vertical_layer
+        self.base_boundaries = self.create_base_boundaries()
 
     def __repr__(self):
-        return "<InterpolationPrintOrganizer with %i vertical_layers_print_data>" % len(self.vertical_layers_print_data)
+        return "<InterpolationPrintOrganizer with %i vertical_layers>" % len(self.vertical_layers)
 
     def topological_sorting(self):
         """ When the print consists of various paths, this function initializes a class that creates
@@ -62,14 +68,9 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.vertical_layers,
                                                                max_layer_height, DATA_PATH=self.DATA_PATH)
 
-    def create_vertical_layers_dict(self):
-        """ Initializes vertical_layers_print_data dictionary with empty vertical_layers_print_data. """
-        for i, vertical_layer in enumerate(self.vertical_layers):
-            self.vertical_layers_print_data[i] = {'boundary': None,
-                                                  'path_collection': None}
-
     def create_base_boundaries(self):
         """ Creates one BaseBoundary per vertical_layer."""
+        bs = []
         root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
 
@@ -84,26 +85,15 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
                         parent = self.vertical_layers[parent_index]
                         boundary_pts.extend(parent.paths[-1].points)
                     boundary = BaseBoundary(self.slicer.mesh, boundary_pts)
-                self.vertical_layers_print_data[i]['boundary'] = boundary
+                bs.append(boundary)
         else:
-            self.vertical_layers_print_data[0]['boundary'] = root_boundary
+            bs.append(root_boundary)
 
         # save intermediary outputs
-        b_data = {}
-        for i in self.vertical_layers_print_data:
-            b_data[i] = self.vertical_layers_print_data[i]['boundary'].to_data()
+        b_data = {i: b.to_data() for i, b in enumerate(bs)}
         utils.save_to_json(b_data, self.OUTPUT_PATH, 'boundaries.json')
 
-    def create_vertical_connectivity(self):
-        """ A VerticalConnectivity finds vertical relation between paths. Creates and fills in its printpoints."""
-        for i, vertical_layer in enumerate(self.vertical_layers):
-            logger.info('Creating vertical connectivity of segment no %d' % i)
-            path_collection = VerticalConnectivity(paths=vertical_layer.paths,
-                                                   base_boundary=self.vertical_layers_print_data[i]['boundary'],
-                                                   mesh=self.slicer.mesh,
-                                                   parameters=self.parameters)
-            path_collection.compute()
-            self.vertical_layers_print_data[i]['path_collection'] = path_collection
+        return bs
 
     def create_printpoints(self):
         """
@@ -111,17 +101,16 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         Based on the directed graph, select one topological order.
         From each path collection in that order copy PrintPoints dictionary in the correct order.
         """
-
-        # (1) --- First add the printpoints of the horizontal brim layer (first layer of print)
         current_layer_index = 0
 
+        # (1) --- First add the printpoints of the horizontal brim layer (first layer of print)
         self.printpoints_dict['layer_0'] = {}
         if len(self.horizontal_layers) > 0:  # first add horizontal brim layers
             paths = self.horizontal_layers[0].paths
             for j, path in enumerate(paths):
                 self.printpoints_dict['layer_0']['path_%d' % j] = \
                     [PrintPoint(pt=point, layer_height=get_param(self.parameters, 'avg_layer_height', 'layers'),
-                     mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh))
+                                mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh))
                      for k, point in enumerate(path.points)]
             current_layer_index += 1
 
@@ -132,28 +121,49 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         else:
             self.selected_order = [0]  # there is only one segment, only this option
 
-        # (3) --- Then add the printpoints of all the vertical layers in the selected order
-        for i in self.selected_order:
-            path_collection = self.vertical_layers_print_data[i]['path_collection']
+        # (3) --- Then create the printpoints of all the vertical layers in the selected order
+        for index, i in enumerate(self.selected_order):
+            layer = self.vertical_layers[i]
             self.printpoints_dict['layer_%d' % current_layer_index] = {}
-
-            for j, path in enumerate(path_collection.paths):
-                self.printpoints_dict['layer_%d' % current_layer_index]['path_%d' % j] = \
-                    [path_collection.printpoints[j][k] for k, p in enumerate(path.points)]
-
+            self.printpoints_dict['layer_%d' % current_layer_index] = self.get_layer_ppts(layer, self.base_boundaries[i])
             current_layer_index += 1
 
-    def check_printpoints_feasibility(self):
-        """ Checks if the get_distance to the closest support of every layer height is within the admissible limits. """
+    def get_layer_ppts(self, layer, base_boundary):
+        """ Creates the PrintPoints of a single layer."""
         max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='layers')
         min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='layers')
+        avg_layer_height = get_param(self.parameters, 'avg_layer_height', 'layers')
 
-        for layer_key in self.printpoints_dict:
-            for path_key in self.printpoints_dict[layer_key]:
-                ppt = self.printpoints_dict[layer_key][path_key]
-                d = ppt.distance_to_support
-                if d < min_layer_height or d > max_layer_height:
-                    ppt.is_feasible = False
+        all_pts = [pt for path in layer.paths for pt in path.points]
+        closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.slicer.mesh, all_pts)
+        normals = [Vector(*self.slicer.mesh.face_normal(fkey)) for fkey in closest_fks]
+
+        count = 0
+        crv_to_check = Path(base_boundary.points, True)  # creation of fake path for the lower boundary
+
+        layer_ppts = {}
+        for i, path in enumerate(layer.paths):
+            layer_ppts['path_%d' % i] = []
+
+            for p in path.points:
+                cp = closest_point_on_polyline(p, Polyline(crv_to_check.points))
+                d = distance_point_point(cp, p)
+
+                ppt = PrintPoint(pt=p, layer_height=avg_layer_height, mesh_normal=normals[count])
+
+                ppt.closest_support_pt = Point(*cp)
+                ppt.distance_to_support = d
+                ppt.layer_height = max(min(d, max_layer_height), min_layer_height)
+                ppt.up_vector = Vector(*normalize_vector(Vector.from_start_end(cp, p)))
+                ppt.frame = ppt.get_frame()
+
+                layer_ppts['path_%d' % i].append(ppt)
+                count += 1
+
+            crv_to_check = path
+
+        return layer_ppts
+
 
 
 if __name__ == "__main__":

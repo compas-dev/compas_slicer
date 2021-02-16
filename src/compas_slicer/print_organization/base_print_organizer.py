@@ -40,11 +40,6 @@ class BasePrintOrganizer(object):
         """To be implemented by the inheriting classes"""
         pass
 
-    @abstractmethod
-    def check_printpoints_feasibility(self):
-        """To be implemented by the inheriting classes"""
-        pass
-
     ######################
     # Iterators
     ######################

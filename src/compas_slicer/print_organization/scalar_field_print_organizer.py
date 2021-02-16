@@ -94,11 +94,6 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
             data['gradient_norm'] = g_evaluation.vertex_gradient_norm[i]
         return g_evaluation
 
-    def check_printpoints_feasibility(self):
-        """ Check the feasibility of the print points """
-        # TODO
-        raise NotImplementedError
-
 
 if __name__ == "__main__":
     pass

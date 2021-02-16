@@ -55,11 +55,6 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                         bar.update(count)
                         count += 1
 
-    def check_printpoints_feasibility(self):
-        """ Check the feasibility of the print points """
-        # TODO
-        raise NotImplementedError
-
 
 if __name__ == "__main__":
     pass
