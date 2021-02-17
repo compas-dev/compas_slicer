@@ -22,6 +22,7 @@ __all__ = ['remap',
            'point_list_to_dict',
            'point_list_from_dict',
            'get_closest_mesh_vkey_to_pt',
+           'get_closest_mesh_normal_to_pt',
            'get_mesh_cotmatrix_igl',
            'get_mesh_cotans_igl',
            'get_closest_pt_index',
@@ -273,6 +274,24 @@ def get_closest_mesh_vkey_to_pt(mesh, pt):
     vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(pt, v_tupple[1]))
     closest_vkey = vertex_tupples[0][0]
     return closest_vkey
+
+
+def get_closest_mesh_normal_to_pt(mesh, pt):
+    """
+    Finds the closest vertex normal to the point.
+    Parameters
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    pt: :class: 'compas.geometry.Point'
+    Returns
+    ----------
+    :class: 'compas.geometry.Vector'
+        The closest normal of the mesh.
+    """
+
+    closest_vkey = get_closest_mesh_vkey_to_pt(mesh, pt)
+    v = mesh.vertex_normal(closest_vkey)
+    return Vector(v[0], v[1], v[2])
 
 
 def get_mesh_vertex_coords_with_attribute(mesh, attr, value):

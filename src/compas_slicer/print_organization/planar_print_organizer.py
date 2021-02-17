@@ -4,6 +4,7 @@ import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintPoint
 from compas.geometry import Vector
 import progressbar
+import compas_slicer
 
 logger = logging.getLogger('logger')
 
@@ -21,6 +22,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
     """
 
     def __init__(self, slicer):
+        assert isinstance(slicer, compas_slicer.slicers.PlanarSlicer), 'Please provide a PlanarSlicer'
         BasePrintOrganizer.__init__(self, slicer)
 
     def __repr__(self):

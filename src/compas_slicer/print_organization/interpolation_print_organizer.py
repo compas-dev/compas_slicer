@@ -6,6 +6,7 @@ import logging
 from compas_slicer.geometry import Path, PrintPoint
 import compas_slicer.utilities as utils
 from compas_slicer.parameters import get_param
+import compas_slicer
 
 logger = logging.getLogger('logger')
 
@@ -25,6 +26,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
     """
 
     def __init__(self, slicer, parameters, DATA_PATH):
+        assert isinstance(slicer, compas_slicer.slicers.InterpolationSlicer), 'Please provide an InterpolationSlicer'
         BasePrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)

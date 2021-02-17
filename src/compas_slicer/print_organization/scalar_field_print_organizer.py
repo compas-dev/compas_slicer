@@ -6,6 +6,8 @@ import progressbar
 import logging
 from compas_slicer.pre_processing import GradientEvaluation
 from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
+from compas_slicer.parameters import get_param
+import compas_slicer
 
 logger = logging.getLogger('logger')
 
@@ -23,6 +25,7 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
     """
 
     def __init__(self, slicer, parameters, DATA_PATH):
+        assert isinstance(slicer, compas_slicer.slicers.ScalarFieldSlicer), 'Please provide a ScalarFieldSlicer'
         BasePrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
@@ -57,7 +60,8 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
                     for k, point in enumerate(path.points):
                         normal = utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh)
 
-                        printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height, mesh_normal=normal)
+                        h = get_param(self.parameters, 'avg_layer_height', defaults_type='layers')
+                        printpoint = PrintPoint(pt=point, layer_height=h, mesh_normal=normal)
 
                         self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
                         bar.update(count)
