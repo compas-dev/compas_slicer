@@ -94,7 +94,7 @@ def main():
     # --- print organization
     if PRINT_ORGANIZER:
         filenames = utils.get_all_files_with_name('curved_slicer_', '.json', OUTPUT_PATH)
-        slicers = [BaseSlicer.from_data(utils.load_from_json(OUTPUT_PATH, filename)) for filename in filenames]
+        slicers = [InterpolationSlicer.from_data(utils.load_from_json(OUTPUT_PATH, filename)) for filename in filenames]
         for i, slicer in enumerate(slicers):
 
             print_organizer = InterpolationPrintOrganizer(slicer, parameters, DATA_PATH)
