@@ -30,7 +30,7 @@ class ScalarFieldSlicer(BaseSlicer):
         BaseSlicer.__init__(self, mesh)
 
         self.no_of_isocurves = no_of_isocurves
-        self.scalar_field = list(np.array(scalar_field) - np.max(np.array(scalar_field)))
+        self.scalar_field = list(np.array(scalar_field) - np.min(np.array(scalar_field)))
         self.parameters = parameters if parameters else {}
 
         mesh.update_default_vertex_attributes({'scalar_field': 0})
@@ -47,7 +47,7 @@ class ScalarFieldSlicer(BaseSlicer):
         with progressbar.ProgressBar(max_value=self.no_of_isocurves) as bar:
             for i in range(1, self.no_of_isocurves + 1):
                 for vkey, data in self.mesh.vertices(data=True):
-                    data['scalar_field'] = self.scalar_field[vkey] + i * step
+                    data['scalar_field'] = self.scalar_field[vkey] - i * step
 
                 contours = ScalarFieldContours(self.mesh)
                 contours.compute()
