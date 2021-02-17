@@ -10,6 +10,7 @@ from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import InterpolationPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
+from compas_slicer.print_organization import smooth_printpoints_up_vectors
 from compas_slicer.post_processing import generate_brim
 import time
 
@@ -34,9 +35,7 @@ def main():
         'target_HIGH_smooth_union': [True, 7],  # boolean, blend_radius
         'avg_layer_height': 5.0,  # controls number of curves that will be generated
         'min_layer_height': 0.1,
-        'max_layer_height': 50.0,  # 2.0,
-        'layer_heights_smoothing': [False, 3, 0.5],  # boolean, iterations, strength
-        'up_vectors_smoothing': [False, 3, 0.5]  # boolean, iterations, strength
+        'max_layer_height': 50.0  # 2.0
     }
 
     ### --- Load initial_mesh
@@ -102,6 +101,7 @@ def main():
             print_organizer.create_printpoints()
             set_extruder_toggle(print_organizer, slicer)
             add_safety_printpoints(print_organizer, z_hop=10.0)
+            smooth_printpoints_up_vectors(print_organizer, strength=0.5, iterations=10)
 
             ### --- Save printpoints dictionary to json file
             printpoints_data = print_organizer.output_printpoints_dict()
