@@ -50,6 +50,9 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
         paths_to_offset = slicer.layers[0].paths
         has_vertical_layers = False
 
+    assert len(paths_to_offset) > 0, 'Attention the brim generator did not find any path on the base. Please check the \
+                                      paths of your slicer. '
+
     # (2) --- create new empty brim_layer
     brim_layer = Layer(paths=[])
     brim_layer.is_brim = True
