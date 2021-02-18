@@ -25,6 +25,7 @@ Unreleased
 **Added**
 
 * Fancy badges in the readme
+* Export to Gcode
 
 **Changed**
 

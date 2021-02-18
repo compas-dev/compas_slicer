@@ -10,9 +10,10 @@ Slicing package for FDM 3D Printing with COMPAS.
 Main features
 -------------
 
-* Planar slicing
-* Curved slicing (using the stratum library)
-* Export robotic commands in Json format
+* Planar slicing (default method, and method based on Cgal library)
+* Curved slicing (interpolation of boundaries, UV slicing, scalar field slicing)
+* Generation of fabrication-related information
+* Export print data to Json and gcode formats
 
 Getting started
 ------------
@@ -43,7 +44,7 @@ pip install -e .
 ```
 - You should get the message 'Successfully installed compas-slicer' (amongst other packages)
 
-### Step 3. Install compas_viewers
+### Step 3. Install compas_viewers (optional)
 
 - Install compas_viewers (https://github.com/compas-dev/compas_viewers).
 
@@ -98,3 +99,4 @@ Authors
 
 * Ioanna Mitropoulou <<mitropoulou@arch.ethz.ch>> [@ioanna21](https://github.com/ioanna21)
 * Joris Burger <<burger@arch.ethz.ch>> [@joburger](https://github.com/joburger)
+* Andrei Jipa <<jipa@arch.ethz.ch>> [@stratocaster](https://github.com/stratocaster)
