@@ -28,7 +28,11 @@ For example, create an environment named ``my-project`` (or replace with your ow
 
 #### COMPAS Viewers
 
+<<<<<<< HEAD
 Follow the instructions to install `compas_view2` (https://github.com/compas-dev/compas_view2).
+=======
+### Step 3. Install compas_viewers (optional)
+>>>>>>> 06e9328 (Updates on readme and changelog)
 
 #### COMPAS CGAL
 
