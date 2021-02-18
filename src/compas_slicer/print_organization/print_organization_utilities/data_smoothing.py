@@ -32,10 +32,10 @@ def smooth_printpoint_attribute(print_organizer, iterations, strength, get_attr_
     for ppt in print_organizer.printpoints_iterator():
         assert get_attr_value(ppt), 'The attribute you are trying to smooth has not been assigned a value'
 
-    for iteration in range(iterations):
-        attrs = [get_attr_value(ppt) for ppt in print_organizer.printpoints_iterator()]
-        new_values = deepcopy(attrs)
+    attrs = [get_attr_value(ppt) for ppt in print_organizer.printpoints_iterator()]
+    new_values = deepcopy(attrs)
 
+    for iteration in range(iterations):
         for i, ppt in enumerate(print_organizer.printpoints_iterator()):
             if 0 < i < len(attrs) - 1:  # ignore first and last element
                 mid = (attrs[i - 1] + attrs[i + 1]) * 0.5
