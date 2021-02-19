@@ -18,7 +18,7 @@ class PlanarSlicer(BaseSlicer):
         Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).
     slicer_type: str
         String representing which slicing method to use.
-        options: 'default', 'cgal', 'meshcut'
+        options: 'default', 'cgal'
     layer_height: float
         Distance between layers (slices).
     """
@@ -47,11 +47,6 @@ class PlanarSlicer(BaseSlicer):
             logger.info('')
             logger.info("Planar slicing using default function ...")
             self.layers = compas_slicer.slicers.create_planar_paths(self.mesh, planes)
-
-        elif self.slicer_type == "meshcut":
-            logger.info('')
-            logger.info("Planar slicing using meshcut ...")
-            self.layers = compas_slicer.slicers.create_planar_paths_meshcut(self.mesh, planes)
 
         elif self.slicer_type == "cgal":
             logger.info('')
