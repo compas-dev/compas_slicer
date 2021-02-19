@@ -15,6 +15,7 @@ from compas_slicer.print_organization import set_linear_velocity
 from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.utilities import save_to_json
 from compas_viewers.objectviewer import ObjectViewer
+from compas_slicer.parameters import get_param
 
 from compas.datastructures import Mesh
 from compas.geometry import Point
@@ -30,7 +31,13 @@ MODEL = 'simple_vase_open_low_res.obj'
 def main():
 
     compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
-    move_mesh_to_point(compas_mesh, Point(0, 0, 0))
+    delta = get_param({}, key='delta', defaults_type='gcode')  # boolean for delta printers
+    print_volume_x = get_param({}, key='print_volume_x', defaults_type='gcode')  # in mm
+    print_volume_y = get_param({}, key='print_volume_y', defaults_type='gcode')  # in mm
+    if delta:
+        move_mesh_to_point(compas_mesh, Point(0, 0, 0))
+    else:
+        move_mesh_to_point(compas_mesh, Point(print_volume_x/2, print_volume_y/2, 0))
 
     # ----- slicing
     slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=4.5)
