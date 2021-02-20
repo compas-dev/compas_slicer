@@ -45,9 +45,12 @@ class ScalarFieldSlicer(BaseSlicer):
 
         # create paths + layers
         with progressbar.ProgressBar(max_value=self.no_of_isocurves) as bar:
-            for i in range(1, self.no_of_isocurves + 1):
+            for i in range(0, self.no_of_isocurves + 1):
                 for vkey, data in self.mesh.vertices(data=True):
-                    data['scalar_field'] = self.scalar_field[vkey] - i * step
+                    if i == 0:
+                        data['scalar_field'] = self.scalar_field[vkey] - 0.05 * step  # things can be tricky in the edge
+                    else:
+                        data['scalar_field'] = self.scalar_field[vkey] - i * step
 
                 contours = ScalarFieldContours(self.mesh)
                 contours.compute()

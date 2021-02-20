@@ -54,13 +54,11 @@ class UVSlicer(BaseSlicer):
 
         # create paths + layers
         with progressbar.ProgressBar(max_value=self.no_of_isocurves) as bar:
-            for i in range(1, self.no_of_isocurves + 1):
-
+            for i in range(0, self.no_of_isocurves + 1):
+                if i == 0:
+                    i += 0.05  # contours are a bit tricky in the edges
                 if paths_type == 'spiral':
                     u1, u2 = i, i + 1.0
-                elif paths_type == 'zigzag':
-                    u1 = i if i % 2 == 0 else i + 1.0
-                    u2 = i + 1.0 if i % 2 == 0 else i
                 else:  # 'flat'
                     u1 = u2 = i
 
