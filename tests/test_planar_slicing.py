@@ -13,7 +13,7 @@ layer_height = 15.0
 z = [compas_mesh.vertex_attribute(key, 'z') for key in compas_mesh.vertices()]
 min_z, max_z = min(z), max(z)
 d = abs(min_z - max_z)
-no_of_layers = int(d / layer_height)
+no_of_layers = int(d / layer_height) + 1
 
 
 def test_planar_slicing_success():

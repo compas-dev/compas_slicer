@@ -37,7 +37,7 @@ def set_linear_velocity_per_layer(print_organizer, per_layer_velocities):
     for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
         printpoint.velocity = per_layer_velocities[i]
 
- 
+
 def set_linear_velocity_by_range(print_organizer, param_func, parameter_range, velocity_range,
                                  bound_remapping=True):
     """

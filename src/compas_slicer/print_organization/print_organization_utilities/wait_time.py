@@ -34,25 +34,23 @@ def set_wait_time(print_organizer, wait_type, wait_time):
 
     logger.info("Setting wait time")
 
-    for i, layer_key in enumerate(pp_dict):
-        for j, path_key in enumerate(pp_dict[layer_key]):
-            for k, printpoint in enumerate(pp_dict[layer_key][path_key]):
-                # compares the current point with the next point
-                next_ppt = find_next_printpoint(pp_dict, layer_key, path_key, i, j, k)
+    for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
+        # compares the current point with the next point
+        next_ppt = find_next_printpoint(pp_dict, layer_key, path_key, i, j, k)
 
-                # for the brim layer don't add any wait times
-                if not print_organizer.slicer.layers[i].is_brim and next_ppt:
-                    if wait_type == "wait_before_extrusion":
-                        if printpoint.extruder_toggle is False and next_ppt.extruder_toggle is True:
-                            next_ppt.wait_time = wait_time
-                    elif wait_type == "wait_after_extrusion":
-                        if printpoint.extruder_toggle is True and next_ppt.extruder_toggle is False:
-                            next_ppt.wait_time = wait_time
-                    elif wait_type == "wait_before_and_after_extrusion":
-                        if printpoint.extruder_toggle is False and next_ppt.extruder_toggle is True:
-                            next_ppt.wait_time = wait_time
-                        if printpoint.extruder_toggle is True and next_ppt.extruder_toggle is False:
-                            next_ppt.wait_time = wait_time
+        # for the brim layer don't add any wait times
+        if not print_organizer.slicer.layers[i].is_brim and next_ppt:
+            if wait_type == "wait_before_extrusion":
+                if printpoint.extruder_toggle is False and next_ppt.extruder_toggle is True:
+                    next_ppt.wait_time = wait_time
+            elif wait_type == "wait_after_extrusion":
+                if printpoint.extruder_toggle is True and next_ppt.extruder_toggle is False:
+                    next_ppt.wait_time = wait_time
+            elif wait_type == "wait_before_and_after_extrusion":
+                if printpoint.extruder_toggle is False and next_ppt.extruder_toggle is True:
+                    next_ppt.wait_time = wait_time
+                if printpoint.extruder_toggle is True and next_ppt.extruder_toggle is False:
+                    next_ppt.wait_time = wait_time
 
 
 def override_wait_time(print_organizer, override_value):

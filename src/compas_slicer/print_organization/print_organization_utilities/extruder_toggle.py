@@ -75,28 +75,17 @@ def override_extruder_toggle(print_organizer, override_value):
         Value to override the extruder_toggle values with.
 
     """
-    pp_dict = print_organizer.printpoints_dict
-    if isinstance(override_value, bool):
-        for layer_key in pp_dict:
-            for path_key in pp_dict[layer_key]:
-                path_printpoints = pp_dict[layer_key][path_key]
-                for printpoint in path_printpoints:
-                    printpoint.extruder_toggle = override_value
-
-    else:
-        raise NameError("Override value must be of type bool")
+    assert isinstance(override_value, bool), "Override value must be of type bool"
+    for printpoint in print_organizer.printpoints_iterator():
+        printpoint.extruder_toggle = override_value
 
 
 def check_assigned_extruder_toggle(print_organizer):
     """ Checks that all the printpoints have an assigned extruder toggle. """
-    pp_dict = print_organizer.printpoints_dict
     all_toggles_assigned = True
-    for layer_key in pp_dict:
-        for path_key in pp_dict[layer_key]:
-            for pp in pp_dict[layer_key][path_key]:
-
-                if pp.extruder_toggle is None:
-                    all_toggles_assigned = False
+    for printpoint in print_organizer.printpoints_iterator():
+        if printpoint.extruder_toggle is None:
+            all_toggles_assigned = False
     return all_toggles_assigned
 
 

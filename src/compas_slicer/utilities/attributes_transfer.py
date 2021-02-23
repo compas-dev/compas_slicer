@@ -1,4 +1,4 @@
-from compas.geometry import closest_point_on_plane, barycentric_coordinates
+from compas.geometry import barycentric_coordinates
 import logging
 import progressbar
 from compas_slicer.utilities.utils import pull_pts_to_mesh_faces

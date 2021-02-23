@@ -1,12 +1,6 @@
 from compas_slicer.print_organization import BasePrintOrganizer
 from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
-from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, normalize_vector, Point
-import logging
-from compas_slicer.geometry import Path, PrintPoint
-import compas_slicer.utilities as utils
-from compas_slicer.parameters import get_param
-import compas
 import compas_slicer
 from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, normalize_vector, Point
 import logging
@@ -162,7 +156,6 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             crv_to_check = path
 
         return layer_ppts
-
 
 
 if __name__ == "__main__":

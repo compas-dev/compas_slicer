@@ -20,26 +20,22 @@ def set_blend_radius(print_organizer, d_fillet=10, buffer=0.3):
     """
 
     logger.info("Setting blend radius")
-    pp_dict = print_organizer.printpoints_dict
 
-    for layer_key in pp_dict:
-        for path_key in pp_dict[layer_key]:
-            path_printpoints = pp_dict[layer_key][path_key]
-            for i, printpoint in enumerate(path_printpoints):
-                neighboring_items = print_organizer.get_printpoint_neighboring_items(layer_key, path_key, i)
+    for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
+        layer_key = 'layer_%d' % i
+        path_key = 'path_%d' % j
+        neighboring_items = print_organizer.get_printpoint_neighboring_items(layer_key, path_key, k)
 
-                radius = d_fillet
-                if neighboring_items[0]:
-                    radius = min(radius,
-                                 norm_vector(Vector.from_start_end(neighboring_items[0].pt, printpoint.pt)) * buffer)
+        radius = d_fillet
+        if neighboring_items[0]:
+            radius = min(radius, norm_vector(Vector.from_start_end(neighboring_items[0].pt, printpoint.pt)) * buffer)
 
-                if neighboring_items[1]:
-                    radius = min(radius,
-                                 norm_vector(Vector.from_start_end(neighboring_items[1].pt, printpoint.pt)) * buffer)
+        if neighboring_items[1]:
+            radius = min(radius, norm_vector(Vector.from_start_end(neighboring_items[1].pt, printpoint.pt)) * buffer)
 
-                radius = round(radius, 5)
+        radius = round(radius, 5)
 
-                printpoint.blend_radius = radius
+        printpoint.blend_radius = radius
 
 
 if __name__ == "__main__":
