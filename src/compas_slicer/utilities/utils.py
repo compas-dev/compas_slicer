@@ -16,6 +16,7 @@ __all__ = ['remap',
            'save_to_json',
            'load_from_json',
            'is_jsonable',
+           'get_jsonable_attributes',
            'save_to_text_file',
            'flattened_list_of_dictionary',
            'interrupt',
@@ -212,6 +213,21 @@ def is_jsonable(x):
         return True
     except TypeError:
         return False
+
+
+def get_jsonable_attributes(attributes_dict):
+    jsonable_attr = {}
+    for attr_key in attributes_dict:
+        attr = attributes_dict[attr_key]
+        if is_jsonable(attr):
+            jsonable_attr[attr_key] = attr
+        else:
+            if isinstance(attr, np.ndarray):
+                jsonable_attr[attr_key] = list(attr)
+            else:
+                jsonable_attr[attr_key] = 'non serializable attribute'
+
+    return jsonable_attr
 
 
 #######################################

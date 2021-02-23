@@ -8,7 +8,7 @@ __all__ = ['get_vertex_gradient_from_face_gradient',
            'get_edge_gradient_from_vertex_gradient',
            'get_face_gradient_from_scalar_field',
            'normalize_gradient',
-           'get_per_face_divergence',
+           'get_per_vertex_divergence',
            'get_scalar_field_from_gradient']
 
 
@@ -113,7 +113,7 @@ def get_face_edge_vectors(mesh, fkey):
     return edge_0, edge_1, edge_2
 
 
-def get_per_face_divergence(mesh, X, cotans):
+def get_per_vertex_divergence(mesh, X, cotans):
     """
     Computes the divergence of the gradient X for the mesh, using cotangent weights.
 
@@ -164,7 +164,7 @@ def get_scalar_field_from_gradient(mesh, X, C, cotans):
     ----------
     np.array (dimensions : #V x 1) one scalar value per vertex.
     """
-    div_X = get_per_face_divergence(mesh, X, cotans)
+    div_X = get_per_vertex_divergence(mesh, X, cotans)
     u = scipy.sparse.linalg.spsolve(C, div_X)
     logger.info('Solved Δ(u) = div(X). Linear system error |Δ(u) - div(X)| = ' + str(np.linalg.norm(C * u - div_X)))
     u = u - np.amin(u)  # make start value equal 0

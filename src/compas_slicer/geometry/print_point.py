@@ -1,4 +1,5 @@
 from compas.geometry import Point, Frame, Vector, cross_vectors
+import compas_slicer.utilities.utils as utils
 import compas
 
 __all__ = ['PrintPoint']
@@ -98,7 +99,9 @@ class PrintPoint(object):
             'closest_support_pt': self.closest_support_pt.to_data() if self.closest_support_pt else None,
             'distance_to_support': self.distance_to_support,
 
-            'is_feasible': self.is_feasible
+            'is_feasible': self.is_feasible,
+
+            'attributes': utils.get_jsonable_attributes(self.attributes)
         }
         return point
 
@@ -134,6 +137,8 @@ class PrintPoint(object):
         pp.distance_to_support = data['distance_to_support']
 
         pp.is_feasible = data['is_feasible']
+
+        pp.attributes = data['attributes']
         return pp
 
 

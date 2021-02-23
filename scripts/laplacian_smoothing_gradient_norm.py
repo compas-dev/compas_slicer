@@ -1,7 +1,7 @@
 import numpy as np
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.preprocessing_utils.gradient import normalize_gradient, \
-    get_vertex_gradient_from_face_gradient, get_scalar_field_from_gradient, get_per_face_divergence
+    get_vertex_gradient_from_face_gradient, get_scalar_field_from_gradient, get_per_vertex_divergence
 
 
 ###################################################
