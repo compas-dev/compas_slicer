@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <title>compas_slicer - compas_slicer.slicers.base_slicer</title>
+  
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <meta name="author" content="" />
+  <meta name="description" content="" />
+
+  <link rel="shortcut icon" href="../../../_static/images/compas.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/styles/default.min.css">
+  <link rel="stylesheet" type="text/css" href="../../../_static/css/compas.css" />
+  <link rel="stylesheet" type="text/css" href="../../../_static/css/compas-reference.css" />
+
+  
+
+  
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+<body data-spy="scroll" data-target="#compas-toc">
+  <!-- header -->
+  <header id="header" class="compas-header d-flex align-items-center">
+    <nav class="navbar navbar-expand navbar-dark col flex-column flex-md-row text-center">
+      <!-- brand -->
+      <a class="navbar-brand" href="https://compas.dev/compas_slicer/">
+        <img src="../../../_static/images/compas_icon_white.png" alt="COMPAS SLICER" width="48px" height="48px" />
+      </a>
+      <!-- brand -->
+      <!-- primary -->
+      <ul class="navbar-nav">
+        <li class="nav-item active"><a class="nav-link" href="https://compas.dev/compas_slicer/">COMPAS SLICER</a></li>
+      </ul>
+      <!-- primary -->
+      <ul class="navbar-nav d-none d-md-flex ml-md-auto">
+        <!-- version -->
+        
+        <li class="nav-item nav-versions dropdown">
+          <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            0.1.3
+          </a>
+          <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.3">0.1.3</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.2">0.1.2</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.1">0.1.1</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.0">0.1.0</a>
+            
+          </div>
+        </li>
+        
+        <!-- version -->
+        <!-- social -->
+        <li class="nav-item">
+          <a class="nav-link" href="https://https://github.com/compas-dev/compas_slicer" target="_blank">
+            <span class="fab fa-github fa-1x"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://forum.compas-framework.org" target="_blank">
+            <span class="fab fa-discourse fa-1x"></span>
+          </a>
+        </li>
+        <!-- social -->
+      </ul>
+    </nav>
+  </header>
+  <!-- header -->
+  <!-- main -->
+  <div class="container-fluid">
+    <div class="row">
+      <!-- main -->
+      <main class="col-12 col-md-9 col-xl-7 px-2 px-md-5 pt-2 pb-5 compas-content" role="main">
+        
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-3 bg-white px-0">
+            <li class="breadcrumb-item"><a href="../../../index.html">docs</a></li>
+            
+              <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+            
+            <li class="breadcrumb-item active" aria-current="page">compas_slicer.slicers.base_slicer</li>
+          </ol>
+        </nav>
+        
+
+        
+        
+        <h1>Source code for compas_slicer.slicers.base_slicer</h1><div class="highlight"><pre><code>
+<span></span><span class="kn">import</span> <span class="nn">compas</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">compas_slicer</span>
+<span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.utilities</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polyline</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.geometry</span> <span class="kn">import</span> <span class="n">Layer</span><span class="p">,</span> <span class="n">VerticalLayer</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_align</span><span class="p">,</span> <span class="n">unify_paths_orientation</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">mesh_bounding_box</span>
+<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">distance_point_point_sqrd</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BaseSlicer&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="BaseSlicer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer">[docs]</a><span class="k">class</span> <span class="nc">BaseSlicer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is an organizational class that holds all the information for the slice process.</span>
+<span class="sd">    Do not use this class directly in your python code. Instead use PlanarSlicer or InterpolationSlicer.</span>
+<span class="sd">    This class is meant to be extended for the implementation of the various slicers.</span>
+<span class="sd">    See :class:`compas.slicer.slicers.PlanarSlicer` and :class:`compas.slicer.slicers.InterpolationSlicer` as examples.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mesh: :class:`compas.datastructures.Mesh`</span>
+<span class="sd">        Input mesh, has to be a triangular mesh (i.e. no quads or n-gons allowed)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseSlicer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.__init__.html#compas_slicer.slicers.BaseSlicer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">):</span>
+        <span class="c1">#  check input</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">compas</span><span class="o">.</span><span class="n">datastructures</span><span class="o">.</span><span class="n">Mesh</span><span class="p">),</span> \
+            <span class="s2">&quot;Input mesh must be of type &lt;compas.datastructures.Mesh&gt;, not &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mesh</span><span class="p">))</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">check_triangular_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+
+        <span class="c1">#  input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="n">mesh</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Input Mesh with : </span><span class="si">%d</span><span class="s2"> vertices, </span><span class="si">%d</span><span class="s2"> Faces&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">())),</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">()))))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># any class inheriting from Layer(horizontal sorting)</span></div>
+
+    <span class="c1">##############################</span>
+    <span class="c1">#  --- Properties</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns int: Total number of points in the slicer.&quot;&quot;&quot;</span>
+        <span class="n">total_number_of_pts</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+                <span class="n">total_number_of_pts</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">total_number_of_pts</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_of_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns int: Total number of layers.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_of_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns tuple (int, int, int): Total number of paths, number of open paths, number of closed paths. &quot;&quot;&quot;</span>
+        <span class="n">total_number_of_paths</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">closed_paths</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">open_paths</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">total_number_of_paths</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>
+                    <span class="n">closed_paths</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">open_paths</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">total_number_of_paths</span><span class="p">,</span> <span class="n">closed_paths</span><span class="p">,</span> <span class="n">open_paths</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vertical_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a list of all the vertical layers stored in the slicer. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">layer</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">VerticalLayer</span><span class="p">)]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">horizontal_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a list of all the layers stored in the slicer that are NOT vertical. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">layer</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">VerticalLayer</span><span class="p">)]</span>
+
+    <span class="c1">##############################</span>
+    <span class="c1">#  --- Functions</span>
+
+<div class="viewcode-block" id="BaseSlicer.slice_model"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.slice_model.html#compas_slicer.slicers.BaseSlicer.slice_model">[docs]</a>    <span class="k">def</span> <span class="nf">slice_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Slices the model and applies standard post-processing and removing of invalid paths.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_paths</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_invalid_paths_and_layers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">post_processing</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseSlicer.generate_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.generate_paths.html#compas_slicer.slicers.BaseSlicer.generate_paths">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">generate_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes. &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseSlicer.post_processing"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.post_processing.html#compas_slicer.slicers.BaseSlicer.post_processing">[docs]</a>    <span class="k">def</span> <span class="nf">post_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Applies standard post-processing operations: seams_align and unify_paths.&quot;&quot;&quot;</span>
+
+        <span class="c1">#  --- Align the seams between layers and unify orientation</span>
+        <span class="n">seams_align</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">align_with</span><span class="o">=</span><span class="s1">&#39;x_axis&#39;</span><span class="p">)</span>
+        <span class="n">unify_paths_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_paths</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created </span><span class="si">%d</span><span class="s2"> Layers with </span><span class="si">%d</span><span class="s2"> total number of points&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_points</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="BaseSlicer.close_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.close_paths.html#compas_slicer.slicers.BaseSlicer.close_paths">[docs]</a>    <span class="k">def</span> <span class="nf">close_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; For paths that are labeled as closed, it makes sure that the first and the last point are identical. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>  <span class="c1"># if the path is closed, first and last point should be the same.</span>
+                    <span class="k">if</span> <span class="n">distance_point_point_sqrd</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.00001</span><span class="p">:</span>  <span class="c1"># if not already the same</span>
+                        <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="BaseSlicer.remove_invalid_paths_and_layers"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.remove_invalid_paths_and_layers.html#compas_slicer.slicers.BaseSlicer.remove_invalid_paths_and_layers">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid_paths_and_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes invalid layers and paths from the slicer.&quot;&quot;&quot;</span>
+
+        <span class="n">paths_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">layers_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
+                <span class="c1"># check if a path has less than two points and appends to list to_remove</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">paths_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Invalid Path found: Layer </span><span class="si">%d</span><span class="s2">, Path </span><span class="si">%d</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span>
+                    <span class="c1"># check if the layer that the invalid path was in has only one path</span>
+                    <span class="c1"># this means that path is now invalid, and the entire layer should be removed</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">layers_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Invalid Layer found: Layer </span><span class="si">%d</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">layer</span><span class="p">)))</span>
+            <span class="c1"># check for layers with less than one path and appends to list to_remove</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">layers_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Invalid Layer found: Layer </span><span class="si">%d</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">layer</span><span class="p">)))</span>
+
+        <span class="c1"># compares the two lists and removes any invalid items</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths_to_remove</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers_to_remove</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseSlicer.find_vertical_layers_with_first_path_on_base"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.find_vertical_layers_with_first_path_on_base.html#compas_slicer.slicers.BaseSlicer.find_vertical_layers_with_first_path_on_base">[docs]</a>    <span class="k">def</span> <span class="nf">find_vertical_layers_with_first_path_on_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bbox</span> <span class="o">=</span> <span class="n">mesh_bounding_box</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+        <span class="n">z_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">bbox</span><span class="p">])</span>
+        <span class="n">paths_on_base</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">vertical_layer_indices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">d_threshold</span> <span class="o">=</span> <span class="mi">30</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">vertical_layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers</span><span class="p">):</span>
+            <span class="n">first_path</span> <span class="o">=</span> <span class="n">vertical_layer</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">avg_z_dist_from_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">z_min</span><span class="p">)</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">first_path</span><span class="o">.</span><span class="n">points</span><span class="p">]))</span>
+
+            <span class="k">if</span> <span class="n">avg_z_dist_from_min</span> <span class="o">&lt;</span> <span class="n">d_threshold</span><span class="p">:</span>
+                <span class="n">paths_on_base</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertical_layer</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">vertical_layer_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">paths_on_base</span><span class="p">,</span> <span class="n">vertical_layer_indices</span></div>
+
+    <span class="c1">##############################</span>
+    <span class="c1">#  --- Output</span>
+
+<div class="viewcode-block" id="BaseSlicer.printout_info"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.printout_info.html#compas_slicer.slicers.BaseSlicer.printout_info">[docs]</a>    <span class="k">def</span> <span class="nf">printout_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prints out information from the slicing process.&quot;&quot;&quot;</span>
+        <span class="n">no_of_paths</span><span class="p">,</span> <span class="n">closed_paths</span><span class="p">,</span> <span class="n">open_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_paths</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">---- Slicer Info ----&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of layers: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_layers</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of paths: </span><span class="si">%d</span><span class="s2">, open paths: </span><span class="si">%d</span><span class="s2">, closed paths: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">no_of_paths</span><span class="p">,</span> <span class="n">open_paths</span><span class="p">,</span> <span class="n">closed_paths</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of sampling printpoints on layers: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_points</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseSlicer.visualize_on_viewer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.visualize_on_viewer.html#compas_slicer.slicers.BaseSlicer.visualize_on_viewer">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_on_viewer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_mesh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">visualize_paths</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Visualizes slicing result using compas.viewers.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        viewer: :class:`compas_viewers.objectviewer.Objectviewer`</span>
+<span class="sd">            An instance of the Objectviewer class.</span>
+<span class="sd">        visualize_mesh: bool, optional</span>
+<span class="sd">            True to visualize mesh, False to not.</span>
+<span class="sd">        visualize_paths: bool, optional</span>
+<span class="sd">            True to visualize paths, False to not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">visualize_mesh</span><span class="p">:</span>
+            <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#ff0000&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span> <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">visualize_paths</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
+                    <span class="n">pts</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>
+                        <span class="n">pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">polyline</span> <span class="o">=</span> <span class="n">Polyline</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">VerticalLayer</span><span class="p">):</span>
+                        <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">polyline</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;VerticalSegment </span><span class="si">%d</span><span class="s2">, Path </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span>
+                                   <span class="n">settings</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#ffffff&#39;</span><span class="p">})</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">polyline</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Layer </span><span class="si">%d</span><span class="s2">, Path </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span>
+                                   <span class="n">settings</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#ffffff&#39;</span><span class="p">})</span></div>
+
+    <span class="c1">##############################</span>
+    <span class="c1">#  --- To data, from data</span>
+
+<div class="viewcode-block" id="BaseSlicer.from_data"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.from_data.html#compas_slicer.slicers.BaseSlicer.from_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Construct a slicer from its data representation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data: dict</span>
+<span class="sd">            The data dictionary.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        layer</span>
+<span class="sd">            The constructed slicer.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;mesh&#39;</span><span class="p">])</span>
+        <span class="n">slicer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+        <span class="n">layers_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;layers&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="n">layers_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">layers_data</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="s1">&#39;layer_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;horizontal_layer&#39;</span><span class="p">:</span>
+                <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Layer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">layers_data</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># &#39;vertical_layer&#39;</span>
+                <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">VerticalLayer</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">layers_data</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]))</span>
+        <span class="n">slicer</span><span class="o">.</span><span class="n">layer_height</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;layer_height&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">slicer</span></div>
+
+<div class="viewcode-block" id="BaseSlicer.to_json"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.to_json.html#compas_slicer.slicers.BaseSlicer.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes the slicer to a JSON file.&quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseSlicer.to_data"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.to_data.html#compas_slicer.slicers.BaseSlicer.to_data">[docs]</a>    <span class="k">def</span> <span class="nf">to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a dictionary of structured data representing the data structure.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            The slicer&#39;s data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># To avoid errors when saving to Json, create a copy of the self.mesh and remove from it</span>
+        <span class="c1"># any non-serializable attributes (by checking a random face and a random vertex, assuming</span>
+        <span class="c1"># that all faces and vertices share the same types of attributes).</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">v_key</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">get_any_vertex</span><span class="p">()</span>
+        <span class="n">v_attrs</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertex_attributes</span><span class="p">(</span><span class="n">v_key</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr_key</span> <span class="ow">in</span> <span class="n">v_attrs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_jsonable</span><span class="p">(</span><span class="n">v_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;vertex : &#39;</span> <span class="o">+</span> <span class="n">attr_key</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">v_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">():</span>
+                    <span class="n">mesh</span><span class="o">.</span><span class="n">unset_vertex_attribute</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">attr_key</span><span class="p">)</span>
+
+        <span class="n">f_key</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">get_any_face</span><span class="p">()</span>
+        <span class="n">f_attrs</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">face_attributes</span><span class="p">(</span><span class="n">f_key</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr_key</span> <span class="ow">in</span> <span class="n">f_attrs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_jsonable</span><span class="p">(</span><span class="n">f_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;face : &#39;</span> <span class="o">+</span> <span class="n">attr_key</span><span class="p">,</span> <span class="n">f_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">])</span>
+                <span class="n">mesh</span><span class="o">.</span><span class="n">update_default_face_attributes</span><span class="p">({</span><span class="n">attr_key</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">})</span>  <span class="c1"># just set all to 0.0</span>
+
+        <span class="c1"># fill data dictionary with slicer info</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;layers&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_layers_dict</span><span class="p">(),</span>
+                <span class="s1">&#39;mesh&#39;</span><span class="p">:</span> <span class="n">mesh</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span>
+                <span class="s1">&#39;layer_height&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="BaseSlicer.get_layers_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.get_layers_dict.html#compas_slicer.slicers.BaseSlicer.get_layers_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_layers_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a dictionary consisting of the layers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        
+      </main>
+      <!-- content -->
+      <!-- sidebar -->
+      <div class="col-12 col-md-3 compas-sidebar" role="navigation">
+        <form id="search" class="d-flex align-items-center compas-searchbox" action="../../../search.html" method="get">
+          <input class="form-control" type="text" name="q" placeholder="Search docs" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+          <button class="navbar-toggler d-md-none" type="button" data-toggle="collapse" data-target="#compas-navigation" aria-controls="compas-navigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </form>
+        
+        
+          <div id="compas-navigation" class="collapse compas-navigation">
+          <ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="../../../index.html">Overview</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../installation.html">Installation</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../examples.html">Examples</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../api.html">API Reference</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../devguide.html">Developer Guide</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../license.html">License</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../citing.html">Citing</a></li>
+</ul>
+
+          </div>
+        
+      </div>
+      <!-- sidebar -->
+      <!-- toc -->
+      <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
+        
+        
+      </div>
+      <!-- toc -->
+    </div>
+  </div>
+  <!-- main -->
+  <!-- footer -->
+  <footer class="compas-footer">
+    <nav class="nav p-2">
+      
+
+      
+    </nav>  
+  </footer>
+  <!-- footer -->
+  <!-- below -->
+  <div class="below py-5" style="background-color: #222;">
+    <div class="container">
+      <div class="row flex-column">
+      <div class="col-12 col-md-6 mx-md-auto text-center">
+        <h4 class="pb-3 below-text">COMPAS</h4>
+        <p class="below-text">
+          A computational framework for collaboration and research
+          in Architecture, Engineering, Fabrication, and Construction.
+        </p>
+        <nav class="nav justify-content-center pb-3">
+          <a class="nav-link mx-2 px-0 below-link" href="http://github.com/compas-dev" target="_blank">
+            <span class="fab fa-github fa-1x"></span>
+          </a>
+          <a class="nav-link mx-2 px-0 below-link" href="http://forum.compas-framework.org" target="_blank">
+            <span class="fab fa-discourse fa-1x"></span>
+          </a>
+          <a class="nav-link mx-2 px-0 below-link" href="https://pypi.org/project/COMPAS/" target="_blank">
+            <span class="fab fa-python fa-1x"></span>
+          </a>
+        </nav>
+      </div>
+      </div>
+      <div class="row">
+      <div class="col text-center">
+        <p class="p-0 m-0 below-text">Copyright &copy; 2017-2021 compas-dev</p>
+      </div>
+      </div>
+    </div>
+  </div>
+  <!-- below -->
+  <!-- scripts -->
+  <script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+  URL_ROOT          : '',
+  VERSION           : '0.1.3',
+  COLLAPSE_INDEX    : false,
+  FILE_SUFFIX       : '.html',
+  HAS_SOURCE        : 'false',
+  SOURCELINK_SUFFIX : '.txt'
+  };
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https:////cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.1/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.0.0/anchor.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+
+  <script src="../../../_static/underscore.js"></script>
+  <script src="../../../_static/doctools.js"></script>
+  <script src="../../../_static/js/searchtools_.js"></script>
+
+  <script>
+  $(document).ready(function() {
+    $(".language-default code").addClass("python");
+    $(".language-python code").addClass("python");
+    $(".language-bash code").addClass("bash");
+    $(".language-cpp code").addClass("cpp");
+    $(".language-json code").addClass("json");
+    $(".language-none code").addClass("plaintext");
+
+    hljs.initHighlighting();
+    anchors.add();
+
+    $('.nav-versions .dropdown-item').filter(function(i, ver) {
+      return window.location.href.startsWith(ver.href);
+    }).addClass("active");
+
+  });
+
+
+  var url = $("#doc_versions").data("url");
+  var docs_site = $("#doc_versions").data("docs");
+
+  if (url) {
+    $.get(url, res=>{
+      var lines = res.match(/[^\r\n]+/g);
+      lines.forEach(version => {
+        $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
+      });
+    })
+  }
+  </script>
+  <!-- scripts -->
+  
+  
+</body>
+</html>
