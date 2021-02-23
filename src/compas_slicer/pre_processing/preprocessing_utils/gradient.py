@@ -125,7 +125,7 @@ def get_per_face_divergence(mesh, X, cotans):
 
     Returns
     ----------
-    np.array (dimensions : #F x 1) one float (divergence value) per face.
+    np.array (dimensions : #V x 1) one float (divergence value) per vertex.
     """
     cotans = cotans.reshape(-1, 3)
     div_X = np.zeros(len(list(mesh.vertices())))

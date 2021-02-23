@@ -1,7 +1,7 @@
 import logging
 import math
 from compas_slicer.parameters import get_param
-from compas.geometry import Point, Vector, distance_point_point
+from compas.geometry import Point, Vector
 from compas_slicer.geometry import PrintPoint
 from datetime import datetime
 
@@ -17,7 +17,6 @@ def create_gcode_text(print_organizer, parameters):
     print_organizer: :class: compas_slicer.print_organization.PrintOrganizer
     parameters : dict with gcode parameters.
         The defaults for those parameters are in the file compas_slicer.parameters.defaults_gcode.
-
     Returns
     ----------
     str, gcode text file
@@ -76,10 +75,10 @@ def create_gcode_text(print_organizer, parameters):
     gcode += "G21                             ;metric values" + n_l
     gcode += "G90                             ;absolute positioning" + n_l
     gcode += "M107                            ;start with the fan off" + n_l
-    gcode += "M140 S%d                        ;set bed temperature fast" % bed_temperature + n_l
-    gcode += "M104 S%d                        ;set extruder temperature fast" % extruder_temperature + n_l
-    gcode += "M109 S%d                        ;set extruder temperature and wait" % extruder_temperature + n_l
-    gcode += "M190 S%d                        ;set bed temperature and wait" % bed_temperature + n_l
+    gcode += "M140 S" + str(bed_temperature) + "                        ;set bed temperature fast" + n_l
+    gcode += "M104 S" + str(extruder_temperature) + "                       ;set extruder temperature fast" + n_l
+    gcode += "M109 S" + str(extruder_temperature) + "                       ;set extruder temperature and wait" + n_l
+    gcode += "M190 S" + str(bed_temperature) + "                        ;set bed temperature and wait" + n_l
     gcode += "G21                             ;metric values" + n_l
     gcode += "G90                             ;absolute positioning" + n_l
     gcode += "M83                             ;set e-values to relative while in absolute mode" + n_l
@@ -90,34 +89,13 @@ def create_gcode_text(print_organizer, parameters):
     gcode += "G28 X0 Y0                       ;home x and y axes" + n_l
     gcode += "G28 Z0                          ;home z axis independently" + n_l
     gcode += "G1 F4500                        ;set feedrate to 4,500 mm/min (75 mm/s)" + n_l
-    # gcode += "G1 Z15.0                        ;move nozzle up 15mm" + n_l
-    # gcode += "G1 F140 E10                     ;extruded slowly some filament (default: 10mm)" + n_l
-    # gcode += "G92 E0                          ;reset the extruded length" + n_l  # useless after M83, otherwise needed
-    gcode += "G1 F%d                          ;set initial Feedrate" % feedrate_travel + n_l
+    gcode += "G1 Z15.0                        ;move nozzle up 15mm" + n_l
+    gcode += "G1 F140 E29                     ;extruded slowly some filament (default: 29mm)" + n_l
+    gcode += "G92 E0                          ;reset the extruded length" + n_l  # useless after M83, otherwise needed
+    gcode += "G1 F" + str(feedrate_travel) + "                       ;set initial Feedrate" + n_l
     gcode += "M117 compas gcode print...      ;show up text on LCD" + n_l
     gcode += ";" + n_l
     # ______________________________________________________________________/ header
-
-    # ######################################################################
-    # print dummy line to avoid initially extruded filament to mess up the print (default in CURA slicer)
-
-    h = 0.0  # get the layer height of the 1st printpoint
-    for ppt in print_organizer.printpoints_iterator():
-        h = ppt.layer_height
-        if h:
-            break
-
-    gcode += "; Dummy line" + n_l
-    # gcode += "G92 E0                               ;Reset Extruder" + n_l
-    gcode += "G1 Z2.0 F3000                        ;Move Z Axis up" + n_l
-    gcode += "G1 X5.1 Y10 Z%.3f F5000.0            ;Move to start position" % (h * 0.5) + n_l
-    gcode += "G1 X5.1 Y150.0 Z%.3f F1500.0 E15     ;Draw the first line" % (h * 0.5) + n_l
-    gcode += "G1 X5.4 Y150.0 Z%.3f F5000.0         ;Move to side a little" % (h * 0.5) + n_l
-    gcode += "G1 X5.4 Y20 Z%.3f F1500.0 E30        ;Draw the second line" % (h * 0.5) + n_l
-    gcode += "G92 E0                               ;Reset Extruder" + n_l
-    gcode += "G1 Z2.0 F3000                        ;Move Z Axis up" + n_l
-    gcode += ";" + n_l
-    # ______________________________________________________________________/ dummy line
 
     # ######################################################################
     # global parameters
@@ -125,70 +103,70 @@ def create_gcode_text(print_organizer, parameters):
     fan_on = False  # boolean; is true when fan is toggled
     prev_point = PrintPoint(Point(0, 0, 0), layer_height=1.0,
                             mesh_normal=Vector(1.0, 0.0, 0.0))  # dummy print_point that is overwritten
+    layer_height = 0.2  # dummy value that is overwritten
     # ______________________________________________________________________/ global parameters
 
     # ######################################################################
     # iterate all layers, paths
+    print('')
     for point_v, i, j, k in print_organizer.printpoints_indices_iterator():
-        pt = point_v.pt
         layer_height = point_v.layer_height
         # Calculate relative length
-        re_l = distance_point_point(pt, prev_point.pt)
-
+        re_l = ((point_v.pt.x - prev_point.pt.x) ** 2 + (point_v.pt.y - prev_point.pt.y) ** 2 + (
+                point_v.pt.z - prev_point.pt.z) ** 2) ** 0.5
         if k == 0:  # 'First point
             # retract before moving to first point in path if necessary
             if retraction_min_travel < re_l:
-                gcode += "G1 F%d      ;set retraction feedrate" % feedrate_retraction + n_l
-                gcode += "G1 E-%d     ;retract" % retraction_length + n_l
+                gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
+                gcode += "G1" + " E-" + str(retraction_length) + "      ;retract" + n_l
                 # ZHOP
-                gcode += "G1 Z%.3f     ;z-hop" % (prev_point.pt.z + z_hop) + n_l
+                gcode += "G1" + " Z" + '{:.3f}'.format(prev_point.pt.z + z_hop) + "  ;z-hop" + n_l
                 # move to first point in path:
-                gcode += "G1 F%d     ;set travel feedrate" % feedrate_travel + n_l
-                if prev_point.pt.z != pt.z:
-                    gcode += "G1 X%.3f Y%.3f Z%.3f" % (pt.x, pt.y, pt.z) + n_l
+                gcode += "G1" + " F" + str(feedrate_travel) + "    ;set travel feedrate" + n_l
+                if prev_point.pt.z != point_v.pt.z:
+                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
                 else:
-                    gcode += "G1 X%.3f Y%.3f" % (pt.x, pt.y) + n_l
+                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
                 # reverse z-hop after reaching the first point
-                gcode += "G1 F%d     ;set retraction feedrate" % feedrate_retraction + n_l
-                gcode += "G1 Z%.3f     ;reverse z-hop" % pt.z + n_l
+                gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
+                gcode += "G1" + " Z" + '{:.3f}'.format(point_v.pt.z) + "  ;reverse z-hop" + n_l
                 # reverse retract after reaching the first point
-                gcode += "G1 E%d     ;reverse retraction" % retraction_length + n_l
+                gcode += "G1" + " E" + str(retraction_length) + "       ;reverse retraction" + n_l
             else:
-                if prev_point.pt.z != pt.z:
-                    gcode += "G1 X%.3f Y%.3f Z%.3f" % (pt.x, pt.y, pt.z) + n_l
+                if prev_point.pt.z != point_v.pt.z:
+                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
+                        point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
                 else:
-                    gcode += 'G1 X%.3f Y%.3f' % (pt.x, pt.y) + n_l
-
+                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
             # set extrusion feedrate: low for adhesion to bed and normal otherwise
-            if pt.z < min_over_z:
-                gcode += "G1 F%d     ;set low feedrate" % feedrate_low + n_l
+            if point_v.pt.z < min_over_z:
+                gcode += "G1" + " F" + str(feedrate_low) + "    ;set low feedrate" + n_l
             else:
-                gcode += "G1 F%d     ;set extrusion feedrate" % feedrate + n_l
-
+                gcode += "G1" + " F" + str(feedrate) + "    ;set extrusion feedrate" + n_l
         else:  # from 2nd point in each path onwards
             # tmpflow = myflow.Branch(b)(i) here we can set the flow multiplier
             # Calculate feedrate : TODO: just a basic formula for now, better ones in the future
             e_val = 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
-            if pt.z < min_over_z:
+            if point_v.pt.z < min_over_z:
                 e_val *= flow_over
-            gcode += 'G1 X%.3f Y%.3f E%.3f' % (pt.x, pt.y, e_val) + n_l
+            gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
+                point_v.pt.y) + " E" + '{:.3f}'.format(e_val) + n_l
         prev_point = point_v
-
         if fan_on is False:
-            if pt.z >= fan_start_z:  # 'Fan On:
-                gcode += "M106 S%d     ;set fan on to set speed" % fan_speed + n_l
+            if i * layer_height >= fan_start_z:  # 'Fan On:
+                gcode += "M106 S" + str(fan_speed) + "     ;set fan on to set speed" + n_l
                 fan_on = True
 
     # 'retract after last path
-    gcode += "G1 F%d        ;set ret spd" % feedrate_retraction + n_l
-    gcode += "G1 E-%d       ;ret fil" % retraction_length + n_l
-    gcode += "G1 Z%.3f      ;ZHop" % (prev_point.pt.z + 5 * z_hop) + n_l
-    gcode += "G1 F%d        ;set ret spd" % feedrate_travel + n_l
+    gcode += "G1 F" + str(feedrate_retraction) + "     ;set ret spd" + n_l
+    gcode += "G1" + " E-" + str(retraction_length) + "       ;ret fil" + n_l
+    gcode += "G1" + " Z" + '{:.3f}'.format(3 * (prev_point.pt.z + z_hop)) + "  ;ZHop" + n_l
+    gcode += "G1 F" + str(feedrate_travel) + "    ;set ret spd" + n_l
 
     #######################################################################
     # Footer
     gcode += "M201 X500 Y500              ;set acceleration to 500mm/s^2" + n_l
-    gcode += "G1 F 1000                   ;set feedrate to 1000 mm/min" + n_l
+    gcode += "G1" + " F 1000                   ;set feedrate to 1000 mm/min" + n_l
     gcode += "G1 X0 Y0                    ;home x and y axes" + n_l
     gcode += "M104 S0                     ;turn extruder heater off" + n_l
     gcode += "M140 S0                     ;turn bed heater off (if it exists)" + n_l

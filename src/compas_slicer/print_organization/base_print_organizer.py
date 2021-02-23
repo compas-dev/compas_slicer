@@ -268,7 +268,7 @@ class BasePrintOrganizer(object):
         """
         # check print organizer: Should have horizontal layers, ideally should be planar
         # ...
-        gcode = compas_slicer.print_organization.create_gcode_text(self.printpoints_dict, parameters)
+        gcode = compas_slicer.print_organization.create_gcode_text(self, parameters)
         return gcode
 
     def get_printpoints_attribute(self, attr_name):
