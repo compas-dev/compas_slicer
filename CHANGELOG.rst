@@ -24,16 +24,29 @@ Unreleased
 
 **Added**
 
+* Iterators through printpoints in PrintOrganizer
+* Iterative smoothing of attributes on printpoints (ex smooth velocities, orientations etc)
 * Fancy badges in the readme
 * Export to Gcode
+* Export of (jsonable) PrintPoint attributes to json (in previous versions they were ignored upon export)
 
 **Changed**
 
+* added first layer in the slicing process that was previously removed.
+* set_velocity function was split into separate functions depending on type (constant, by layer, by range, by overhang)
+
 **Fixed**
+
+* Fixed bug on the calculation of the Printpoint frame (both on PrintOrganizer and on the gh visualization).
 
 **Deprecated**
 
 **Removed**
+
+* VerticalConnectivity from CurvedPrintOrganizer. This function does not need to be on its own class.
+* Checking feasibility of Printpoints in PrintOrganizer (anyway it was a function left not-implemented in most PrintOrganizers). Might be re-introduced in the future but with more specific tasks.
+* Planar slicing using MeshCut (and meshcut library from requirements).
+
 
 0.1.2
 ----------
