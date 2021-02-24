@@ -11,23 +11,8 @@ Unreleased
 
 **Added**
 
-**Changed**
-
-**Fixed**
-
-**Deprecated**
-
-**Removed**
-
-0.1.3
-----------
-
-**Added**
-
 * Iterators through printpoints in PrintOrganizer
 * Iterative smoothing of attributes on printpoints (ex smooth velocities, orientations etc)
-* Fancy badges in the readme
-* Export to Gcode
 * Export of (jsonable) PrintPoint attributes to json (in previous versions they were ignored upon export)
 
 **Changed**
@@ -47,6 +32,21 @@ Unreleased
 * Checking feasibility of Printpoints in PrintOrganizer (anyway it was a function left not-implemented in most PrintOrganizers). Might be re-introduced in the future but with more specific tasks.
 * Planar slicing using MeshCut (and meshcut library from requirements).
 
+0.1.3
+----------
+
+**Added**
+
+* Fancy badges in the readme
+* Export to Gcode
+
+**Changed**
+
+**Fixed**
+
+**Deprecated**
+
+**Removed**
 
 0.1.2
 ----------
