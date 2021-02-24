@@ -519,11 +519,12 @@ def get_dict_key_from_value(dictionary, val):
     return "key doesn't exist"
 
 
-def find_next_printpoint(pp_dict, layer_key, path_key, i, j, k):
+def find_next_printpoint(pp_dict, i, j, k):
     """
     Returns the next printpoint from the current printpoint if it exists, otherwise returns None.
     """
     next_ppt = None
+    layer_key, path_key = 'layer_%d' % i, 'path_%d' % j
     if k < len(pp_dict[layer_key][path_key]) - 1:  # If there are more ppts in the current path, then take the next ppt
         next_ppt = pp_dict[layer_key][path_key][k + 1]
     else:

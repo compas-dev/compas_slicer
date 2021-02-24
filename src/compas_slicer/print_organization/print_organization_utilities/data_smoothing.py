@@ -11,24 +11,27 @@ __all__ = ['smooth_printpoint_attribute',
 def smooth_printpoint_attribute(print_organizer, iterations, strength, get_attr_value, set_attr_value):
     """
     Iterative smoothing of the printpoints attribute.
-    The attribute is accessed using the function get_attr_value(ppt), and is
-    set using the function set_attr_value(ppt, v).
+    The attribute is accessed using the function 'get_attr_value(ppt)', and is set using the function
+    'set_attr_value(ppt, v)'.
     All attributes are smoothened continuously (i.e. as if their printpoints belong into one long uninterrupted path)
     For examples of how to use this function look at 'smooth_printpoints_layer_heights' and
     'smooth_printpoints_up_vectors' below.
-    TODO: add interrupted smoothing, where the ppt.extrusion_toggle is taken into consideration.
+    The smoothing is happening by taking an average of the previous and next point attributes, and combining them with
+    the current value of the print point; On every iteration:
+    new_val = (0.5*(neighbor_left_val + neighbor_right_attr)) * strength - current_val * (1-strength)
 
     Parameters
     ----------
     print_organizer: :class: 'compas_slicer.print_organization.BasePrintOrganizer', or other class inheriting from it.
     iterations: int, smoothing iterations
-    strength: float
+    strength: float. in the range [0.0 - 1.0]. 0.0 corresponds to no smoothing at all, 1.0 corresponds to overwriting
+        the current value with the average of the two neighbors on every interation stop. On each iteration:
+        new_val = (0.5*(neighbor_left_val + neighbor_right_attr)) * strength - current_val * (1-strength)
     get_attr_value: function that returns an attribute of a printpoint, get_attr_value(ppt)
     set_attr_value: function that sets an attribute of a printpoint, set_attr_value(ppt, new_value)
     """
 
     # first smoothen the values
-    attrs = []
     for ppt in print_organizer.printpoints_iterator():
         assert get_attr_value(ppt), 'The attribute you are trying to smooth has not been assigned a value'
 

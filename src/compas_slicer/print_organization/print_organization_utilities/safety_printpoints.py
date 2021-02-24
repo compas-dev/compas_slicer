@@ -43,7 +43,7 @@ def add_safety_printpoints(print_organizer, z_hop=10.0):
                     pp_copy_dict[layer_key][path_key].append(create_safety_printpoint(printpoint, z_hop, False))
 
                     #  safety ppt before next printpoint (if there exists one)
-                    next_ppt = find_next_printpoint(pp_dict, layer_key, path_key, i, j, k)
+                    next_ppt = find_next_printpoint(pp_dict, i, j, k)
                     if next_ppt:
                         if next_ppt.extruder_toggle is True:  # if it is a printing ppt
                             pp_copy_dict[layer_key][path_key].append(create_safety_printpoint(next_ppt, z_hop, False))
