@@ -11,10 +11,7 @@ from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
-from compas_slicer.print_organization import set_linear_velocity
-from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.utilities import save_to_json
-from compas_viewers.objectviewer import ObjectViewer
 from compas_slicer.parameters import get_param
 
 from compas.datastructures import Mesh
@@ -53,7 +50,6 @@ def main():
     print_organizer.create_printpoints()
     # Set fabrication-related parameters
     set_extruder_toggle(print_organizer, slicer)
-    set_linear_velocity(print_organizer, "constant", v=25.0)
     print_organizer.printout_info()
 
     # create and output gcode

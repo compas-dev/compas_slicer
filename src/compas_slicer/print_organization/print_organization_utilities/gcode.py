@@ -10,20 +10,13 @@ logger = logging.getLogger('logger')
 __all__ = ['create_gcode_text']
 
 
-def create_gcode_text(printpoints_dict, parameters):
+def create_gcode_text(print_organizer, parameters):
     """ Creates a gcode text file
     Parameters
     ----------
-    printpoints_dict: dict with compas_slicer.geometry.Printpoint instances.
-        The keys of the dictionary are setup in the following way:
-        {['layer_%d' % i] =
-            {['path_%d' % i] =
-                [printpoint_1 , ....., printpoint_n ]
-            }
-        }
+    print_organizer: :class: compas_slicer.print_organization.PrintOrganizer
     parameters : dict with gcode parameters.
         The defaults for those parameters are in the file compas_slicer.parameters.defaults_gcode.
-
     Returns
     ----------
     str, gcode text file
@@ -116,51 +109,49 @@ def create_gcode_text(printpoints_dict, parameters):
     # ######################################################################
     # iterate all layers, paths
     print('')
-    for i, layer_v in enumerate(printpoints_dict):
-        for j, path_v in enumerate(printpoints_dict[layer_v]):
-            for k, point_v in enumerate(printpoints_dict[layer_v][path_v]):
-                layer_height = point_v.layer_height
-                # Calculate relative length
-                re_l = ((point_v.pt.x - prev_point.pt.x) ** 2 + (point_v.pt.y - prev_point.pt.y) ** 2 + (
-                        point_v.pt.z - prev_point.pt.z) ** 2) ** 0.5
-                if k == 0:  # 'First point
-                    # retract before moving to first point in path if necessary
-                    if retraction_min_travel < re_l:
-                        gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
-                        gcode += "G1" + " E-" + str(retraction_length) + "      ;retract" + n_l
-                        # ZHOP
-                        gcode += "G1" + " Z" + '{:.3f}'.format(prev_point.pt.z + z_hop) + "  ;z-hop" + n_l
-                        # move to first point in path:
-                        gcode += "G1" + " F" + str(feedrate_travel) + "    ;set travel feedrate" + n_l
-                        if prev_point.pt.z != point_v.pt.z:
-                            gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
-                        else:
-                            gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
-                        # reverse z-hop after reaching the first point
-                        gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
-                        gcode += "G1" + " Z" + '{:.3f}'.format(point_v.pt.z) + "  ;reverse z-hop" + n_l
-                        # reverse retract after reaching the first point
-                        gcode += "G1" + " E" + str(retraction_length) + "       ;reverse retraction" + n_l
-                    else:
-                        if prev_point.pt.z != point_v.pt.z:
-                            gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
-                                point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
-                        else:
-                            gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
-                    # set extrusion feedrate: low for adhesion to bed and normal otherwise
-                    if point_v.pt.z < min_over_z:
-                        gcode += "G1" + " F" + str(feedrate_low) + "    ;set low feedrate" + n_l
-                    else:
-                        gcode += "G1" + " F" + str(feedrate) + "    ;set extrusion feedrate" + n_l
-                else:  # from 2nd point in each path onwards
-                    # tmpflow = myflow.Branch(b)(i) here we can set the flow multiplier
-                    # Calculate feedrate : TODO: just a basic formula for now, better ones in the future
-                    e_val = 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
-                    if point_v.pt.z < min_over_z:
-                        e_val *= flow_over
+    for point_v, i, j, k in print_organizer.printpoints_indices_iterator():
+        layer_height = point_v.layer_height
+        # Calculate relative length
+        re_l = ((point_v.pt.x - prev_point.pt.x) ** 2 + (point_v.pt.y - prev_point.pt.y) ** 2 + (
+                point_v.pt.z - prev_point.pt.z) ** 2) ** 0.5
+        if k == 0:  # 'First point
+            # retract before moving to first point in path if necessary
+            if retraction_min_travel < re_l:
+                gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
+                gcode += "G1" + " E-" + str(retraction_length) + "      ;retract" + n_l
+                # ZHOP
+                gcode += "G1" + " Z" + '{:.3f}'.format(prev_point.pt.z + z_hop) + "  ;z-hop" + n_l
+                # move to first point in path:
+                gcode += "G1" + " F" + str(feedrate_travel) + "    ;set travel feedrate" + n_l
+                if prev_point.pt.z != point_v.pt.z:
+                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
+                else:
+                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
+                # reverse z-hop after reaching the first point
+                gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
+                gcode += "G1" + " Z" + '{:.3f}'.format(point_v.pt.z) + "  ;reverse z-hop" + n_l
+                # reverse retract after reaching the first point
+                gcode += "G1" + " E" + str(retraction_length) + "       ;reverse retraction" + n_l
+            else:
+                if prev_point.pt.z != point_v.pt.z:
                     gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
-                        point_v.pt.y) + " E" + '{:.3f}'.format(e_val) + n_l
-                prev_point = point_v
+                        point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
+                else:
+                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
+            # set extrusion feedrate: low for adhesion to bed and normal otherwise
+            if point_v.pt.z < min_over_z:
+                gcode += "G1" + " F" + str(feedrate_low) + "    ;set low feedrate" + n_l
+            else:
+                gcode += "G1" + " F" + str(feedrate) + "    ;set extrusion feedrate" + n_l
+        else:  # from 2nd point in each path onwards
+            # tmpflow = myflow.Branch(b)(i) here we can set the flow multiplier
+            # Calculate feedrate : TODO: just a basic formula for now, better ones in the future
+            e_val = 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
+            if point_v.pt.z < min_over_z:
+                e_val *= flow_over
+            gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
+                point_v.pt.y) + " E" + '{:.3f}'.format(e_val) + n_l
+        prev_point = point_v
         if fan_on is False:
             if i * layer_height >= fan_start_z:  # 'Fan On:
                 gcode += "M106 S" + str(fan_speed) + "     ;set fan on to set speed" + n_l

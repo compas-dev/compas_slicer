@@ -98,8 +98,7 @@ def load_printpoints(path, folder_name, json_name):
 
             compas_frame = Frame.from_data(data_point["frame"])
             pt, x_axis, y_axis = compas_frame.point, compas_frame.xaxis, compas_frame.yaxis
-            frame = rs.PlaneFromNormal(pt, rs.VectorCrossProduct(rg.Vector3d(x_axis[0], x_axis[1], x_axis[2]),
-                                                                 rg.Vector3d(y_axis[0], y_axis[1], y_axis[2])))
+            frame = rs.PlaneFromFrame(pt, x_axis, y_axis)
             frames.append(frame)
 
             layer_heights.append(data_point["layer_height"])

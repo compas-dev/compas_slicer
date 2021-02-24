@@ -77,7 +77,7 @@ def get_interpolation_parameters_list(number_of_curves):
     a = list(np.arange(number_of_curves + 1) / (number_of_curves + 1))
     a.pop(0)
     t_list.extend(a)
-    t_list.append(0.997)
+    # t_list.append(0.997)
     return t_list
 
 

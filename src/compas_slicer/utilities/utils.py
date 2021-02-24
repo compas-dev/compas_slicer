@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from compas.geometry import Point, distance_point_point_sqrd, normalize_vector
-from compas.geometry import Vector, length_vector, closest_point_in_cloud
+from compas.geometry import Vector, length_vector, closest_point_in_cloud, closest_point_on_plane
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
@@ -10,21 +10,24 @@ import scipy
 
 logger = logging.getLogger('logger')
 
-__all__ = ['get_output_directory',
+__all__ = ['remap',
+           'remap_unbound',
+           'get_output_directory',
            'save_to_json',
            'load_from_json',
            'is_jsonable',
+           'get_jsonable_attributes',
            'save_to_text_file',
            'flattened_list_of_dictionary',
            'interrupt',
            'point_list_to_dict',
            'point_list_from_dict',
            'get_closest_mesh_vkey_to_pt',
-           'get_closest_mesh_normal_to_pt',
            'get_mesh_cotmatrix_igl',
            'get_mesh_cotans_igl',
            'get_closest_pt_index',
            'get_closest_pt',
+           'pull_pts_to_mesh_faces',
            'plot_networkx_graph',
            'get_mesh_vertex_coords_with_attribute',
            'get_dict_key_from_value',
@@ -33,6 +36,30 @@ __all__ = ['get_output_directory',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
            'get_all_files_with_name']
+
+
+def remap(input_val, in_from, in_to, out_from, out_to):
+    """ Bounded remap. """
+    if input_val <= in_from:
+        return out_from
+    elif input_val >= in_to:
+        return out_to
+    else:
+        return remap_unbound(input_val, in_from, in_to, out_from, out_to)
+
+
+def remap_unbound(input_val, in_from, in_to, out_from, out_to):
+    """
+    Remaps input_val from source domain to target domain.
+    No clamping is performed, the result can be outside of the target domain
+    if the input is outside of the source domain.
+    """
+    out_range = out_to - out_from
+    in_range = in_to - in_from
+    in_val = input_val - in_from
+    val = (float(in_val) / in_range) * out_range
+    out_val = out_from + val
+    return out_val
 
 
 def get_output_directory(path):
@@ -91,6 +118,29 @@ def get_closest_pt(pt, pts):
     """
     ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
     return pts[ci]
+
+
+def pull_pts_to_mesh_faces(mesh, points):
+    """
+    Very fast method for projecting a list of points on a mesh, and finding their closest face keys.
+
+    Parameters
+    ----------
+    mesh: :class: compas.datastructures.Mesh
+    points: list, compas.geometry.Point
+
+    Returns
+    -------
+    closest_fks: a list of the closest face keys
+    projected_pts: a list of the projected points on the mesh
+    """
+    points = np.array(points, dtype=np.float64).reshape((-1, 3))
+    fi_fk = {index: fkey for index, fkey in enumerate(mesh.faces())}
+    f_centroids = np.array([mesh.face_centroid(fkey) for fkey in mesh.faces()], dtype=np.float64)
+    closest_fis = np.argmin(scipy.spatial.distance_matrix(points, f_centroids), axis=1)
+    closest_fks = [fi_fk[fi] for fi in closest_fis]
+    projected_pts = [closest_point_on_plane(point, mesh.face_plane(fi)) for point, fi in zip(points, closest_fis)]
+    return closest_fks, projected_pts
 
 
 def smooth_vectors(vectors, strength, iterations):
@@ -165,6 +215,21 @@ def is_jsonable(x):
         return False
 
 
+def get_jsonable_attributes(attributes_dict):
+    jsonable_attr = {}
+    for attr_key in attributes_dict:
+        attr = attributes_dict[attr_key]
+        if is_jsonable(attr):
+            jsonable_attr[attr_key] = attr
+        else:
+            if isinstance(attr, np.ndarray):
+                jsonable_attr[attr_key] = list(attr)
+            else:
+                jsonable_attr[attr_key] = 'non serializable attribute'
+
+    return jsonable_attr
+
+
 #######################################
 #  text file
 
@@ -229,17 +294,14 @@ def get_closest_mesh_vkey_to_pt(mesh, pt):
 def get_closest_mesh_normal_to_pt(mesh, pt):
     """
     Finds the closest vertex normal to the point.
-
     Parameters
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
     pt: :class: 'compas.geometry.Point'
-
     Returns
     ----------
     :class: 'compas.geometry.Vector'
         The closest normal of the mesh.
-
     """
 
     closest_vkey = get_closest_mesh_vkey_to_pt(mesh, pt)
@@ -457,11 +519,12 @@ def get_dict_key_from_value(dictionary, val):
     return "key doesn't exist"
 
 
-def find_next_printpoint(pp_dict, layer_key, path_key, i, j, k):
+def find_next_printpoint(pp_dict, i, j, k):
     """
     Returns the next printpoint from the current printpoint if it exists, otherwise returns None.
     """
     next_ppt = None
+    layer_key, path_key = 'layer_%d' % i, 'path_%d' % j
     if k < len(pp_dict[layer_key][path_key]) - 1:  # If there are more ppts in the current path, then take the next ppt
         next_ppt = pp_dict[layer_key][path_key][k + 1]
     else:

@@ -25,6 +25,9 @@ class BaseBoundary:
         self.mesh = mesh
         self.points = points
         self.override_vector = override_vector
+        closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.mesh, [pt for pt in self.points])
+        self.normals = [Vector(*self.mesh.face_normal(fkey)) for fkey in closest_fks]
+
         if self.override_vector:
             self.up_vectors = [self.override_vector for p in self.points]
         else:
@@ -32,8 +35,7 @@ class BaseBoundary:
 
         self.printpoints = [PrintPoint(pt=pt,  # Create fake print points
                                        layer_height=1.0,
-                                       mesh_normal=utils.get_closest_mesh_normal_to_pt(self.mesh, pt))
-                            for pt in self.points]
+                                       mesh_normal=self.normals[i]) for i, pt in enumerate(self.points)]
 
         for i, pp in enumerate(self.printpoints):
             pp.up_vector = self.up_vectors[i]
@@ -46,9 +48,8 @@ class BaseBoundary:
         up_vectors = []
         for i, p in enumerate(self.points):
             v1 = Vector.from_start_end(p, self.points[(i + 1) % len(self.points)])
-            cross = v1.cross(utils.get_closest_mesh_normal_to_pt(self.mesh, p))
-            v = normalize_vector(cross)
-            v = Vector(v[0], v[1], v[2])
+            cross = v1.cross(self.normals[i])
+            v = Vector(*normalize_vector(cross))
             if v[2] < 0:
                 v.scale(-1)
             up_vectors.append(v)

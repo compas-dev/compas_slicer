@@ -1,4 +1,5 @@
-from compas.geometry import Point
+from compas.geometry import Point, distance_point_point_sqrd
+from compas.utilities.itertools import pairwise
 from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_edges, sort_graph_connected_components
 import compas_slicer.utilities as utils
 import logging
@@ -107,3 +108,16 @@ class ContoursBase(object):
                 path = Path(pts, is_closed=self.closed_paths_booleans[key])
 
                 vertical_layers_manager.add(path)
+
+    @property
+    def is_valid(self):
+        if len(self.sorted_point_clusters) > 0:
+            for key in self.sorted_point_clusters:
+                pts = self.sorted_point_clusters[key]
+                if len(pts) > 3:
+                    path_total_length = 0.0
+                    for p1, p2 in pairwise(pts):
+                        path_total_length += distance_point_point_sqrd(p1, p2)
+                    if path_total_length > 1.0:
+                        return True  # make sure there is at least one path with acceptable length
+        return False

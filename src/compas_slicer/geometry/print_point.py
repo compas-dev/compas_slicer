@@ -1,4 +1,5 @@
-from compas.geometry import Point, Frame, Vector
+from compas.geometry import Point, Frame, Vector, cross_vectors
+import compas_slicer.utilities.utils as utils
 import compas
 
 __all__ = ['PrintPoint']
@@ -35,6 +36,7 @@ class PrintPoint(object):
     def __init__(self, pt, layer_height, mesh_normal):
         assert isinstance(pt, compas.geometry.Point)
         assert isinstance(mesh_normal, compas.geometry.Vector)
+        assert layer_height
 
         #  --- basic printpoint
         self.pt = pt
@@ -44,7 +46,7 @@ class PrintPoint(object):
         self.up_vector = Vector(0, 0, 1)  # default value that can be updated
         self.frame = self.get_frame()  # compas.geometry.Frame
 
-        #  --- attributes transfered from the mesh (meshe's vertex / face attributes)
+        #  --- attributes transferred from the mesh (vertex / face attributes)
         self.attributes = {}  # dict. To fill this in,
 
         #  --- print_organization related attributes
@@ -65,7 +67,8 @@ class PrintPoint(object):
 
     def get_frame(self):
         """ Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal. """
-        return Frame(self.pt, self.up_vector, self.mesh_normal)
+        c = cross_vectors(self.up_vector, self.mesh_normal)
+        return Frame(self.pt, c, self.mesh_normal)
 
     #################################
     #  --- To data , from data
@@ -77,7 +80,7 @@ class PrintPoint(object):
         Returns
         -------
         dict
-            The PrintPoints's data.
+            The PrintPoints' data.
 
         """
         point = {
@@ -96,7 +99,9 @@ class PrintPoint(object):
             'closest_support_pt': self.closest_support_pt.to_data() if self.closest_support_pt else None,
             'distance_to_support': self.distance_to_support,
 
-            'is_feasible': self.is_feasible
+            'is_feasible': self.is_feasible,
+
+            'attributes': utils.get_jsonable_attributes(self.attributes)
         }
         return point
 
@@ -132,6 +137,8 @@ class PrintPoint(object):
         pp.distance_to_support = data['distance_to_support']
 
         pp.is_feasible = data['is_feasible']
+
+        pp.attributes = data['attributes']
         return pp
 
 

@@ -31,7 +31,7 @@ def create_planar_paths(mesh, planes):
             intersection.compute()
 
             paths = []
-            if len(intersection.sorted_point_clusters) > 0:
+            if len(intersection.sorted_point_clusters) > 0 and intersection.is_valid:
                 for key in intersection.sorted_point_clusters:
                     is_closed = intersection.closed_paths_booleans[key]
                     path = Path(points=intersection.sorted_point_clusters[key], is_closed=is_closed)

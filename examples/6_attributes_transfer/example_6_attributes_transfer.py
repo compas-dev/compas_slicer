@@ -61,11 +61,13 @@ if __name__ == '__main__':
     # --------------- Create printpoints
     print_organizer = PlanarPrintOrganizer(slicer)
     print_organizer.create_printpoints()
-    printpoints_data = print_organizer.output_printpoints_dict()
-    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
     # --------------- Transfer mesh attributes to printpoints
     transfer_mesh_attributes_to_printpoints(mesh, print_organizer.printpoints_dict)
+
+    # --------------- Save printpoints to json (only json-serializable attributes are saved)
+    printpoints_data = print_organizer.output_printpoints_dict()
+    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
     # --------------- Print the info to see the attributes of the printpoints (you can also visualize them on gh)
     print_organizer.printout_info()

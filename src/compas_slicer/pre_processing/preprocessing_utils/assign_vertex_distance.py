@@ -1,5 +1,6 @@
 import logging
 from compas_slicer.pre_processing.preprocessing_utils import blend_union_list
+from compas_slicer.utilities.utils import remap_unbound
 
 logger = logging.getLogger('logger')
 
@@ -90,20 +91,6 @@ def get_weighted_distance(vkey, weight, target_LOW, target_HIGH):
         d_low = target_LOW.get_distance(vkey)
         d_high = target_HIGH.get_distance(vkey)
         return (d_low * (1 - weight)) - (d_high * weight)
-
-
-def remap_unbound(input_val, in_from, in_to, out_from, out_to):
-    """
-    Remaps input_val from source domain to target domain.
-    No clamping is performed, the result can be outside of the target domain
-    if the input is outside of the source domain.
-    """
-    out_range = out_to - out_from
-    in_range = in_to - in_from
-    in_val = input_val - in_from
-    val = (float(in_val) / in_range) * out_range
-    out_val = out_from + val
-    return out_val
 
 
 if __name__ == "__main__":
