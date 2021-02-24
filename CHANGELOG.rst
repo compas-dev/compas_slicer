@@ -11,6 +11,8 @@ Unreleased
 
 **Added**
 
+* Bumped version to 0.2.1
+
 **Changed**
 
 **Fixed**
