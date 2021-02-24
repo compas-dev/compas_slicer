@@ -129,17 +129,15 @@
 
     <span class="n">pp_dict</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span>
 
-    <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="n">pp_dict</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
-            <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
-                <span class="k">assert</span> <span class="n">pp</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> \
-                    <span class="s1">&#39;You need to set the extruder toggles first, before you can automatically set the wait time&#39;</span>
+    <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_iterator</span><span class="p">():</span>
+        <span class="k">assert</span> <span class="n">printpoint</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> \
+            <span class="s1">&#39;You need to set the extruder toggles first, before you can automatically set the wait time&#39;</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting wait time&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">printpoint</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_indices_iterator</span><span class="p">():</span>
         <span class="c1"># compares the current point with the next point</span>
-        <span class="n">next_ppt</span> <span class="o">=</span> <span class="n">find_next_printpoint</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">,</span> <span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="n">next_ppt</span> <span class="o">=</span> <span class="n">find_next_printpoint</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
 
         <span class="c1"># for the brim layer don&#39;t add any wait times</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">is_brim</span> <span class="ow">and</span> <span class="n">next_ppt</span><span class="p">:</span>
@@ -158,21 +156,14 @@
 
 <div class="viewcode-block" id="override_wait_time"><a class="viewcode-back" href="../../../../api/generated/compas_slicer.print_organization.override_wait_time.html#compas_slicer.print_organization.override_wait_time">[docs]</a><span class="k">def</span> <span class="nf">override_wait_time</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">override_value</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Overrides the wait_time value for the printpoints with a user-defined value.</span>
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`</span>
 <span class="sd">    override_value: float</span>
 <span class="sd">        Value to override the wait_time values with.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">pp_dict</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span>
-
-    <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="n">pp_dict</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
-            <span class="n">path_printpoints</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="n">path_printpoints</span><span class="p">:</span>
-                <span class="n">printpoint</span><span class="o">.</span><span class="n">wait_time</span> <span class="o">=</span> <span class="n">override_value</span></div>
+    <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_iterator</span><span class="p">():</span>
+        <span class="n">printpoint</span><span class="o">.</span><span class="n">wait_time</span> <span class="o">=</span> <span class="n">override_value</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
