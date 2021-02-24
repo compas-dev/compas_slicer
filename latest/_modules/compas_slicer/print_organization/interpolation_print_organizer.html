@@ -45,13 +45,15 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.1.3
+            0.2.0
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.0">0.2.0</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.3">0.1.3</a>
             
@@ -101,14 +103,14 @@
         
         
         <h1>Source code for compas_slicer.print_organization.interpolation_print_organizer</h1><div class="highlight"><pre><code>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">BasePrintOrganizer</span>
+<span></span><span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">BasePrintOrganizer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.pre_processing.preprocessing_utils</span> <span class="kn">import</span> <span class="n">topological_sorting</span> <span class="k">as</span> <span class="n">topo_sort</span>
-<span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization.curved_print_organization</span> <span class="kn">import</span> <span class="n">BaseBoundary</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.print_organization.curved_print_organization</span> <span class="kn">import</span> <span class="n">VerticalConnectivity</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.geometry</span> <span class="kn">import</span> <span class="n">PrintPoint</span>
+<span class="kn">import</span> <span class="nn">compas_slicer</span>
+<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">closest_point_on_polyline</span><span class="p">,</span> <span class="n">distance_point_point</span><span class="p">,</span> <span class="n">Polyline</span><span class="p">,</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">normalize_vector</span><span class="p">,</span> <span class="n">Point</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.geometry</span> <span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">PrintPoint</span>
+<span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.parameters</span> <span class="kn">import</span> <span class="n">get_param</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
@@ -129,6 +131,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="InterpolationPrintOrganizer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.__init__.html#compas_slicer.print_organization.InterpolationPrintOrganizer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slicer</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">DATA_PATH</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">slicers</span><span class="o">.</span><span class="n">InterpolationSlicer</span><span class="p">),</span> <span class="s1">&#39;Please provide an InterpolationSlicer&#39;</span>
         <span class="n">BasePrintOrganizer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">DATA_PATH</span> <span class="o">=</span> <span class="n">DATA_PATH</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">OUTPUT_PATH</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_output_directory</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">)</span>
@@ -149,13 +152,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">topological_sorting</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selected_order</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers_print_data</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># one segment per vertical layer</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">create_vertical_layers_dict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">create_base_boundaries</span><span class="p">()</span>  <span class="c1"># creation of one base boundary per vertical_layer</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">create_vertical_connectivity</span><span class="p">()</span></div>
+        <span class="c1"># creation of one base boundary per vertical_layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_boundaries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_base_boundaries</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;InterpolationPrintOrganizer with </span><span class="si">%i</span><span class="s2"> vertical_layers_print_data&gt;&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers_print_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;InterpolationPrintOrganizer with </span><span class="si">%i</span><span class="s2"> vertical_layers&gt;&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers</span><span class="p">)</span>
 
 <div class="viewcode-block" id="InterpolationPrintOrganizer.topological_sorting"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.topological_sorting.html#compas_slicer.print_organization.InterpolationPrintOrganizer.topological_sorting">[docs]</a>    <span class="k">def</span> <span class="nf">topological_sorting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; When the print consists of various paths, this function initializes a class that creates</span>
@@ -165,14 +166,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">topo_sort_graph</span> <span class="o">=</span> <span class="n">topo_sort</span><span class="o">.</span><span class="n">SegmentsDirectedGraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers</span><span class="p">,</span>
                                                                <span class="n">max_layer_height</span><span class="p">,</span> <span class="n">DATA_PATH</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">DATA_PATH</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="InterpolationPrintOrganizer.create_vertical_layers_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.create_vertical_layers_dict.html#compas_slicer.print_organization.InterpolationPrintOrganizer.create_vertical_layers_dict">[docs]</a>    <span class="k">def</span> <span class="nf">create_vertical_layers_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Initializes vertical_layers_print_data dictionary with empty vertical_layers_print_data. &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">vertical_layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers_print_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;boundary&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                                                  <span class="s1">&#39;path_collection&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span></div>
-
 <div class="viewcode-block" id="InterpolationPrintOrganizer.create_base_boundaries"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.create_base_boundaries.html#compas_slicer.print_organization.InterpolationPrintOrganizer.create_base_boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">create_base_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Creates one BaseBoundary per vertical_layer.&quot;&quot;&quot;</span>
+        <span class="n">bs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">root_vs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_mesh_vertex_coords_with_attribute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">&#39;boundary&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">root_boundary</span> <span class="o">=</span> <span class="n">BaseBoundary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">root_vs</span><span class="p">])</span>
 
@@ -187,26 +183,15 @@
                         <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers</span><span class="p">[</span><span class="n">parent_index</span><span class="p">]</span>
                         <span class="n">boundary_pts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
                     <span class="n">boundary</span> <span class="o">=</span> <span class="n">BaseBoundary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">boundary_pts</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers_print_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundary</span>
+                <span class="n">bs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">boundary</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers_print_data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_boundary</span>
+            <span class="n">bs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">root_boundary</span><span class="p">)</span>
 
         <span class="c1"># save intermediary outputs</span>
-        <span class="n">b_data</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers_print_data</span><span class="p">:</span>
-            <span class="n">b_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers_print_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;boundary&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">b_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;boundaries.json&#39;</span><span class="p">)</span></div>
+        <span class="n">b_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bs</span><span class="p">)}</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">b_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;boundaries.json&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="InterpolationPrintOrganizer.create_vertical_connectivity"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.create_vertical_connectivity.html#compas_slicer.print_organization.InterpolationPrintOrganizer.create_vertical_connectivity">[docs]</a>    <span class="k">def</span> <span class="nf">create_vertical_connectivity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; A VerticalConnectivity finds vertical relation between paths. Creates and fills in its printpoints.&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">vertical_layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating vertical connectivity of segment no </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
-            <span class="n">path_collection</span> <span class="o">=</span> <span class="n">VerticalConnectivity</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">vertical_layer</span><span class="o">.</span><span class="n">paths</span><span class="p">,</span>
-                                                   <span class="n">base_boundary</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers_print_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;boundary&#39;</span><span class="p">],</span>
-                                                   <span class="n">mesh</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span>
-                                                   <span class="n">parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
-            <span class="n">path_collection</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers_print_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;path_collection&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_collection</span></div>
+        <span class="k">return</span> <span class="n">bs</span></div>
 
 <div class="viewcode-block" id="InterpolationPrintOrganizer.create_printpoints"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.create_printpoints.html#compas_slicer.print_organization.InterpolationPrintOrganizer.create_printpoints">[docs]</a>    <span class="k">def</span> <span class="nf">create_printpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -214,17 +199,16 @@
 <span class="sd">        Based on the directed graph, select one topological order.</span>
 <span class="sd">        From each path collection in that order copy PrintPoints dictionary in the correct order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># (1) --- First add the printpoints of the horizontal brim layer (first layer of print)</span>
         <span class="n">current_layer_index</span> <span class="o">=</span> <span class="mi">0</span>
 
+        <span class="c1"># (1) --- First add the printpoints of the horizontal brim layer (first layer of print)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">horizontal_layers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># first add horizontal brim layers</span>
             <span class="n">paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontal_layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">paths</span>
             <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">paths</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_0&#39;</span><span class="p">][</span><span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> \
-                    <span class="p">[</span><span class="n">PrintPoint</span><span class="p">(</span><span class="n">pt</span><span class="o">=</span><span class="n">point</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">layer_height</span><span class="p">,</span>
-                     <span class="n">mesh_normal</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">get_normal_of_path_on_xy_plane</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">))</span>
+                    <span class="p">[</span><span class="n">PrintPoint</span><span class="p">(</span><span class="n">pt</span><span class="o">=</span><span class="n">point</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="n">get_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="s1">&#39;avg_layer_height&#39;</span><span class="p">,</span> <span class="s1">&#39;layers&#39;</span><span class="p">),</span>
+                                <span class="n">mesh_normal</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">get_normal_of_path_on_xy_plane</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">))</span>
                      <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)]</span>
             <span class="n">current_layer_index</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -235,28 +219,48 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selected_order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># there is only one segment, only this option</span>
 
-        <span class="c1"># (3) --- Then add the printpoints of all the vertical layers in the selected order</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_order</span><span class="p">:</span>
-            <span class="n">path_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers_print_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;path_collection&#39;</span><span class="p">]</span>
+        <span class="c1"># (3) --- Then create the printpoints of all the vertical layers in the selected order</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_order</span><span class="p">):</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertical_layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">current_layer_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-
-            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path_collection</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">current_layer_index</span><span class="p">][</span><span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> \
-                    <span class="p">[</span><span class="n">path_collection</span><span class="o">.</span><span class="n">printpoints</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)]</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">current_layer_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_layer_ppts</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_boundaries</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             <span class="n">current_layer_index</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="InterpolationPrintOrganizer.check_printpoints_feasibility"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.check_printpoints_feasibility.html#compas_slicer.print_organization.InterpolationPrintOrganizer.check_printpoints_feasibility">[docs]</a>    <span class="k">def</span> <span class="nf">check_printpoints_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Checks if the get_distance to the closest support of every layer height is within the admissible limits. &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="InterpolationPrintOrganizer.get_layer_ppts"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.get_layer_ppts.html#compas_slicer.print_organization.InterpolationPrintOrganizer.get_layer_ppts">[docs]</a>    <span class="k">def</span> <span class="nf">get_layer_ppts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">base_boundary</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Creates the PrintPoints of a single layer.&quot;&quot;&quot;</span>
         <span class="n">max_layer_height</span> <span class="o">=</span> <span class="n">get_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;max_layer_height&#39;</span><span class="p">,</span> <span class="n">defaults_type</span><span class="o">=</span><span class="s1">&#39;layers&#39;</span><span class="p">)</span>
         <span class="n">min_layer_height</span> <span class="o">=</span> <span class="n">get_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;min_layer_height&#39;</span><span class="p">,</span> <span class="n">defaults_type</span><span class="o">=</span><span class="s1">&#39;layers&#39;</span><span class="p">)</span>
+        <span class="n">avg_layer_height</span> <span class="o">=</span> <span class="n">get_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="s1">&#39;avg_layer_height&#39;</span><span class="p">,</span> <span class="s1">&#39;layers&#39;</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
-                <span class="n">ppt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span>
-                <span class="n">d</span> <span class="o">=</span> <span class="n">ppt</span><span class="o">.</span><span class="n">distance_to_support</span>
-                <span class="k">if</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="n">min_layer_height</span> <span class="ow">or</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="n">max_layer_height</span><span class="p">:</span>
-                    <span class="n">ppt</span><span class="o">.</span><span class="n">is_feasible</span> <span class="o">=</span> <span class="kc">False</span></div></div>
+        <span class="n">all_pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">pt</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">]</span>
+        <span class="n">closest_fks</span><span class="p">,</span> <span class="n">projected_pts</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">pull_pts_to_mesh_faces</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">all_pts</span><span class="p">)</span>
+        <span class="n">normals</span> <span class="o">=</span> <span class="p">[</span><span class="n">Vector</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">face_normal</span><span class="p">(</span><span class="n">fkey</span><span class="p">))</span> <span class="k">for</span> <span class="n">fkey</span> <span class="ow">in</span> <span class="n">closest_fks</span><span class="p">]</span>
+
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">crv_to_check</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">base_boundary</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># creation of fake path for the lower boundary</span>
+
+        <span class="n">layer_ppts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
+            <span class="n">layer_ppts</span><span class="p">[</span><span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
+                <span class="n">cp</span> <span class="o">=</span> <span class="n">closest_point_on_polyline</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Polyline</span><span class="p">(</span><span class="n">crv_to_check</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">distance_point_point</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+                <span class="n">ppt</span> <span class="o">=</span> <span class="n">PrintPoint</span><span class="p">(</span><span class="n">pt</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="n">avg_layer_height</span><span class="p">,</span> <span class="n">mesh_normal</span><span class="o">=</span><span class="n">normals</span><span class="p">[</span><span class="n">count</span><span class="p">])</span>
+
+                <span class="n">ppt</span><span class="o">.</span><span class="n">closest_support_pt</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">cp</span><span class="p">)</span>
+                <span class="n">ppt</span><span class="o">.</span><span class="n">distance_to_support</span> <span class="o">=</span> <span class="n">d</span>
+                <span class="n">ppt</span><span class="o">.</span><span class="n">layer_height</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">max_layer_height</span><span class="p">),</span> <span class="n">min_layer_height</span><span class="p">)</span>
+                <span class="n">ppt</span><span class="o">.</span><span class="n">up_vector</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="o">*</span><span class="n">normalize_vector</span><span class="p">(</span><span class="n">Vector</span><span class="o">.</span><span class="n">from_start_end</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">p</span><span class="p">)))</span>
+                <span class="n">ppt</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">ppt</span><span class="o">.</span><span class="n">get_frame</span><span class="p">()</span>
+
+                <span class="n">layer_ppts</span><span class="p">[</span><span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ppt</span><span class="p">)</span>
+                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">crv_to_check</span> <span class="o">=</span> <span class="n">path</span>
+
+        <span class="k">return</span> <span class="n">layer_ppts</span></div></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -346,7 +350,7 @@
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.1.3',
+  VERSION           : '0.2.0',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',

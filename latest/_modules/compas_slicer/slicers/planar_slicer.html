@@ -45,13 +45,15 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.1.3
+            0.2.0
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.0">0.2.0</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.3">0.1.3</a>
             
@@ -121,7 +123,7 @@
 <span class="sd">        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).</span>
 <span class="sd">    slicer_type: str</span>
 <span class="sd">        String representing which slicing method to use.</span>
-<span class="sd">        options: &#39;default&#39;, &#39;cgal&#39;, &#39;meshcut&#39;</span>
+<span class="sd">        options: &#39;default&#39;, &#39;cgal&#39;</span>
 <span class="sd">    layer_height: float</span>
 <span class="sd">        Distance between layers (slices).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -144,17 +146,12 @@
         <span class="n">no_of_layers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">normal</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">planes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Plane</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">min_z</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span><span class="p">),</span> <span class="n">normal</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no_of_layers</span><span class="p">)]</span>
-        <span class="n">planes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># remove planes that are on the print platform</span>
+        <span class="c1"># planes.pop(0)  # remove planes that are on the print platform</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slicer_type</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Planar slicing using default function ...&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">slicers</span><span class="o">.</span><span class="n">create_planar_paths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">planes</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">slicer_type</span> <span class="o">==</span> <span class="s2">&quot;meshcut&quot;</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Planar slicing using meshcut ...&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">slicers</span><span class="o">.</span><span class="n">create_planar_paths_meshcut</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">planes</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">slicer_type</span> <span class="o">==</span> <span class="s2">&quot;cgal&quot;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -252,7 +249,7 @@
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.1.3',
+  VERSION           : '0.2.0',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',

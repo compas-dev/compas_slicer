@@ -45,13 +45,15 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.1.3
+            0.2.0
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.0">0.2.0</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.3">0.1.3</a>
             
@@ -143,10 +145,35 @@
         <span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="BasePrintOrganizer.check_printpoints_feasibility"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.check_printpoints_feasibility.html#compas_slicer.print_organization.BasePrintOrganizer.check_printpoints_feasibility">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">check_printpoints_feasibility</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+    <span class="c1">######################</span>
+    <span class="c1"># Iterators</span>
+    <span class="c1">######################</span>
+<div class="viewcode-block" id="BasePrintOrganizer.printpoints_iterator"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator.html#compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">printpoints_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over the printpoints of the print organizer.</span>
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        printpoint: :class: &#39;compas_slicer.geometry.Printpoint&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;No printpoints have been created.&#39;</span>
+        <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]:</span>
+                    <span class="k">yield</span> <span class="n">printpoint</span></div>
+
+<div class="viewcode-block" id="BasePrintOrganizer.printpoints_indices_iterator"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator.html#compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">printpoints_indices_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Iterate over the printpoints of the print organizer.</span>
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        printpoint: :class: &#39;compas_slicer.geometry.Printpoint&#39;</span>
+<span class="sd">        i: int, layer index. To get the layer key use: layer_key = &#39;layer_%d&#39; % i</span>
+<span class="sd">        j: int, path index. To get the path key use: path_key = &#39;path_%d&#39; % j</span>
+<span class="sd">        k: int, printpoint index</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;No printpoints have been created.&#39;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]):</span>
+                    <span class="k">yield</span> <span class="n">printpoint</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span></div>
 
     <span class="c1">######################</span>
     <span class="c1"># Properties</span>
@@ -346,7 +373,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># check print organizer: Should have horizontal layers, ideally should be planar</span>
         <span class="c1"># ...</span>
-        <span class="n">gcode</span> <span class="o">=</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">print_organization</span><span class="o">.</span><span class="n">create_gcode_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+        <span class="n">gcode</span> <span class="o">=</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">print_organization</span><span class="o">.</span><span class="n">create_gcode_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">gcode</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.get_printpoints_attribute"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_printpoints_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">):</span>
@@ -458,7 +485,7 @@
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.1.3',
+  VERSION           : '0.2.0',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',

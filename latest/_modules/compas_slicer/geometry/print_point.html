@@ -45,13 +45,15 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.1.3
+            0.2.0
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.0">0.2.0</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.3">0.1.3</a>
             
@@ -101,7 +103,8 @@
         
         
         <h1>Source code for compas_slicer.geometry.print_point</h1><div class="highlight"><pre><code>
-<span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Frame</span><span class="p">,</span> <span class="n">Vector</span>
+<span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Frame</span><span class="p">,</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">cross_vectors</span>
+<span class="kn">import</span> <span class="nn">compas_slicer.utilities.utils</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">import</span> <span class="nn">compas</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PrintPoint&#39;</span><span class="p">]</span>
@@ -138,6 +141,7 @@
 <div class="viewcode-block" id="PrintPoint.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.PrintPoint.__init__.html#compas_slicer.geometry.PrintPoint.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pt</span><span class="p">,</span> <span class="n">layer_height</span><span class="p">,</span> <span class="n">mesh_normal</span><span class="p">):</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">compas</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">Point</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mesh_normal</span><span class="p">,</span> <span class="n">compas</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">Vector</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">layer_height</span>
 
         <span class="c1">#  --- basic printpoint</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pt</span> <span class="o">=</span> <span class="n">pt</span>
@@ -147,7 +151,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">up_vector</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># default value that can be updated</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_frame</span><span class="p">()</span>  <span class="c1"># compas.geometry.Frame</span>
 
-        <span class="c1">#  --- attributes transfered from the mesh (meshe&#39;s vertex / face attributes)</span>
+        <span class="c1">#  --- attributes transferred from the mesh (vertex / face attributes)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict. To fill this in,</span>
 
         <span class="c1">#  --- print_organization related attributes</span>
@@ -168,7 +172,8 @@
 
 <div class="viewcode-block" id="PrintPoint.get_frame"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.PrintPoint.get_frame.html#compas_slicer.geometry.PrintPoint.get_frame">[docs]</a>    <span class="k">def</span> <span class="nf">get_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_vector</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_normal</span><span class="p">)</span></div>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">cross_vectors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">up_vector</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_normal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pt</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_normal</span><span class="p">)</span></div>
 
     <span class="c1">#################################</span>
     <span class="c1">#  --- To data , from data</span>
@@ -180,7 +185,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
-<span class="sd">            The PrintPoints&#39;s data.</span>
+<span class="sd">            The PrintPoints&#39; data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">point</span> <span class="o">=</span> <span class="p">{</span>
@@ -199,7 +204,9 @@
             <span class="s1">&#39;closest_support_pt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">closest_support_pt</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">closest_support_pt</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">&#39;distance_to_support&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_to_support</span><span class="p">,</span>
 
-            <span class="s1">&#39;is_feasible&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_feasible</span>
+            <span class="s1">&#39;is_feasible&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_feasible</span><span class="p">,</span>
+
+            <span class="s1">&#39;attributes&#39;</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_jsonable_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">point</span></div>
 
@@ -235,6 +242,8 @@
         <span class="n">pp</span><span class="o">.</span><span class="n">distance_to_support</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;distance_to_support&#39;</span><span class="p">]</span>
 
         <span class="n">pp</span><span class="o">.</span><span class="n">is_feasible</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;is_feasible&#39;</span><span class="p">]</span>
+
+        <span class="n">pp</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;attributes&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">pp</span></div></div>
 
 
@@ -325,7 +334,7 @@
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.1.3',
+  VERSION           : '0.2.0',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',
