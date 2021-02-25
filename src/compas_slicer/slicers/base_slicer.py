@@ -1,6 +1,5 @@
 import compas
 import numpy as np
-import compas_slicer
 from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
@@ -205,7 +204,6 @@ class BaseSlicer(object):
                         pts.append(pts[0])
                     polyline = Polyline(pts)
                     viewer.add(polyline, show_points=True, pointcolor=(0, 0, 1), linecolor=(1, 0, 0), linewidth=2)
-
 
     ##############################
     #  --- To data, from data
