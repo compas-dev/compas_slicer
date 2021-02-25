@@ -45,13 +45,15 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.2.1
+            0.2.2
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.2">0.2.2</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.1">0.2.1</a>
             
@@ -107,7 +109,6 @@
         <h1>Source code for compas_slicer.slicers.base_slicer</h1><div class="highlight"><pre><code>
 <span></span><span class="kn">import</span> <span class="nn">compas</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">compas_slicer</span>
 <span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.utilities</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polyline</span>
@@ -293,8 +294,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        viewer: :class:`compas_viewers.objectviewer.Objectviewer`</span>
-<span class="sd">            An instance of the Objectviewer class.</span>
+<span class="sd">        viewer: :class:`compas_view2.app.App`</span>
+<span class="sd">            An instance of the App viewer class.</span>
 <span class="sd">        visualize_mesh: bool, optional</span>
 <span class="sd">            True to visualize mesh, False to not.</span>
 <span class="sd">        visualize_paths: bool, optional</span>
@@ -302,8 +303,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">visualize_mesh</span><span class="p">:</span>
-            <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#ff0000&#39;</span><span class="p">,</span>
-                                            <span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span> <span class="p">})</span>
+            <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hide_coplanaredges</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">visualize_paths</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
@@ -312,12 +312,7 @@
                     <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>
                         <span class="n">pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                     <span class="n">polyline</span> <span class="o">=</span> <span class="n">Polyline</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">VerticalLayer</span><span class="p">):</span>
-                        <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">polyline</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;VerticalSegment </span><span class="si">%d</span><span class="s2">, Path </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span>
-                                   <span class="n">settings</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#ffffff&#39;</span><span class="p">})</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">polyline</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Layer </span><span class="si">%d</span><span class="s2">, Path </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span>
-                                   <span class="n">settings</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#ffffff&#39;</span><span class="p">})</span></div>
+                    <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">polyline</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pointcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
     <span class="c1">##############################</span>
     <span class="c1">#  --- To data, from data</span>
@@ -482,7 +477,7 @@
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.2.1',
+  VERSION           : '0.2.2',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',
