@@ -11,6 +11,20 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 
 **Added**
 
+**Changed**
+* Switched from compas_viewers to compas_viewers2
+
+**Fixed**
+
+**Deprecated**
+
+**Removed**
+
+0.2.1
+----------
+
+**Added**
+
 * Bumped version to 0.2.1
 
 **Changed**
