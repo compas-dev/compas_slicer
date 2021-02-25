@@ -210,13 +210,13 @@ class BasePrintOrganizer(object):
             print("Print Velocity has not been assigned, thus print time is not calculated.")
         print("")
 
-    def visualize_on_viewer(self, viewer, visualize_polyline, visualize_printpoints):
+    def visualize_on_viewer(self, viewer, visualize_printpoints):
         """Visualize printpoints on the compas_viewer.
 
         Parameters
         ----------
-        viewer: :class: 'compas_viewers.objectviewer.ObjectViewer'
-        visualize_polyline: bool
+        viewer: :class:`compas_view2.app.App`
+            An instance of the App viewer class.
         visualize_printpoints: bool
         """
         all_pts = []
@@ -225,12 +225,8 @@ class BasePrintOrganizer(object):
                 for printpoint in self.printpoints_dict[layer_key][path_key]:
                     all_pts.append(printpoint.pt)
 
-        if visualize_polyline:
-            polyline = Polyline(all_pts)
-            viewer.add(polyline, name="Polyline", settings={'color': '#ffffff'})
-
-        if visualize_printpoints:
-            [viewer.add(pt, name="Point %d" % i) for i, pt in enumerate(all_pts)]
+        polyline = Polyline(all_pts)
+        viewer.add(polyline, show_points=visualize_printpoints, pointcolor=(0, 0, 1), linecolor=(1, 0, 1), linewidth=1)
 
     ######################
     # Output data

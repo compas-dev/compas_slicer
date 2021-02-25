@@ -186,8 +186,8 @@ class BaseSlicer(object):
 
         Parameters
         ----------
-        viewer: :class:`compas_viewers.objectviewer.Objectviewer`
-            An instance of the Objectviewer class.
+        viewer: :class:`compas_view2.app.App`
+            An instance of the App viewer class.
         visualize_mesh: bool, optional
             True to visualize mesh, False to not.
         visualize_paths: bool, optional
@@ -195,8 +195,7 @@ class BaseSlicer(object):
         """
 
         if visualize_mesh:
-            viewer.add(self.mesh, settings={'color': '#ff0000',
-                                            'opacity': 0.4, })
+            viewer.add(self.mesh, show_points=False, hide_coplanaredges=False)
 
         if visualize_paths:
             for i, layer in enumerate(self.layers):
@@ -205,12 +204,8 @@ class BaseSlicer(object):
                     if path.is_closed:
                         pts.append(pts[0])
                     polyline = Polyline(pts)
-                    if isinstance(layer, compas_slicer.geometry.VerticalLayer):
-                        viewer.add(polyline, name="VerticalSegment %d, Path %d" % (i, j),
-                                   settings={'color': '#ffffff'})
-                    else:
-                        viewer.add(polyline, name="Layer %d, Path %d" % (i, j),
-                                   settings={'color': '#ffffff'})
+                    viewer.add(polyline, show_points=True, pointcolor=(0, 0, 1), linecolor=(1, 0, 0), linewidth=2)
+
 
     ##############################
     #  --- To data, from data
