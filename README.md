@@ -44,18 +44,10 @@ pip install -e .
 ```
 - You should get the message 'Successfully installed compas-slicer' (amongst other packages)
 
-### Step 3. Install compas_viewers (optional)
+### Step 3. Install compas_viewers2 (optional)
 
-- Install compas_viewers (https://github.com/compas-dev/compas_viewers).
+- Follow the instructions to install compas_viewers2 (https://github.com/compas-dev/compas_view2).
 
-- Download the wheel file from here: https://www.lfd.uci.edu/~gohlke/pythonlibs/
-To install on an existing environment with python=3.7, use:
-```bash
-conda activate <environment_name>
-pip install PySide2 
-pip install <path/to/file>/PyOpenGL‑3.1.5‑cp37‑cp37m‑win_amd64.whl
-pip install <path/to/compas_viewers>
-```
 
 ### Step 4. Test if the library works
 - Run the file examples/1_versions_check.py

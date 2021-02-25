@@ -1,9 +1,8 @@
 import os
 from compas.datastructures import Mesh
 import logging
-from compas.geometry import Point
 import compas_slicer.utilities as utils
-from compas_slicer.slicers import InterpolationSlicer, BaseSlicer
+from compas_slicer.slicers import InterpolationSlicer
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.pre_processing import InterpolationSlicingPreprocessor
 from compas_slicer.pre_processing import create_mesh_boundary_attributes

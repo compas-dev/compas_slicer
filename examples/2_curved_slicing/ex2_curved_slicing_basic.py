@@ -12,6 +12,7 @@ from compas_slicer.print_organization import InterpolationPrintOrganizer
 from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import smooth_printpoints_up_vectors, smooth_printpoints_layer_heights
 from compas_slicer.post_processing import generate_brim
+from compas_view2 import app
 import time
 
 logger = logging.getLogger('logger')
@@ -25,10 +26,10 @@ OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'vase.obj')
 def main():
     start_time = time.time()
 
-    ### --- Load initial_mesh
+    # --- Load initial_mesh
     mesh = Mesh.from_obj(os.path.join(DATA_PATH, OBJ_INPUT_NAME))
 
-    ### --- Load targets (boundaries)
+    # --- Load targets (boundaries)
     low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
     high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
     create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)
@@ -74,12 +75,11 @@ def main():
     printpoints_data = print_organizer.output_printpoints_dict()
     utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
-    # # ----- Visualize
-    # viewer = ObjectViewer()
-    # # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
-    # print_organizer.visualize_on_viewer(viewer, visualize_polyline=True, visualize_printpoints=False)
-    # viewer.update()
-    # viewer.show()
+    # ----- Visualize
+    viewer = app.App(width=1600, height=1000)
+    # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
+    print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
+    viewer.show()
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
