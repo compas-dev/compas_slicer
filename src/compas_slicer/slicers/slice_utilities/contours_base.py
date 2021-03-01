@@ -104,7 +104,7 @@ class ContoursBase(object):
     def add_to_vertical_layers_manager(self, vertical_layers_manager):
         for key in self.sorted_point_clusters:
             pts = self.sorted_point_clusters[key]
-            if len(pts) > 3:  # discard curves that are too small
+            if len(pts) > 15:  # discard curves that are too small
                 path = Path(pts, is_closed=self.closed_paths_booleans[key])
 
                 vertical_layers_manager.add(path)
@@ -114,7 +114,7 @@ class ContoursBase(object):
         if len(self.sorted_point_clusters) > 0:
             for key in self.sorted_point_clusters:
                 pts = self.sorted_point_clusters[key]
-                if len(pts) > 3:
+                if len(pts) > 4:
                     path_total_length = 0.0
                     for p1, p2 in pairwise(pts):
                         path_total_length += distance_point_point_sqrd(p1, p2)
