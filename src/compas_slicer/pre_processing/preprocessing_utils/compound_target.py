@@ -168,14 +168,14 @@ class CompoundTarget:
                 distances.append(statistics.median(ds))
         return distances
 
-    def get_extreme_distances_from_other_target(self, other_target):
+    def get_avg_distances_from_other_target(self, other_target):
         """
         Returns the minimum and maximum distance of the vertices of this target from the other_target
         """
         extreme_distances = []
         for v_index in other_target.all_target_vkeys:
             extreme_distances.append(self.get_all_distances()[v_index])
-        return min(extreme_distances), max(extreme_distances)
+        return np.average(np.array(extreme_distances))
 
     #############################
     #  --- get all distances
