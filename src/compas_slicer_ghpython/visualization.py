@@ -115,13 +115,14 @@ def load_printpoints(path, folder_name, json_name):
             if cp:
                 cp_pt = rg.Point3d(cp[0], cp[1], cp[2])
                 closest_support.append(cp_pt)
+            else:
+                closest_support.append(point)  # in order to have the same number of points everywhere
 
             # fabrication related data
             velocities.append(data_point["velocity"])
             wait_times.append(data_point["wait_time"])
             blend_radiuses.append(data_point["blend_radius"])
             extruder_toggles.append(data_point["extruder_toggle"])
-            feasibility.append(data_point["is_feasible"])
 
     return points, frames, layer_heights, up_vectors, mesh_normals, closest_support, velocities, wait_times, \
         blend_radiuses, extruder_toggles, feasibility
@@ -259,7 +260,7 @@ def create_targets(mesh, targets, resolution_mult, path, folder_name, json_name)
         closest_vi = get_closest_point_index(p, vs)
         if closest_vi not in vertex_indices:
             ds_from_targets = [distance_of_pt_from_crv(vs[closest_vi], target) for target in targets]
-            if min(ds_from_targets) < 0.1:  # hardcoded threshold value
+            if min(ds_from_targets) < 0.5:  # hardcoded threshold value
                 vertices.append(vs[closest_vi])
                 vertex_indices.append(closest_vi)
 
