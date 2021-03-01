@@ -218,23 +218,22 @@ def tool_visualization(origin_coords, mesh, planes, i):
 
     i = min(i, len(planes) - 1)  # make sure i doesn't go beyond available number of planes
     passed_path = None
+    assert planes[0], 'The planes you have provided are invalid.'
 
-    if planes[0]:
-        origin = [float(origin_coords[0]), float(origin_coords[1]), float(origin_coords[2])]
-        o = rg.Point3d(origin[0], origin[1], origin[2])
-        x = rg.Vector3d(1, 0, 0)
-        z = rg.Vector3d(0, 0, -1)
+    origin = [float(origin_coords[0]), float(origin_coords[1]), float(origin_coords[2])]
+    o = rg.Point3d(origin[0], origin[1], origin[2])
+    x = rg.Vector3d(1, 0, 0)
+    y = rg.Vector3d(0, -1, 0)
+    # z = rg.Vector3d(0, 0, -1)
 
-        ee_frame = rg.Plane(o, x, z)
-        target_frame = planes[i]
+    ee_frame = rg.Plane(o, x, y)
+    target_frame = planes[i]
 
-        T = rg.Transform.PlaneToPlane(ee_frame, target_frame)
-        mesh = rs.TransformObject(rs.CopyObject(mesh), T)
+    T = rg.Transform.PlaneToPlane(ee_frame, target_frame)
+    mesh = rs.TransformObject(rs.CopyObject(mesh), T)
 
-        passed_path = rs.AddPolyline([plane.Origin for plane in planes[:i + 1]])
+    passed_path = rs.AddPolyline([plane.Origin for plane in planes[:i + 1]])
 
-    else:
-        print('The planes you have provided are invalid. ')
 
     return mesh, passed_path
 
