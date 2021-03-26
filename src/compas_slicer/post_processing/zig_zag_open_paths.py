@@ -1,7 +1,3 @@
-from compas.geometry import Vector
-from compas_slicer.print_organization.print_organization_utilities.extruder_toggle import check_assigned_extruder_toggle
-from compas_slicer.utilities import find_next_printpoint
-import copy
 import logging
 
 logger = logging.getLogger('logger')
@@ -10,6 +6,7 @@ __all__ = ['zig_zag_open_paths']
 
 
 def zig_zag_open_paths(slicer):
+    """ Reverses half of the open paths of the slicer, so that they can be printed in a zig zag motion. """
     reverse = False
     for layer in slicer.layers:
         for i, path in enumerate(layer.paths):

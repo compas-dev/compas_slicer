@@ -234,7 +234,6 @@ def tool_visualization(origin_coords, mesh, planes, i):
 
     passed_path = rs.AddPolyline([plane.Origin for plane in planes[:i + 1]])
 
-
     return mesh, passed_path
 
 
