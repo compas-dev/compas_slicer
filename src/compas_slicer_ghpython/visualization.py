@@ -43,21 +43,14 @@ def load_slicer(path, folder_name, json_name):
 
                     are_closed.append(path_data['is_closed'])
 
-                    for k in range(len(path_data['points'])):
-                        pt = path_data['points'][str(k)]
-                        pt = rs.AddPoint(pt[0], pt[1], pt[2])  # re-create points
-                        pts.append(pt)
-                    all_points.extend(pts)
-                    path = rs.AddPolyline(pts)
-
-                    # # create contour per layer
-                    # try:
-                    #     path = rs.AddPolyline(pts)
-                    # except:
-                    #     print('Attention! Could not add polyline at layer %d, path %d with %d points ' % (
-                    #         i, j, len(path_data['points'])))
-
-                    paths_nested_list[-1].append(path)
+                    if len(path_data['points']) > 2:  # ignore smaller curves that throw errors
+                        for k in range(len(path_data['points'])):
+                            pt = path_data['points'][str(k)]
+                            pt = rs.AddPoint(pt[0], pt[1], pt[2])  # re-create points
+                            pts.append(pt)
+                        all_points.extend(pts)
+                        path = rs.AddPolyline(pts)
+                        paths_nested_list[-1].append(path)
         else:
             print('No layers have been saved in the json file. Is this the correct json?')
 
@@ -86,7 +79,6 @@ def load_printpoints(path, folder_name, json_name):
     wait_times = []
     blend_radiuses = []
     extruder_toggles = []
-    feasibility = []
 
     if data:
         for i in range(len(data)):
@@ -125,7 +117,7 @@ def load_printpoints(path, folder_name, json_name):
             extruder_toggles.append(data_point["extruder_toggle"])
 
     return points, frames, layer_heights, up_vectors, mesh_normals, closest_support, velocities, wait_times, \
-        blend_radiuses, extruder_toggles, feasibility
+        blend_radiuses, extruder_toggles
 
 
 #######################################
@@ -408,10 +400,15 @@ def distance_fields_weighted_interpolation(path, folder_name, json_name, weight)
 
             ds = [(w - 1) * d_low + w * d_high for d_high, w in zip(ds_high, weights_remapped)]
 
-            if has_blend_union:
-                d_final = blend_union_list(ds, blend_radius)
-            else:
-                d_final = min(ds)
+            if len(ds) > 1:
+                if has_blend_union:
+                    d_final = blend_union_list(ds, blend_radius)
+                else:
+                    d_final = min(ds)
+            else:  # then there's a single upper target
+                print("Single upper target. Cannot interpolate. ")
+                return None
+
             interpolation.append(abs(d_final))
 
     return interpolation
