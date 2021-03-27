@@ -1,3 +1,4 @@
+name: compas_slicer
 channels:
   - conda-forge
 
