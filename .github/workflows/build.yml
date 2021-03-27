@@ -33,7 +33,7 @@ jobs:
           python -m pip install --no-cache-dir -r requirements-dev.txt
       - name: Test import
         run: |
-          python -c "import compas_slicer; print('COMPAS Slicer version: ' + compas_slicer.__version)" 
+          python -c "import compas_slicer; print('COMPAS Slicer version: ' + compas_slicer.__version__)" 
       - name: Lint with flake8
         run: |
           invoke lint
