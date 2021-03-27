@@ -1,7 +1,7 @@
 channels:
   - conda-forge
 
-  dependencies:
+dependencies:
   - python
   - pip
   - compas>=1.0.0
