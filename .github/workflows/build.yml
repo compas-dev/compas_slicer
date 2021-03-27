@@ -14,29 +14,29 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest] #ubuntu-latest, macos-latest, ]
-        python-version: [3.7]
+        os: [windows-latest]
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - name: Setup miniconda with python ${{ matrix.python-version }}
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+          activate-environment: compas_slicer
+          environment-file: environment.yml
+          python-version: 3.7
+          auto-activate-base: false
+          auto-update-conda: true
+      - name: Conda info
+        run: conda info
+      - name: Install project
         run: |
-          python -m pip install --upgrade pip
-          pip install cython --install-option='--no-cython-compile'
-      - name: Install
+          python -m pip install --no-cache-dir -r requirements-dev.txt
+      - name: Test import
         run: |
-          pip install --no-cache-dir -r requirements-dev.txt
+          python -c 'import compas_slicer; print("COMPAS Slicer version: " + compas_slicer.__version)' 
       - name: Lint with flake8
         run: |
           invoke lint
-      - name: Test import
-        run: |
-          python -m compas
       - name: Test with pytest
         run: |
           invoke test
