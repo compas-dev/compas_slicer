@@ -1,7 +1,8 @@
 attrs>=19.2.0
-rdp==0.8
-pyclipper==1.2.0
 compas>=1.0.0
-numpy~=1.19.1
-networkx~=2.5
-progressbar2==3.53.1
+networkx
+numpy
+progressbar2>=3.53
+pyclipper>=1.2.0
+rdp>=0.8
+igl @ git+git://github.com/geometryprocessing/libigl-python-bindings@2.2.1#egg=igl

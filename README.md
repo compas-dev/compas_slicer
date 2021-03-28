@@ -7,16 +7,14 @@
 Slicing package for FDM 3D Printing with COMPAS.
 
 
-Main features
--------------
+## Main features
 
 * Planar slicing (default method, and method based on Cgal library)
 * Curved slicing (interpolation of boundaries, UV slicing, scalar field slicing)
 * Generation of fabrication-related information
 * Export print data to Json and gcode formats
 
-Getting started
-------------
+## Getting started
 
 ### Step 1: Install compas
 
@@ -24,11 +22,8 @@ Getting started
 and install compas, compas_cgal, and libigl.
 
 ```bash
-conda create -n compas_slicer python=3.7
+conda create -n compas_slicer compas compas_cgal igl python=3.7
 conda activate compas_slicer
-conda install COMPAS
-conda install COMPAS compas_cgal
-conda install -c conda-forge igl
 ```
 
 ### Step 2: Install compas_slicer
@@ -48,20 +43,17 @@ pip install -e .
 
 - Follow the instructions to install compas_viewers2 (https://github.com/compas-dev/compas_view2).
 
-
 ### Step 4. Test if the library works
+
 - Run the file examples/1_versions_check.py
 
 Enjoy!
 
-Troubleshooting
----------------
+## Troubleshooting
 
 See here: https://compas.dev/compas_slicer/installation.html#troubleshooting-1
 
-
-Contributions
-------------
+## Contributions
 
 Before contributing code:
 
@@ -86,8 +78,7 @@ invoke lint
 Make sure the pull request passes the automatic tests as well. If not, then inspect the result, find what went wrong, fix it, and push again the result on your branch. The action will run again automatically on the open pull request.
 
 
-Authors
--------------
+## Authors
 
 * Ioanna Mitropoulou <<mitropoulou@arch.ethz.ch>> [@ioanna21](https://github.com/ioanna21)
 * Joris Burger <<burger@arch.ethz.ch>> [@joburger](https://github.com/joburger)
