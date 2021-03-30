@@ -11,7 +11,10 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 
 **Added**
 
+* Added automatic install on Rhino and GH when compas core is installed. 
+
 **Changed**
+
 * Switched from compas_viewers to compas_viewers2
 
 **Fixed**
