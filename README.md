@@ -16,36 +16,37 @@ Slicing package for FDM 3D Printing with COMPAS.
 
 ## Getting started
 
-### Step 1: Install compas
+### Step 1: Installation
 
-- Create a new environment (you can replace 'compas_slicer' with your own environment name),
-and install compas, compas_cgal, and libigl.
+The recommended way to install `compas_slicer` is with [conda](https://conda.io/docs/).
+For example, create an environment named ``my-project`` (or replace with your own environment name) and install as follows:
 
-```bash
-conda create -n compas_slicer compas compas_cgal igl python=3.7
-conda activate compas_slicer
-```
+    conda config --add channels conda-forge
+    conda create -n my-project compas_slicer
 
-### Step 2: Install compas_slicer
+### Step 2: Optional installation steps
 
-- Clone the repository and activate your environment.
-```bash
-git clone https://github.com/compas-dev/compas_slicer.git
-conda activate compas_slicer
-```
-- Navigate to the folder where you cloned the compas_slicer repository and install compas_slicer using:
-```bash
-pip install -e .
-```
-- You should get the message 'Successfully installed compas-slicer' (amongst other packages)
+#### COMPAS Viewers
 
-### Step 3. Install compas_viewers2 (optional)
+Follow the instructions to install `compas_view2` (https://github.com/compas-dev/compas_view2).
 
-- Follow the instructions to install compas_viewers2 (https://github.com/compas-dev/compas_view2).
+#### COMPAS CGAL
 
-### Step 4. Test if the library works
+    conda install -n my-project compas_cgal
 
-- Run the file examples/1_versions_check.py
+#### Grasshopper
+
+The Grasshopper components are automatically installed with the `compas_rhino` installation, e.g.:
+
+    conda activate my-project
+    python -m compas_rhino.install -v 6.0
+
+### Step 3. Test if the library works
+
+Activate your environment and run the following command:
+
+    conda activate my-project
+    python -m compas_slicer
 
 Enjoy!
 
