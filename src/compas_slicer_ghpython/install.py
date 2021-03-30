@@ -41,6 +41,7 @@ def after_rhino_install(installed_packages):
 
     return results
 
+
 @compas.plugins.plugin(category='install')
 def after_rhino_uninstall(installed_packages):
     if 'compas_slicer_ghpython' not in installed_packages:
