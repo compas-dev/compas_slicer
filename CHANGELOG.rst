@@ -10,18 +10,25 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 ----------
 
 **Added**
+Zig Zag paths in print organization
 
 * Added automatic install on Rhino and GH when compas core is installed. 
 
 **Changed**
 
 * Switched from compas_viewers to compas_viewers2
+* Updated csLoadPrintpoint.ghuser component on the data/gh_components and on the gh examples
 
 **Fixed**
+Bug in PrintPoint.get_frame() method. (It was throwing a 0-division error when contours where situated on flat surfaces)
+Bug in calculation of desired number of isocurves in interpolation slicer
+Bug in safety points (their frame was not matching their point position)
+Bug in tool plane in grasshopper visualization. (Its axis did not match the compas_fab convention.)
 
 **Deprecated**
 
 **Removed**
+Feasibility parameter from printpoints visualization. (Had forgotten to delete it from visualization when it was deleted from printpoints )
 
 0.2.1
 ----------

@@ -43,21 +43,14 @@ def load_slicer(path, folder_name, json_name):
 
                     are_closed.append(path_data['is_closed'])
 
-                    for k in range(len(path_data['points'])):
-                        pt = path_data['points'][str(k)]
-                        pt = rs.AddPoint(pt[0], pt[1], pt[2])  # re-create points
-                        pts.append(pt)
-                    all_points.extend(pts)
-                    path = rs.AddPolyline(pts)
-
-                    # # create contour per layer
-                    # try:
-                    #     path = rs.AddPolyline(pts)
-                    # except:
-                    #     print('Attention! Could not add polyline at layer %d, path %d with %d points ' % (
-                    #         i, j, len(path_data['points'])))
-
-                    paths_nested_list[-1].append(path)
+                    if len(path_data['points']) > 2:  # ignore smaller curves that throw errors
+                        for k in range(len(path_data['points'])):
+                            pt = path_data['points'][str(k)]
+                            pt = rs.AddPoint(pt[0], pt[1], pt[2])  # re-create points
+                            pts.append(pt)
+                        all_points.extend(pts)
+                        path = rs.AddPolyline(pts)
+                        paths_nested_list[-1].append(path)
         else:
             print('No layers have been saved in the json file. Is this the correct json?')
 
@@ -86,7 +79,6 @@ def load_printpoints(path, folder_name, json_name):
     wait_times = []
     blend_radiuses = []
     extruder_toggles = []
-    feasibility = []
 
     if data:
         for i in range(len(data)):
@@ -115,16 +107,17 @@ def load_printpoints(path, folder_name, json_name):
             if cp:
                 cp_pt = rg.Point3d(cp[0], cp[1], cp[2])
                 closest_support.append(cp_pt)
+            else:
+                closest_support.append(point)  # in order to have the same number of points everywhere
 
             # fabrication related data
             velocities.append(data_point["velocity"])
             wait_times.append(data_point["wait_time"])
             blend_radiuses.append(data_point["blend_radius"])
             extruder_toggles.append(data_point["extruder_toggle"])
-            feasibility.append(data_point["is_feasible"])
 
     return points, frames, layer_heights, up_vectors, mesh_normals, closest_support, velocities, wait_times, \
-        blend_radiuses, extruder_toggles, feasibility
+        blend_radiuses, extruder_toggles
 
 
 #######################################
@@ -217,23 +210,21 @@ def tool_visualization(origin_coords, mesh, planes, i):
 
     i = min(i, len(planes) - 1)  # make sure i doesn't go beyond available number of planes
     passed_path = None
+    assert planes[0], 'The planes you have provided are invalid.'
 
-    if planes[0]:
-        origin = [float(origin_coords[0]), float(origin_coords[1]), float(origin_coords[2])]
-        o = rg.Point3d(origin[0], origin[1], origin[2])
-        x = rg.Vector3d(1, 0, 0)
-        z = rg.Vector3d(0, 0, -1)
+    origin = [float(origin_coords[0]), float(origin_coords[1]), float(origin_coords[2])]
+    o = rg.Point3d(origin[0], origin[1], origin[2])
+    x = rg.Vector3d(1, 0, 0)
+    y = rg.Vector3d(0, -1, 0)
+    # z = rg.Vector3d(0, 0, -1)
 
-        ee_frame = rg.Plane(o, x, z)
-        target_frame = planes[i]
+    ee_frame = rg.Plane(o, x, y)
+    target_frame = planes[i]
 
-        T = rg.Transform.PlaneToPlane(ee_frame, target_frame)
-        mesh = rs.TransformObject(rs.CopyObject(mesh), T)
+    T = rg.Transform.PlaneToPlane(ee_frame, target_frame)
+    mesh = rs.TransformObject(rs.CopyObject(mesh), T)
 
-        passed_path = rs.AddPolyline([plane.Origin for plane in planes[:i + 1]])
-
-    else:
-        print('The planes you have provided are invalid. ')
+    passed_path = rs.AddPolyline([plane.Origin for plane in planes[:i + 1]])
 
     return mesh, passed_path
 
@@ -259,7 +250,7 @@ def create_targets(mesh, targets, resolution_mult, path, folder_name, json_name)
         closest_vi = get_closest_point_index(p, vs)
         if closest_vi not in vertex_indices:
             ds_from_targets = [distance_of_pt_from_crv(vs[closest_vi], target) for target in targets]
-            if min(ds_from_targets) < 0.1:  # hardcoded threshold value
+            if min(ds_from_targets) < 0.5:  # hardcoded threshold value
                 vertices.append(vs[closest_vi])
                 vertex_indices.append(closest_vi)
 
@@ -409,10 +400,15 @@ def distance_fields_weighted_interpolation(path, folder_name, json_name, weight)
 
             ds = [(w - 1) * d_low + w * d_high for d_high, w in zip(ds_high, weights_remapped)]
 
-            if has_blend_union:
-                d_final = blend_union_list(ds, blend_radius)
-            else:
-                d_final = min(ds)
+            if len(ds) > 1:
+                if has_blend_union:
+                    d_final = blend_union_list(ds, blend_radius)
+                else:
+                    d_final = min(ds)
+            else:  # then there's a single upper target
+                print("Single upper target. Cannot interpolate. ")
+                return None
+
             interpolation.append(abs(d_final))
 
     return interpolation
