@@ -174,9 +174,9 @@
 
 <span class="k">def</span> <span class="nf">find_no_of_isocurves</span><span class="p">(</span><span class="n">target_0</span><span class="p">,</span> <span class="n">target_1</span><span class="p">,</span> <span class="n">avg_layer_height</span><span class="o">=</span><span class="mf">1.1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Returns the average number of isocurves that can cover the get_distance from target_0 to target_1. &quot;&quot;&quot;</span>
-    <span class="n">extreme_ds0</span> <span class="o">=</span> <span class="n">target_0</span><span class="o">.</span><span class="n">get_extreme_distances_from_other_target</span><span class="p">(</span><span class="n">target_1</span><span class="p">)</span>
-    <span class="n">extreme_ds1</span> <span class="o">=</span> <span class="n">target_1</span><span class="o">.</span><span class="n">get_extreme_distances_from_other_target</span><span class="p">(</span><span class="n">target_0</span><span class="p">)</span>
-    <span class="n">number_of_curves</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">extreme_ds0</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">extreme_ds1</span><span class="p">))</span> <span class="o">/</span> <span class="n">avg_layer_height</span>
+    <span class="n">avg_ds0</span> <span class="o">=</span> <span class="n">target_0</span><span class="o">.</span><span class="n">get_avg_distances_from_other_target</span><span class="p">(</span><span class="n">target_1</span><span class="p">)</span>
+    <span class="n">avg_ds1</span> <span class="o">=</span> <span class="n">target_1</span><span class="o">.</span><span class="n">get_avg_distances_from_other_target</span><span class="p">(</span><span class="n">target_0</span><span class="p">)</span>
+    <span class="n">number_of_curves</span> <span class="o">=</span> <span class="p">((</span><span class="n">avg_ds0</span> <span class="o">+</span> <span class="n">avg_ds1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">/</span> <span class="n">avg_layer_height</span>
     <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">number_of_curves</span><span class="p">))</span>
 
 
