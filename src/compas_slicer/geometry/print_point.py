@@ -67,7 +67,7 @@ class PrintPoint(object):
 
     def get_frame(self):
         """ Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal. """
-        if dot_vectors(self.up_vector, self.mesh_normal) < 1.0:  # if the normalized vectors are not co-linear
+        if abs(dot_vectors(self.up_vector, self.mesh_normal)) < 1.0:  # if the normalized vectors are not co-linear
             c = cross_vectors(self.up_vector, self.mesh_normal)
             return Frame(self.pt, c, self.mesh_normal)
         else:  # in horizontal surfaces the vectors happen to be co-linear
