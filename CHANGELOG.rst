@@ -20,7 +20,7 @@ Zig Zag paths in print organization
 * Updated csLoadPrintpoint.ghuser component on the data/gh_components and on the gh examples
 
 **Fixed**
-Bug in PrintPoint.get_frame() method. (It was throwing a 0-division error when contours where situated on flat surfaces)
+Bug in PrintPoint.get_frame() method. (It was throwing a 0-division error when contours where situated on flat surfaces) x 2
 Bug in calculation of desired number of isocurves in interpolation slicer
 Bug in safety points (their frame was not matching their point position)
 Bug in tool plane in grasshopper visualization. (Its axis did not match the compas_fab convention.)
