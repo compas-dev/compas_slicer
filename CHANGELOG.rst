@@ -19,6 +19,13 @@ Unreleased
 
 **Removed**
 
+0.3.1
+----------
+
+**Changed**
+
+* Version to 0.3.1
+
 0.3.0
 ----------
 
