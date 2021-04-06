@@ -49,13 +49,15 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.2.2
+            0.3.0
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.0">0.3.0</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.2">0.2.2</a>
             
@@ -110,11 +112,11 @@
 
         
         
-        <div class="section" id="simple-planar-slicing">
+        <section id="simple-planar-slicing">
 <h1><span class="section-number">1. </span>Simple planar slicing<a class="headerlink" href="#simple-planar-slicing" title="Permalink to this headline">¶</a></h1>
 <p>This example describes the planar slicing process for a simple shape, consisting
 out of a shape with a single contour (also known as a ‘vase’).</p>
-<div class="section" id="imports-and-initialization">
+<section id="imports-and-initialization">
 <h2><span class="section-number">1.1. </span>Imports and initialization<a class="headerlink" href="#imports-and-initialization" title="Permalink to this headline">¶</a></h2>
 <p>The first step is to import the required functions:</p>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="kn">import</span> <span class="nn">time</span>
@@ -155,8 +157,8 @@ checks if the <code class="docutils literal notranslate"><span class="pre">outpu
 <span class="n">MODEL</span> <span class="o">=</span> <span class="s1">&#39;simple_vase_open_low_res.obj&#39;</span>
 </code></pre></div>
 </div>
-</div>
-<div class="section" id="slicing-process">
+</section>
+<section id="slicing-process">
 <h2><span class="section-number">1.2. </span>Slicing process<a class="headerlink" href="#slicing-process" title="Permalink to this headline">¶</a></h2>
 <p>In the next step we use the Compas function <code class="docutils literal notranslate"><span class="pre">Mesh.from_obj</span></code> to load our <code class="docutils literal notranslate"><span class="pre">.obj</span></code>
 file. We then move it to the origin, but this can be any specified point, such as
@@ -183,10 +185,12 @@ to choose the method that you prefer.</p>
 One useful functionality is <code class="docutils literal notranslate"><span class="pre">generate_brim</span></code>, which generates a number of layers
 that are offset from the bottom layer, to improve adhesion to the build plate
 (see image).</p>
-<div class="figure align-default" id="id1">
+<figure class="figure align-default" id="id1">
 <img alt="../_images/01_brim.jpg" class="figure-img img-fluid" src="../_images/01_brim.jpg" />
-<p class="caption"><span class="caption-text"><em>Left: Without brim. Right: With brim</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text"><em>Left: Without brim. Right: With brim</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </code></pre></div>
 </div>
@@ -216,8 +220,8 @@ we can save the slicing result to JSON. In the next steps we will use the
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
-</div>
-<div class="section" id="print-organization">
+</section>
+<section id="print-organization">
 <h2><span class="section-number">1.3. </span>Print organization<a class="headerlink" href="#print-organization" title="Permalink to this headline">¶</a></h2>
 <p>In the next steps of the process we will use the <code class="xref py py-class docutils literal notranslate"><span class="pre">PlanarPrintOrganizer</span></code> to
 make our slicing result ready for fabrication. First, we initialize the
@@ -254,8 +258,8 @@ Printpoints as data and then export them to a <code class="docutils literal notr
 <span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div>
 </div>
-</div>
-<div class="section" id="final-script">
+</section>
+<section id="final-script">
 <h2><span class="section-number">1.4. </span>Final script<a class="headerlink" href="#final-script" title="Permalink to this headline">¶</a></h2>
 <p>The completed final script can be found below:</p>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="kn">import</span> <span class="nn">time</span>
@@ -378,8 +382,8 @@ Printpoints as data and then export them to a <code class="docutils literal notr
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total elapsed time&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
 </code></pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
         
       </main>
@@ -494,7 +498,7 @@ Printpoints as data and then export them to a <code class="docutils literal notr
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.2.2',
+  VERSION           : '0.3.0',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',
