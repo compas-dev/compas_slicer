@@ -29,7 +29,7 @@ project = 'COMPAS SLICER'
 year = '2020'
 author = 'Digital Building Technologies, Gramazio Kohler Research'
 copyright = '{0}, {1}'.format(year, author)
-version = release = '0.3.2'
+version = release = '0.3.3'
 
 pygments_style = 'sphinx'
 show_authors = True
