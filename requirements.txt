@@ -5,4 +5,3 @@ numpy
 progressbar2>=3.53
 pyclipper>=1.2.0
 rdp>=0.8
-igl @ git+git://github.com/geometryprocessing/libigl-python-bindings@2.2.1#egg=igl
