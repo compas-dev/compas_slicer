@@ -13,6 +13,8 @@ Unreleased
 
 **Changed**
 
+* Version to 0.3.1
+
 **Fixed**
 
 **Deprecated**
