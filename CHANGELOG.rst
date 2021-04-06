@@ -19,6 +19,8 @@ Unreleased
 
 **Removed**
 
+* Removed libigl from the requirements, since it is not on pip we cannot have it in the requirements for now. We should also update the installation instructions for conda and pip.
+
 0.3.2
 ----------
 
