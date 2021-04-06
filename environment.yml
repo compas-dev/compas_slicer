@@ -10,5 +10,5 @@ dependencies:
   - numpy
   - progressbar2>=3.53
   - pyclipper>=1.2.0
-  #- rdp>=0.8 (not yet in conda)
+  - rdp>=0.8
   - igl
