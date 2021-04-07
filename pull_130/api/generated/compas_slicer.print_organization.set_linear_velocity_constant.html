@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   
-  <title>compas_slicer - override_wait_time</title>
+  <title>compas_slicer - set_linear_velocity_constant</title>
   
 
   <meta charset="utf-8" />
@@ -19,11 +19,11 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="set_linear_velocity_constant" href="compas_slicer.print_organization.set_linear_velocity_constant.html" />
+    <link rel="next" title="set_linear_velocity_per_layer" href="compas_slicer.print_organization.set_linear_velocity_per_layer.html" />
   
 
   
-    <link rel="prev" title="set_wait_time" href="compas_slicer.print_organization.set_wait_time.html" />
+    <link rel="prev" title="override_wait_time" href="compas_slicer.print_organization.override_wait_time.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -115,25 +115,27 @@
             
               <li class="breadcrumb-item"><a href="../print_organization.html">print_organization</a></li>
             
-            <li class="breadcrumb-item active" aria-current="page">override_wait_time</li>
+            <li class="breadcrumb-item active" aria-current="page">set_linear_velocity_constant</li>
           </ol>
         </nav>
         
 
         
         
-        <section class="detail" id="override-wait-time">
-<h1>override_wait_time<a class="headerlink" href="#override-wait-time" title="Permalink to this headline">¶</a></h1>
+        <section class="detail" id="set-linear-velocity-constant">
+<h1>set_linear_velocity_constant<a class="headerlink" href="#set-linear-velocity-constant" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="compas_slicer.print_organization.override_wait_time">
-<code class="sig-prename descclassname"><span class="pre">compas_slicer.print_organization.</span></code><code class="sig-name descname"><span class="pre">override_wait_time</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_organizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/print_organization_utilities/wait_time.html#override_wait_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#compas_slicer.print_organization.override_wait_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overrides the wait_time value for the printpoints with a user-defined value.
-:Parameters: * <strong>print_organizer</strong> (<a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.html#compas_slicer.print_organization.BasePrintOrganizer" title="compas_slicer.print_organization.BasePrintOrganizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.print_organization.BasePrintOrganizer</span></code></a>)</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><strong>override_value</strong> (<em>float</em>) – Value to override the wait_time values with.</p></li>
+<dt id="compas_slicer.print_organization.set_linear_velocity_constant">
+<code class="sig-prename descclassname"><span class="pre">compas_slicer.print_organization.</span></code><code class="sig-name descname"><span class="pre">set_linear_velocity_constant</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_organizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/print_organization_utilities/linear_velocity.html#set_linear_velocity_constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#compas_slicer.print_organization.set_linear_velocity_constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the linear velocity parameter of the printpoints depending on the selected type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>print_organizer</strong> (<a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.html#compas_slicer.print_organization.BasePrintOrganizer" title="compas_slicer.print_organization.BasePrintOrganizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.print_organization.BasePrintOrganizer</span></code></a>)</p></li>
+<li><p><strong>v</strong> (<em>float. Velocity value (in mm/s) to set for printpoints. Defaults to 25 mm/s.</em>)</p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -184,7 +186,7 @@
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">override_wait_time</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">set_linear_velocity_constant</a></li>
 </ul>
 
       </div>
@@ -196,20 +198,20 @@
   <footer class="compas-footer">
     <nav class="nav p-2">
       
-        <a href="compas_slicer.print_organization.set_wait_time.html" title="set_wait_time" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+        <a href="compas_slicer.print_organization.override_wait_time.html" title="override_wait_time" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
           <div class="nav-title flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Previous</div>
-            set_wait_time
+            override_wait_time
           </div>
         </a>
       
 
       
-        <a href="compas_slicer.print_organization.set_linear_velocity_constant.html" title="set_linear_velocity_constant" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+        <a href="compas_slicer.print_organization.set_linear_velocity_per_layer.html" title="set_linear_velocity_per_layer" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
           <div class="nav-title footer-link flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Next</div>
-            set_linear_velocity_constant
+            set_linear_velocity_per_layer
           </div>
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
         </a>
