@@ -16,6 +16,7 @@ def set_extruder_toggle(print_organizer, slicer):
     print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`
     slicer: :class:`compas.slicers.BaseSlicer`
     """
+
     logger.info("Setting extruder toggle")
 
     pp_dict = print_organizer.printpoints_dict

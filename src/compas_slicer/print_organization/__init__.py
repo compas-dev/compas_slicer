@@ -35,11 +35,14 @@ Functions
 
     set_extruder_toggle
     override_extruder_toggle
-    set_linear_velocity
     set_blend_radius
     add_safety_printpoints
     set_wait_time
     override_wait_time
+    set_linear_velocity_constant
+    set_linear_velocity_per_layer
+    set_linear_velocity_by_range
+    set_linear_velocity_by_overhang
 
 """
 
