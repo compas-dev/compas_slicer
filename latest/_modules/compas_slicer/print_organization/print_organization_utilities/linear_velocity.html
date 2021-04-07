@@ -45,13 +45,27 @@
         <li class="nav-item nav-versions dropdown">
           <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            0.1.3
+            0.3.3
           </a>
           <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.3">0.3.3</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.2">0.3.2</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.1">0.3.1</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.0">0.3.0</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.2">0.2.2</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.1">0.2.1</a>
+            
+              <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.0">0.2.0</a>
             
               <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.3">0.1.3</a>
             
@@ -67,7 +81,7 @@
         <!-- version -->
         <!-- social -->
         <li class="nav-item">
-          <a class="nav-link" href="https://https://github.com/compas-dev/compas_slicer" target="_blank">
+          <a class="nav-link" href="https://github.com/compas-dev/compas_slicer" target="_blank">
             <span class="fab fa-github fa-1x"></span>
           </a>
         </li>
@@ -101,137 +115,96 @@
         
         
         <h1>Source code for compas_slicer.print_organization.print_organization_utilities.linear_velocity</h1><div class="highlight"><pre><code>
-<span></span><span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">angle_vectors</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.utilities</span> <span class="kn">import</span> <span class="n">get_closest_mesh_normal_to_pt</span>
+<span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">dot_vectors</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.utilities</span> <span class="kn">import</span> <span class="n">remap</span><span class="p">,</span> <span class="n">remap_unbound</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;set_linear_velocity&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;set_linear_velocity_constant&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;set_linear_velocity_per_layer&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;set_linear_velocity_by_range&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;set_linear_velocity_by_overhang&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="set_linear_velocity"><a class="viewcode-back" href="../../../../api/generated/compas_slicer.print_organization.set_linear_velocity.html#compas_slicer.print_organization.set_linear_velocity">[docs]</a><span class="k">def</span> <span class="nf">set_linear_velocity</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span>
-                        <span class="n">velocity_type</span><span class="p">,</span>
-                        <span class="n">v</span><span class="o">=</span><span class="mf">25.0</span><span class="p">,</span>
-                        <span class="n">per_layer_velocities</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">angle_range</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                        <span class="n">speed_range</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
-    <span class="sd">&quot;&quot;&quot; Sets the linear velocity parameter of the printpoints depending on the selected type.</span>
+<div class="viewcode-block" id="set_linear_velocity_constant"><a class="viewcode-back" href="../../../../api/generated/compas_slicer.print_organization.set_linear_velocity_constant.html#compas_slicer.print_organization.set_linear_velocity_constant">[docs]</a><span class="k">def</span> <span class="nf">set_linear_velocity_constant</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mf">25.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the linear velocity parameter of the printpoints depending on the selected type.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`</span>
-<span class="sd">    velocity_type: str</span>
-<span class="sd">        Determines how to add linear velocity to the printpoints.</span>
-
-<span class="sd">        &#39;constant&#39;:              one value used for all printpoints</span>
-<span class="sd">        &#39;per_layer&#39;:             different values used for every layer</span>
-<span class="sd">        &#39;by_layer_height&#39;:       set velocity in accordance to layer height (beta, to be improved)</span>
-<span class="sd">        &#39;by_overhang&#39;:           set velocity in accordance to the overhang (beta, to be improved)</span>
-<span class="sd">    v: float</span>
-<span class="sd">        Velocity value (in mm/s) to set for printpoints. Defaults to 25 mm/s.</span>
-<span class="sd">    per_layer_velocities: list of floats</span>
-<span class="sd">        If setting velocity per layer, provide a list of floats with equal length to the number of layers.</span>
-<span class="sd">    angle_range: tuple</span>
-<span class="sd">        Two angles (in degrees) that give the minimum and maximum value to map the speed_range to.</span>
-<span class="sd">        For example, (10, 50) will assign the maximum speed to overhang angles of 10 degrees</span>
-<span class="sd">        or less, and the minimum speed to points with an overhang angle of 50 degrees and above.</span>
-<span class="sd">    speed_range: tuple</span>
-<span class="sd">        xxx</span>
+<span class="sd">    v:  float. Velocity value (in mm/s) to set for printpoints. Defaults to 25 mm/s.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting linear velocity with type : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">velocity_type</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">velocity_type</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span>
-            <span class="ow">or</span> <span class="n">velocity_type</span> <span class="o">==</span> <span class="s2">&quot;per_layer&quot;</span>
-            <span class="ow">or</span> <span class="n">velocity_type</span> <span class="o">==</span> <span class="s2">&quot;by_layer_height&quot;</span>
-            <span class="ow">or</span> <span class="n">velocity_type</span> <span class="o">==</span> <span class="s2">&quot;by_overhang&quot;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Velocity method doesn&#39;t exist&quot;</span><span class="p">)</span>
-
-    <span class="n">pp_dict</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_dict</span>
-
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
-            <span class="n">path_printpoints</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="n">path_printpoints</span><span class="p">:</span>
-
-                <span class="k">if</span> <span class="n">velocity_type</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span>
-                    <span class="n">printpoint</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">v</span>
-
-                <span class="k">elif</span> <span class="n">velocity_type</span> <span class="o">==</span> <span class="s2">&quot;per_layer&quot;</span><span class="p">:</span>
-                    <span class="k">assert</span> <span class="n">per_layer_velocities</span><span class="p">,</span> <span class="s2">&quot;You need to provide one velocity value per layer&quot;</span>
-                    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">per_layer_velocities</span><span class="p">)</span> <span class="o">==</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">number_of_layers</span><span class="p">,</span> \
-                        <span class="s1">&#39;Wrong number of velocity values. You need to provide one velocity value per layer, &#39;</span> \
-                        <span class="s1">&#39;on the &quot;per_layer_velocities&quot; list.&#39;</span>
-                    <span class="n">printpoint</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">per_layer_velocities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-
-                <span class="c1"># ----- TODO: these two methods are trying to do the same thing. They should be merged!</span>
-                <span class="k">elif</span> <span class="n">velocity_type</span> <span class="o">==</span> <span class="s2">&quot;by_layer_height&quot;</span><span class="p">:</span>
-                    <span class="n">printpoint</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">calculate_linear_velocity_based_on_layer_height</span><span class="p">(</span><span class="n">printpoint</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">velocity_type</span> <span class="o">==</span> <span class="s2">&quot;by_overhang&quot;</span><span class="p">:</span>
-                    <span class="n">mesh</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span>
-                    <span class="n">printpoint</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">calculate_linear_velocity_based_on_overhang</span><span class="p">(</span><span class="n">printpoint</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span>
-                                                                                      <span class="n">angle_range</span><span class="p">,</span> <span class="n">speed_range</span><span class="p">)</span></div>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting constant linear velocity&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_iterator</span><span class="p">():</span>
+        <span class="n">printpoint</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">v</span></div>
 
 
-<span class="c1"># --------  Nozzle linear velocity based on layer height</span>
-
-<span class="c1"># TODO: These parameters should NOT be hardcoded! Instead they should be passed as a dictionary of parameters.</span>
-<span class="n">motor_omega</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>  <span class="c1"># 1 revolution / sec = 2*pi rad/sec</span>
-<span class="n">motor_r</span> <span class="o">=</span> <span class="mf">4.0</span>  <span class="c1"># 4.25 #mm</span>
-<span class="n">motor_linear_speed</span> <span class="o">=</span> <span class="n">motor_omega</span> <span class="o">*</span> <span class="n">motor_r</span>
-<span class="n">D_filament</span> <span class="o">=</span> <span class="mf">2.75</span>  <span class="c1"># mm</span>
-<span class="n">filament_area</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">D_filament</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>  <span class="c1"># pi*r^2</span>
-<span class="n">multiplier</span> <span class="o">=</span> <span class="mf">0.25</span>  <span class="c1"># arbitrary value! You might have to change this</span>
-
-
-<span class="k">def</span> <span class="nf">calculate_linear_velocity_based_on_layer_height</span><span class="p">(</span><span class="n">printpoint</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the linear velocity during the print of a printpoint, so that the volume of extrusion matches the</span>
-<span class="sd">    volume of the desired path cross-section</span>
-<span class="sd">    path_area * robot_linear_speed = filament_area * motor_linear_speed</span>
+<div class="viewcode-block" id="set_linear_velocity_per_layer"><a class="viewcode-back" href="../../../../api/generated/compas_slicer.print_organization.set_linear_velocity_per_layer.html#compas_slicer.print_organization.set_linear_velocity_per_layer">[docs]</a><span class="k">def</span> <span class="nf">set_linear_velocity_per_layer</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">per_layer_velocities</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the linear velocity parameter of the printpoints depending on the selected type.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    printpoint: :class: &#39;compas_slicer.geometry.PrintPoint&#39;</span>
+<span class="sd">    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`</span>
+<span class="sd">    per_layer_velocities: list</span>
+<span class="sd">        A list of velocities (floats) with equal length to the number of layers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">layer_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">printpoint</span><span class="o">.</span><span class="n">layer_height</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span>
-    <span class="n">path_area</span> <span class="o">=</span> <span class="n">layer_width</span> <span class="o">*</span> <span class="n">printpoint</span><span class="o">.</span><span class="n">layer_height</span>
-    <span class="n">linear_speed</span> <span class="o">=</span> <span class="p">(</span><span class="n">filament_area</span> <span class="o">*</span> <span class="n">motor_linear_speed</span><span class="p">)</span> <span class="o">/</span> <span class="n">path_area</span>
-    <span class="k">return</span> <span class="n">linear_speed</span> <span class="o">*</span> <span class="n">multiplier</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting per-layer linear velocity&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">per_layer_velocities</span><span class="p">)</span> <span class="o">==</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">number_of_layers</span><span class="p">,</span> <span class="s1">&#39;Wrong number of velocity values. You need </span><span class="se">\</span>
+<span class="s1">        to provide one velocity value per layer, on the &quot;per_layer_velocities&quot; list.&#39;</span>
+    <span class="k">for</span> <span class="n">printpoint</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_indices_iterator</span><span class="p">():</span>
+        <span class="n">printpoint</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">per_layer_velocities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
 
 
-<span class="c1"># --------  Nozzle linear velocity based on overhang</span>
-<span class="k">def</span> <span class="nf">calculate_linear_velocity_based_on_overhang</span><span class="p">(</span><span class="n">printpoint</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">angle_range</span><span class="p">,</span> <span class="n">speed_range</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the linear velocity during the print of a printpoint, so that it is slower on large overhangs.</span>
+<div class="viewcode-block" id="set_linear_velocity_by_range"><a class="viewcode-back" href="../../../../api/generated/compas_slicer.print_organization.set_linear_velocity_by_range.html#compas_slicer.print_organization.set_linear_velocity_by_range">[docs]</a><span class="k">def</span> <span class="nf">set_linear_velocity_by_range</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">param_func</span><span class="p">,</span> <span class="n">parameter_range</span><span class="p">,</span> <span class="n">velocity_range</span><span class="p">,</span>
+                                 <span class="n">bound_remapping</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the linear velocity parameter of the printpoints depending on the selected type.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    printpoint: :class: &#39;compas_slicer.geometry.PrintPoint&#39;</span>
-<span class="sd">    mesh: :class: &#39;compas.datastructures.Mesh&#39;</span>
-<span class="sd">    angle_range: tupple</span>
-<span class="sd">    speed_range: tupple</span>
-
+<span class="sd">    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`</span>
+<span class="sd">    param_func: function that takes as argument a :class: &#39;compas_slicer.geometry.Printpoint&#39;: get_param_func(pp)</span>
+<span class="sd">        and returns the parameter value that will be used for the remapping</span>
+<span class="sd">    parameter_range: tuple</span>
+<span class="sd">        An example of a parameter that can be used is the overhang angle, or the layer height.</span>
+<span class="sd">    velocity_range: tuple</span>
+<span class="sd">        The range of velocities where the parameter will be remapped</span>
+<span class="sd">    bound_remapping: bool</span>
+<span class="sd">        If True, the remapping is bound in the domain velocity_range, else it is unbound.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># get mesh normal and calculate overhang angle</span>
-    <span class="n">mesh_normal</span> <span class="o">=</span> <span class="n">get_closest_mesh_normal_to_pt</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">printpoint</span><span class="o">.</span><span class="n">pt</span><span class="p">)</span>
-    <span class="n">vect_angle</span> <span class="o">=</span> <span class="n">angle_vectors</span><span class="p">(</span><span class="n">mesh_normal</span><span class="p">,</span> <span class="n">Vector</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">overhang_angle</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">90</span> <span class="o">-</span> <span class="n">vect_angle</span><span class="p">)</span>
 
-    <span class="c1"># remap values</span>
-    <span class="n">min_speed</span><span class="p">,</span> <span class="n">max_speed</span> <span class="o">=</span> <span class="n">speed_range</span>
-    <span class="n">min_angle</span><span class="p">,</span> <span class="n">max_angle</span> <span class="o">=</span> <span class="n">angle_range</span>
-    <span class="n">old_range</span> <span class="o">=</span> <span class="n">max_angle</span> <span class="o">-</span> <span class="n">min_angle</span>
-    <span class="n">new_range</span> <span class="o">=</span> <span class="n">max_speed</span> <span class="o">-</span> <span class="n">min_speed</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting linear velocity based on parameter range&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_iterator</span><span class="p">():</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">param_func</span><span class="p">(</span><span class="n">printpoint</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">param</span><span class="p">,</span> <span class="s1">&#39;The param_func does not return any value for calculating the velocity range.&#39;</span>
+        <span class="k">if</span> <span class="n">bound_remapping</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">remap</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">parameter_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">parameter_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">velocity_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">velocity_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">remap_unbound</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">parameter_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">parameter_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">velocity_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">velocity_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">printpoint</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">v</span></div>
 
-    <span class="k">if</span> <span class="n">overhang_angle</span> <span class="o">&lt;=</span> <span class="n">min_angle</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">max_speed</span>
-    <span class="k">elif</span> <span class="n">min_angle</span> <span class="o">&lt;</span> <span class="n">overhang_angle</span> <span class="o">&lt;=</span> <span class="n">max_angle</span><span class="p">:</span>
-        <span class="n">velocity</span> <span class="o">=</span> <span class="p">(((</span><span class="n">overhang_angle</span> <span class="o">-</span> <span class="n">min_angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">new_range</span><span class="p">)</span> <span class="o">/</span> <span class="n">old_range</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_speed</span>
-        <span class="k">return</span> <span class="n">new_range</span> <span class="o">-</span> <span class="p">(</span><span class="n">velocity</span> <span class="o">-</span> <span class="n">new_range</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>  <span class="c1"># overhang_angle &gt; max_angle:</span>
-        <span class="k">return</span> <span class="n">min_speed</span>
+
+<div class="viewcode-block" id="set_linear_velocity_by_overhang"><a class="viewcode-back" href="../../../../api/generated/compas_slicer.print_organization.set_linear_velocity_by_overhang.html#compas_slicer.print_organization.set_linear_velocity_by_overhang">[docs]</a><span class="k">def</span> <span class="nf">set_linear_velocity_by_overhang</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">overhang_range</span><span class="p">,</span> <span class="n">velocity_range</span><span class="p">,</span> <span class="n">bound_remapping</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set velocity by overhang by using set_linear_velocity_by_range.</span>
+
+<span class="sd">    An example function for how to use the &#39;set_linear_velocity_by_range&#39;. In this case the parameter that controls the</span>
+<span class="sd">    velocity is the overhang, measured as a dot product with the horizontal direction.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`</span>
+<span class="sd">    overhang_range: tuple:</span>
+<span class="sd">        should be within [0.0, 1.0]. For example a reasonable value would be [0.0, 0.5], that would</span>
+<span class="sd">        be remapping overhangs up to 45 degrees</span>
+<span class="sd">    velocity_range: tuple</span>
+<span class="sd">    bound_remapping: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">param_func</span><span class="p">(</span><span class="n">ppt</span><span class="p">):</span> <span class="k">return</span> <span class="n">dot_vectors</span><span class="p">(</span><span class="n">ppt</span><span class="o">.</span><span class="n">mesh_normal</span><span class="p">,</span> <span class="n">Vector</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+    <span class="c1"># returns values from 0.0 (no overhang) to 1.0 (horizontal overhang)</span>
+    <span class="n">set_linear_velocity_by_range</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">param_func</span><span class="p">,</span> <span class="n">overhang_range</span><span class="p">,</span> <span class="n">velocity_range</span><span class="p">,</span> <span class="n">bound_remapping</span><span class="p">)</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -321,7 +294,7 @@
   <script type="text/javascript">
   var DOCUMENTATION_OPTIONS = {
   URL_ROOT          : '',
-  VERSION           : '0.1.3',
+  VERSION           : '0.3.3',
   COLLAPSE_INDEX    : false,
   FILE_SUFFIX       : '.html',
   HAS_SOURCE        : 'false',
