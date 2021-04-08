@@ -2,10 +2,14 @@
 Simple curved interpolation slicing
 *********************
 
-Make sure to read the Example 1 before reading this example, as it explains the main concepts of compas_slicer.
+A general introduction of the concepts organization of compas_slicer can be found in the `introduction tutorial <https://compas.dev/compas_slicer/tutorials/01_introduction.html>`_
+
+
+Make sure to read the `1st example <https://compas.dev/compas_slicer/examples/01_planar_slicing_simple.html>`_ before reading this example,
+as it explains the main concepts of compas_slicer.
 Having done that, in this example, we go through the basics of using the non-planar interpolation slicer.
-This example uses the method described in
-https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408
+This example uses the method described in `Print Paths KeyFraming <https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408>`_
+
 
 .. figure:: figures/curved_slicing.PNG
     :figclass: figure
@@ -132,6 +136,12 @@ Visualize the result using compas_viewer2
     # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
     print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
     viewer.show()
+
+
+
+Once the slicing process is finished, you can use the compas_slicer grasshopper components to visualize the results.
+`Grasshopper visualization tutorial <https://compas.dev/compas_slicer/tutorials/02_grasshopper_visualization.html>`_
+
 
 
 Final script
