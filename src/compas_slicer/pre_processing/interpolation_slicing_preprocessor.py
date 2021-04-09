@@ -47,22 +47,21 @@ class InterpolationSlicingPreprocessor:
         """ Creates the target_LOW and the target_HIGH and computes the geodesic distances. """
 
         # --- low target
-        target_blending = get_param(self.parameters, key='target_LOW_smooth_union', defaults_type='interpolation_slicing')
-        smooth, r = target_blending[0], target_blending[1]
-        geodesics_method = get_param(self.parameters, key='target_LOW_geodesics_method', defaults_type='interpolation_slicing')
+        geodesics_method = get_param(self.parameters, key='target_LOW_geodesics_method',
+                                     defaults_type='interpolation_slicing')
+        method, params = 'min', []  # no other union methods currently supported for lower target
         self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH,
-                                         has_blend_union=smooth,
-                                         blend_radius=r,
+                                         union_method=method,
+                                         union_params=params,
                                          geodesics_method=geodesics_method)
 
         # --- high target
-        target_blending = get_param(self.parameters, key='target_HIGH_smooth_union', defaults_type='interpolation_slicing')
-        smooth, r = target_blending[0], target_blending[1]
         geodesics_method = get_param(self.parameters, key='target_HIGH_geodesics_method',
                                      defaults_type='interpolation_slicing')
+        method, params = get_union_method(self.parameters)
         self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH,
-                                          has_blend_union=smooth,
-                                          blend_radius=r,
+                                          union_method=method,
+                                          union_params=params,
                                           geodesics_method=geodesics_method)
 
         # --- uneven boundaries of high target
@@ -80,8 +79,8 @@ class InterpolationSlicingPreprocessor:
         df_interpolation = {'distances_LOW': self.target_LOW.get_all_distances(),
                             'distances_HIGH_clusters': self.target_HIGH.get_all_clusters_distances_dict(),
                             't_end_per_cluster_HIGH': self.target_HIGH.weight_max_per_cluster,
-                            'has_blend_union_HIGH': self.target_HIGH.has_blend_union,
-                            'blend_radius': self.target_HIGH.blend_radius}
+                            'union_method_HIGH': self.target_HIGH.union_method,
+                            'union_params_HIGH': self.target_HIGH.union_params }
         utils.save_to_json(df_interpolation, self.OUTPUT_PATH, "df_interpolation.json")
 
     def targets_laplacian_smoothing(self, iterations, strength):
@@ -232,6 +231,40 @@ class InterpolationSlicingPreprocessor:
                                'pts_boundary_LOW_%d.json' % index)
             utils.save_to_json(utils.point_list_to_dict(pts_boundary_HIGH), self.OUTPUT_PATH,
                                'pts_boundary_HIGH_%d.json' % index)
+
+
+# ---- utils
+
+def get_union_method(params_dict):
+    """
+    Read input params_dict and return union method id and its parameters.
+    target_type: LOW/HIGH
+    """
+    smooth_union_data = get_param(params_dict, key='target_HIGH_smooth_union', defaults_type='interpolation_slicing')
+    chamfer_union_data = get_param(params_dict, key='target_HIGH_chamfer_union', defaults_type='interpolation_slicing')
+    stairs_union_data = get_param(params_dict, key='target_HIGH_stairs_union', defaults_type='interpolation_slicing')
+    if smooth_union_data[0]:
+        method = 'smooth'
+        params = smooth_union_data[1]
+        assert not chamfer_union_data[0] and not stairs_union_data[0], 'You can only select one union method.'
+        assert len(params) == 1, 'Wrong number of union params'
+        return method, params
+    elif chamfer_union_data[0]:
+        method = 'chamfer'
+        params = chamfer_union_data[1]
+        assert not smooth_union_data[0] and not stairs_union_data[0], 'You can only select one union method.'
+        assert len(params) == 1, 'Wrong number of union params'
+        return method, params
+    elif stairs_union_data[0]:
+        method = 'stairs'
+        params = stairs_union_data[1]
+        assert not smooth_union_data[0] and not chamfer_union_data[0], 'You can only select one union method.'
+        assert len(params) == 2, 'Wrong number of union params'
+        return method, params
+    else:
+        method = 'min'
+        params = []
+        return method, params
 
 
 if __name__ == "__main__":
