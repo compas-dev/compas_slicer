@@ -31,6 +31,7 @@ default_parameters = \
         'fan_start_z': 0,  # in mm; height at which the fan starts
 
         # Movement parameters
+        'flowrate': 1,  # as fraction; this is a global flow multiplier
         'feedrate': 3600,  # in mm/s
         'feedrate_travel': 4800,  # in mm/s
         'feedrate_low': 1800,  # in mm/s
