@@ -12,6 +12,7 @@ Unreleased
 **Added**
 
 **Changed**
+*Small improvements in gcode
 
 **Fixed**
 
