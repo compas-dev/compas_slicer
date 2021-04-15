@@ -30,7 +30,6 @@ def create_gcode_text(print_organizer, parameters):
 
     #######################################################################
     # get all the necessary parameters:
-    # get all the necessary parameters:    
     # Physical parameters
     # nozzle_diameter = get_param(parameters, key='nozzle_diameter', defaults_type='gcode')  # in mm
     filament_diameter = get_param(parameters, key='filament diameter', defaults_type='gcode')  # in mm
@@ -116,22 +115,14 @@ def create_gcode_text(print_organizer, parameters):
     # ######################################################################
     # iterate all layers, paths
     print('')
-<<<<<<< HEAD
-    for point_v, i, j, k in print_organizer.printpoints_indices_iterator():
-=======
     for point_v, i, j, k in print_organizer.printpoints_indices_iterator():  # i: layer; j: path; k: point index
->>>>>>> f38484f (Update gcode.py)
         layer_height = point_v.layer_height
         # Calculate relative length
         re_l = ((point_v.pt.x - prev_point.pt.x) ** 2 + (point_v.pt.y - prev_point.pt.y) ** 2 + (
                 point_v.pt.z - prev_point.pt.z) ** 2) ** 0.5
         if k == 0:  # 'First point
             # retract before moving to first point in path if necessary
-<<<<<<< HEAD
-            if retraction_min_travel < re_l:
-=======
             if (retraction_min_travel < re_l) and (point_v.extruder_toggle is False):
->>>>>>> f38484f (Update gcode.py)
                 gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
                 gcode += "G1" + " E-" + str(retraction_length) + "      ;retract" + n_l
                 # ZHOP
@@ -159,14 +150,8 @@ def create_gcode_text(print_organizer, parameters):
             else:
                 gcode += "G1" + " F" + str(feedrate) + "    ;set extrusion feedrate" + n_l
         else:  # from 2nd point in each path onwards
-<<<<<<< HEAD
-            # tmpflow = myflow.Branch(b)(i) here we can set the flow multiplier
-            # Calculate feedrate : TODO: just a basic formula for now, better ones in the future
-            e_val = 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
-=======
             # Calculate feedrate : TODO: just a basic formula for now, better ones in the future
             e_val = flowrate * 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
->>>>>>> f38484f (Update gcode.py)
             if point_v.pt.z < min_over_z:
                 e_val *= flow_over
             gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
@@ -192,8 +177,6 @@ def create_gcode_text(print_organizer, parameters):
     gcode += "M140 S0                     ;turn bed heater off (if it exists)" + n_l
     gcode += "M84                         ;turn steppers off" + n_l
     gcode += "M106 S0                     ;turn fan off" + n_l
-
     # ______________________________________________________________________/ footer
-            # .... gcode += 'command'
-        
+
     return gcode
