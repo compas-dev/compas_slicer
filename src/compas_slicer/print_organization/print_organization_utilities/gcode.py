@@ -44,6 +44,7 @@ def create_gcode_text(print_organizer, parameters):
     fan_start_z = get_param(parameters, key='fan_start_z', defaults_type='gcode')  # in mm
 
     # Movement parameters
+    flowrate = get_param(parameters, key='flowrate', defaults_type='gcode')  # as fraction; this is a global flow multiplier
     feedrate = get_param(parameters, key='feedrate', defaults_type='gcode')  # in mm/s
     feedrate_travel = get_param(parameters, key='feedrate_travel', defaults_type='gcode')  # in mm/s
     feedrate_low = get_param(parameters, key='feedrate_low', defaults_type='gcode')  # in mm/s, for z < min_over_z
@@ -64,9 +65,9 @@ def create_gcode_text(print_organizer, parameters):
     # ######################################################################
     # gcode header
     gcode += ";Gcode with compas_slicer " + n_l
-    gcode += ";Ioana Mitropolou <mitropoulou@arch.ethz.ch> @ioanna21" + n_l
+    gcode += ";Ioana Mitropolou <mitropoulou@arch.ethz.ch> @ioannaMitropoulou" + n_l
     gcode += ";Joris Burger     <burger@arch.ethz.ch>      @joburger" + n_l
-    gcode += ";Andrei Jipa      <jipa@arch.ethz.ch         @stratocaster>" + n_l
+    gcode += ";Andrei Jipa      <jipa@arch.ethz.ch>         @stratocaster" + n_l
     gcode += ";MIT License" + n_l
     gcode += ";" + n_l
     gcode += ";generated " + datetimestamp + n_l
@@ -89,10 +90,15 @@ def create_gcode_text(print_organizer, parameters):
     gcode += "G28 X0 Y0                       ;home x and y axes" + n_l
     gcode += "G28 Z0                          ;home z axis independently" + n_l
     gcode += "G1 F4500                        ;set feedrate to 4,500 mm/min (75 mm/s)" + n_l
-    gcode += "G1 Z15.0                        ;move nozzle up 15mm" + n_l
-    gcode += "G1 F140 E29                     ;extruded slowly some filament (default: 29mm)" + n_l
+    gcode += "G1 Z0.2                         ;move nozzle up 0.2mm" + n_l
+    gcode += "G1 X5 Y5                        ;move nozzle up 0.2mm" + n_l
+    ex_val = 560 * 0.2 * path_width / (math.pi * (filament_diameter ** 2))
+    gcode += "G1 Y150 E" + '{:.3f}'.format(ex_val) + "                  ;extrude a line of filament" + n_l
+    gcode += "G1 X" + '{:.3f}'.format(5 + path_width) + "                       ;move nozzle away from the first line" + n_l
+    gcode += "G1 Y5 E" + '{:.3f}'.format(ex_val) + "                    ;extrude a second line of filament" + n_l
+    gcode += "G1 Z2                           ;move nozzle up 1.8mm" + n_l
     gcode += "G92 E0                          ;reset the extruded length" + n_l  # useless after M83, otherwise needed
-    gcode += "G1 F" + str(feedrate_travel) + "                       ;set initial Feedrate" + n_l
+    gcode += "G1 F" + str(feedrate_travel) + "                        ;set initial Feedrate" + n_l
     gcode += "M117 compas gcode print...      ;show up text on LCD" + n_l
     gcode += ";" + n_l
     # ______________________________________________________________________/ header
@@ -109,14 +115,14 @@ def create_gcode_text(print_organizer, parameters):
     # ######################################################################
     # iterate all layers, paths
     print('')
-    for point_v, i, j, k in print_organizer.printpoints_indices_iterator():
+    for point_v, i, j, k in print_organizer.printpoints_indices_iterator():  # i: layer; j: path; k: point index
         layer_height = point_v.layer_height
         # Calculate relative length
         re_l = ((point_v.pt.x - prev_point.pt.x) ** 2 + (point_v.pt.y - prev_point.pt.y) ** 2 + (
                 point_v.pt.z - prev_point.pt.z) ** 2) ** 0.5
         if k == 0:  # 'First point
             # retract before moving to first point in path if necessary
-            if retraction_min_travel < re_l:
+            if (retraction_min_travel < re_l) and (point_v.extruder_toggle is False):
                 gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
                 gcode += "G1" + " E-" + str(retraction_length) + "      ;retract" + n_l
                 # ZHOP
@@ -144,9 +150,8 @@ def create_gcode_text(print_organizer, parameters):
             else:
                 gcode += "G1" + " F" + str(feedrate) + "    ;set extrusion feedrate" + n_l
         else:  # from 2nd point in each path onwards
-            # tmpflow = myflow.Branch(b)(i) here we can set the flow multiplier
             # Calculate feedrate : TODO: just a basic formula for now, better ones in the future
-            e_val = 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
+            e_val = flowrate * 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
             if point_v.pt.z < min_over_z:
                 e_val *= flow_over
             gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
