@@ -9,10 +9,6 @@ from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.utilities import save_to_json
-<<<<<<< HEAD
-=======
-from compas_viewers.objectviewer import ObjectViewer
->>>>>>> ee1b8e0 (Added bacic acceleration and jerk functionality for Marlin; Added basic support for delta printers; Added basic printer dimensions for calculating the centre point in the example file 4.)
 from compas_slicer.parameters import get_param
 
 from compas.datastructures import Mesh
