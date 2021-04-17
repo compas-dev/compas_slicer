@@ -12,7 +12,10 @@ Unreleased
 **Added**
 
 **Changed**
-*Small improvements in gcode
+
+ *Small improvements in gcode
+ *Updated examples, and setup tutorials content (which is still empty - remaining to be filled)
+
 
 **Fixed**
 
