@@ -149,9 +149,8 @@ Visualize the result using compas_viewer2
     viewer.show()
 
 
-
-Once the slicing process is finished, you can use the compas_slicer grasshopper components to visualize the results.
-`Grasshopper visualization tutorial <https://compas.dev/compas_slicer/tutorials/02_grasshopper_visualization.html>`_
+Once the slicing process is finished, you can use the compas_slicer grasshopper components to visualize the results,
+described in the :ref:`grasshopper tutorial <compas_slicer_tutorial_2>`.
 
 
 
