@@ -35,7 +35,8 @@ __all__ = ['remap',
            'find_previous_printpoint',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
-           'get_all_files_with_name']
+           'get_all_files_with_name',
+           'get_closest_mesh_normal_to_pt']
 
 
 def remap(input_val, in_from, in_to, out_from, out_to):
@@ -294,10 +295,12 @@ def get_closest_mesh_vkey_to_pt(mesh, pt):
 def get_closest_mesh_normal_to_pt(mesh, pt):
     """
     Finds the closest vertex normal to the point.
+
     Parameters
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
     pt: :class: 'compas.geometry.Point'
+
     Returns
     ----------
     :class: 'compas.geometry.Vector'

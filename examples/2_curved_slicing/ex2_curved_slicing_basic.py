@@ -38,8 +38,8 @@ def main():
 
     parameters = {
         'avg_layer_height': avg_layer_height,  # controls number of curves that will be generated
-        'min_layer_height': 0.1,
-        'max_layer_height': 50.0  # 2.0,
+        'min_layer_height': 0.3,
+        'max_layer_height': 5.0  # 2.0,
     }
 
     preprocessor = InterpolationSlicingPreprocessor(mesh, parameters, DATA_PATH)
@@ -59,7 +59,7 @@ def main():
     slicer.printout_info()
     utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer.json')
 
-    # ### --- Print organizer
+    # --- Print organizer
     print_organizer = InterpolationPrintOrganizer(slicer, parameters, DATA_PATH)
     print_organizer.create_printpoints()
 

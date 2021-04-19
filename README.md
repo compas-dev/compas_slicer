@@ -73,7 +73,7 @@ invoke test
 invoke lint
 ```
 
-- Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly. Ideally also add a visualization of the result using compas.MeshPlotter (see the other examples in the same folder)
+- Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly. 
 
 - Create a pull request for the master branch, where you explain in detail what you fixed. When you create a pull request, there is an automatic action that runs the tests for your code again on the server.
 Make sure the pull request passes the automatic tests as well. If not, then inspect the result, find what went wrong, fix it, and push again the result on your branch. The action will run again automatically on the open pull request.
@@ -81,6 +81,6 @@ Make sure the pull request passes the automatic tests as well. If not, then insp
 
 ## Authors
 
-* Ioanna Mitropoulou <<mitropoulou@arch.ethz.ch>> [@ioanna21](https://github.com/ioanna21)
+* Ioanna Mitropoulou <<mitropoulou@arch.ethz.ch>> [@ioannaMitropoulou](https://github.com/ioannaMitropoulou)
 * Joris Burger <<burger@arch.ethz.ch>> [@joburger](https://github.com/joburger)
 * Andrei Jipa <<jipa@arch.ethz.ch>> [@stratocaster](https://github.com/stratocaster)

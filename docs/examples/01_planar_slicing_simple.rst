@@ -1,6 +1,11 @@
+.. _compas_slicer_example_1:
+
 ****************************
 Simple planar slicing
 ****************************
+
+A general introduction of the concepts organization of compas_slicer can be found in the :ref:`introduction tutorial <compas_slicer_tutorial_1_introduction>`.
+
 
 This example describes the planar slicing process for a simple shape, consisting
 out of a shape with a single contour (also known as a 'vase').
@@ -20,15 +25,16 @@ The first step is to import the required functions:
     from compas_slicer.pre_processing import move_mesh_to_point
     from compas_slicer.slicers import PlanarSlicer
     from compas_slicer.post_processing import generate_brim
+    from compas_slicer.post_processing import generate_raft
     from compas_slicer.post_processing import simplify_paths_rdp
     from compas_slicer.post_processing import seams_smooth
     from compas_slicer.print_organization import PlanarPrintOrganizer
     from compas_slicer.print_organization import set_extruder_toggle
     from compas_slicer.print_organization import add_safety_printpoints
-    from compas_slicer.print_organization import set_linear_velocity
+    from compas_slicer.print_organization import set_linear_velocity_constant
     from compas_slicer.print_organization import set_blend_radius
     from compas_slicer.utilities import save_to_json
-    from compas_viewers.objectviewer import ObjectViewer
+    from compas_view2 import app
 
     from compas.datastructures import Mesh
     from compas.geometry import Point
@@ -43,8 +49,8 @@ printed in the terminal.
 
 Next we point to the data folder. Compas_slicer assumed there is a folder named ``data``
 where it looks for the model to slice. The model to slice can be of type ``.stl`` or ``.obj``.
-Also, we want to have a folder called ``output``, where all of the output of our slicing 
-process can be stored. Therefore, we run the command ``get_output_directory(DATA)``, which 
+In the data folder compas_slicer will create a folder called ``output``, where all the intermediate and final outputs
+of the slicing process will be saved. Therefore, we run the command ``get_output_directory(DATA)``, which
 checks if the ``output`` folder exists and if not, it creates it. 
 
 .. code-block:: python
@@ -58,23 +64,21 @@ Slicing process
 
 In the next step we use the Compas function ``Mesh.from_obj`` to load our ``.obj`` 
 file. We then move it to the origin, but this can be any specified point, such as 
-a point on your printbed. 
+a point on your print bed.
 
 .. code-block:: python
 
     compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
     move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
-We then initialize the :class:`PlanarSlicer` to initialize the slicing process.
-The layer height needs to be specified by the user. Furthermore, the ``slicing_type``
-can be changed to use different methods of generating the 'slices'. Currently,
-three methods for slicing are supported:
+Next, we initialize the :class:`PlanarSlicer` to initialize the slicing process. You need to specify the layer height and
+the ``slicing_type`` that defines the methods for generating the 'slices'. Currently, the following methods
+are supported:
 
 * ``default``: Uses only standard compas functions, without external libraries, but can be a bit slow.
+    It works for both open and closed paths.
 * ``cgal``: Uses the 'compas_cgal' package, this is a very fast method but requires you to install compas_cgal.
-
-The three methods will all return the slices of your model, so it is up to you 
-to choose the method that you prefer. 
+    It only works for closed paths
 
 .. code-block:: python
 
@@ -84,7 +88,7 @@ to choose the method that you prefer.
 After the model has been sliced, several post processing operations can be executed.
 One useful functionality is ``generate_brim``, which generates a number of layers
 that are offset from the bottom layer, to improve adhesion to the build plate 
-(see image).
+(see image). Also, a raft can be generated using the ``generate_raft`` command.
 
 .. figure:: figures/01_brim.jpg
     :figclass: figure
@@ -95,6 +99,11 @@ that are offset from the bottom layer, to improve adhesion to the build plate
 .. code-block:: python
 
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
+    generate_raft(slicer,
+                  raft_offset=20,
+                  distance_between_paths=5,
+                  direction="xy_diagonal",
+                  raft_layers=1)
 
 Depending on the amount of faces that your input mesh has, a very large amount of 
 points can be generated. ``simplify_paths_rdp`` is a function that removes points
@@ -138,7 +147,8 @@ In the next steps of the process we will use the :class:`PlanarPrintOrganizer` t
 make our slicing result ready for fabrication. First, we initialize the 
 :class:`PlanarPrintOrganizer` and create :class:`PrintPoints`. The difference between
 :class:`PrintPoints` and the ``compas.geometry.Points`` we were using in the
-previous step is that the :class:`PrintPoints` have additional functionality.
+previous step is that the :class:`PrintPoints` have all the necessary additional functionality that is
+needed for the fabrication process.
 
 .. code-block:: python
 
@@ -156,25 +166,36 @@ different functions.
 
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
-    set_linear_velocity(print_organizer, "constant", v=25.0)
+    set_linear_velocity_constant(print_organizer, v=25.0)
 
-After adding all of the fabrication-related parameters we an now first output the
-Printpoints as data and then export them to a ``.JSON`` file. 
+Again we can print out the information about the print_organizer.
+
+.. code-block:: python
+
+    print_organizer.printout_info()
+
+After adding all of the fabrication-related parameters we will convert the Printpoints into a dictionary of data
+and then export it to a ``.JSON`` file.
 
 .. code-block:: python
 
     printpoints_data = print_organizer.output_printpoints_dict()
     save_to_json(printpoints_data, DATA, 'out_printpoints.json')
 
-Finally, we can initialize the ``compas_viewer`` to visualize our results.
+Finally, we can use the library ``compas_view2`` to visualize our results.
 
 .. code-block:: python
 
-    viewer = ObjectViewer()
-    print_organizer.visualize_on_viewer(viewer, visualize_polyline=True,
-                                        visualize_printpoints=False)
-    viewer.update()
+    viewer = app.App(width=1600, height=1000)
+    slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
+    print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
     viewer.show()
+
+
+
+Once the slicing process is finished, you can use the compas_slicer grasshopper components to visualize the results,
+described in the :ref:`grasshopper tutorial <compas_slicer_tutorial_2>`.
+
 
 Final script
 ============
@@ -191,15 +212,16 @@ The completed final script can be found below:
     from compas_slicer.pre_processing import move_mesh_to_point
     from compas_slicer.slicers import PlanarSlicer
     from compas_slicer.post_processing import generate_brim
+    from compas_slicer.post_processing import generate_raft
     from compas_slicer.post_processing import simplify_paths_rdp
     from compas_slicer.post_processing import seams_smooth
     from compas_slicer.print_organization import PlanarPrintOrganizer
     from compas_slicer.print_organization import set_extruder_toggle
     from compas_slicer.print_organization import add_safety_printpoints
-    from compas_slicer.print_organization import set_linear_velocity
+    from compas_slicer.print_organization import set_linear_velocity_constant
     from compas_slicer.print_organization import set_blend_radius
     from compas_slicer.utilities import save_to_json
-    from compas_viewers.objectviewer import ObjectViewer
+    from compas_view2 import app
 
     from compas.datastructures import Mesh
     from compas.geometry import Point
@@ -207,17 +229,15 @@ The completed final script can be found below:
     # ==============================================================================
     # Logging
     # ==============================================================================
-
     logger = logging.getLogger('logger')
     logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
     # ==============================================================================
     # Select location of data folder and specify model to slice
     # ==============================================================================
-
     DATA = os.path.join(os.path.dirname(__file__), 'data')
     OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
-    MODEL = 'simple_vase.obj'
+    MODEL = 'simple_vase_open_low_res.obj'
 
 
     start_time = time.time()
@@ -225,7 +245,6 @@ The completed final script can be found below:
     # ==========================================================================
     # Load mesh
     # ==========================================================================
-
     compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
 
     # ==========================================================================
@@ -233,23 +252,32 @@ The completed final script can be found below:
     # ==========================================================================
     move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
-    ### --- Slicer
-    # options: 'default' : Both for open and closed paths. But slow
-    #          'cgal' : Very fast. Only for closed paths. Requires additional installation (compas_cgal).
-
+    # ==========================================================================
+    # Slicing
+    # options: 'default': Both for open and closed paths. But slow
+    #          'cgal':    Very fast. Only for closed paths.
+    #                     Requires additional installation (compas_cgal).
+    # ==========================================================================
     slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
     slicer.slice_model()
 
     # ==========================================================================
-    # Generate brim
+    # Generate brim / raft
     # ==========================================================================
-    generate_brim(slicer, layer_width=3.0, number_of_brim_paths=3)
+    # NOTE: Typically you would want to use either a brim OR a raft,
+    # however, in this example both are used to explain the functionality
+    generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
+    generate_raft(slicer,
+                  raft_offset=20,
+                  distance_between_paths=5,
+                  direction="xy_diagonal",
+                  raft_layers=1)
 
     # ==========================================================================
     # Simplify the paths by removing points with a certain threshold
     # change the threshold value to remove more or less points
-
-    simplify_paths_rdp(slicer, threshold=0.3)
+    # ==========================================================================
+    simplify_paths_rdp(slicer, threshold=0.6)
 
     # ==========================================================================
     # Smooth the seams between layers
@@ -276,11 +304,15 @@ The completed final script can be found below:
     # ==========================================================================
     # Set fabrication-related parameters
     # ==========================================================================
-
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
-    set_linear_velocity(print_organizer, "constant", v=25.0)
-    set_blend_radius(print_organizer, d_fillet=10)
+    set_linear_velocity_constant(print_organizer, v=25.0)
+    set_blend_radius(print_organizer, d_fillet=10.0)
+
+    # ==========================================================================
+    # Prints out the info of the PrintOrganizer
+    # ==========================================================================
+    print_organizer.printout_info()
 
     # ==========================================================================
     # Converts the PrintPoints to data and saves to JSON
@@ -291,12 +323,9 @@ The completed final script can be found below:
     # ==========================================================================
     # Initializes the compas_viewer and visualizes results
     # ==========================================================================
-    viewer = ObjectViewer()
-    #     slicer.visualize_on_viewer(viewer)
-    print_organizer.visualize_on_viewer(viewer, visualize_polyline=True,
-                                        visualize_printpoints=False)
-    viewer.view.use_shaders = False
-    viewer.update()
+    viewer = app.App(width=1600, height=1000)
+    # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
+    print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
     viewer.show()
 
     end_time = time.time()

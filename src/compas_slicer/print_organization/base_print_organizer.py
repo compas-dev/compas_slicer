@@ -44,7 +44,9 @@ class BasePrintOrganizer(object):
     # Iterators
     ######################
     def printpoints_iterator(self):
-        """Iterate over the printpoints of the print organizer.
+        """
+        Iterate over the printpoints of the print organizer.
+
         Yields
         ------
         printpoint: :class: 'compas_slicer.geometry.Printpoint'
@@ -56,7 +58,9 @@ class BasePrintOrganizer(object):
                     yield printpoint
 
     def printpoints_indices_iterator(self):
-        """ Iterate over the printpoints of the print organizer.
+        """
+        Iterate over the printpoints of the print organizer.
+
         Yields
         ------
         printpoint: :class: 'compas_slicer.geometry.Printpoint'
