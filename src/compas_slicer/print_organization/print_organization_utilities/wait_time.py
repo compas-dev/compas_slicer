@@ -52,7 +52,9 @@ def set_wait_time(print_organizer, wait_type, wait_time):
 
 
 def override_wait_time(print_organizer, override_value):
-    """Overrides the wait_time value for the printpoints with a user-defined value.
+    """
+    Overrides the wait_time value for the printpoints with a user-defined value.
+
     Parameters
     ----------
     print_organizer: :class:`compas_slicer.print_organization.BasePrintOrganizer`

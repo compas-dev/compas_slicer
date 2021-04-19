@@ -295,10 +295,12 @@ def get_closest_mesh_vkey_to_pt(mesh, pt):
 def get_closest_mesh_normal_to_pt(mesh, pt):
     """
     Finds the closest vertex normal to the point.
+
     Parameters
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
     pt: :class: 'compas.geometry.Point'
+
     Returns
     ----------
     :class: 'compas.geometry.Vector'
