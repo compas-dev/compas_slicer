@@ -1,3 +1,5 @@
+.. _compas_slicer_tutorial_2:
+
 ****************************
 Visualization in grasshopper
 ****************************

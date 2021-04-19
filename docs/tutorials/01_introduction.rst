@@ -1,3 +1,5 @@
+.. _compas_slicer_tutorial_1_introduction:
+
 ****************************
 Introduction
 ****************************

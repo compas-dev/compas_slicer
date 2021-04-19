@@ -1,8 +1,10 @@
+.. _compas_slicer_example_1:
+
 ****************************
 Simple planar slicing
 ****************************
 
-A general introduction of the concepts organization of compas_slicer can be found in the `introduction tutorial <https://compas.dev/compas_slicer/tutorials/01_introduction.html>`_
+A general introduction of the concepts organization of compas_slicer can be found in the :ref:`introduction tutorial <compas_slicer_tutorial_1_introduction>`.
 
 
 This example describes the planar slicing process for a simple shape, consisting
@@ -62,7 +64,7 @@ Slicing process
 
 In the next step we use the Compas function ``Mesh.from_obj`` to load our ``.obj`` 
 file. We then move it to the origin, but this can be any specified point, such as 
-a point on your printbed. 
+a point on your print bed.
 
 .. code-block:: python
 
@@ -169,6 +171,7 @@ different functions.
 Again we can print out the information about the print_organizer.
 
 .. code-block:: python
+
     print_organizer.printout_info()
 
 After adding all of the fabrication-related parameters we will convert the Printpoints into a dictionary of data
@@ -190,9 +193,8 @@ Finally, we can use the library ``compas_view2`` to visualize our results.
 
 
 
-Once the slicing process is finished, you can use the compas_slicer grasshopper components to visualize the results.
-`Grasshopper visualization tutorial <https://compas.dev/compas_slicer/tutorials/02_grasshopper_visualization.html>`_
-
+Once the slicing process is finished, you can use the compas_slicer grasshopper components to visualize the results,
+described in the :ref:`grasshopper tutorial <compas_slicer_tutorial_2>`.
 
 
 Final script

@@ -35,7 +35,8 @@ __all__ = ['remap',
            'find_previous_printpoint',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
-           'get_all_files_with_name']
+           'get_all_files_with_name',
+           'get_closest_mesh_normal_to_pt']
 
 
 def remap(input_val, in_from, in_to, out_from, out_to):
