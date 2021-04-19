@@ -122,30 +122,65 @@
 <span id="compas-slicer-tutorial-2"></span><h1><span class="section-number">2. </span>Visualization in grasshopper<a class="headerlink" href="#visualization-in-grasshopper" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial gives an overview of how the results of the slicing process can be visualized in Rhino grasshopper.
 It is important to note that the grasshopper components do not run any slicing code, they merely visualize
-existing results.</p>
+existing results, that have been generated using python.</p>
 <div class="section" id="installation">
 <h2><span class="section-number">2.1. </span>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>How to install (-reference to README) and verify that the grasshopper components have been installed</p></li>
-</ul>
+<p>To install the grasshopper components see the <a class="reference internal" href="../installation.html#compas-slicer-installation"><span class="std std-ref">installation page</span></a>.</p>
 </div>
 <div class="section" id="overview">
 <h2><span class="section-number">2.2. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>How do grasshopper components work? (only visualization, load json files, no actual slicing code running on them)</p></li>
-</ul>
-</div>
-<div class="section" id="components">
-<h2><span class="section-number">2.3. </span>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>What components are available?</p></li>
-</ul>
+<p>When compas_slicer code is run for a project <cite>my_project</cite>, then the folder <cite>my_project/data/output/</cite> is created, where
+all the intermediary and final results of the slicing process are saved in the form of json files. The grasshopper
+components look into that folder, load the according json file, and turn it into geometry that can be visualized.
+To find the correct folder, the grasshopper file that contains the components needs to be positioned in the <cite>my_project</cite>
+folder. You can look at the <cite>compas_slicer/examples</cite> to see the way the grasshopper components are used.</p>
 </div>
 <div class="section" id="workflow">
-<h2><span class="section-number">2.4. </span>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.3. </span>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<p>When the compas_slicer python code is run, then all the json files that are recalculated are overwritten in the output
+folder. To update the visualization in grasshopper we click on the button <cite>recompute</cite> that is on the top of each component.
+This loads the latest version of the according json file from the output folder.</p>
+</div>
+<div class="section" id="components">
+<h2><span class="section-number">2.4. </span>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
+<p>The components that exist correspond to the main classes of data types from compas_slicer that someone might want to
+visualize. The following components are currently available.</p>
 <ul class="simple">
-<li><p>What is the standard workflow with compas_slicer-grasshopper visualization?</p></li>
+<li><p>csLoadSlicer</p></li>
 </ul>
+<p>Loads the <cite>compas_slicer.slicers.Base_slicer</cite> class and all classes that inherit from it, with all the attributes stored
+in the class.</p>
+<div class="figure align-default" id="id1">
+<img alt="../_images/slicer.PNG" class="figure-img img-fluid" src="../_images/slicer.PNG" />
+<p class="caption"><span class="caption-text"><em>Loading the slicer results.</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>csLoadPrintpoints</p></li>
+</ul>
+<p>Loads the Printpoints dictionary with all the data stored in the <cite>compas_slicer.geometry.PrintPoint</cite> class.</p>
+<div class="figure align-default" id="id2">
+<img alt="../_images/ppts.PNG" class="figure-img img-fluid" src="../_images/ppts.PNG" />
+<p class="caption"><span class="caption-text"><em>Loading the outputted printpoints information.</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>csLightPathViz</p></li>
+</ul>
+<p>Creates a lightweight visualization of the paths. The print paths are displayed with white tubes, and the traveling paths
+are displayed with orange tubes.</p>
+<div class="figure align-default" id="id3">
+<img alt="../_images/lightweight_viz.PNG" class="figure-img img-fluid" src="../_images/lightweight_viz.PNG" />
+<p class="caption"><span class="caption-text"><em>Lightweight paths visualization.</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>csRenderPathViz</p></li>
+</ul>
+<p>If the user provides a cross-section of the paths, then a more expensive visualization can be created, where each path
+is displayed with its cross-sectional geometry.</p>
+<div class="figure align-default" id="id4">
+<img alt="../_images/render_viz.PNG" class="figure-img img-fluid" src="../_images/render_viz.PNG" />
+<p class="caption"><span class="caption-text"><em>Render paths visualization.</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>And many others that will be documented soon!…</p>
 </div>
 </div>
 
@@ -191,8 +226,8 @@ existing results.</p>
 <li class="nav-item"><a class="nav-link reference internal" href="#">2. Visualization in grasshopper</a><ul class="nav flex-column">
 <li class="nav-item"><a class="nav-link reference internal" href="#installation">2.1. Installation</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#overview">2.2. Overview</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#components">2.3. Components</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#workflow">2.4. Workflow</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#workflow">2.3. Workflow</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#components">2.4. Components</a></li>
 </ul>
 </li>
 </ul>
