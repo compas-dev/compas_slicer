@@ -10,7 +10,7 @@ A general introduction of the concepts organization of compas_slicer can be foun
 Make sure to read the :ref:`example on simple planar slicing <compas_slicer_example_1>` before reading this example,
 as it explains the main concepts of compas_slicer.
 Having done that, in this example, we go through the basics of using the non-planar interpolation slicer.
-This example uses the method described in `Print Paths KeyFraming <https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408>`_
+This example uses the method described in `Print Paths KeyFraming <https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408>`_.
 
 
 .. figure:: figures/curved_slicing.PNG
