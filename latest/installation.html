@@ -117,50 +117,48 @@
         
         
         <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<span id="compas-slicer-installation"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p class="lead">COMPAS_SLICER can be easily installed on multiple platforms.</p>
 <div class="section" id="basic-installation-steps">
 <h2>Basic installation steps<a class="headerlink" href="#basic-installation-steps" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="step-1-install-compas">
-<h3>Step 1: Install compas<a class="headerlink" href="#step-1-install-compas" title="Permalink to this headline">¶</a></h3>
-<p>Create a new environment (you can replace ‘compas_slicer’ with your own environment name),
-and install compas, compas_cgal, and libigl.</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda create -n compas_slicer <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.7
-conda activate compas_slicer
-conda install COMPAS
-conda install COMPAS compas_cgal
-conda install -c conda-forge igl
+<div class="section" id="step-1-install-compas-slicer">
+<h3>Step 1: Install compas slicer<a class="headerlink" href="#step-1-install-compas-slicer" title="Permalink to this headline">¶</a></h3>
+<p>The recommended way to install <cite>compas_slicer</cite> is with <a class="reference external" href="https://conda.io/docs/">conda</a>.
+For example, create an environment named <code class="docutils literal notranslate"><span class="pre">my-project</span></code> (or replace with your own environment name) and install as follows:</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda config --add channels conda-forge
+conda create -n my-project compas_slicer
 </code></pre></div>
 </div>
 </div>
-<div class="section" id="step-2-install-compas-slicer">
-<h3>Step 2: Install compas_slicer<a class="headerlink" href="#step-2-install-compas-slicer" title="Permalink to this headline">¶</a></h3>
-<p>Clone the repository and activate your environment.</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>git clone https://github.com/compas-dev/compas_slicer.git
-conda activate compas_slicer
+<div class="section" id="step-2-optional-installation-steps">
+<h3>Step 2: Optional installation steps<a class="headerlink" href="#step-2-optional-installation-steps" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>COMPAS Viewers</p></li>
+</ul>
+<p>Follow the instructions to install <a class="reference external" href="https://github.com/compas-dev/compas_view2">compas_view2</a>.</p>
+<ul class="simple">
+<li><p>COMPAS CGAL</p></li>
+</ul>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda install -n my-project compas_cgal
 </code></pre></div>
 </div>
-<p>Navigate to the folder where you cloned the compas_slicer repository and install compas_slicer using:</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>pip install -e .
-</code></pre></div>
-</div>
-<p>You should get the message ‘Successfully installed compas-slicer’ (amongst other packages)</p>
-</div>
-<div class="section" id="step-3-install-compas-viewers">
-<h3>Step 3. Install compas_viewers<a class="headerlink" href="#step-3-install-compas-viewers" title="Permalink to this headline">¶</a></h3>
-<p>Install compas_viewers (<a class="reference external" href="https://github.com/compas-dev/compas_viewers">https://github.com/compas-dev/compas_viewers</a>).</p>
-<p>Download the wheel file from here: <a class="reference external" href="https://www.lfd.uci.edu/~gohlke/pythonlibs/">https://www.lfd.uci.edu/~gohlke/pythonlibs/</a></p>
-<p>To install on an existing environment with python=3.7, use:</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda activate &lt;environment_name&gt;
-pip install PySide2
-pip install &lt;path/to/file&gt;/PyOpenGL‑3.1.5‑cp37‑cp37m‑win_amd64.whl
-pip install &lt;path/to/compas_viewers&gt;
+<ul class="simple">
+<li><p>Grasshopper</p></li>
+</ul>
+<p>The Grasshopper components are automatically installed with the <cite>compas_rhino</cite> installation, e.g.:</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda activate my-project
+python -m compas_rhino.install -v <span class="m">6</span>.0
 </code></pre></div>
 </div>
 </div>
 <div class="section" id="step-4-test-if-the-library-works">
 <h3>Step 4. Test if the library works<a class="headerlink" href="#step-4-test-if-the-library-works" title="Permalink to this headline">¶</a></h3>
-<p>Run the file examples/1_versions_check.py</p>
+<p>Activate your environment and run the following command:</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda activate my-project
+python -m compas_slicer
+</code></pre></div>
+</div>
+<p>Enjoy!</p>
 </div>
 </div>
 <div class="section" id="troubleshooting">
@@ -239,9 +237,8 @@ Make sure you are in the correct environment and type:</p>
         <ul class="nav flex-column" id="compas-toc">
 <li class="nav-item"><a class="nav-link reference internal" href="#">Installation</a><ul class="nav flex-column">
 <li class="nav-item"><a class="nav-link reference internal" href="#basic-installation-steps">Basic installation steps</a><ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="#step-1-install-compas">Step 1: Install compas</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#step-2-install-compas-slicer">Step 2: Install compas_slicer</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#step-3-install-compas-viewers">Step 3. Install compas_viewers</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#step-1-install-compas-slicer">Step 1: Install compas slicer</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#step-2-optional-installation-steps">Step 2: Optional installation steps</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#step-4-test-if-the-library-works">Step 4. Test if the library works</a></li>
 </ul>
 </li>

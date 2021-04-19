@@ -1,3 +1,7 @@
+{"filename": "examples/02_curved_slicing_simple.rst", "lineno": 10, "status": "unchecked", "code": 0, "uri": "#compas-slicer-example-1", "info": ""}
+{"filename": "tutorials/02_grasshopper_visualization.rst", "lineno": 13, "status": "unchecked", "code": 0, "uri": "#compas-slicer-installation", "info": ""}
+{"filename": "examples/01_planar_slicing_simple.rst", "lineno": 7, "status": "unchecked", "code": 0, "uri": "#compas-slicer-tutorial-1-introduction", "info": ""}
+{"filename": "examples/01_planar_slicing_simple.rst", "lineno": 196, "status": "unchecked", "code": 0, "uri": "#compas-slicer-tutorial-2", "info": ""}
 {"filename": "api/geometry.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.geometry.Layer", "info": ""}
 {"filename": "api/generated/compas_slicer.geometry.Layer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.geometry.Layer.__init__", "info": ""}
 {"filename": "api/generated/compas_slicer.geometry.Layer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.geometry.Layer.calculate_z_bounds", "info": ""}
@@ -104,6 +108,7 @@
 {"filename": "api/generated/compas_slicer.slicers.PlanarSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.PlanarSlicer.to_json", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.PlanarSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.PlanarSlicer.visualize_on_viewer", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.flattened_list_of_dictionary", "info": ""}
+{"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.get_closest_mesh_normal_to_pt", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.get_closest_pt", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.get_closest_pt_index", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.get_dict_key_from_value", "info": ""}
@@ -115,10 +120,11 @@
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.point_list_to_dict", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.save_to_json", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.smooth_vectors", "info": ""}
-{"filename": "index.rst", "lineno": 10, "status": "working", "code": 0, "uri": "https://compas.dev/", "info": ""}
 {"filename": "api/generated/compas_slicer.geometry.Layer.rst", "lineno": 1, "status": "working", "code": 0, "uri": "https://docs.python.org/3/library/functions.html#object", "info": ""}
+{"filename": "index.rst", "lineno": 10, "status": "working", "code": 0, "uri": "https://compas.dev/", "info": ""}
 {"filename": "api/generated/compas_slicer.post_processing.simplify_paths_rdp.rst", "lineno": 1, "status": "working", "code": 0, "uri": "https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm", "info": ""}
-{"filename": "installation.rst", "lineno": 95, "status": "working", "code": 0, "uri": "https://www.scivision.dev/python-windows-visual-c-14-required/", "info": ""}
+{"filename": "examples/02_curved_slicing_simple.rst", "lineno": 10, "status": "working", "code": 0, "uri": "https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408", "info": ""}
+{"filename": "installation.rst", "lineno": 18, "status": "redirected", "code": 302, "uri": "https://conda.io/docs/", "info": "https://conda.io/en/latest/", "text": "with Found"}
+{"filename": "installation.rst", "lineno": 92, "status": "working", "code": 0, "uri": "https://www.scivision.dev/python-windows-visual-c-14-required/", "info": ""}
 {"filename": "index.rst", "lineno": 18, "status": "working", "code": 0, "uri": "https://github.com/compas-dev/compas_slicer/issues", "info": ""}
-{"filename": "installation.rst", "lineno": 49, "status": "working", "code": 0, "uri": "https://github.com/compas-dev/compas_viewers", "info": ""}
-{"filename": "installation.rst", "lineno": 51, "status": "working", "code": 0, "uri": "https://www.lfd.uci.edu/~gohlke/pythonlibs/", "info": ""}
+{"filename": "installation.rst", "lineno": 32, "status": "working", "code": 0, "uri": "https://github.com/compas-dev/compas_view2", "info": ""}

@@ -152,7 +152,8 @@
            <span class="s1">&#39;find_previous_printpoint&#39;</span><span class="p">,</span>
            <span class="s1">&#39;smooth_vectors&#39;</span><span class="p">,</span>
            <span class="s1">&#39;get_normal_of_path_on_xy_plane&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;get_all_files_with_name&#39;</span><span class="p">]</span>
+           <span class="s1">&#39;get_all_files_with_name&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;get_closest_mesh_normal_to_pt&#39;</span><span class="p">]</span>
 
 
 <span class="k">def</span> <span class="nf">remap</span><span class="p">(</span><span class="n">input_val</span><span class="p">,</span> <span class="n">in_from</span><span class="p">,</span> <span class="n">in_to</span><span class="p">,</span> <span class="n">out_from</span><span class="p">,</span> <span class="n">out_to</span><span class="p">):</span>
@@ -408,13 +409,15 @@
     <span class="k">return</span> <span class="n">closest_vkey</span>
 
 
-<span class="k">def</span> <span class="nf">get_closest_mesh_normal_to_pt</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
+<div class="viewcode-block" id="get_closest_mesh_normal_to_pt"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.get_closest_mesh_normal_to_pt.html#compas_slicer.utilities.get_closest_mesh_normal_to_pt">[docs]</a><span class="k">def</span> <span class="nf">get_closest_mesh_normal_to_pt</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the closest vertex normal to the point.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    mesh: :class: &#39;compas.datastructures.Mesh&#39;</span>
 <span class="sd">    pt: :class: &#39;compas.geometry.Point&#39;</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    ----------</span>
 <span class="sd">    :class: &#39;compas.geometry.Vector&#39;</span>
@@ -423,7 +426,7 @@
 
     <span class="n">closest_vkey</span> <span class="o">=</span> <span class="n">get_closest_mesh_vkey_to_pt</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">pt</span><span class="p">)</span>
     <span class="n">v</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertex_normal</span><span class="p">(</span><span class="n">closest_vkey</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Vector</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">Vector</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="get_mesh_vertex_coords_with_attribute"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.get_mesh_vertex_coords_with_attribute.html#compas_slicer.utilities.get_mesh_vertex_coords_with_attribute">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_vertex_coords_with_attribute</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>

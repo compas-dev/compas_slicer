@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   
-  <title>compas_slicer - BasePrintOrganizer.printpoints_indices_iterator</title>
+  <title>compas_slicer - 2. Visualization in grasshopper</title>
   
 
   <meta charset="utf-8" />
@@ -11,19 +11,19 @@
   <meta name="author" content="" />
   <meta name="description" content="" />
 
-  <link rel="shortcut icon" href="../../_static/images/compas.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../_static/images/compas.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/styles/default.min.css">
-  <link rel="stylesheet" type="text/css" href="../../_static/css/compas.css" />
-  <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
+  <link rel="stylesheet" type="text/css" href="../_static/css/compas.css" />
+  <link rel="stylesheet" type="text/css" href="../_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="BasePrintOrganizer.printpoints_iterator" href="compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator.html" />
+    <link rel="next" title="Examples" href="../examples.html" />
   
 
   
-    <link rel="prev" title="BasePrintOrganizer.printout_info" href="compas_slicer.print_organization.BasePrintOrganizer.printout_info.html" />
+    <link rel="prev" title="1. Introduction" href="01_introduction.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -35,7 +35,7 @@
     <nav class="navbar navbar-expand navbar-dark col flex-column flex-md-row text-center">
       <!-- brand -->
       <a class="navbar-brand" href="https://compas.dev/compas_slicer/">
-        <img src="../../_static/images/compas_icon_white.png" alt="COMPAS SLICER" width="48px" height="48px" />
+        <img src="../_static/images/compas_icon_white.png" alt="COMPAS SLICER" width="48px" height="48px" />
       </a>
       <!-- brand -->
       <!-- primary -->
@@ -107,41 +107,81 @@
         
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb mb-3 bg-white px-0">
-            <li class="breadcrumb-item"><a href="../../index.html">docs</a></li>
+            <li class="breadcrumb-item"><a href="../index.html">docs</a></li>
             
-              <li class="breadcrumb-item"><a href="../../api.html">API Reference</a></li>
+              <li class="breadcrumb-item"><a href="../tutorials.html">Tutorials</a></li>
             
-              <li class="breadcrumb-item"><a href="../compas_slicer.html">compas_slicer</a></li>
-            
-              <li class="breadcrumb-item"><a href="../print_organization.html">print_organization</a></li>
-            
-              <li class="breadcrumb-item"><a href="compas_slicer.print_organization.BasePrintOrganizer.html">BasePrintOrganizer</a></li>
-            
-            <li class="breadcrumb-item active" aria-current="page">BasePrintOrganizer.printpoints_indices_iterator</li>
+            <li class="breadcrumb-item active" aria-current="page"><span class="section-number">2. </span>Visualization in grasshopper</li>
           </ol>
         </nav>
         
 
         
         
-        <div class="detail section" id="baseprintorganizer-printpoints-indices-iterator">
-<h1>BasePrintOrganizer.printpoints_indices_iterator<a class="headerlink" href="#baseprintorganizer-printpoints-indices-iterator" title="Permalink to this headline">¶</a></h1>
-<dl class="py method">
-<dt id="compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator">
-<code class="sig-prename descclassname"><span class="pre">BasePrintOrganizer.</span></code><code class="sig-name descname"><span class="pre">printpoints_indices_iterator</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/base_print_organizer.html#BasePrintOrganizer.printpoints_indices_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Iterate over the printpoints of the print organizer.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Yields</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>printpoint</strong> (<em>:class: ‘compas_slicer.geometry.Printpoint’</em>)</p></li>
-<li><p><strong>i</strong> (<em>int, layer index. To get the layer key use: layer_key = ‘layer_%d’ % i</em>)</p></li>
-<li><p><strong>j</strong> (<em>int, path index. To get the path key use: path_key = ‘path_%d’ % j</em>)</p></li>
-<li><p><strong>k</strong> (<em>int, printpoint index</em>)</p></li>
+        <div class="section" id="visualization-in-grasshopper">
+<span id="compas-slicer-tutorial-2"></span><h1><span class="section-number">2. </span>Visualization in grasshopper<a class="headerlink" href="#visualization-in-grasshopper" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial gives an overview of how the results of the slicing process can be visualized in Rhino grasshopper.
+It is important to note that the grasshopper components do not run any slicing code, they merely visualize
+existing results, that have been generated using python.</p>
+<div class="section" id="installation">
+<h2><span class="section-number">2.1. </span>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To install the grasshopper components see the <a class="reference internal" href="../installation.html#compas-slicer-installation"><span class="std std-ref">installation page</span></a>.</p>
+</div>
+<div class="section" id="overview">
+<h2><span class="section-number">2.2. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>When compas_slicer code is run for a project <cite>my_project</cite>, then the folder <cite>my_project/data/output/</cite> is created, where
+all the intermediary and final results of the slicing process are saved in the form of json files. The grasshopper
+components look into that folder, load the according json file, and turn it into geometry that can be visualized.
+To find the correct folder, the grasshopper file that contains the components needs to be positioned in the <cite>my_project</cite>
+folder. You can look at the <cite>compas_slicer/examples</cite> to see the way the grasshopper components are used.</p>
+</div>
+<div class="section" id="workflow">
+<h2><span class="section-number">2.3. </span>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<p>When the compas_slicer python code is run, then all the json files that are recalculated are overwritten in the output
+folder. To update the visualization in grasshopper we click on the button <cite>recompute</cite> that is on the top of each component.
+This loads the latest version of the according json file from the output folder.</p>
+</div>
+<div class="section" id="components">
+<h2><span class="section-number">2.4. </span>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
+<p>The components that exist correspond to the main classes of data types from compas_slicer that someone might want to
+visualize. The following components are currently available.</p>
+<ul class="simple">
+<li><p>csLoadSlicer</p></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
+<p>Loads the <cite>compas_slicer.slicers.Base_slicer</cite> class and all classes that inherit from it, with all the attributes stored
+in the class.</p>
+<div class="figure align-default" id="id1">
+<img alt="../_images/slicer.PNG" class="figure-img img-fluid" src="../_images/slicer.PNG" />
+<p class="caption"><span class="caption-text"><em>Loading the slicer results.</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>csLoadPrintpoints</p></li>
+</ul>
+<p>Loads the Printpoints dictionary with all the data stored in the <cite>compas_slicer.geometry.PrintPoint</cite> class.</p>
+<div class="figure align-default" id="id2">
+<img alt="../_images/ppts.PNG" class="figure-img img-fluid" src="../_images/ppts.PNG" />
+<p class="caption"><span class="caption-text"><em>Loading the outputted printpoints information.</em></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>csLightPathViz</p></li>
+</ul>
+<p>Creates a lightweight visualization of the paths. The print paths are displayed with white tubes, and the traveling paths
+are displayed with orange tubes.</p>
+<div class="figure align-default" id="id3">
+<img alt="../_images/lightweight_viz.PNG" class="figure-img img-fluid" src="../_images/lightweight_viz.PNG" />
+<p class="caption"><span class="caption-text"><em>Lightweight paths visualization.</em></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>csRenderPathViz</p></li>
+</ul>
+<p>If the user provides a cross-section of the paths, then a more expensive visualization can be created, where each path
+is displayed with its cross-sectional geometry.</p>
+<div class="figure align-default" id="id4">
+<img alt="../_images/render_viz.PNG" class="figure-img img-fluid" src="../_images/render_viz.PNG" />
+<p class="caption"><span class="caption-text"><em>Render paths visualization.</em></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<p>And many others that will be documented soon!…</p>
+</div>
 </div>
 
         
@@ -149,7 +189,7 @@
       <!-- content -->
       <!-- sidebar -->
       <div class="col-12 col-md-3 compas-sidebar" role="navigation">
-        <form id="search" class="d-flex align-items-center compas-searchbox" action="../../search.html" method="get">
+        <form id="search" class="d-flex align-items-center compas-searchbox" action="../search.html" method="get">
           <input class="form-control" type="text" name="q" placeholder="Search docs" />
           <input type="hidden" name="check_keywords" value="yes" />
           <input type="hidden" name="area" value="default" />
@@ -161,25 +201,18 @@
         
           <div id="compas-navigation" class="collapse compas-navigation">
           <ul class="nav flex-column active">
-<li class="nav-item"><a class="nav-link reference internal" href="../../index.html">Overview</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../installation.html">Installation</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../tutorials.html">Tutorials</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../examples.html">Examples</a></li>
-<li class="nav-item active"><a class="nav-link reference internal" href="../../api.html">API Reference</a><ul class="nav flex-column active">
-<li class="nav-item active"><a class="nav-link reference internal" href="../compas_slicer.html">compas_slicer</a><ul class="nav flex-column active">
-<li class="nav-item"><a class="nav-link reference internal" href="../geometry.html">geometry</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../slicers.html">slicers</a></li>
-<li class="nav-item active"><a class="nav-link reference internal" href="../print_organization.html">print_organization</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../pre_processing.html">pre_processing</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../post_processing.html">post_processing</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../utilities.html">utilities</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../index.html">Overview</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../installation.html">Installation</a></li>
+<li class="nav-item active"><a class="nav-link reference internal" href="../tutorials.html">Tutorials</a><ul class="nav flex-column active">
+<li class="nav-item"><a class="nav-link reference internal" href="01_introduction.html">1. Introduction</a></li>
+<li class="nav-item active"><a class="nav-link active current reference internal" href="#">2. Visualization in grasshopper</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../devguide.html">Developer Guide</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../license.html">License</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../../citing.html">Citing</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../examples.html">Examples</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../api.html">API Reference</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../devguide.html">Developer Guide</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../license.html">License</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../citing.html">Citing</a></li>
 </ul>
 
           </div>
@@ -190,7 +223,13 @@
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">BasePrintOrganizer.printpoints_indices_iterator</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">2. Visualization in grasshopper</a><ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="#installation">2.1. Installation</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#overview">2.2. Overview</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#workflow">2.3. Workflow</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#components">2.4. Components</a></li>
+</ul>
+</li>
 </ul>
 
       </div>
@@ -202,20 +241,20 @@
   <footer class="compas-footer">
     <nav class="nav p-2">
       
-        <a href="compas_slicer.print_organization.BasePrintOrganizer.printout_info.html" title="BasePrintOrganizer.printout_info" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+        <a href="01_introduction.html" title="<span class="section-number">1. </span>Introduction" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
           <div class="nav-title flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Previous</div>
-            BasePrintOrganizer.printout_info
+            <span class="section-number">1. </span>Introduction
           </div>
         </a>
       
 
       
-        <a href="compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator.html" title="BasePrintOrganizer.printpoints_iterator" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+        <a href="../examples.html" title="Examples" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
           <div class="nav-title footer-link flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Next</div>
-            BasePrintOrganizer.printpoints_iterator
+            Examples
           </div>
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
         </a>
@@ -273,9 +312,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.0.0/anchor.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
 
-  <script src="../../_static/underscore.js"></script>
-  <script src="../../_static/doctools.js"></script>
-  <script src="../../_static/js/searchtools_.js"></script>
+  <script src="../_static/underscore.js"></script>
+  <script src="../_static/doctools.js"></script>
+  <script src="../_static/js/searchtools_.js"></script>
 
   <script>
   $(document).ready(function() {
