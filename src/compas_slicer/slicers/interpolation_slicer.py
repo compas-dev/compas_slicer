@@ -73,11 +73,12 @@ def find_no_of_isocurves(target_0, target_1, avg_layer_height=1.1):
 
 def get_interpolation_parameters_list(number_of_curves):
     """ Returns a list of #number_of_curves floats from 0.001 to 0.997. """
-    t_list = [0.001]
+    # t_list = [0.001]
+    t_list = []
     a = list(np.arange(number_of_curves + 1) / (number_of_curves + 1))
     a.pop(0)
     t_list.extend(a)
-    # t_list.append(0.997)
+    t_list.append(0.997)
     return t_list
 
 
