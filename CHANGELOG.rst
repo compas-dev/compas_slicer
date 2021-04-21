@@ -10,8 +10,8 @@ Unreleased
 ----------
 
 **Added**
-* Alternative union operations in curved slicing
-* function that adds wait time at sharp corners
+* Alternative union operations in curved slicing.
+* function that adds wait time at sharp corners. 
 
 **Changed**
 
