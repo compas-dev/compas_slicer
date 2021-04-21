@@ -1,6 +1,7 @@
 import logging
-from compas_slicer.pre_processing.preprocessing_utils import blend_union_list
+from compas_slicer.pre_processing.preprocessing_utils import blend_union_list, stairs_union_list, chamfer_union_list
 from compas_slicer.utilities.utils import remap_unbound
+import numpy as np
 
 logger = logging.getLogger('logger')
 
@@ -81,10 +82,19 @@ def get_weighted_distance(vkey, weight, target_LOW, target_HIGH):
 
         distances = [(weight - 1) * d_low + weight * d_high for d_high, weight in zip(ds_high, weights)]
 
-        if target_HIGH.has_blend_union:
-            return blend_union_list(distances, target_HIGH.blend_radius)
-        else:
-            return min(distances)
+        # return the distance based on the union method of the high target
+        if target_HIGH.union_method == 'min':
+            # --- simple union
+            return np.min(distances)
+        elif target_HIGH.union_method == 'smooth':
+            # --- blend (smooth) union
+            return blend_union_list(values=distances, r=target_HIGH.union_params[0])
+        elif target_HIGH.union_method == 'chamfer':
+            # --- blend (smooth) union
+            return chamfer_union_list(values=distances, r=target_HIGH.union_params[0])
+        elif target_HIGH.union_method == 'stairs':
+            # --- stairs union
+            return stairs_union_list(values=distances, r=target_HIGH.union_params[0], n=target_HIGH.union_params[1])
 
     # --- simple calculation (without uneven weights)
     else:

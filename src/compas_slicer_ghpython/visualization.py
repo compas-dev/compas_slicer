@@ -377,43 +377,6 @@ def distance_fields_interpolation(path, folder_name, json_name1, json_name2, wei
         return [d2 * weight - d1 * (1 - weight) for d1, d2 in zip(distances_LOW, distances_HIGH)]
 
 
-#######################################
-# --- Load json BaseBoundaries
-
-def distance_fields_weighted_interpolation(path, folder_name, json_name, weight):
-    """ Weighted interpolation of the two distance fields in the json file. """
-    data = load_json_file(path, folder_name, json_name)
-    interpolation = []
-
-    if data:
-        distances_LOW = data['distances_LOW']
-        distances_HIGH_dict = data['distances_HIGH_clusters']
-        t_ends_HIGH = data['t_end_per_cluster_HIGH']
-        has_blend_union = data['has_blend_union_HIGH']
-        blend_radius = data['blend_radius']
-
-        weights_remapped = [remap_unbound(weight, 0, t_end, 0, 1) for t_end in t_ends_HIGH]
-
-        for i in range(len(distances_LOW)):
-            d_low = distances_LOW[i]
-            ds_high = [distances_HIGH_dict[str(j)][i] for j in range(len(distances_HIGH_dict))]
-
-            ds = [(w - 1) * d_low + w * d_high for d_high, w in zip(ds_high, weights_remapped)]
-
-            if len(ds) > 1:
-                if has_blend_union:
-                    d_final = blend_union_list(ds, blend_radius)
-                else:
-                    d_final = min(ds)
-            else:  # then there's a single upper target
-                print("Single upper target. Cannot interpolate. ")
-                return None
-
-            interpolation.append(abs(d_final))
-
-    return interpolation
-
-
 ##############################################
 # --- utilities
 ##############################################

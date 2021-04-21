@@ -13,15 +13,31 @@ Unreleased
 
 **Changed**
 
+**Fixed**
+
+**Deprecated**
+
+**Removed**
+
+0.3.4
+----------
+
+**Added**
+* Alternative union operations in curved slicing.
+* function that adds wait time at sharp corners. 
+
+**Changed**
+
  *Small improvements in gcode
  *Updated examples, and setup tutorials content (which is still empty - remaining to be filled)
-
+ *set_blend_radius function assigns 0 to ppts that have a wait time (so that we are sure they are reached exactly)
 
 **Fixed**
 
 **Deprecated**
 
 **Removed**
+ * csWeightedUnion (outdated)
 
 0.3.3
 ----------
