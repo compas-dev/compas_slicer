@@ -1,1 +1,0 @@
-installation.rst:18: [redirected with Found] https://conda.io/docs/ to https://conda.io/en/latest/
