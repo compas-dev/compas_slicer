@@ -118,22 +118,22 @@
 
         
         
-        <div class="section" id="installation">
-<span id="compas-slicer-installation"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+        <section id="installation">
+<span id="compas-slicer-installation"></span><h1>Installation</h1>
 <p class="lead">COMPAS_SLICER can be easily installed on multiple platforms.</p>
-<div class="section" id="basic-installation-steps">
-<h2>Basic installation steps<a class="headerlink" href="#basic-installation-steps" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="step-1-install-compas-slicer">
-<h3>Step 1: Install compas slicer<a class="headerlink" href="#step-1-install-compas-slicer" title="Permalink to this headline">¶</a></h3>
+<section id="basic-installation-steps">
+<h2>Basic installation steps</h2>
+<section id="step-1-install-compas-slicer">
+<h3>Step 1: Install compas slicer</h3>
 <p>The recommended way to install <cite>compas_slicer</cite> is with <a class="reference external" href="https://conda.io/docs/">conda</a>.
 For example, create an environment named <code class="docutils literal notranslate"><span class="pre">my-project</span></code> (or replace with your own environment name) and install as follows:</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda config --add channels conda-forge
 conda create -n my-project compas_slicer
 </code></pre></div>
 </div>
-</div>
-<div class="section" id="step-2-optional-installation-steps">
-<h3>Step 2: Optional installation steps<a class="headerlink" href="#step-2-optional-installation-steps" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="step-2-optional-installation-steps">
+<h3>Step 2: Optional installation steps</h3>
 <ul class="simple">
 <li><p>COMPAS Viewers</p></li>
 </ul>
@@ -152,23 +152,23 @@ conda create -n my-project compas_slicer
 python -m compas_rhino.install -v <span class="m">6</span>.0
 </code></pre></div>
 </div>
-</div>
-<div class="section" id="step-4-test-if-the-library-works">
-<h3>Step 4. Test if the library works<a class="headerlink" href="#step-4-test-if-the-library-works" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="step-4-test-if-the-library-works">
+<h3>Step 4. Test if the library works</h3>
 <p>Activate your environment and run the following command:</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda activate my-project
 python -m compas_slicer
 </code></pre></div>
 </div>
 <p>Enjoy!</p>
-</div>
-</div>
-<div class="section" id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting</h2>
 <p>If you encounter a problem that is not described here, please file an issue
 using the <a class="reference external" href="https://github.com/compas-dev/compas_slicer/issues">Issue Tracker</a>.</p>
-<div class="section" id="installing-planarity">
-<h3>Installing Planarity<a class="headerlink" href="#installing-planarity" title="Permalink to this headline">¶</a></h3>
+<section id="installing-planarity">
+<h3>Installing Planarity</h3>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>ModuleNotFoundError: No module named <span class="s1">&#39;Cython&#39;</span>
 </code></pre></div>
 </div>
@@ -177,9 +177,9 @@ In that case, install cython using pip (or conda) and then run the installation 
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>pip install cython --install-option<span class="o">=</span><span class="s2">&quot;--no-cython-compile&quot;</span>
 </code></pre></div>
 </div>
-</div>
-<div class="section" id="microsoft-visual-c-build-tools">
-<h3>Microsoft Visual C++ Build Tools<a class="headerlink" href="#microsoft-visual-c-build-tools" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="microsoft-visual-c-build-tools">
+<h3>Microsoft Visual C++ Build Tools</h3>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>error: Microsoft Visual C++ <span class="m">14</span>.0 or greater is required. Get it with <span class="s2">&quot;Microsoft C++ Build Tools&quot;</span>: https://visualstudio.microsoft.com/visual-cpp-build-tools/
 </code></pre></div>
 </div>
@@ -187,9 +187,9 @@ In that case, install cython using pip (or conda) and then run the installation 
 To install the Microsoft Visual C++ Build Tools choose one of the options provided here:
 <a class="reference external" href="https://www.scivision.dev/python-windows-visual-c-14-required/">https://www.scivision.dev/python-windows-visual-c-14-required/</a> and just follow the instructions.
 Then run the pip installation commands again.</p>
-</div>
-<div class="section" id="numpy-error">
-<h3>Numpy error<a class="headerlink" href="#numpy-error" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="numpy-error">
+<h3>Numpy error</h3>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>RuntimeError: The current Numpy installation <span class="o">(</span><span class="s1">&#39;C:\\Users\\&lt;username&gt;\\.conda\\envs\\compas_slicer\\lib\\site-packages\\numpy\\__init__.py&#39;</span><span class="o">)</span> fails to pass a sanity check due to a bug <span class="k">in</span> the windows runtime. See this issue <span class="k">for</span> more information: https://tinyurl.com/y3dm3h86
 </code></pre></div>
 </div>
@@ -198,9 +198,9 @@ Make sure you are in the correct environment and type:</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>pip install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.19.3
 </code></pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
         
       </main>

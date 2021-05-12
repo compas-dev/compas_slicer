@@ -120,19 +120,21 @@
 
         
         
-        <div class="section" id="simple-curved-interpolation-slicing">
-<span id="compas-slicer-example-2"></span><h1><span class="section-number">2. </span>Simple curved interpolation slicing<a class="headerlink" href="#simple-curved-interpolation-slicing" title="Permalink to this headline">¶</a></h1>
+        <section id="simple-curved-interpolation-slicing">
+<span id="compas-slicer-example-2"></span><h1><span class="section-number">2. </span>Simple curved interpolation slicing</h1>
 <p>A general introduction of the concepts organization of compas_slicer can be found in the <a class="reference internal" href="../tutorials/01_introduction.html#compas-slicer-tutorial-1-introduction"><span class="std std-ref">introduction tutorial</span></a>.</p>
 <p>Make sure to read the <a class="reference internal" href="01_planar_slicing_simple.html#compas-slicer-example-1"><span class="std std-ref">example on simple planar slicing</span></a> before reading this example,
 as it explains the main concepts of compas_slicer.
 Having done that, in this example, we go through the basics of using the non-planar interpolation slicer.
 This example uses the method described in <a class="reference external" href="https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408">Print Paths KeyFraming</a>.</p>
-<div class="figure align-default" id="id1">
+<figure class="figure align-default" id="id1">
 <img alt="../_images/curved_slicing.PNG" class="figure-img img-fluid" src="../_images/curved_slicing.PNG" />
-<p class="caption"><span class="caption-text"><em>Result of simple curved slicing.</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-<div class="section" id="imports-and-initialization">
-<h2><span class="section-number">2.1. </span>Imports and initialization<a class="headerlink" href="#imports-and-initialization" title="Permalink to this headline">¶</a></h2>
+<figcaption>
+<p><span class="caption-text"><em>Result of simple curved slicing.</em></span></p>
+</figcaption>
+</figure>
+<section id="imports-and-initialization">
+<h2><span class="section-number">2.1. </span>Imports and initialization</h2>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -157,9 +159,9 @@ This example uses the method described in <a class="reference external" href="ht
 <span class="n">OBJ_INPUT_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;vase.obj&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
-</div>
-<div class="section" id="slicing-process">
-<h2><span class="section-number">2.2. </span>Slicing process<a class="headerlink" href="#slicing-process" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="slicing-process">
+<h2><span class="section-number">2.2. </span>Slicing process</h2>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="c1"># --- Load initial_mesh</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="n">OBJ_INPUT_NAME</span><span class="p">))</span>
 </code></pre></div>
@@ -207,9 +209,9 @@ options are available for all slicers.</p>
 <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;curved_slicer.json&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
-</div>
-<div class="section" id="print-organization">
-<h2><span class="section-number">2.3. </span>Print organization<a class="headerlink" href="#print-organization" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="print-organization">
+<h2><span class="section-number">2.3. </span>Print organization</h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">PrintOrganizer</span></code> classes generate a list of <code class="docutils literal notranslate"><span class="pre">compas_slicer.Printpoint</span></code> instances that have the information
 that is necessary for the print process.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="c1"># --- Print organizer</span>
@@ -241,9 +243,9 @@ that is necessary for the print process.</p>
 </div>
 <p>Once the slicing process is finished, you can use the compas_slicer grasshopper components to visualize the results,
 described in the <a class="reference internal" href="../tutorials/02_grasshopper_visualization.html#compas-slicer-tutorial-2"><span class="std std-ref">grasshopper tutorial</span></a>.</p>
-</div>
-<div class="section" id="final-script">
-<h2><span class="section-number">2.4. </span>Final script<a class="headerlink" href="#final-script" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="final-script">
+<h2><span class="section-number">2.4. </span>Final script</h2>
 <p>The completed final script can be found below:</p>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
@@ -331,8 +333,8 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total elapsed time&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
 </code></pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
         
       </main>
