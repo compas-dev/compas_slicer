@@ -11,6 +11,8 @@ Unreleased
 
 **Added**
 
+* Add GH Python package to the installation.
+
 **Changed**
 
 **Fixed**

@@ -56,7 +56,7 @@ setup(
     ],
     keywords=[],
     project_urls={},
-    packages=["compas_slicer"],
+    packages=["compas_slicer", "compas_slicer_ghpython"],
     package_dir={"": "src"},
     package_data={},
     data_files=[],
