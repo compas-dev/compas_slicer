@@ -50,7 +50,7 @@ def main():
     print_organizer.printout_info()
 
     # create and output gcode
-    gcode_parameters = {}
+    gcode_parameters = {}  # leave all to default
     gcode_text = print_organizer.output_gcode(gcode_parameters)
     utils.save_to_text_file(gcode_text, OUTPUT_DIR, 'my_gcode.gcode')
 

@@ -10,6 +10,7 @@ Unreleased
 ----------
 
 **Added**
+* Documentation updates
 
 **Changed**
 

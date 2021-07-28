@@ -1,6 +1,6 @@
 attrs>=19.2.0
 compas>=1.0.0
-networkx
+networkx>=2.5
 numpy
 progressbar2>=3.53
 pyclipper>=1.2.0
