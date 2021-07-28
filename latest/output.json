@@ -119,10 +119,10 @@
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.point_list_to_dict", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.save_to_json", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.smooth_vectors", "info": ""}
-{"filename": "api/generated/compas_slicer.geometry.PrintPoint.rst", "lineno": 7, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.geometry.Vector.html#compas.geometry.Vector", "info": ""}
-{"filename": "index.rst", "lineno": 10, "status": "working", "code": 0, "uri": "https://compas.dev/", "info": ""}
 {"filename": "api/generated/compas_slicer.geometry.PrintPoint.rst", "lineno": 11, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.geometry.Frame.html#compas.geometry.Frame", "info": ""}
+{"filename": "index.rst", "lineno": 10, "status": "working", "code": 0, "uri": "https://compas.dev/", "info": ""}
 {"filename": "api/generated/compas_slicer.pre_processing.get_mid_pt_base.rst", "lineno": 3, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.datastructures.Mesh.html#compas.datastructures.Mesh", "info": ""}
+{"filename": "api/generated/compas_slicer.geometry.PrintPoint.rst", "lineno": 7, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.geometry.Vector.html#compas.geometry.Vector", "info": ""}
 {"filename": "api/generated/compas_slicer.geometry.Path.rst", "lineno": 4, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.geometry.Point.html#compas.geometry.Point", "info": ""}
 {"filename": "api/generated/compas_slicer.geometry.Layer.rst", "lineno": 1, "status": "working", "code": 0, "uri": "https://docs.python.org/3/library/functions.html#object", "info": ""}
 {"filename": "api/generated/compas_slicer.post_processing.simplify_paths_rdp.rst", "lineno": 1, "status": "working", "code": 0, "uri": "https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm", "info": ""}
