@@ -40,6 +40,8 @@ class InterpolationSlicingPreprocessor:
         self.split_meshes = []  # list , :class: 'compas.datastructures.Mesh'
         # The meshes that result from the region splitting process.
 
+        utils.utils.check_triangular_mesh(mesh)
+
     ###########################
     # --- compound targets
 
