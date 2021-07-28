@@ -1,24 +1,19 @@
-.. _compas_slicer_example_3:
+.. _compas_slicer_example_5:
 
 ************************************
 Non-planar slicing on custom base
 ************************************
 
-A general introduction of the concepts organization of compas_slicer can be found in the :ref:`introduction tutorial <compas_slicer_tutorial_1_introduction>`.
-
-
-Make sure to read the :ref:`example on simple planar slicing <compas_slicer_example_1>` before reading this example,
-as it explains the main concepts of compas_slicer.
 In this example we describe the process of non-planar slicing of a mesh, generating paths that are an offset to its
 custom base. We are using the ScalarFieldSlicer, which generates paths as contours of a scalar field defined on every
 vertex of the mesh. In this case we create a scalar field with the distance of each vertex from the custom base.
 
-we create a scalar field
-.. figure:: figures/scalar_field_slicing.PNG
+.. figure:: figures/05_scalar_field_slicing.PNG
     :figclass: figure
     :class: figure-img img-fluid
 
     *Result of scalar field slicing considering the distance of each vertex from the custom base.*
+
 
 .. code-block:: python
 

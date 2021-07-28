@@ -13,7 +13,7 @@ Having done that, in this example, we go through the basics of using the non-pla
 paths by interpolating user-defined boundaries.
 This example uses the method described in `Print Paths KeyFraming <https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408>`_.
 
-.. figure:: figures/curved_slicing.PNG
+.. figure:: figures/02_curved_slicing.PNG
     :figclass: figure
     :class: figure-img img-fluid
 
