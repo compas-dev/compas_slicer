@@ -28,7 +28,7 @@ optional_requirements = {}
 
 setup(
     name="compas_slicer",
-    version="0.3.4",
+    version="0.3.5",
     description="Slicing package for FDM 3D Printing with COMPAS",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -56,7 +56,7 @@ setup(
     ],
     keywords=[],
     project_urls={},
-    packages=["compas_slicer"],
+    packages=["compas_slicer", "compas_slicer_ghpython"],
     package_dir={"": "src"},
     package_data={},
     data_files=[],

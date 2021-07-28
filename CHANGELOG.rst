@@ -20,6 +20,21 @@ Unreleased
 
 **Removed**
 
+0.3.5
+----------
+
+**Added**
+
+* Add GH Python package to the installation.
+
+**Changed**
+
+**Fixed**
+
+**Deprecated**
+
+**Removed**
+
 0.3.4
 ----------
 

@@ -29,7 +29,7 @@ __author__ = ['Ioanna Mitropoulou and Joris Burger']
 __copyright__ = 'Copyright 2020 ETH Zurich'
 __license__ = 'MIT License'
 __email__ = 'mitropoulou@arch.ethz.ch'
-__version__ = '0.3.4'
+__version__ = '0.3.5'
 
 
 HERE = os.path.dirname(__file__)

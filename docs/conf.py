@@ -29,7 +29,7 @@ project = 'COMPAS SLICER'
 year = '2020'
 author = 'Digital Building Technologies, Gramazio Kohler Research'
 copyright = '{0}, {1}'.format(year, author)
-version = release = '0.3.4'
+version = release = '0.3.5'
 
 pygments_style = 'sphinx'
 show_authors = True
@@ -86,6 +86,7 @@ html_static_path = ['_static']
 html_last_updated_fmt = '%b %d, %Y'
 html_copy_source = False
 html_show_sourcelink = False
+html_permalinks = False
 html_add_permalinks = ''
 html_experimental_html5_writer = True
 html_compact_lists = True
