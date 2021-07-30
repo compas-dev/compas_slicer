@@ -133,7 +133,7 @@ class BasePrintOrganizer(object):
     ######################
 
     def remove_duplicate_points_in_path(self, layer_key, path_key, tolerance=0.0001):
-        """Remove subsequent points that are within a certain tolerance.
+        """Remove subsequent points that are within a certain threshold.
 
         Parameters
         ----------

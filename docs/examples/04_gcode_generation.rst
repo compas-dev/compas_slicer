@@ -16,7 +16,7 @@ to materialize them in a typical desktop 3D printer. The gcode generation is sti
     from compas_slicer.pre_processing import move_mesh_to_point
     from compas_slicer.slicers import PlanarSlicer
     from compas_slicer.post_processing import generate_brim
-    from compas_slicer.post_processing import simplify_paths_rdp
+    from compas_slicer.post_processing import simplify_paths_rdp_igl
     from compas_slicer.post_processing import seams_smooth
     from compas_slicer.print_organization import PlanarPrintOrganizer
     from compas_slicer.print_organization import set_extruder_toggle
@@ -49,7 +49,7 @@ to materialize them in a typical desktop 3D printer. The gcode generation is sti
         slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=4.5)
         slicer.slice_model()
         generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
-        simplify_paths_rdp(slicer, threshold=0.6)
+        simplify_paths_rdp_igl(slicer, threshold=0.6)
         seams_smooth(slicer, smooth_distance=10)
         slicer.printout_info()
         save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')

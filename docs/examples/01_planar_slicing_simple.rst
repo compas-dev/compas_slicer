@@ -26,7 +26,7 @@ The first step is to import the required functions:
     from compas_slicer.slicers import PlanarSlicer
     from compas_slicer.post_processing import generate_brim
     from compas_slicer.post_processing import generate_raft
-    from compas_slicer.post_processing import simplify_paths_rdp
+    from compas_slicer.post_processing import simplify_paths_rdp_igl
     from compas_slicer.post_processing import seams_smooth
     from compas_slicer.print_organization import PlanarPrintOrganizer
     from compas_slicer.print_organization import set_extruder_toggle
@@ -106,14 +106,14 @@ that are offset from the bottom layer, to improve adhesion to the build plate
                   raft_layers=1)
 
 Depending on the amount of faces that your input mesh has, a very large amount of 
-points can be generated. ``simplify_paths_rdp`` is a function that removes points
+points can be generated. ``simplify_paths_rdp`` or ``simplify_paths_rdp_igl`` are functions that remove points
 that do not have a high impact on the final shape of the polyline. Increase the
 threshold value to remove more points, decrease it to remove less. For more 
 information on how the algorithm works see: `Ramer–Douglas–Peucker algorithm <https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm>`_
 
 .. code-block:: python
 
-    simplify_paths_rdp(slicer, threshold=0.6)
+    simplify_paths_rdp_igl(slicer, threshold=0.6)
 
 Currently the 'seam' between different layers of our shape is a 'hard seam',
 the printer would move up almost vertically to move to the next layer. 
@@ -213,7 +213,7 @@ The completed final script can be found below:
     from compas_slicer.slicers import PlanarSlicer
     from compas_slicer.post_processing import generate_brim
     from compas_slicer.post_processing import generate_raft
-    from compas_slicer.post_processing import simplify_paths_rdp
+    from compas_slicer.post_processing import simplify_paths_rdp_igl
     from compas_slicer.post_processing import seams_smooth
     from compas_slicer.print_organization import PlanarPrintOrganizer
     from compas_slicer.print_organization import set_extruder_toggle
@@ -277,7 +277,7 @@ The completed final script can be found below:
     # Simplify the paths by removing points with a certain threshold
     # change the threshold value to remove more or less points
     # ==========================================================================
-    simplify_paths_rdp(slicer, threshold=0.6)
+    simplify_paths_rdp_igl(slicer, threshold=0.6)
 
     # ==========================================================================
     # Smooth the seams between layers

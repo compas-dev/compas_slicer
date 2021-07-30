@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import scipy
+from compas.plugins import PluginNotInstalledError
 
 logger = logging.getLogger('logger')
 
@@ -36,7 +37,8 @@ __all__ = ['remap',
            'smooth_vectors',
            'get_normal_of_path_on_xy_plane',
            'get_all_files_with_name',
-           'get_closest_mesh_normal_to_pt']
+           'get_closest_mesh_normal_to_pt',
+           'check_package_is_installed']
 
 
 def remap(input_val, in_from, in_to, out_from, out_to):
@@ -399,6 +401,7 @@ def get_mesh_cotmatrix_igl(mesh, fix_boundaries=True):
     :class: 'scipy.sparse.csr_matrix'
         sparse matrix (dimensions: #V x #V), laplace operator, each row i corresponding to v(i, :)
     """
+    check_package_is_installed('igl')
     import igl
     v, f = mesh.to_vertices_and_faces()
     C = igl.cotmatrix(np.array(v), np.array(f))
@@ -427,6 +430,7 @@ def get_mesh_cotans_igl(mesh):
     :class: 'np.array'
         Dimensions: F by 3 list of 1/2*cotangents corresponding angles
     """
+    check_package_is_installed('igl')
     import igl
     v, f = mesh.to_vertices_and_faces()
     return igl.cotmatrix_entries(np.array(v), np.array(f))
@@ -599,6 +603,17 @@ def get_all_files_with_name(startswith, endswith, DATA_PATH):
     logger.info('Reloading : ' + str(files))
     return files
 
+
+#######################################
+# check installation
+from compas_slicer.utilities import TerminalCommand
+
+def check_package_is_installed(package_name):
+    """ Throws an error if igl python bindings are not installed in the current environment. """
+    packages = TerminalCommand('conda list').get_split_output_strings()
+    if package_name not in packages:
+        raise PluginNotInstalledError(" ATTENTION! Package : " + package_name +
+                                      " is missing! Please follow installation guide to install it.")
 
 if __name__ == "__main__":
     pass
