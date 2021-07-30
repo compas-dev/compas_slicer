@@ -30,8 +30,7 @@ def unify_paths_orientation(slicer):
 
 
 def match_paths_orientations(pts, reference_points, is_closed):
-    """
-    Check if new curve has same direction as prev curve, otherwise reverse.
+    """Check if new curve has same direction as prev curve, otherwise reverse.
 
     Parameters
     ----------
@@ -39,6 +38,7 @@ def match_paths_orientations(pts, reference_points, is_closed):
     reference_points: list, :class: 'compas.geometry.Point'. [p1, p2] Two reference points.
     is_closed : bool, Determines if the path is closed or open
     """
+
     if len(pts) > 2 and len(reference_points) > 2:
         v1 = normalize_vector(subtract_vectors(pts[0], pts[2]))
         v2 = normalize_vector(subtract_vectors(reference_points[0], reference_points[2]))

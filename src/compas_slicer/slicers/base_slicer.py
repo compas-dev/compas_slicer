@@ -107,7 +107,7 @@ class BaseSlicer(object):
         #  --- Align the seams between layers and unify orientation
         seams_align(self, align_with='x_axis')
         unify_paths_orientation(self)
-        self.close_paths()
+        # self.close_paths()
 
         logger.info("Created %d Layers with %d total number of points"
                     % (len(self.layers), self.number_of_points))
