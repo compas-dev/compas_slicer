@@ -8,7 +8,7 @@ from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.post_processing import generate_brim
 from compas_slicer.post_processing import generate_raft
 from compas_slicer.post_processing import simplify_paths_rdp
-from compas_slicer.post_processing import seams_smooth
+from compas_slicer.post_processing import seams_smooth, seams_align
 from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
@@ -31,7 +31,7 @@ logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 # ==============================================================================
 DATA = os.path.join(os.path.dirname(__file__), 'data')
 OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
-MODEL = 'simple_vase_open_low_res.obj'
+MODEL = 'geo_hole2.stl'
 
 
 def main():
@@ -40,12 +40,12 @@ def main():
     # ==========================================================================
     # Load mesh
     # ==========================================================================
-    compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
+    compas_mesh = Mesh.from_stl(os.path.join(DATA, MODEL))
 
     # ==========================================================================
     # Move to origin
     # ==========================================================================
-    move_mesh_to_point(compas_mesh, Point(0, 0, 0))
+    # move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
     # ==========================================================================
     # Slicing
@@ -53,20 +53,27 @@ def main():
     #          'cgal':    Very fast. Only for closed paths.
     #                     Requires additional installation (compas_cgal).
     # ==========================================================================
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=30)
     slicer.slice_model()
+
+    seams_align(slicer, "next_path")
+
+    # for i, layer in enumerate(slicer.layers):
+    #     for j, path in enumerate(layer.paths):
+    #         for k, pt in enumerate(path.points):
+    #             print(i, j, k, pt)
 
     # ==========================================================================
     # Generate brim / raft
     # ==========================================================================
     # NOTE: Typically you would want to use either a brim OR a raft, 
     # however, in this example both are used to explain the functionality
-    generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
-    generate_raft(slicer,
-                  raft_offset=20,
-                  distance_between_paths=5,
-                  direction="xy_diagonal",
-                  raft_layers=1)
+    # generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
+    # generate_raft(slicer,
+    #               raft_offset=20,
+    #               distance_between_paths=5,
+    #               direction="xy_diagonal",
+    #               raft_layers=1)
 
     # ==========================================================================
     # Simplify the paths by removing points with a certain threshold
@@ -78,7 +85,7 @@ def main():
     # Smooth the seams between layers
     # change the smooth_distance value to achieve smoother, or more abrupt seams
     # ==========================================================================
-    seams_smooth(slicer, smooth_distance=10)
+    # seams_smooth(slicer, smooth_distance=10)
 
     # ==========================================================================
     # Prints out the info of the slicer
@@ -118,10 +125,10 @@ def main():
     # ==========================================================================
     # Initializes the compas_viewer and visualizes results
     # ==========================================================================
-    viewer = app.App(width=1600, height=1000)
+    # viewer = app.App(width=1600, height=1000)
     # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
-    print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
-    viewer.show()
+    # print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
+    # viewer.show()
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")

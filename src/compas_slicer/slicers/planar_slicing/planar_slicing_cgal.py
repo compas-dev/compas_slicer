@@ -51,9 +51,14 @@ def create_planar_paths_cgal(mesh, planes):
                 for point in path:
                     pt = Point(point[0], point[1], point[2])
                     points_per_contour.append(pt)
-                # generate contours
-                # TODO: add a check for is_closed
-                path = Path(points=points_per_contour, is_closed=True)
+
+                # check if path is closed
+                if points_per_contour[0] == points_per_contour[-1]:
+                    is_closed = True
+                else:
+                    is_closed = False
+                # generate paths
+                path = Path(points=points_per_contour, is_closed=is_closed)
                 paths_per_layer.append(path)
 
             # generate layers
