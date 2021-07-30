@@ -89,7 +89,6 @@ def main():
     # Save slicer data to JSON
     # ==========================================================================
     save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
-    raise Exception
 
     # ==========================================================================
     # Initializes the PlanarPrintOrganizer and creates PrintPoints
