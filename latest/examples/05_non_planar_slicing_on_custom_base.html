@@ -138,7 +138,7 @@ vertex of the mesh. In this case we create a scalar field with the distance of e
 <span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">slicer_utils</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp_igl</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers</span> <span class="kn">import</span> <span class="n">ScalarFieldSlicer</span>
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">ScalarFieldPrintOrganizer</span>
@@ -173,11 +173,10 @@ vertex of the mesh. In this case we create a scalar field with the distance of e
     <span class="c1"># --- Slice model by generating contours of scalar field</span>
     <span class="n">slicer</span> <span class="o">=</span> <span class="n">ScalarFieldSlicer</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">no_of_isocurves</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
     <span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>
-    <span class="c1"># simplify_paths_rdp(slicer, threshold=0.3)</span>
     <span class="n">slicer_utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;isocontours.json&#39;</span><span class="p">)</span>  <span class="c1"># save results to json</span>
 
     <span class="c1"># --- Print organization calculations (i.e. generation of printpoints with fabrication-related information)</span>
-    <span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="n">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
     <span class="n">print_organizer</span> <span class="o">=</span> <span class="n">ScalarFieldPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">DATA_PATH</span><span class="o">=</span><span class="n">DATA_PATH</span><span class="p">)</span>
     <span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">()</span>
 

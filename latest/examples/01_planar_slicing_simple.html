@@ -139,7 +139,7 @@ out of a shape with a single contour (also known as a ‘vase’).</p>
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers</span> <span class="kn">import</span> <span class="n">PlanarSlicer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">generate_brim</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">generate_raft</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp_igl</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_smooth</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">PlanarPrintOrganizer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_extruder_toggle</span>
@@ -217,11 +217,11 @@ that are offset from the bottom layer, to improve adhesion to the build plate
 </code></pre></div>
 </div>
 <p>Depending on the amount of faces that your input mesh has, a very large amount of
-points can be generated. <code class="docutils literal notranslate"><span class="pre">simplify_paths_rdp</span></code> is a function that removes points
+points can be generated. <code class="docutils literal notranslate"><span class="pre">simplify_paths_rdp</span></code> or <code class="docutils literal notranslate"><span class="pre">simplify_paths_rdp_igl</span></code> are functions that remove points
 that do not have a high impact on the final shape of the polyline. Increase the
 threshold value to remove more points, decrease it to remove less. For more
 information on how the algorithm works see: <a class="reference external" href="https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm">Ramer–Douglas–Peucker algorithm</a></p>
-<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="n">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
 </code></pre></div>
 </div>
 <p>Currently the ‘seam’ between different layers of our shape is a ‘hard seam’,
@@ -299,7 +299,7 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers</span> <span class="kn">import</span> <span class="n">PlanarSlicer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">generate_brim</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">generate_raft</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp_igl</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_smooth</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">PlanarPrintOrganizer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_extruder_toggle</span>
@@ -363,7 +363,7 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 <span class="c1"># Simplify the paths by removing points with a certain threshold</span>
 <span class="c1"># change the threshold value to remove more or less points</span>
 <span class="c1"># ==========================================================================</span>
-<span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
 
 <span class="c1"># ==========================================================================</span>
 <span class="c1"># Smooth the seams between layers</span>

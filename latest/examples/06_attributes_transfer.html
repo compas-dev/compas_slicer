@@ -141,7 +141,7 @@ barycentric coordinates.</p>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">distance_point_plane</span><span class="p">,</span> <span class="n">normalize_vector</span>
 <span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">slicer_utils</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp_igl</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers</span> <span class="kn">import</span> <span class="n">PlanarSlicer</span>
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities.utils</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.utilities.attributes_transfer</span> <span class="kn">import</span> <span class="n">transfer_mesh_attributes_to_printpoints</span>
@@ -193,7 +193,7 @@ barycentric coordinates.</p>
     <span class="c1"># --------------- Slice mesh</span>
     <span class="n">slicer</span> <span class="o">=</span> <span class="n">PlanarSlicer</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">slicer_type</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
     <span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>
-    <span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
     <span class="n">slicer_utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
 
     <span class="c1"># --------------- Create printpoints</span>

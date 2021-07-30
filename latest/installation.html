@@ -201,6 +201,17 @@ Make sure you are in the correct environment and type:</p>
 </code></pre></div>
 </div>
 </section>
+<section id="fractions-error">
+<h3>Fractions error</h3>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>ImportError: cannot import name <span class="s1">&#39;gcd&#39;</span> from <span class="s1">&#39;fractions&#39;</span> <span class="o">(</span>C:<span class="se">\P</span>rogramData<span class="se">\A</span>naconda3<span class="se">\e</span>nvs<span class="se">\c</span>ompas_slicer<span class="se">\l</span>ib<span class="se">\f</span>ractions.py<span class="o">)</span>
+</code></pre></div>
+</div>
+<p>This issue can be solved, as explained here:  <a class="reference external" href="https://stackoverflow.com/questions/66174862/import-error-cant-import-name-gcd-from-fractions">https://stackoverflow.com/questions/66174862/import-error-cant-import-name-gcd-from-fractions</a>
+by typing the following command (make sure you are in the correct environment)</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda install -c conda-forge <span class="nv">networkx</span><span class="o">=</span><span class="m">2</span>.5
+</code></pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -250,6 +261,7 @@ Make sure you are in the correct environment and type:</p>
 <li class="nav-item"><a class="nav-link reference internal" href="#installing-planarity">Installing Planarity</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#microsoft-visual-c-build-tools">Microsoft Visual C++ Build Tools</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#numpy-error">Numpy error</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#fractions-error">Fractions error</a></li>
 </ul>
 </li>
 </ul>

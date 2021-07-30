@@ -123,14 +123,18 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">progressbar</span>
-
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">compas.plugins</span> <span class="kn">import</span> <span class="n">PluginNotInstalledError</span>
 
-<span class="c1"># from compas_slicer.geometry import PrintPoint, Contour</span>
+<span class="n">packages</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">TerminalCommand</span><span class="p">(</span><span class="s1">&#39;conda list&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_split_output_strings</span><span class="p">()</span>
+<span class="k">if</span> <span class="s1">&#39;igl&#39;</span> <span class="ow">in</span> <span class="n">packages</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">igl</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;simplify_paths_rdp&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;simplify_paths_rdp&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;simplify_paths_rdp_igl&#39;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="simplify_paths_rdp"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.simplify_paths_rdp.html#compas_slicer.post_processing.simplify_paths_rdp">[docs]</a><span class="k">def</span> <span class="nf">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
@@ -144,7 +148,6 @@
 <span class="sd">    threshold: float</span>
 <span class="sd">        Controls the degree of polyline simplification.</span>
 <span class="sd">        Low threshold removes few points, high threshold removes many points.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Paths simplification rdp&quot;</span><span class="p">)</span>
@@ -159,6 +162,35 @@
                     <span class="n">remaining_pts_num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
                     <span class="n">bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> Points remaining after rdp simplification&#39;</span> <span class="o">%</span> <span class="n">remaining_pts_num</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    https://libigl.github.io/libigl-python-bindings/igl_docs/#ramer_douglas_peucker</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    slicer: :class:`compas_slicer.slicers.BaseSlicer`</span>
+<span class="sd">        An instance of one of the compas_slicer.slicers classes.</span>
+<span class="sd">    threshold: float</span>
+<span class="sd">        Controls the degree of polyline simplification.</span>
+<span class="sd">        Low threshold removes few points, high threshold removes many points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">check_package_is_installed</span><span class="p">(</span><span class="s1">&#39;igl&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Paths simplification rdp - igl&quot;</span><span class="p">)</span>
+        <span class="n">remaining_pts_num</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">layer</span><span class="o">.</span><span class="n">is_raft</span><span class="p">:</span>  <span class="c1"># no simplification necessary for raft layer</span>
+                <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+                    <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">])</span>
+                    <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">Q</span> <span class="o">=</span> <span class="n">igl</span><span class="o">.</span><span class="n">ramer_douglas_peucker</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">S</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> Points remaining after rdp simplification&#39;</span> <span class="o">%</span> <span class="n">remaining_pts_num</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">PluginNotInstalledError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Libigl is not installed. Falling back to python rdp function&quot;</span><span class="p">)</span>
+        <span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

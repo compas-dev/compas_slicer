@@ -143,7 +143,7 @@ This example uses the method described in <a class="reference external" href="ht
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers</span> <span class="kn">import</span> <span class="n">InterpolationSlicer</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp_igl</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.pre_processing</span> <span class="kn">import</span> <span class="n">InterpolationSlicingPreprocessor</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_extruder_toggle</span><span class="p">,</span> <span class="n">set_linear_velocity_by_range</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">add_safety_printpoints</span>
@@ -207,7 +207,7 @@ options are available for all slicers.</p>
 <span class="c1"># post processing</span>
 <span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
 <span class="n">slicer</span><span class="o">.</span><span class="n">printout_info</span><span class="p">()</span>
 <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;curved_slicer.json&#39;</span><span class="p">)</span>
 </code></pre></div>
@@ -255,7 +255,7 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers</span> <span class="kn">import</span> <span class="n">InterpolationSlicer</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp_igl</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.pre_processing</span> <span class="kn">import</span> <span class="n">InterpolationSlicingPreprocessor</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_extruder_toggle</span><span class="p">,</span> <span class="n">set_linear_velocity_by_range</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">add_safety_printpoints</span>
@@ -306,7 +306,7 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 <span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-<span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">slicer</span><span class="o">.</span><span class="n">printout_info</span><span class="p">()</span>
 <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;curved_slicer.json&#39;</span><span class="p">)</span>
 
