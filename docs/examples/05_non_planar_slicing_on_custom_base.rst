@@ -22,7 +22,7 @@ vertex of the mesh. In this case we create a scalar field with the distance of e
     from compas.datastructures import Mesh
     import os
     import compas_slicer.utilities as slicer_utils
-    from compas_slicer.post_processing import simplify_paths_rdp
+    from compas_slicer.post_processing import simplify_paths_rdp_igl
     from compas_slicer.slicers import ScalarFieldSlicer
     import compas_slicer.utilities as utils
     from compas_slicer.print_organization import ScalarFieldPrintOrganizer
@@ -57,11 +57,10 @@ vertex of the mesh. In this case we create a scalar field with the distance of e
         # --- Slice model by generating contours of scalar field
         slicer = ScalarFieldSlicer(mesh, u, no_of_isocurves=50)
         slicer.slice_model()
-        # simplify_paths_rdp(slicer, threshold=0.3)
         slicer_utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'isocontours.json')  # save results to json
 
         # --- Print organization calculations (i.e. generation of printpoints with fabrication-related information)
-        simplify_paths_rdp(slicer, threshold=0.3)
+        simplify_paths_rdp_igl(slicer, threshold=0.3)
         print_organizer = ScalarFieldPrintOrganizer(slicer, parameters={}, DATA_PATH=DATA_PATH)
         print_organizer.create_printpoints()
 

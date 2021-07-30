@@ -107,3 +107,17 @@ Make sure you are in the correct environment and type:
 .. code-block:: bash
 
     pip install numpy==1.19.3
+
+Fractions error
+-----------
+.. code-block:: bash
+
+    ImportError: cannot import name 'gcd' from 'fractions' (C:\ProgramData\Anaconda3\envs\compas_slicer\lib\fractions.py)
+
+This issue can be solved, as explained here:  https://stackoverflow.com/questions/66174862/import-error-cant-import-name-gcd-from-fractions
+by typing the following command (make sure you are in the correct environment)
+
+.. code-block:: bash
+
+    conda install -c conda-forge networkx=2.5
+
