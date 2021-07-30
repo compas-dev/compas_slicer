@@ -35,9 +35,6 @@ def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
 
 def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH, v_equalize=None, anisotropic_scaling=False):
     """ Calculate geodesic distances using the heat method. """
-    utils.check_package_is_installed('igl')
-    import igl
-
     geodesics_solver = GeodesicsSolver(mesh, OUTPUT_PATH)
     u = geodesics_solver.diffuse_heat(vi_sources, v_equalize, method='simulation')
     geodesic_dist = geodesics_solver.get_geodesic_distances(u, vi_sources, v_equalize)
@@ -64,6 +61,9 @@ class GeodesicsSolver:
     """
 
     def __init__(self, mesh, OUTPUT_PATH):
+        utils.check_package_is_installed('igl')
+        import igl
+
         logger.info('GeodesicsSolver')
         self.mesh = mesh
         self.OUTPUT_PATH = OUTPUT_PATH

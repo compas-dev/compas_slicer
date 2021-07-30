@@ -8,6 +8,7 @@ import networkx as nx
 import numpy as np
 import scipy
 from compas.plugins import PluginNotInstalledError
+from compas_slicer.utilities import TerminalCommand
 
 logger = logging.getLogger('logger')
 
@@ -606,7 +607,7 @@ def get_all_files_with_name(startswith, endswith, DATA_PATH):
 
 #######################################
 # check installation
-from compas_slicer.utilities import TerminalCommand
+
 
 def check_package_is_installed(package_name):
     """ Throws an error if igl python bindings are not installed in the current environment. """
@@ -614,6 +615,7 @@ def check_package_is_installed(package_name):
     if package_name not in packages:
         raise PluginNotInstalledError(" ATTENTION! Package : " + package_name +
                                       " is missing! Please follow installation guide to install it.")
+
 
 if __name__ == "__main__":
     pass

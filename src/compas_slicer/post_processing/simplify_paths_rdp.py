@@ -15,6 +15,7 @@ logger = logging.getLogger('logger')
 __all__ = ['simplify_paths_rdp',
            'simplify_paths_rdp_igl']
 
+
 def simplify_paths_rdp(slicer, threshold):
     """Simplifies a path using the Ramer–Douglas–Peucker algorithm, implemented in the rdp python library.
     https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm
@@ -43,7 +44,7 @@ def simplify_paths_rdp(slicer, threshold):
 
 
 def simplify_paths_rdp_igl(slicer, threshold):
-    """ 
+    """
     https://libigl.github.io/libigl-python-bindings/igl_docs/#ramer_douglas_peucker
     Parameters
     ----------
