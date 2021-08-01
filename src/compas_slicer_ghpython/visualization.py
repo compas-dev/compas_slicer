@@ -11,17 +11,30 @@ from compas_ghpython.utilities import list_to_ghtree
 #######################################
 # --- Slicer
 
+def polyline_from_pts_data(pts_data):
+    pts = []
+    for k in range(len(pts_data)):
+        pt = pts_data[str(k)]
+        pt = rs.AddPoint(pt[0], pt[1], pt[2])  # re-create points
+        pts.append(pt)
+    polyline = rs.AddPolyline(pts)
+    return polyline
+
+
 def load_slicer(path, folder_name, json_name):
     """ Loads slicer data. """
     data = load_json_file(path, folder_name, json_name)
 
     mesh = None
-    paths_nested_list = []
+
+    travel_to_contour_nested_list = []
+    contours_nested_list = []
+    travel_to_infill_nested_list = []
+    infill_nested_list = []
+
     are_closed = []
-    all_points = []
 
     if data:
-
         if 'mesh' in data:
             compas_mesh = Mesh.from_data(data['mesh'])
             artist = MeshArtist(compas_mesh)
@@ -33,30 +46,58 @@ def load_slicer(path, folder_name, json_name):
             layers_data = data['layers']
 
             for i in range(len(layers_data)):
-                paths_nested_list.append([])  # save each layer on a different list
+                travel_to_contour_nested_list.append([])
+                contours_nested_list.append([])  # save each layer on a different list
+                travel_to_infill_nested_list.append([])
+                infill_nested_list.append([])
+
                 layer_data = layers_data[str(i)]
                 paths_data = layer_data['paths']
 
                 for j in range(len(paths_data)):
                     path_data = paths_data[str(j)]
-                    pts = []
 
-                    are_closed.append(path_data['is_closed'])
+                    travel_to_contour_data = path_data['travel_to_contour']
+                    contour_data = path_data['contour']
+                    travel_to_infill_data = path_data['travel_to_infill']
+                    infill_data = path_data['infill']
 
-                    if len(path_data['points']) > 2:  # ignore smaller curves that throw errors
-                        for k in range(len(path_data['points'])):
-                            pt = path_data['points'][str(k)]
-                            pt = rs.AddPoint(pt[0], pt[1], pt[2])  # re-create points
-                            pts.append(pt)
-                        all_points.extend(pts)
-                        path = rs.AddPolyline(pts)
-                        paths_nested_list[-1].append(path)
+                    # --- Load travel to contour
+                    if travel_to_contour_data:
+                        if len(travel_to_contour_data['points']) > 1:
+                            travel_path = polyline_from_pts_data(travel_to_contour_data['points'])
+                            travel_to_contour_nested_list[-1].append(travel_path)
+
+                    # --- Load contour
+                    if len(contour_data['points']) > 1:
+                        contour_path = polyline_from_pts_data(contour_data['points'])
+                        contours_nested_list[-1].append(contour_path)
+                    are_closed.append(contour_data['is_closed'])
+
+                    # --- Load travel to infill
+                    if travel_to_infill_data:
+                        if len(travel_to_infill_data['points']) > 1:
+                            travel_path = polyline_from_pts_data(travel_to_infill_data['points'])
+                            travel_to_infill_nested_list[-1].append(travel_path)
+
+                    # --- Load infill
+                    if infill_data:
+                        if len(infill_data['points']) > 1:  # ignore smaller curves that throw errors
+                            infill_path = polyline_from_pts_data(infill_data['points'])
+                            infill_nested_list[-1].append(infill_path)
+
         else:
             print('No layers have been saved in the json file. Is this the correct json?')
 
-    print('The slicer contains %d layers. ' % len(paths_nested_list))
-    paths_nested_list = list_to_ghtree(paths_nested_list)
-    return mesh, paths_nested_list, are_closed, all_points
+    print('The slicer contains %d layers. ' % len(contours_nested_list))
+
+    travel_to_contour_nested_list = list_to_ghtree(travel_to_contour_nested_list)
+    contours_nested_list = list_to_ghtree(contours_nested_list)
+    travel_to_infill_nested_list = list_to_ghtree(travel_to_infill_nested_list)
+    infill_nested_list = list_to_ghtree(infill_nested_list)
+
+    return mesh, travel_to_contour_nested_list, contours_nested_list, are_closed, travel_to_infill_nested_list, \
+           infill_nested_list
 
 
 #######################################
@@ -117,7 +158,7 @@ def load_printpoints(path, folder_name, json_name):
             extruder_toggles.append(data_point["extruder_toggle"])
 
     return points, frames, layer_heights, up_vectors, mesh_normals, closest_support, velocities, wait_times, \
-        blend_radiuses, extruder_toggles
+           blend_radiuses, extruder_toggles
 
 
 #######################################

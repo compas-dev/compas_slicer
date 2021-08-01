@@ -33,11 +33,11 @@ def seams_align(slicer, align_with="next_path"):
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
 
-            align_seams_for_current_path = path.is_closed  # should not happen if path is open
+            align_seams_for_current_path = path.contour.is_closed  # should not happen if path is open
 
             if align_seams_for_current_path:
                 #  get the points of the current layer and path
-                path_to_change = layer.paths[j].points
+                path_to_change = layer.paths[j].contour.points
 
                 # check if start- and end-points are the same point
                 if path_to_change[0] == path_to_change[-1]:
@@ -54,23 +54,23 @@ def seams_align(slicer, align_with="next_path"):
                     if len(layer.paths) == 1 and i == 0:
                         #  if ONE PATH and FIRST LAYER
                         #  >>> align with second layer
-                        pt_to_align_with = slicer.layers[i + 1].paths[0].points[0]
+                        pt_to_align_with = slicer.layers[i + 1].paths[0].contour.points[0]
                     if len(layer.paths) == 1 and i != 0:
                         #  if ONE PATH and NOT FIRST LAYER
                         #  >>> align with previous layer
-                        pt_to_align_with = slicer.layers[i - 1].paths[0].points[0]
+                        pt_to_align_with = slicer.layers[i - 1].paths[0].contour.points[0]
                     if len(layer.paths) != 1 and i == 0 and j == 0:
                         #  if MULTIPLE PATHS and FIRST LAYER and FIRST PATH
                         #  >>> align with second path of first layer
-                        pt_to_align_with = slicer.layers[i].paths[i + 1].points[0]
+                        pt_to_align_with = slicer.layers[i].paths[i + 1].contour.points[0]
                     if len(layer.paths) != 1 and j != 0:
                         #  if MULTIPLE PATHS and NOT FIRST PATH
                         #  >>> align with previous path
-                        pt_to_align_with = slicer.layers[i].paths[j - 1].points[0]
+                        pt_to_align_with = slicer.layers[i].paths[j - 1].contour.points[0]
                     if len(layer.paths) != 1 and i != 0 and j == 0:
                         #  if MULTIPLE PATHS and NOT FIRST LAYER and FIRST PATH
                         #  >>> align with first path of previous layer
-                        pt_to_align_with = slicer.layers[i - 1].paths[j].points[0]
+                        pt_to_align_with = slicer.layers[i - 1].paths[j].contour.points[0]
 
                 elif align_with == "origin":
                     pt_to_align_with = Point(0, 0, 0)

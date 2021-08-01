@@ -1,7 +1,7 @@
 import itertools
-from compas.geometry import Point
+from compas.geometry import Point, distance_point_point_sqrd
 from compas_slicer.geometry import Layer
-from compas_slicer.geometry import Path
+from compas_slicer.geometry import ContourPath, Path
 import progressbar
 import logging
 import compas_slicer.utilities as utils
@@ -50,9 +50,14 @@ def create_planar_paths_cgal(mesh, planes):
                 for point in path:
                     pt = Point(point[0], point[1], point[2])
                     points_per_contour.append(pt)
+
                 # generate contours
                 # TODO: add a check for is_closed
-                path = Path(points=points_per_contour, is_closed=True)
+                is_closed = True  # for now set all to True
+
+                contour = ContourPath(points=points_per_contour, is_closed=is_closed)
+                path = Path(contour)
+
                 paths_per_layer.append(path)
 
             # generate layers

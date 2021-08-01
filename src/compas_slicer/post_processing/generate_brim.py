@@ -1,7 +1,7 @@
 import pyclipper
 from pyclipper import scale_from_clipper, scale_to_clipper
 from compas_slicer.geometry import Layer
-from compas_slicer.geometry import Path
+from compas_slicer.geometry import Path, ContourPath
 from compas.geometry import Point
 import compas_slicer
 import logging
@@ -91,7 +91,8 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
             clipper_points_per_brim_path = clipper_points_per_brim_path + [clipper_points_per_brim_path[0]]
 
             #  create a path per brim contour
-            new_path = Path(points=clipper_points_per_brim_path, is_closed=True)
+            contour = ContourPath(points=clipper_points_per_brim_path, is_closed=True)
+            new_path = Path(contour)
             brim_layer.paths.append(new_path)
 
     brim_layer.paths.reverse()  # go from outside towards the object

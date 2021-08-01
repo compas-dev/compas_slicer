@@ -4,7 +4,7 @@ from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_edges, 
 import compas_slicer.utilities as utils
 import logging
 from abc import abstractmethod
-from compas_slicer.geometry import Path
+from compas_slicer.geometry import Path, ContourPath
 
 logger = logging.getLogger('logger')
 
@@ -105,8 +105,8 @@ class ContoursBase(object):
         for key in self.sorted_point_clusters:
             pts = self.sorted_point_clusters[key]
             if len(pts) > 3:  # discard curves that are too small
-                path = Path(pts, is_closed=self.closed_paths_booleans[key])
-
+                contour = ContourPath(pts, is_closed=self.closed_paths_booleans[key])
+                path = Path(contour)
                 vertical_layers_manager.add(path)
 
     @property

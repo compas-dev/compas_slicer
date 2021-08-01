@@ -3,7 +3,7 @@ import math
 
 import compas_slicer
 from compas_slicer.geometry import Layer
-from compas_slicer.geometry import Path
+from compas_slicer.geometry import Path, ContourPath
 
 from compas.geometry import Point
 from compas.geometry import Line
@@ -168,7 +168,8 @@ def generate_raft(slicer,
             iter += 1
 
         # create raft layer
-        raft_layer = Layer([Path(raft_points, is_closed=False)])
+        contour = ContourPath(raft_points, is_closed=False)
+        raft_layer = Layer([Path(contour)])
         raft_layer.is_raft = True
         # insert raft layer in the correct position into the slicer
         slicer.layers.insert(i, raft_layer)

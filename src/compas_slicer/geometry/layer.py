@@ -66,7 +66,7 @@ class Layer(object):
         z_min = 2 ** 32  # very big number
         z_max = -2 ** 32  # very small number
         for path in self.paths:
-            for pt in path.points:
+            for pt in path.contour.points:
                 z_min = min(z_min, pt[2])
                 z_max = max(z_max, pt[2])
         self.min_max_z_height = (z_min, z_max)
@@ -139,7 +139,7 @@ class VerticalLayer(Layer):
 
     def compute_head_centroid(self):
         """ Find the centroid of all the points of the last path in the self.paths list"""
-        pts = np.array(self.paths[-1].points)
+        pts = np.array(self.paths[-1].contour.points)
         self.head_centroid = np.mean(pts, axis=0)
 
     def printout_details(self):
@@ -213,7 +213,7 @@ class VerticalLayersManager:
             selected_layer = self.layers[0]
 
         else:  # find the candidate segment for new isocurve
-            centroid = np.mean(np.array(path.points), axis=0)
+            centroid = np.mean(np.array(path.contour.points), axis=0)
             other_centroids = get_vertical_layers_centroids_list(self.layers)
             candidate_layer = self.layers[utils.get_closest_pt_index(centroid, other_centroids)]
 

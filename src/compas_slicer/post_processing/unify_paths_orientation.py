@@ -26,7 +26,7 @@ def unify_paths_orientation(slicer):
                 reference_points = slicer.layers[i - 1].paths[0].points
 
             if reference_points:  # then reorient current pts based on reference
-                path.points = match_paths_orientations(path.points, reference_points, path.is_closed)
+                path.contour.points = match_paths_orientations(path.contour.points, reference_points, path.contour.is_closed)
 
 
 def match_paths_orientations(pts, reference_points, is_closed):

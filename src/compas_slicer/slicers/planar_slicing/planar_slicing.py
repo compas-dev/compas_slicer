@@ -1,4 +1,4 @@
-from compas_slicer.geometry import Path
+from compas_slicer.geometry import Path, ContourPath
 from compas_slicer.geometry import Layer
 import logging
 import progressbar
@@ -34,7 +34,8 @@ def create_planar_paths(mesh, planes):
             if len(intersection.sorted_point_clusters) > 0 and intersection.is_valid:
                 for key in intersection.sorted_point_clusters:
                     is_closed = intersection.closed_paths_booleans[key]
-                    path = Path(points=intersection.sorted_point_clusters[key], is_closed=is_closed)
+                    contour = ContourPath(points=intersection.sorted_point_clusters[key], is_closed=is_closed)
+                    path = Path(contour)
                     paths.append(path)
 
                 layers.append(Layer(paths))

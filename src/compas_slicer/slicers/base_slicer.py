@@ -52,7 +52,7 @@ class BaseSlicer(object):
         total_number_of_pts = 0
         for layer in self.layers:
             for path in layer.paths:
-                total_number_of_pts += len(path.points)
+                total_number_of_pts += path.number_of_points()
         return total_number_of_pts
 
     @property
@@ -69,7 +69,7 @@ class BaseSlicer(object):
         for layer in self.layers:
             total_number_of_paths += len(layer.paths)
             for path in layer.paths:
-                if path.is_closed:
+                if path.contour.is_closed:
                     closed_paths += 1
                 else:
                     open_paths += 1
@@ -116,9 +116,9 @@ class BaseSlicer(object):
         """ For paths that are labeled as closed, it makes sure that the first and the last point are identical. """
         for layer in self.layers:
             for path in layer.paths:
-                if path.is_closed:  # if the path is closed, first and last point should be the same.
-                    if distance_point_point_sqrd(path.points[0], path.points[-1]) > 0.00001:  # if not already the same
-                        path.points.append(path.points[0])
+                if path.contour.is_closed:  # if the path is closed, first and last point should be the same.
+                    if distance_point_point_sqrd(path.contour.points[0], path.contour.points[-1]) > 0.00001:  # if not already the same
+                        path.contour.points.append(path.contour.points[0])
 
     def remove_invalid_paths_and_layers(self):
         """Removes invalid layers and paths from the slicer."""
@@ -129,7 +129,7 @@ class BaseSlicer(object):
         for i, layer in enumerate(self.layers):
             for j, path in enumerate(layer.paths):
                 # check if a path has less than two points and appends to list to_remove
-                if len(path.points) < 2:
+                if len(path.contour.points) < 2:
                     paths_to_remove.append(path)
                     logger.warning("Invalid Path found: Layer %d, Path %d, %s" % (i, j, str(path)))
                     # check if the layer that the invalid path was in has only one path
@@ -159,7 +159,7 @@ class BaseSlicer(object):
 
         for i, vertical_layer in enumerate(self.vertical_layers):
             first_path = vertical_layer.paths[0]
-            avg_z_dist_from_min = np.average(np.array([abs(pt[2] - z_min) for pt in first_path.points]))
+            avg_z_dist_from_min = np.average(np.array([abs(pt[2] - z_min) for pt in first_path.contour.points]))
 
             if avg_z_dist_from_min < d_threshold:
                 paths_on_base.append(vertical_layer.paths[0])
@@ -199,8 +199,8 @@ class BaseSlicer(object):
         if visualize_paths:
             for i, layer in enumerate(self.layers):
                 for j, path in enumerate(layer.paths):
-                    pts = copy.deepcopy(path.points)
-                    if path.is_closed:
+                    pts = copy.deepcopy(path.contour.points)
+                    if path.contour.is_closed:
                         pts.append(pts[0])
                     polyline = Polyline(pts)
                     viewer.add(polyline, show_points=True, pointcolor=(0, 0, 1), linecolor=(1, 0, 0), linewidth=2)

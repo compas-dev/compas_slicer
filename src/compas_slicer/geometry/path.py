@@ -4,7 +4,10 @@ from compas.geometry import Point
 
 logger = logging.getLogger('logger')
 
-__all__ = ['Path']
+__all__ = ['ContourPath',
+           'InfillPath',
+           'TravelPath',
+           'Path']
 
 
 ###################
@@ -38,7 +41,6 @@ class ContourPath(object):
     @classmethod
     def from_data(cls, data):
         """ Construct a path from its data representation.
-
         Parameters
         ----------
         data: dict, the data dictionary.
@@ -55,11 +57,9 @@ class ContourPath(object):
 
     def to_data(self):
         """ Returns a dictionary of structured data representing the data structure.
-
         Returns
         -------
-        dict
-            The path's data.
+        dict: The path's data.
         """
         data = {'points': {i: point.to_data() for i, point in enumerate(self.points)},
                 'is_closed': self.is_closed}
@@ -131,35 +131,52 @@ class Path(object):
     A Path the overarching class that contains the paths of all the above types
     """
 
-    def __init__(self):
+    def __init__(self, contour):
         self.travel_to_contour = None
-        self.contour = None
+        self.contour = contour
         self.travel_to_infill = None
-        self.infill_paths = [] # TODO: should infill be a list of paths?
+        self.infill_paths = []  # TODO: should infill be a list of paths?
 
     def __repr__(self):
-        return "<Path object>"
+        return "<Path object >"
+
+    def number_of_points(self):
+        n = 0
+        if self.travel_to_contour:
+            n += len(self.travel_to_contour.points)
+        n += len(self.contour.points)
+        if self.travel_to_infill:
+            n += len(self.travel_to_infill.points)
+        for infill in self.infill_paths:
+            n += len(infill.points)
+        return n
 
     @classmethod
     def from_data(cls, data):
-        travel_to_contour = TravelPath.from_data(data['travel_to_contour'])
+        if data['travel_to_contour']:
+            travel_to_contour = TravelPath.from_data(data['travel_to_contour'])
+        else:
+            travel_to_contour = None
         contour = ContourPath.from_data(data['contour'])
-        travel_to_infill = TravelPath.from_data(data['travel_to_infill'])
-        infill = InfillPath.from_data(data['infill']) # TODO: THIS IS A LIST!! FIX
-        assert(False)
-        path = cls()
+        if data['travel_to_infill']:
+            travel_to_infill = TravelPath.from_data(data['travel_to_infill'])
+        else:
+            travel_to_infill = None
+        infill_paths = []
+        for data in data['infill']:
+            infill_paths.append(InfillPath.from_data(data))
+
+        path = cls(contour)
         path.travel_to_contour = travel_to_contour
-        path.contour = contour
         path.travel_to_infill = travel_to_infill
-        path.infill = infill
+        path.infill_paths = infill_paths
         return path
 
     def to_data(self):
-        data = {'travel_to_contour': self.travel_to_contour.to_data(),
-                'contour': self.travel_to_contour.to_data(),
-                'travel_to_infill': self.travel_to_infill.to_data(),
-                'infill': self.travel_to_infill.to_data()} # THIS *IS A LIST!! FIX
-        assert(False)
+        data = {'travel_to_contour': self.travel_to_contour.to_data() if self.travel_to_contour else None,
+                'contour': self.contour.to_data(),
+                'travel_to_infill': self.travel_to_infill.to_data() if self.travel_to_infill else None,
+                'infill': [infill.to_data() for infill in self.infill_paths]}
         return data
 
 
