@@ -7,8 +7,8 @@ from compas_slicer.pre_processing import move_mesh_to_point
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.post_processing import generate_brim
 from compas_slicer.post_processing import generate_raft
-from compas_slicer.post_processing import simplify_paths_rdp
-from compas_slicer.post_processing import seams_smooth, seams_align
+from compas_slicer.post_processing import simplify_paths_rdp_igl
+from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
@@ -79,7 +79,7 @@ def main():
     # Simplify the paths by removing points with a certain threshold
     # change the threshold value to remove more or less points
     # ==========================================================================
-    simplify_paths_rdp(slicer, threshold=0.6)
+    simplify_paths_rdp_igl(slicer, threshold=0.6)
 
     # ==========================================================================
     # Smooth the seams between layers

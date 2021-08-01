@@ -3,7 +3,7 @@ from compas.datastructures import Mesh
 import logging
 import compas_slicer.utilities as utils
 from compas_slicer.slicers import InterpolationSlicer
-from compas_slicer.post_processing import simplify_paths_rdp
+from compas_slicer.post_processing import simplify_paths_rdp_igl
 from compas_slicer.pre_processing import InterpolationSlicingPreprocessor
 from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import InterpolationPrintOrganizer
@@ -86,7 +86,7 @@ def main():
                 generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=5)
 
             seams_smooth(slicer, smooth_distance=0.1)
-            simplify_paths_rdp(slicer, threshold=0.25)
+            simplify_paths_rdp_igl(slicer, threshold=0.25)
             utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer_%d.json' % i)
             slicers.append(slicer)
 

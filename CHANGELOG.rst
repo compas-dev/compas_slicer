@@ -11,6 +11,7 @@ Unreleased
 
 **Added**
 * Documentation updates
+* rdp libigl function
 
 **Changed**
 
