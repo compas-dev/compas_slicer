@@ -21,13 +21,19 @@ class PlanarSlicer(BaseSlicer):
         options: 'default', 'cgal'
     layer_height: float
         Distance between layers (slices).
+    slice_height_range: tuple (optional)
+        Optional tuple that lets the user slice only a part of the model.
+        Defaults to None which slices the entire model. 
+        First value is the Z height to start slicing from, second value is the Z height to end.
+
     """
-    def __init__(self, mesh, slicer_type="default", layer_height=2.0):
+    def __init__(self, mesh, slicer_type="default", layer_height=2.0, slice_height_range=None):
         logger.info('PlanarSlicer')
         BaseSlicer.__init__(self, mesh)
 
         self.layer_height = layer_height
         self.slicer_type = slicer_type
+        self.slice_height_range = slice_height_range
 
     def __repr__(self):
         return "<PlanarSlicer with %d layers and layer_height : %.2f mm>" % \
@@ -37,7 +43,16 @@ class PlanarSlicer(BaseSlicer):
         """Generates the planar slicing paths."""
         z = [self.mesh.vertex_attribute(key, 'z') for key in self.mesh.vertices()]
         min_z, max_z = min(z), max(z)
+
+        if self.slice_height_range:
+            logger.info("Slicing mesh in range from Z = %d to Z = %d." % (self.slice_height_range[0], self.slice_height_range[1]))
+            max_z = min_z + self.slice_height_range[1]
+            min_z = min_z + self.slice_height_range[0]
+
         d = abs(min_z - max_z)
+
+        print("minz", min_z, "maxz", max_z, "d", d)
+
         no_of_layers = int(d / self.layer_height) + 1
         normal = Vector(0, 0, 1)
         planes = [Plane(Point(0, 0, min_z + i * self.layer_height), normal) for i in range(no_of_layers)]
