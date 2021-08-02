@@ -21,6 +21,7 @@ class PrintPoint(object):
         Normal of the mesh at this PrintPoint.
         For planar_slicing it is the projection of the normal on the XY plane.
         # TODO: should we change that?
+    path_type: 'contour', 'travel_to_contour', 'travel_to_infill', 'infill'
     up_vector: :class:`compas.geometry.Vector`
         Vector in up direction. For planar slicing this corresponds to the z axis, for curved slicing it varies.
     frame: :class:`compas.geometry.Frame`
@@ -33,14 +34,20 @@ class PrintPoint(object):
         Time in seconds to wait at this PrintPoint.
     """
 
-    def __init__(self, pt, layer_height, mesh_normal):
+    def __init__(self, i, j, pt, layer_height, mesh_normal, path_type):
         assert isinstance(pt, compas.geometry.Point)
         assert isinstance(mesh_normal, compas.geometry.Vector)
+        assert (path_type in ['contour', 'travel_to_contour', 'travel_to_infill', 'infill'])
         assert layer_height
 
         #  --- basic printpoint
+        self.layer_index = i
+        self.layer_index = j
+
         self.pt = pt
         self.layer_height = layer_height
+
+        self.path_type = path_type
 
         self.mesh_normal = mesh_normal  # compas.geometry.Vector
         self.up_vector = Vector(0, 0, 1)  # default value that can be updated

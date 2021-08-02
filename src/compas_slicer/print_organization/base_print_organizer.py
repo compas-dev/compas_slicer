@@ -36,7 +36,7 @@ class BasePrintOrganizer(object):
     ######################
 
     @abstractmethod
-    def create_printpoints(self):
+    def create_printpoints(self, ppts_with_mesh_normals=True):
         """To be implemented by the inheriting classes"""
         pass
 

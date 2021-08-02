@@ -80,11 +80,12 @@ def load_slicer(path, folder_name, json_name):
                             travel_path = polyline_from_pts_data(travel_to_infill_data['points'])
                             travel_to_infill_nested_list[-1].append(travel_path)
 
-                    # --- Load infill
+                    # --- Load infill paths
                     if infill_data:
-                        if len(infill_data['points']) > 1:  # ignore smaller curves that throw errors
-                            infill_path = polyline_from_pts_data(infill_data['points'])
-                            infill_nested_list[-1].append(infill_path)
+                        for infill_path_data in infill_data:
+                            if len(infill_path_data['points']) > 1:  # ignore smaller curves that throw errors
+                                infill_path = polyline_from_pts_data(infill_path_data['points'])
+                                infill_nested_list[-1].append(infill_path)
 
         else:
             print('No layers have been saved in the json file. Is this the correct json?')

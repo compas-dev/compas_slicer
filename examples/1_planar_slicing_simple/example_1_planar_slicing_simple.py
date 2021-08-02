@@ -53,7 +53,7 @@ def main():
     #          'cgal':    Very fast. Only for closed paths.
     #                     Requires additional installation (compas_cgal).
     # ==========================================================================
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=15.5)
+    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
     slicer.slice_model()
 
     # ==========================================================================
@@ -90,12 +90,12 @@ def main():
     # ==========================================================================
     save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
 
-    # # ==========================================================================
-    # # Initializes the PlanarPrintOrganizer and creates PrintPoints
-    # # ==========================================================================
-    # print_organizer = PlanarPrintOrganizer(slicer)
-    # print_organizer.create_printpoints()
-    #
+    # ==========================================================================
+    # Initializes the PlanarPrintOrganizer and creates PrintPoints
+    # ==========================================================================
+    print_organizer = PlanarPrintOrganizer(slicer)
+    print_organizer.create_printpoints(contour_ppts_with_mesh_normals=True)
+
     # # ==========================================================================
     # # Set fabrication-related parameters
     # # ==========================================================================
@@ -109,9 +109,9 @@ def main():
     # # ==========================================================================
     # print_organizer.printout_info()
     #
-    # # ==========================================================================
-    # # Converts the PrintPoints to data and saves to JSON
-    # # =========================================================================
+    # ==========================================================================
+    # Converts the PrintPoints to data and saves to JSON
+    # =========================================================================
     # printpoints_data = print_organizer.output_printpoints_dict()
     # utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints.json')
     #

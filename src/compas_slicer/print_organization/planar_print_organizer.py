@@ -28,31 +28,69 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
     def __repr__(self):
         return "<PlanarPrintOrganizer with %i layers>" % len(self.slicer.layers)
 
-    def create_printpoints(self):
+    def create_printpoints(self, contour_ppts_with_mesh_normals=True):
         """ Create the print points of the fabrication process """
         count = 0
         logger.info('Creating print points ...')
         with progressbar.ProgressBar(max_value=self.slicer.number_of_points) as bar:
 
-            # fast method for getting the closest mesh normals to all the printpoints
-            all_pts = [pt for layer in self.slicer.layers for path in layer.paths for pt in path.points]
-            closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.slicer.mesh, all_pts)
-            normals = [Vector(*self.slicer.mesh.face_normal(fkey)) for fkey in closest_fks]
+            if contour_ppts_with_mesh_normals:
+                # fast method for getting the closest mesh normals to all the printpoints coming from contour pts
+                all_contour_pts = [pt for layer in self.slicer.layers for path in layer.paths for pt in
+                                   path.contour.points]
+                closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.slicer.mesh, all_contour_pts)
+                normals_contour_pts = [Vector(*self.slicer.mesh.face_normal(fkey)) for fkey in closest_fks]
+            else:
+                # default value
+                normals_contour_pts = [Vector(1, 0, 0) for layer in self.slicer.layers for path in layer.paths for pt in
+                                       path.contour.points]
 
             for i, layer in enumerate(self.slicer.layers):
                 self.printpoints_dict['layer_%d' % i] = {}
 
                 for j, path in enumerate(layer.paths):
-                    self.printpoints_dict['layer_%d' % i]['path_%d' % j] = []
+                    self.printpoints_dict['layer_%d' % i]['path_%d' % j] = {
+                        'travel_to_contour': [],
+                        'contour': [],
+                        'travel_to_infill': [],
+                        'infill': [[] for infill in path.infill_paths]
+                    }
 
-                    for k, point in enumerate(path.points):
+                    # --- travel to contour ppts
+                    if path.travel_to_contour:
+                        for k, point in enumerate(path.travel_to_contour.points):
+                            n = Vector(1, 0, 0)  # default value
+                            printpoint = PrintPoint(i, j, point, self.slicer.layer_height, n, 'travel_to_contour')
+                            self.printpoints_dict['layer_%d' % i]['path_%d' % j]['travel_to_contour'].append(printpoint)
+                            bar.update(count)
+                            count += 1
 
-                        n = normals[count]
-                        printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height, mesh_normal=n)
-
-                        self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
+                    # --- contour ppts
+                    for k, point in enumerate(path.contour.points):
+                        n = normals_contour_pts[count]
+                        printpoint = PrintPoint(i, j, point, self.slicer.layer_height, n,
+                                                path_type='contour')
+                        self.printpoints_dict['layer_%d' % i]['path_%d' % j]['contour'].append(printpoint)
                         bar.update(count)
                         count += 1
+
+                    # --- travel_to_infill ppts
+                    if path.travel_to_infill:
+                        for k, point in enumerate(path.travel_to_infill.points):
+                            n = Vector(1, 0, 0)  # default value
+                            printpoint = PrintPoint(i, j, point, self.slicer.layer_height, n, 'travel_to_infill')
+                            self.printpoints_dict['layer_%d' % i]['path_%d' % j]['travel_to_infill'].append(printpoint)
+                            bar.update(count)
+                            count += 1
+
+                    # --- infill paths ppts
+                    for m, infill in enumerate(path.infill_paths):
+                        for k, point in enumerate(infill.points):
+                            n = Vector(1, 0, 0)  # default value
+                            printpoint = PrintPoint(i, j, point, self.slicer.layer_height, n, 'infill')
+                            self.printpoints_dict['layer_%d' % i]['path_%d' % j][infill][m].append(printpoint)
+                            bar.update(count)
+                            count += 1
 
 
 if __name__ == "__main__":
