@@ -26,9 +26,11 @@ def sort_paths(slicer):
         sorted_paths = []
         while len(layer.paths) > 0:
             index = closest_path(this_point, layer.paths)  # find the closest path to the reference point
+            print("index", index)
             sorted_paths.append(layer.paths[index])  # add the closest path to the sorted list
-            del layer.paths[index]  # delete the added path from the layer
             this_point = layer.paths[index].points[-1]
+            # del layer.paths[index]  # delete the added path from the layer
+            layer.paths.pop(index)
 
         slicer.layers[i].paths = sorted_paths
 
@@ -51,16 +53,16 @@ def adjust_seam_to_closest_pos(this_point, a_path):
 
     if a_path.is_closed:  # if path is closed
         #  calculate distances from this_point to vertices of a_path
-        distances = [distance_point_point(this_point, points) for points in a_path]
+        distances = [distance_point_point(this_point, points) for points in a_path.points]
         #  find  index of closest point
         closest_point = distances.index(min(distances))
         #  adjust seam
-        adjusted_seam = a_path[closest_point:] + a_path[:closest_point]
+        adjusted_seam = a_path.points[closest_point:] + a_path.points[:closest_point]
         a_path.points = adjusted_seam
     else:  # if path is open
         #  if end point is closer than start point >> flip
-        if distance_point_point(this_point, a_path[0]) > distance_point_point(this_point, a_path[-1]):
-            a_path.reverse()
+        if distance_point_point(this_point, a_path.points[0]) > distance_point_point(this_point, a_path.points[-1]):
+            a_path.points.reverse()
 
 
 def closest_path(thispoint, somepaths):
@@ -74,10 +76,10 @@ def closest_path(thispoint, somepaths):
     Returns
     -------
     """
-    min_dist = distance_point_point(thispoint, somepaths.paths[0].points[0])
+    min_dist = distance_point_point(thispoint, somepaths[0].points[0])
     closest_index = 0
 
-    for i, path in enumerate(somepaths.paths):
+    for i, path in enumerate(somepaths):
         #  for each path, adjust the seam to be in the closest vertex to this_point
         adjust_seam_to_closest_pos(thispoint, path)
         #  calculate the minimum distance to the nearest seam of each path
