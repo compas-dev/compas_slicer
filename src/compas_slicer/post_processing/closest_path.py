@@ -19,6 +19,16 @@ def closest_path(thispoint, somepaths):
     Returns
     -------
     """
+    min_dist = distance_point_point(thispoint, somepaths.paths[0].points[0])
+    min_index = 0
+
+    for i, path in enumerate(somepaths.paths):
+        adjust_seam_to_closest_pos(thispoint, path)
+        min_dist_temp = distance_point_point(thispoint, path)
+        if min_dist_temp < min_dist:
+            min_dist = min_dist_temp
+            min_index = i
+
 
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
