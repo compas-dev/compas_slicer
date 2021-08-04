@@ -73,6 +73,7 @@ def create_safety_printpoint(printpoint, z_hop, extruder_toggle):
     pt0 = printpoint.pt
     safety_printpoint = copy.deepcopy(printpoint)
     safety_printpoint.pt = pt0 + Vector(0, 0, z_hop)
+    safety_printpoint.frame.point = safety_printpoint.pt
     safety_printpoint.extruder_toggle = extruder_toggle
     return safety_printpoint
 

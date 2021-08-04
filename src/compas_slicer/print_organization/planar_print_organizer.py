@@ -48,9 +48,6 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                     for k, point in enumerate(path.points):
 
                         n = normals[count]
-                        if layer.is_raft or layer.is_brim:  # then project normal on the xy plane
-                            n = Vector(n[0], n[1], 0.0)
-
                         printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height, mesh_normal=n)
 
                         self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)

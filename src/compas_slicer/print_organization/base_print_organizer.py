@@ -44,7 +44,9 @@ class BasePrintOrganizer(object):
     # Iterators
     ######################
     def printpoints_iterator(self):
-        """Iterate over the printpoints of the print organizer.
+        """
+        Iterate over the printpoints of the print organizer.
+
         Yields
         ------
         printpoint: :class: 'compas_slicer.geometry.Printpoint'
@@ -56,7 +58,9 @@ class BasePrintOrganizer(object):
                     yield printpoint
 
     def printpoints_indices_iterator(self):
-        """ Iterate over the printpoints of the print organizer.
+        """
+        Iterate over the printpoints of the print organizer.
+
         Yields
         ------
         printpoint: :class: 'compas_slicer.geometry.Printpoint'
@@ -129,7 +133,7 @@ class BasePrintOrganizer(object):
     ######################
 
     def remove_duplicate_points_in_path(self, layer_key, path_key, tolerance=0.0001):
-        """Remove subsequent points that are within a certain tolerance.
+        """Remove subsequent points that are within a certain threshold.
 
         Parameters
         ----------

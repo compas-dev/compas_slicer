@@ -1,0 +1,14 @@
+name: compas_slicer
+channels:
+  - conda-forge
+
+dependencies:
+  - python
+  - pip
+  - compas>=1.0.0
+  - networkx
+  - numpy
+  - progressbar2>=3.53
+  - pyclipper>=1.2.0
+  - rdp>=0.8
+  - igl

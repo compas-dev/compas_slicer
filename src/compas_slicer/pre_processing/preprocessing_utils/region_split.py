@@ -143,6 +143,8 @@ class MeshSplitter:
                     logger.info('Updating targets, recomputing geodesic distances')
                     self.update_targets()
 
+            self.mesh.to_obj(os.path.join(self.OUTPUT_PATH, 'most_recent_cut_mesh.obj'))
+
     def update_targets(self):
         """
         Update targets with the new mesh that was created during the split process.

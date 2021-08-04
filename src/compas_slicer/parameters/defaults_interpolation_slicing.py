@@ -12,9 +12,16 @@ def interpolation_slicing_default_param(key):
 
 default_parameters = \
     {
-        'target_LOW_smooth_union': [False, 0],
+        # geodesics method
         'target_LOW_geodesics_method': 'exact_igl',
-        'target_HIGH_smooth_union': [False, 0],
         'target_HIGH_geodesics_method': 'exact_igl',
+
+        # union method for HIGH target
+        # if all are false, then default 'min' method is used
+        'target_HIGH_smooth_union': [False, [10.0]],  # blend radius
+        'target_HIGH_chamfer_union': [False, [100.0]],  # size
+        'target_HIGH_stairs_union': [False, [80.0, 3]],  # size, n-1 number of peaks
+
         'uneven_upper_targets_offset': 0,
+
     }

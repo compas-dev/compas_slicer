@@ -33,7 +33,7 @@ def create_graph_from_mesh_edges(mesh, intersection_data, edge_to_index):
     for node_index, data in G.nodes(data=True):
         mesh_edge = data['mesh_edge']
 
-        # find current neighboring edges
+        # find current neighboring edges that are also intersected
         current_edge_connections = []
         for f in mesh.edge_faces(u=mesh_edge[0], v=mesh_edge[1]):
             if f is not None:
@@ -101,29 +101,35 @@ def sort_graph_connected_components(G):
 
     sorted_indices_dict = {}
 
+    current_index = 0
+
     for j, cp in enumerate(nx.connected_components(G)):
-        sorted_node_indices = []
 
-        # (1) find start_node index
-        start_node = None
-        for node in cp:
-            if not start_node:
-                start_node = node
-            if (len(list(nx.neighbors(G, node)))) == 1:
-                start_node = node
-                break
+        if len(cp) > 1:  # we need at least 2 elements to have an edge
+            sorted_node_indices = []
 
-        # (2) sort nodes_indices with depth first graph traversal from start node
-        for edge_of_node_indices in nx.dfs_edges(G, start_node):
-            # edge_of_node_indices: pair of neighboring graph nodes
-            node_index_1 = edge_of_node_indices[0]
-            node_index_2 = edge_of_node_indices[1]
-            if node_index_1 not in sorted_node_indices:
-                sorted_node_indices.append(node_index_1)
-            if node_index_2 not in sorted_node_indices:
-                sorted_node_indices.append(node_index_2)
+            # (1) find start_node index
+            start_node = None
+            for node in cp:
+                if not start_node:
+                    start_node = node
+                if (len(list(nx.neighbors(G, node)))) == 1:
+                    start_node = node
+                    break
 
-        assert len(sorted_node_indices) == len(cp), 'Attention. len(sorted_node_indices) != len(G.nodes())'
+            # (2) sort nodes_indices with depth first graph traversal from start node
+            for edge_of_node_indices in nx.dfs_edges(G, start_node):
+                # edge_of_node_indices: pair of neighboring graph nodes
+                node_index_1 = edge_of_node_indices[0]
+                node_index_2 = edge_of_node_indices[1]
+                if node_index_1 not in sorted_node_indices:
+                    sorted_node_indices.append(node_index_1)
+                if node_index_2 not in sorted_node_indices:
+                    sorted_node_indices.append(node_index_2)
 
-        sorted_indices_dict[j] = sorted_node_indices
+            assert len(sorted_node_indices) == len(cp), 'Attention. len(sorted_node_indices) != len(G.nodes())'
+
+            sorted_indices_dict[current_index] = sorted_node_indices
+            current_index += 1
+
     return sorted_indices_dict

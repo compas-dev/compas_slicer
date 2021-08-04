@@ -19,20 +19,17 @@ def unify_paths_orientation(slicer):
 
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
-            # find reference points for each path, if possible
-            if path.is_closed:
-                reference_points = None
-                if j > 0:
-                    reference_points = layer.paths[0].points
-                elif i > 0 and j == 0:
-                    reference_points = slicer.layers[i - 1].paths[0].points
+            reference_points = None  # find reference points for each path, if possible
+            if j > 0:
+                reference_points = layer.paths[0].points
+            elif i > 0 and j == 0:
+                reference_points = slicer.layers[i - 1].paths[0].points
 
-                if reference_points:  # then reorient current pts based on reference
-                    path.points = make_pts_have_same_direction_as_pts_reference(path.points,
-                                                                                reference_points)
+            if reference_points:  # then reorient current pts based on reference
+                path.points = match_paths_orientations(path.points, reference_points, path.is_closed)
 
 
-def make_pts_have_same_direction_as_pts_reference(pts, reference_points):
+def match_paths_orientations(pts, reference_points, is_closed):
     """
     Check if new curve has same direction as prev curve, otherwise reverse.
 
@@ -40,6 +37,7 @@ def make_pts_have_same_direction_as_pts_reference(pts, reference_points):
     ----------
     pts: list, :class: 'compas.geometry.Point'. The list of points whose direction we are fixing.
     reference_points: list, :class: 'compas.geometry.Point'. [p1, p2] Two reference points.
+    is_closed : bool, Determines if the path is closed or open
     """
     if len(pts) > 2 and len(reference_points) > 2:
         v1 = normalize_vector(subtract_vectors(pts[0], pts[2]))
@@ -49,9 +47,12 @@ def make_pts_have_same_direction_as_pts_reference(pts, reference_points):
         v2 = normalize_vector(subtract_vectors(reference_points[0], reference_points[1]))
 
     if dot_vectors(v1, v2) < 0:
-        items = deque(reversed(pts))
-        items.rotate(1)  # bring last point again in the front
-        pts = list(items)
+        if is_closed:
+            items = deque(reversed(pts))
+            items.rotate(1)  # bring last point again in the front
+            pts = list(items)
+        else:
+            pts.reverse()
     return pts
 
 

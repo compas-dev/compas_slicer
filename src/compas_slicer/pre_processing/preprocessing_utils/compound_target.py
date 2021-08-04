@@ -13,7 +13,9 @@ import statistics
 logger = logging.getLogger('logger')
 
 __all__ = ['CompoundTarget',
-           'blend_union_list']
+           'blend_union_list',
+           'stairs_union_list',
+           'chamfer_union_list']
 
 
 class CompoundTarget:
@@ -41,19 +43,19 @@ class CompoundTarget:
         This is not yet implemented
     """
 
-    def __init__(self, mesh, v_attr, value, DATA_PATH, has_blend_union=False, blend_radius=15.0,
+    def __init__(self, mesh, v_attr, value, DATA_PATH, union_method='min', union_params=[],
                  geodesics_method='exact_igl', anisotropic_scaling=False):
 
         logger.info('Creating target with attribute : ' + v_attr + '=%d' % value)
-        logger.info('has_blend_union : ' + str(has_blend_union) + ', blend_radius =  %.4f' % blend_radius)
+        logger.info('union_method : ' + union_method + ', union_params =  ' + str(union_params))
         self.mesh = mesh
         self.v_attr = v_attr
         self.value = value
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 
-        self.has_blend_union = has_blend_union
-        self.blend_radius = blend_radius
+        self.union_method = union_method
+        self.union_params = union_params
 
         self.geodesics_method = geodesics_method
         self.anisotropic_scaling = anisotropic_scaling  # Anisotropic scaling not yet implemented
@@ -168,14 +170,14 @@ class CompoundTarget:
                 distances.append(statistics.median(ds))
         return distances
 
-    def get_extreme_distances_from_other_target(self, other_target):
+    def get_avg_distances_from_other_target(self, other_target):
         """
         Returns the minimum and maximum distance of the vertices of this target from the other_target
         """
         extreme_distances = []
         for v_index in other_target.all_target_vkeys:
             extreme_distances.append(self.get_all_distances()[v_index])
-        return min(extreme_distances), max(extreme_distances)
+        return np.average(np.array(extreme_distances))
 
     #############################
     #  --- get all distances
@@ -202,18 +204,21 @@ class CompoundTarget:
 
     def get_distance(self, i):
         """ Return get_distance for vertex with vkey i. """
-        if self.has_blend_union:
-            return self.blend_union(i)
+        if self.union_method == 'min':
+            # --- simple union
+            return np.min(self._np_distances_lists_flipped[i])
+        elif self.union_method == 'smooth':
+            # --- blend (smooth) union
+            return blend_union_list(values=self._np_distances_lists_flipped[i], r=self.union_params[0])
+        elif self.union_method == 'chamfer':
+            # --- blend (smooth) union
+            return chamfer_union_list(values=self._np_distances_lists_flipped[i], r=self.union_params[0])
+        elif self.union_method == 'stairs':
+            # --- stairs union
+            return stairs_union_list(values=self._np_distances_lists_flipped[i], r=self.union_params[0],
+                                     n=self.union_params[1])
         else:
-            return self.union(i)
-
-    def union(self, i):
-        """ Union of distances for vertex with vkey i"""
-        return np.min(self._np_distances_lists_flipped[i])
-
-    def blend_union(self, i):
-        """ Smooth union of distances for vertex with vkey i"""
-        return blend_union_list(values=self._np_distances_lists_flipped[i], r=self.blend_radius)
+            raise ValueError("Unknown Union method : ", self.union_method)
 
     #############################
     #  --- scalar field smoothing
@@ -255,7 +260,7 @@ class CompoundTarget:
 
 
 ####################
-#  utils
+#  unions on lists
 
 def blend_union_list(values, r):
     """ Returns a smooth union of all the elements in the list, with blend radius blend_radius. """
@@ -264,6 +269,24 @@ def blend_union_list(values, r):
         d_result = blend_union(d_result, d, r)
     return d_result
 
+
+def stairs_union_list(values, r, n):
+    """ Returns a stairs union of all the elements in the list, with blend radius r and number of peaks n-1."""
+    d_result = 9999999  # very big number
+    for i, d in enumerate(values):
+        d_result = stairs_union(d_result, d, r, n)
+    return d_result
+
+
+def chamfer_union_list(values, r):
+    d_result = 9999999  # very big number
+    for i, d in enumerate(values):
+        d_result = chamfer_union(d_result, d, r)
+    return d_result
+
+
+####################
+#  unions on pairs
 
 def blend_union(da, db, r):
     """ Returns a smooth union of the two elements da, db with blend radius blend_radius. """
@@ -280,7 +303,7 @@ def stairs_union(a, b, r, n):
     """ Returns a stairs union of the two elements da, db with radius r. """
     s = r / n
     u = b - r
-    return min(min(a, b), 0.5 * (u + a + abs((u - a + s) % (2 * s)) - s))
+    return min(min(a, b), 0.5 * (u + a + abs((u - a + s) % (2 * s) - s)))
 
 
 if __name__ == "__main__":

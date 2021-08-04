@@ -1,15 +1,12 @@
 import os
 import compas_slicer
 import numpy as np
-import compas_slicer.utilities as utils
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.post_processing import generate_brim
 from compas_slicer.post_processing import simplify_paths_rdp
-from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
-from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.print_organization.print_organization_utilities.extruder_toggle import check_assigned_extruder_toggle
 from compas.datastructures import Mesh
 

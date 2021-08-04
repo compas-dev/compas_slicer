@@ -65,19 +65,20 @@ class InterpolationSlicer(BaseSlicer):
 
 def find_no_of_isocurves(target_0, target_1, avg_layer_height=1.1):
     """ Returns the average number of isocurves that can cover the get_distance from target_0 to target_1. """
-    extreme_ds0 = target_0.get_extreme_distances_from_other_target(target_1)
-    extreme_ds1 = target_1.get_extreme_distances_from_other_target(target_0)
-    number_of_curves = max(max(extreme_ds0), max(extreme_ds1)) / avg_layer_height
+    avg_ds0 = target_0.get_avg_distances_from_other_target(target_1)
+    avg_ds1 = target_1.get_avg_distances_from_other_target(target_0)
+    number_of_curves = ((avg_ds0 + avg_ds1) * 0.5) / avg_layer_height
     return max(1, int(number_of_curves))
 
 
 def get_interpolation_parameters_list(number_of_curves):
     """ Returns a list of #number_of_curves floats from 0.001 to 0.997. """
-    t_list = [0.001]
+    # t_list = [0.001]
+    t_list = []
     a = list(np.arange(number_of_curves + 1) / (number_of_curves + 1))
     a.pop(0)
     t_list.extend(a)
-    # t_list.append(0.997)
+    t_list.append(0.997)
     return t_list
 
 

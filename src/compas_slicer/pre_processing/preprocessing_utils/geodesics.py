@@ -1,28 +1,15 @@
 import numpy as np
 import logging
 import compas_slicer.utilities as utils
-from compas.plugins import PluginNotInstalledError
 from compas_slicer.pre_processing.preprocessing_utils.gradient import get_scalar_field_from_gradient, \
     get_face_gradient_from_scalar_field, normalize_gradient
 import scipy
 import math
 
-packages = utils.TerminalCommand('conda list').get_split_output_strings()
-if 'igl' in packages:
-    import igl
-
 logger = logging.getLogger('logger')
 
 __all__ = ['get_igl_EXACT_geodesic_distances',
            'get_custom_HEAT_geodesic_distances']
-
-
-def check_igl_is_installed():
-    """ Throws an error if igl python bindings are not installed in the current environment. """
-    if 'igl' not in packages:
-        raise PluginNotInstalledError("--------ATTENTION! ----------- \
-                        Libigl library is missing! \
-                        Install it with 'conda install -c conda-forge igl'")
 
 
 def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
@@ -34,7 +21,8 @@ def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
     mesh: :class: 'compas.datastructures.Mesh'
     vertices_start: list, int
     """
-    check_igl_is_installed()
+    utils.check_package_is_installed('igl')
+    import igl
 
     v, f = mesh.to_vertices_and_faces()
     v = np.array(v)
@@ -47,8 +35,6 @@ def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
 
 def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH, v_equalize=None, anisotropic_scaling=False):
     """ Calculate geodesic distances using the heat method. """
-    check_igl_is_installed()
-
     geodesics_solver = GeodesicsSolver(mesh, OUTPUT_PATH)
     u = geodesics_solver.diffuse_heat(vi_sources, v_equalize, method='simulation')
     geodesic_dist = geodesics_solver.get_geodesic_distances(u, vi_sources, v_equalize)
@@ -75,6 +61,9 @@ class GeodesicsSolver:
     """
 
     def __init__(self, mesh, OUTPUT_PATH):
+        utils.check_package_is_installed('igl')
+        import igl
+
         logger.info('GeodesicsSolver')
         self.mesh = mesh
         self.OUTPUT_PATH = OUTPUT_PATH

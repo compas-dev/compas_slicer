@@ -6,19 +6,113 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_
 and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 
-0.2.2
+Unreleased
 ----------
 
 **Added**
+* Documentation updates
+* rdp libigl function
 
 **Changed**
-* Switched from compas_viewers to compas_viewers2
 
 **Fixed**
 
 **Deprecated**
 
 **Removed**
+
+0.3.5
+----------
+
+**Added**
+
+* Add GH Python package to the installation.
+
+**Changed**
+
+**Fixed**
+
+**Deprecated**
+
+**Removed**
+
+0.3.4
+----------
+
+**Added**
+* Alternative union operations in curved slicing.
+* function that adds wait time at sharp corners. 
+
+**Changed**
+
+ *Small improvements in gcode
+ *Updated examples, and setup tutorials content (which is still empty - remaining to be filled)
+ *set_blend_radius function assigns 0 to ppts that have a wait time (so that we are sure they are reached exactly)
+
+**Fixed**
+
+**Deprecated**
+
+**Removed**
+ * csWeightedUnion (outdated)
+
+0.3.3
+----------
+
+**Added**
+
+**Changed**
+
+**Fixed**
+
+**Deprecated**
+
+**Removed**
+
+* Removed libigl from the requirements, since it is not on pip we cannot have it in the requirements for now. We should also update the installation instructions for conda and pip.
+
+0.3.2
+----------
+
+**Added**
+
+**Changed**
+
+**Fixed**
+
+**Deprecated**
+
+**Removed**
+
+0.3.1
+----------
+
+**Changed**
+
+* Version to 0.3.1
+
+0.3.0
+----------
+
+**Added**
+* Zig Zag paths in print organization
+* Added automatic install on Rhino and GH when compas core is installed. 
+
+**Changed**
+
+* Switched from compas_viewers to compas_viewers2
+* Updated csLoadPrintpoint.ghuser component on the data/gh_components and on the gh examples
+
+**Fixed**
+* Bug in PrintPoint.get_frame() method. (It was throwing a 0-division error when contours where situated on flat surfaces) x 2
+* Bug in calculation of desired number of isocurves in interpolation slicer
+* Bug in safety points (their frame was not matching their point position)
+* Bug in tool plane in grasshopper visualization. (Its axis did not match the compas_fab convention.)
+
+**Deprecated**
+
+**Removed**
+* Feasibility parameter from printpoints visualization. (Had forgotten to delete it from visualization when it was deleted from printpoints )
 
 0.2.1
 ----------

@@ -1,3 +1,5 @@
+.. _compas_slicer_installation:
+
 ************
 Installation
 ************
@@ -9,60 +11,55 @@ COMPAS_SLICER can be easily installed on multiple platforms.
 Basic installation steps
 ========================
 
-Step 1: Install compas
-----------------------
-
-Create a new environment (you can replace 'compas_slicer' with your own environment name),
-and install compas, compas_cgal, and libigl.
-
-.. code-block:: bash
-
-    conda create -n compas_slicer python=3.7
-    conda activate compas_slicer
-    conda install COMPAS
-    conda install COMPAS compas_cgal
-    conda install -c conda-forge igl
-
-
-Step 2: Install compas_slicer
------------------------------
-
-Clone the repository and activate your environment.
-
-.. code-block:: bash
-
-    git clone https://github.com/compas-dev/compas_slicer.git
-    conda activate compas_slicer
-
-Navigate to the folder where you cloned the compas_slicer repository and install compas_slicer using:
-
-.. code-block:: bash
-
-    pip install -e .
-
-You should get the message 'Successfully installed compas-slicer' (amongst other packages)
-
-
-Step 3. Install compas_viewers
+Step 1: Install compas slicer
 ------------------------------
 
-Install compas_viewers (https://github.com/compas-dev/compas_viewers).
 
-Download the wheel file from here: https://www.lfd.uci.edu/~gohlke/pythonlibs/
-
-To install on an existing environment with python=3.7, use:
+The recommended way to install `compas_slicer` is with `conda <https://conda.io/docs/>`_.
+For example, create an environment named ``my-project`` (or replace with your own environment name) and install as follows:
 
 .. code-block:: bash
 
-    conda activate <environment_name>
-    pip install PySide2 
-    pip install <path/to/file>/PyOpenGL‑3.1.5‑cp37‑cp37m‑win_amd64.whl
-    pip install <path/to/compas_viewers>
+    conda config --add channels conda-forge
+    conda create -n my-project compas_slicer
+
+
+Step 2: Optional installation steps
+------------------------------------
+
+* COMPAS Viewers
+
+Follow the instructions to install `compas_view2 <https://github.com/compas-dev/compas_view2>`_.
+
+
+* COMPAS CGAL
+
+.. code-block:: bash
+
+    conda install -n my-project compas_cgal
+
+
+* Grasshopper
+
+The Grasshopper components are automatically installed with the `compas_rhino` installation, e.g.:
+
+.. code-block:: bash
+
+    conda activate my-project
+    python -m compas_rhino.install -v 6.0
 
 
 Step 4. Test if the library works
 ---------------------------------
-Run the file examples/1_versions_check.py
+
+Activate your environment and run the following command:
+
+.. code-block:: bash
+
+    conda activate my-project
+    python -m compas_slicer
+
+Enjoy!
 
 
 Troubleshooting
@@ -110,3 +107,17 @@ Make sure you are in the correct environment and type:
 .. code-block:: bash
 
     pip install numpy==1.19.3
+
+Fractions error
+-----------
+.. code-block:: bash
+
+    ImportError: cannot import name 'gcd' from 'fractions' (C:\ProgramData\Anaconda3\envs\compas_slicer\lib\fractions.py)
+
+This issue can be solved, as explained here:  https://stackoverflow.com/questions/66174862/import-error-cant-import-name-gcd-from-fractions
+by typing the following command (make sure you are in the correct environment)
+
+.. code-block:: bash
+
+    conda install -c conda-forge networkx=2.5
+

@@ -75,14 +75,17 @@ def get_face_gradient_from_scalar_field(mesh, u, use_igl=True):
     """
     logger.info('Computing per face gradient')
     if use_igl:
-        import igl
-        v, f = mesh.to_vertices_and_faces()
-        G = igl.grad(np.array(v), np.array(f))
-        X = G * u
-        nf = len(list(mesh.faces()))
-        X = np.array([[X[i], X[i + nf], X[i + 2 * nf]] for i in range(nf)])
-        return X
-    else:
+        try:
+            import igl
+            v, f = mesh.to_vertices_and_faces()
+            G = igl.grad(np.array(v), np.array(f))
+            X = G * u
+            nf = len(list(mesh.faces()))
+            X = np.array([[X[i], X[i + nf], X[i + 2 * nf]] for i in range(nf)])
+            return X
+        except ModuleNotFoundError:
+            print("Could not calculate gradient with IGL because it is not installed. Falling back to default function")
+
         grad = []
         for fkey in mesh.faces():
             A = mesh.face_area(fkey)

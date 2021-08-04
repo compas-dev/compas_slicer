@@ -7,61 +7,54 @@
 Slicing package for FDM 3D Printing with COMPAS.
 
 
-Main features
--------------
+## Main features
 
 * Planar slicing (default method, and method based on Cgal library)
 * Curved slicing (interpolation of boundaries, UV slicing, scalar field slicing)
 * Generation of fabrication-related information
 * Export print data to Json and gcode formats
 
-Getting started
-------------
+## Getting started
 
-### Step 1: Install compas
+### Step 1: Installation
 
-- Create a new environment (you can replace 'compas_slicer' with your own environment name),
-and install compas, compas_cgal, and libigl.
+The recommended way to install `compas_slicer` is with [conda](https://conda.io/docs/).
+For example, create an environment named ``my-project`` (or replace with your own environment name) and install as follows:
 
-```bash
-conda create -n compas_slicer python=3.7
-conda activate compas_slicer
-conda install COMPAS
-conda install COMPAS compas_cgal
-conda install -c conda-forge igl
-```
+    conda config --add channels conda-forge
+    conda create -n my-project compas_slicer
 
-### Step 2: Install compas_slicer
+### Step 2: Optional installation steps
 
-- Clone the repository and activate your environment.
-```bash
-git clone https://github.com/compas-dev/compas_slicer.git
-conda activate compas_slicer
-```
-- Navigate to the folder where you cloned the compas_slicer repository and install compas_slicer using:
-```bash
-pip install -e .
-```
-- You should get the message 'Successfully installed compas-slicer' (amongst other packages)
+#### COMPAS Viewers
 
-### Step 3. Install compas_viewers2 (optional)
+Follow the instructions to install `compas_view2` (https://github.com/compas-dev/compas_view2).
 
-- Follow the instructions to install compas_viewers2 (https://github.com/compas-dev/compas_view2).
+#### COMPAS CGAL
 
+    conda install -n my-project compas_cgal
 
-### Step 4. Test if the library works
-- Run the file examples/1_versions_check.py
+#### Grasshopper
+
+The Grasshopper components are automatically installed with the `compas_rhino` installation, e.g.:
+
+    conda activate my-project
+    python -m compas_rhino.install -v 6.0
+
+### Step 3. Test if the library works
+
+Activate your environment and run the following command:
+
+    conda activate my-project
+    python -m compas_slicer
 
 Enjoy!
 
-Troubleshooting
----------------
+## Troubleshooting
 
 See here: https://compas.dev/compas_slicer/installation.html#troubleshooting-1
 
-
-Contributions
-------------
+## Contributions
 
 Before contributing code:
 
@@ -80,15 +73,14 @@ invoke test
 invoke lint
 ```
 
-- Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly. Ideally also add a visualization of the result using compas.MeshPlotter (see the other examples in the same folder)
+- Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly. 
 
 - Create a pull request for the master branch, where you explain in detail what you fixed. When you create a pull request, there is an automatic action that runs the tests for your code again on the server.
 Make sure the pull request passes the automatic tests as well. If not, then inspect the result, find what went wrong, fix it, and push again the result on your branch. The action will run again automatically on the open pull request.
 
 
-Authors
--------------
+## Authors
 
-* Ioanna Mitropoulou <<mitropoulou@arch.ethz.ch>> [@ioanna21](https://github.com/ioanna21)
+* Ioanna Mitropoulou <<mitropoulou@arch.ethz.ch>> [@ioannaMitropoulou](https://github.com/ioannaMitropoulou)
 * Joris Burger <<burger@arch.ethz.ch>> [@joburger](https://github.com/joburger)
 * Andrei Jipa <<jipa@arch.ethz.ch>> [@stratocaster](https://github.com/stratocaster)

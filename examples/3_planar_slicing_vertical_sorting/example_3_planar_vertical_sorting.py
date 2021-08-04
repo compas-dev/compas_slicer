@@ -5,7 +5,7 @@ import compas_slicer.utilities as utils
 from compas_slicer.pre_processing import move_mesh_to_point
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.post_processing import generate_brim
-from compas_slicer.post_processing import simplify_paths_rdp
+from compas_slicer.post_processing import simplify_paths_rdp_igl
 from compas_slicer.post_processing import sort_into_vertical_layers
 from compas_slicer.post_processing import reorder_vertical_layers
 from compas_slicer.post_processing import seams_smooth
@@ -15,8 +15,6 @@ from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.print_organization import set_linear_velocity_constant
 from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.utilities import save_to_json
-from compas_view2 import app
-
 from compas.datastructures import Mesh
 from compas.geometry import Point
 
@@ -48,7 +46,7 @@ def main():
 
     # Post-processing
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=5)
-    simplify_paths_rdp(slicer, threshold=0.7)
+    simplify_paths_rdp_igl(slicer, threshold=0.7)
     seams_smooth(slicer, smooth_distance=10)
     slicer.printout_info()
     save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
@@ -66,14 +64,6 @@ def main():
 
     printpoints_data = print_organizer.output_printpoints_dict()
     utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints.json')
-
-    # ==========================================================================
-    # Initializes the compas_viewer and visualizes results
-    # ==========================================================================
-    viewer = app.App(width=1600, height=1000)
-    # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
-    print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
-    viewer.show()
 
 
 if __name__ == "__main__":
