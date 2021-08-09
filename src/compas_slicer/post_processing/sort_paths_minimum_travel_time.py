@@ -40,17 +40,19 @@ def adjust_seam_to_closest_pos(ref_point, path):
     ref_point: :class:`compas.geometry.Point`
         The reference point
     path: :class:`compas_slicer.geometry.Path`
-        The contour to be adjusted.
+        The contour to be adjusted.    
     """
-
+    
     # TODO: flip orientation to reduce angular velocity
 
     if path.is_closed:  # if path is closed
+        # remove first point
+        path.points.pop(-1)
         #  calculate distances from ref_point to vertices of path
         distances = [distance_point_point(ref_point, points) for points in path.points]
         #  find  index of closest point
         closest_point = distances.index(min(distances))
-        #  adjust seam and add seam point again to make a closed path
+        #  adjust seam
         adjusted_seam = path.points[closest_point:] + path.points[:closest_point] + [path.points[closest_point]]
         path.points = adjusted_seam
     else:  # if path is open

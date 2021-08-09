@@ -50,13 +50,9 @@ class PlanarSlicer(BaseSlicer):
             min_z = min_z + self.slice_height_range[0]
 
         d = abs(min_z - max_z)
-
-        print("minz", min_z, "maxz", max_z, "d", d)
-
         no_of_layers = int(d / self.layer_height) + 1
         normal = Vector(0, 0, 1)
         planes = [Plane(Point(0, 0, min_z + i * self.layer_height), normal) for i in range(no_of_layers)]
-        # planes.pop(0)  # remove planes that are on the print platform
 
         if self.slicer_type == "default":
             logger.info('')
