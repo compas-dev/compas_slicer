@@ -19,6 +19,10 @@ def add_safety_printpoints(print_organizer, z_hop=10.0):
     z_hop: float
         Vertical distance (in millimeters) of the safety point above the PrintPoint.
     """
+    raise NotImplementedError
+    # TODO: re-think this function: safety printpoints should now be part of the travel paths
+
+
     assert check_assigned_extruder_toggle(print_organizer), \
         'You need to set the extruder toggles first, before you can create safety points'
     logger.info("Generating safety print points with height " + str(z_hop) + " mm")

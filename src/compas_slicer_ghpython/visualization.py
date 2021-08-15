@@ -104,11 +104,32 @@ def load_slicer(path, folder_name, json_name):
 #######################################
 # --- Printpoints
 
-def load_printpoints(path, folder_name, json_name):
-    """ Loads a dict of compas_slicer printpoints. """
-    data = load_json_file(path, folder_name, json_name)
+class PrintPointGH:
+    def __init__(self, pt):
+        self.pt = pt
+        self.frame = None
+        self.layer_height = None
+        self.up_vector = None
+        self.mesh_normal = None
+        self.closest_support_pt = None
 
-    # geometry data
+        self.velocity = None
+        self.wait_time = None
+        self.blend_radius = None
+        self.extruder_toggle = None
+
+
+class PathGH:
+    def __init__(self):
+        self.ppts = {
+            'travel_to_contour': [],
+            'contour': [],
+            'travel_to_infill': [],
+            'infill': []
+        }
+
+
+def get_path_viz(paths, path_index, path_type, display_all):
     points = []
     frames = []
     layer_heights = []
@@ -116,51 +137,121 @@ def load_printpoints(path, folder_name, json_name):
     mesh_normals = []
     closest_support = []
 
-    # fabrication related data
     velocities = []
     wait_times = []
     blend_radiuses = []
     extruder_toggles = []
 
-    if data:
-        for i in range(len(data)):
-            data_point = data[str(i)]
+    path_types = ['travel_to_contour', 'contour', 'travel_to_infill', 'infill']
 
-            # geometry related data
-            point = rg.Point3d(data_point["point"][0], data_point["point"][1], data_point["point"][2])
-            points.append(point)
+    ppts = []
+    if not display_all:  # single path and type
+        print('here')
+        ppts = paths[path_index].ppts[path_type]
+        print(len(ppts))
+    else:  # all paths and all types
+        for path in paths:
+            for path_type in path_types:
+                ppts.extend(path.ppts[path_type])
 
-            compas_frame = Frame.from_data(data_point["frame"])
-            pt, x_axis, y_axis = compas_frame.point, compas_frame.xaxis, compas_frame.yaxis
-            frame = rs.PlaneFromFrame(pt, x_axis, y_axis)
-            frames.append(frame)
+    for ppt in ppts:
+        points.append(ppt.pt)
+        frames.append(ppt.frame)
+        layer_heights.append(ppt.layer_height)
+        up_vectors.append(ppt.up_vector)
+        mesh_normals.append(ppt.mesh_normal)
+        closest_support.append(ppt.closest_support_pt)
 
-            layer_heights.append(data_point["layer_height"])
-
-            v = data_point["up_vector"]
-            up_vector = rg.Vector3d(v[0], v[1], v[2])
-            up_vectors.append(up_vector)
-
-            v = data_point["mesh_normal"]
-            mesh_normal = rg.Vector3d(v[0], v[1], v[2])
-            mesh_normals.append(mesh_normal)
-
-            cp = data_point["closest_support_pt"]
-            if cp:
-                cp_pt = rg.Point3d(cp[0], cp[1], cp[2])
-                closest_support.append(cp_pt)
-            else:
-                closest_support.append(point)  # in order to have the same number of points everywhere
-
-            # fabrication related data
-            velocities.append(data_point["velocity"])
-            wait_times.append(data_point["wait_time"])
-            blend_radiuses.append(data_point["blend_radius"])
-            extruder_toggles.append(data_point["extruder_toggle"])
+        velocities.append(ppt.velocity)
+        wait_times.append(ppt.wait_time)
+        blend_radiuses.append(ppt.blend_radius)
+        extruder_toggles.append(ppt.extruder_toggle)
 
     return points, frames, layer_heights, up_vectors, mesh_normals, closest_support, velocities, wait_times, \
-           blend_radiuses, extruder_toggles
+    blend_radiuses, extruder_toggles
 
+def load_printpoints(path, folder_name, json_name, load_options=None):
+    """ Loads a dict of compas_slicer printpoints.
+
+    load_options: dict, Enables to turn off loading of certain data
+    """
+
+    if not load_options:
+        load_options = {"frame": True,
+                        "up_vector": True,
+                        "mesh_normal": True,
+                        "closest_support_pt": True,
+                        "velocity": True,
+                        "wait_time": True,
+                        "blend_radius": True,
+                        "extruder_toggle": True}
+    else:
+        assert "frame" in load_options and "up_vector" in load_options and "mesh_normal" in load_options \
+               and "closest_support_pt" in load_options and "velocity" in load_options and "wait_time" in load_options \
+               and "blend_radius" in load_options and "extruder_toggle" in load_options, "Not all inputs were provided"
+
+    ordered_path_types = ['travel_to_contour', 'contour', 'travel_to_infill', 'infill']
+
+    data = load_json_file(path, folder_name, json_name)
+
+    paths = []
+
+    if data:
+        for i in range(len(data)):
+            layer_key = "layer_%d" % i
+            for j in range(len(data[layer_key])):
+                path_key = "path_%d" % j
+                path = PathGH()
+
+                for path_type in ordered_path_types:
+
+                    for k in range(len(data[layer_key][path_key][path_type])):
+
+                        data_point = data[layer_key][path_key][path_type][k]
+
+                        point = rg.Point3d(data_point["point"][0], data_point["point"][1], data_point["point"][2])
+                        ppt = PrintPointGH(point)
+
+                        if load_options["frame"]:
+                            compas_frame = Frame.from_data(data_point["frame"])
+                            pt, x_axis, y_axis = compas_frame.point, compas_frame.xaxis, compas_frame.yaxis
+                            frame = rs.PlaneFromFrame(pt, x_axis, y_axis)
+                            ppt.frame = frame
+
+                        ppt.layer_height = data_point["layer_height"]
+
+                        if load_options["up_vector"]:
+                            v = data_point["up_vector"]
+                            up_vector = rg.Vector3d(v[0], v[1], v[2])
+                            ppt.up_vector = up_vector
+
+                        if load_options["mesh_normal"]:
+                            v = data_point["mesh_normal"]
+                            mesh_normal = rg.Vector3d(v[0], v[1], v[2])
+                            ppt.mesh_normal = mesh_normal
+
+                        if load_options["closest_support_pt"]:
+                            cp = data_point["closest_support_pt"]
+                            if cp:
+                                cp_pt = rg.Point3d(cp[0], cp[1], cp[2])
+                                ppt.closest_support_pt = cp_pt
+                            else:
+                                ppt.closest_support_pt = point # in order to have the same number of points everywhere
+
+                        # fabrication related data
+                        if load_options["velocity"]:
+                            ppt.velocity = data_point["velocity"]
+                        if load_options["wait_time"]:
+                            ppt.wait_time = data_point["wait_time"]
+                        if load_options["blend_radius"]:
+                            ppt.blend_radius = data_point["blend_radius"]
+                        if load_options["extruder_toggle"]:
+                            ppt.extruder_toggle = data_point["extruder_toggle"]
+
+                        path.ppts[path_type].append(ppt)
+
+                paths.append(path)
+    return paths
 
 #######################################
 # --- Lightweight path visualization

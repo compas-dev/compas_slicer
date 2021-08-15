@@ -21,6 +21,9 @@ def set_extruder_toggle(print_organizer, slicer):
 
     pp_dict = print_organizer.printpoints_dict
 
+    travel_path_types = ['travel_to_contour', 'travel_to_infill']
+    print_path_types = ['contour', 'infill']
+
     for i, layer in enumerate(slicer.layers):
         layer_key = 'layer_%d' % i
         is_vertical_layer = isinstance(layer, compas_slicer.geometry.VerticalLayer)
@@ -28,7 +31,7 @@ def set_extruder_toggle(print_organizer, slicer):
 
         for j, path in enumerate(layer.paths):
             path_key = 'path_%d' % j
-            is_closed_path = path.is_closed
+            is_closed_path = path.contour.is_closed
 
             # --- decide if the path should be interrupted at the end
             interrupt_path = False
@@ -48,22 +51,26 @@ def set_extruder_toggle(print_organizer, slicer):
                 interrupt_path = True
                 # the last path of a vertical layer should be interrupted
 
-            # --- create extruder toggles
-            path_printpoints = pp_dict[layer_key][path_key]
-            for k, printpoint in enumerate(path_printpoints):
+            # --- in traveling extruder toggle is always off
+            for path_type in travel_path_types:
+                path_printpoints = pp_dict[layer_key][path_key][path_type]
+                for k, printpoint in enumerate(path_printpoints):
+                    printpoint.extruder_toggle = False
 
-                if interrupt_path:
-                    if k == len(path_printpoints) - 1:
-                        printpoint.extruder_toggle = False
-                    else:
-                        printpoint.extruder_toggle = True
-                else:
+            # --- create extruder toggle for contour
+            for path_type in print_path_types:
+                path_printpoints = pp_dict[layer_key][path_key][path_type]
+                for k, printpoint in enumerate(path_printpoints):
                     printpoint.extruder_toggle = True
+                    if interrupt_path and k == len(path_printpoints) - 1:
+                        printpoint.extruder_toggle = False
 
-        # set extruder toggle of last print point to false
+        # make sure that extruder toggle of last print point is set to false
         last_layer_key = 'layer_%d' % (len(pp_dict) - 1)
         last_path_key = 'path_%d' % (len(pp_dict[last_layer_key]) - 1)
-        pp_dict[last_layer_key][last_path_key][-1].extruder_toggle = False
+        pp_dict[last_layer_key][last_path_key]['contour'][-1].extruder_toggle = False
+        if (len(pp_dict[last_layer_key][last_path_key]['infill']) > 0):
+            pp_dict[last_layer_key][last_path_key]['infill'][-1].extruder_toggle = False
 
 
 def override_extruder_toggle(print_organizer, override_value):

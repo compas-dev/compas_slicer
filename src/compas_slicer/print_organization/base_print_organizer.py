@@ -126,7 +126,7 @@ class BasePrintOrganizer(object):
     @property
     def total_print_time(self):
         """ If the print speed is defined, it returns the total time of the print, else returns None"""
-        if self.printpoints_dict['layer_0']['path_0'][0].velocity is not None:  # assume that all ppts are set or none
+        if self.printpoints_dict['layer_0']['path_0']['contour'][0].velocity is not None:  # assume that all ppts are set or none
             total_time = 0
             for layer_key in self.printpoints_dict:
                 for path_key in self.printpoints_dict[layer_key]:
@@ -212,7 +212,7 @@ class BasePrintOrganizer(object):
     def printout_info(self):
         """Prints out information from the PrintOrganizer"""
         ppts_attributes = {}
-        for key in self.printpoints_dict['layer_0']['path_0'][0].attributes:
+        for key in self.printpoints_dict['layer_0']['path_0']['contour'][0].attributes:
             ppts_attributes[key] = str(type(self.printpoints_dict['layer_0']['path_0'][0].attributes[key]))
 
         print("\n---- PrintOrganizer Info ----")
@@ -260,11 +260,14 @@ class BasePrintOrganizer(object):
 
         count = 0
         for layer_key in self.printpoints_dict:
+            data[layer_key] = {}
             for path_key in self.printpoints_dict[layer_key]:
+                data[layer_key][path_key] = {}
                 for path_type in self.printpoints_dict[layer_key][path_key]:
+                    data[layer_key][path_key][path_type] = []
                     self.remove_duplicate_points_in_path(layer_key, path_key, path_type)
                     for printpoint in self.printpoints_dict[layer_key][path_key][path_type]:
-                        data[count] = printpoint.to_data()
+                        data[layer_key][path_key][path_type].append(printpoint.to_data())
 
                     count += 1
         logger.info("Generated %d print points" % count)

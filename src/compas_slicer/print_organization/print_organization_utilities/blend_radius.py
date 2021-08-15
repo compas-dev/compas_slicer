@@ -21,26 +21,31 @@ def set_blend_radius(print_organizer, d_fillet=10, buffer=0.3):
 
     logger.info("Setting blend radius")
 
-    for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
+    for printpoint, i, j, k, path_type in print_organizer.printpoints_indices_iterator():
         layer_key = 'layer_%d' % i
         path_key = 'path_%d' % j
-        neighboring_items = print_organizer.get_printpoint_neighboring_items(layer_key, path_key, k)
+
+        ns = print_organizer.get_printpoint_neighboring_items(layer_key, path_key, path_type, k)
 
         if not printpoint.wait_time:
             radius = d_fillet
-            if neighboring_items[0]:
-                radius = min(radius, norm_vector(Vector.from_start_end(neighboring_items[0].pt, printpoint.pt)) * buffer)
+            if ns[0]:
+                radius = min(radius, norm_vector(Vector.from_start_end(ns[0].pt, printpoint.pt)) * buffer)
 
-            if neighboring_items[1]:
-                radius = min(radius, norm_vector(Vector.from_start_end(neighboring_items[1].pt, printpoint.pt)) * buffer)
+            if ns[1]:
+                radius = min(radius, norm_vector(Vector.from_start_end(ns[1].pt, printpoint.pt)) * buffer)
 
             radius = round(radius, 5)
 
         else:
             radius = 0.0  # 0.0 blend radius for points where the robot will pause and wait
 
+        if path_type == 'travel_to_contour' or path_key == 'travel_to_infill':
+            radius = 0.0  # no blend radius for travel paths
+
         printpoint.blend_radius = radius
 
+# if path_type == 'contour' or path_type == 'infill':
 
 if __name__ == "__main__":
     pass
