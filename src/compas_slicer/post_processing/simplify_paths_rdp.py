@@ -61,10 +61,14 @@ def simplify_paths_rdp_igl(slicer, threshold):
 
         for i, layer in enumerate(slicer.layers):
             if not layer.is_raft:  # no simplification necessary for raft layer
-                for path in layer.paths:
+                for j, path in enumerate(layer.paths):
                     pts = np.array([[pt[0], pt[1], pt[2]] for pt in path.contour.points])
+                    path.contour.points = [] # clear list
                     S, J, Q = igl.ramer_douglas_peucker(pts, threshold)
-                    path.points = [Point(pt[0], pt[1], pt[2]) for pt in S]
+
+                    path.contour.points = [Point(pt[0], pt[1], pt[2]) for pt in S]
+                    #slicer.layers[i].paths[j].contour.points = [Point(pt[0], pt[1], pt[2]) for pt in S]
+                    remaining_pts_num += len(S)
         logger.info('%d Points remaining after rdp simplification' % remaining_pts_num)
 
     except PluginNotInstalledError:
