@@ -53,7 +53,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                         'travel_to_contour': [],
                         'contour': [],
                         'travel_to_infill': [],
-                        'infill': [[] for infill in path.infill_paths]
+                        'infill': []
                     }
 
                     # --- travel to contour ppts
@@ -84,11 +84,11 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                             count += 1
 
                     # --- infill paths ppts
-                    for m, infill in enumerate(path.infill_paths):
-                        for k, point in enumerate(infill.points):
+                    if path.infill:
+                        for k, point in enumerate(path.infill.points):
                             n = Vector(1, 0, 0)  # default value
                             printpoint = PrintPoint(i, j, point, self.slicer.layer_height, n, 'infill')
-                            self.printpoints_dict['layer_%d' % i]['path_%d' % j][infill][m].append(printpoint)
+                            self.printpoints_dict['layer_%d' % i]['path_%d' % j]['infill'].append(printpoint)
                             bar.update(count)
                             count += 1
 

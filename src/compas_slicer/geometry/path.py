@@ -71,11 +71,10 @@ class ContourPath(object):
 ###################
 
 class InfillPath(object):
-    def __init__(self, points, type):
+    def __init__(self, points):
         assert len(points) > 1
         assert isinstance(points[0], compas.geometry.Point)
         self.points = points  # list of :class: compas.geometry.Point
-        self.type = type  # string
 
     def __repr__(self):
         no_of_points = len(self.points) if self.points else 0
@@ -86,12 +85,11 @@ class InfillPath(object):
         points_data = data['points']
         pts = [Point(points_data[key][0], points_data[key][1], points_data[key][2])
                for key in points_data]
-        path = cls(points=pts, is_closed=data['type'])
+        path = cls(points=pts)
         return path
 
     def to_data(self):
-        data = {'points': {i: point.to_data() for i, point in enumerate(self.points)},
-                'type': self.type}
+        data = {'points': {i: point.to_data() for i, point in enumerate(self.points)}}
         return data
 
 
@@ -135,10 +133,21 @@ class Path(object):
         self.travel_to_contour = None
         self.contour = contour
         self.travel_to_infill = None
-        self.infill_paths = []  # TODO: should infill be a list of paths?
+        self.infill = None
 
     def __repr__(self):
         return "<Path object >"
+
+    def get_existing_path_types(self):
+        existing_types = []
+        if self.travel_to_contour:
+            existing_types.append('travel_to_contour')
+        existing_types.append('contour')
+        if self.travel_to_infill:
+            existing_types.append('travel_to_infill')
+        if self.infill:
+            existing_types.append('infill')
+        return existing_types
 
     def number_of_points(self):
         n = 0
@@ -147,8 +156,8 @@ class Path(object):
         n += len(self.contour.points)
         if self.travel_to_infill:
             n += len(self.travel_to_infill.points)
-        for infill in self.infill_paths:
-            n += len(infill.points)
+        if self.infill:
+            n += len(self.infill.points)
         return n
 
     @classmethod
@@ -162,21 +171,22 @@ class Path(object):
             travel_to_infill = TravelPath.from_data(data['travel_to_infill'])
         else:
             travel_to_infill = None
-        infill_paths = []
-        for data in data['infill']:
-            infill_paths.append(InfillPath.from_data(data))
+        if data['infill']:
+            infill = InfillPath.from_data(data['infill'])
+        else:
+            infill = None
 
         path = cls(contour)
         path.travel_to_contour = travel_to_contour
         path.travel_to_infill = travel_to_infill
-        path.infill_paths = infill_paths
+        path.infill = infill
         return path
 
     def to_data(self):
         data = {'travel_to_contour': self.travel_to_contour.to_data() if self.travel_to_contour else None,
                 'contour': self.contour.to_data(),
                 'travel_to_infill': self.travel_to_infill.to_data() if self.travel_to_infill else None,
-                'infill': [infill.to_data() for infill in self.infill_paths]}
+                'infill': self.infill.to_data() if self.infill else None}
         return data
 
 
