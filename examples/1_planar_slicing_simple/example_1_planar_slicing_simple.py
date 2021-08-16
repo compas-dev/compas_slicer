@@ -72,7 +72,7 @@ def main():
     # Simplify the paths by removing points with a certain threshold
     # change the threshold value to remove more or less points
     # ==========================================================================
-    simplify_paths_rdp_igl(slicer, threshold=0.6)
+    simplify_paths_rdp_igl(slicer, threshold=0.4)
 
     # ==========================================================================
     # Smooth the seams between layers
@@ -96,35 +96,35 @@ def main():
     print_organizer = PlanarPrintOrganizer(slicer)
     print_organizer.create_printpoints(contour_ppts_with_mesh_normals=True)
 
-    # # ==========================================================================
-    # # Set fabrication-related parameters
-    # # ==========================================================================
-    # set_extruder_toggle(print_organizer, slicer)
+    # ==========================================================================
+    # Set fabrication-related parameters
+    # ==========================================================================
+    set_extruder_toggle(print_organizer, slicer)
     # add_safety_printpoints(print_organizer, z_hop=10.0)
-    # set_linear_velocity_constant(print_organizer, v=25.0)
-    # set_blend_radius(print_organizer, d_fillet=10.0)
-    #
-    # # ==========================================================================
-    # # Prints out the info of the PrintOrganizer
-    # # ==========================================================================
-    # print_organizer.printout_info()
-    #
+    set_linear_velocity_constant(print_organizer, v=25.0)
+    set_blend_radius(print_organizer, d_fillet=10.0)
+
+    # ==========================================================================
+    # Prints out the info of the PrintOrganizer
+    # ==========================================================================
+    print_organizer.printout_info()
+
     # ==========================================================================
     # Converts the PrintPoints to data and saves to JSON
     # =========================================================================
-    # printpoints_data = print_organizer.output_printpoints_dict()
-    # utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints.json')
-    #
-    # # ==========================================================================
-    # # Initializes the compas_viewer and visualizes results
-    # # ==========================================================================
+    printpoints_data = print_organizer.output_printpoints_dict()
+    utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints.json')
+
+    # ==========================================================================
+    # Initializes the compas_viewer and visualizes results
+    # ==========================================================================
     # viewer = app.App(width=1600, height=1000)
     # # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
     # print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
     # viewer.show()
-    #
-    # end_time = time.time()
-    # print("Total elapsed time", round(end_time - start_time, 2), "seconds")
+
+    end_time = time.time()
+    print("Total elapsed time", round(end_time - start_time, 2), "seconds")
 
 
 if __name__ == "__main__":
