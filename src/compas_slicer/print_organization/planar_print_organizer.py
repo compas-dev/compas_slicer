@@ -41,7 +41,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
         count = 0
         logger.info('Creating print points ...')
         with progressbar.ProgressBar(max_value=self.slicer.number_of_points) as bar:
-            
+
             if generate_mesh_normals:
                 logger.info('Generating mesh normals ...')
                 # fast method for getting the closest mesh normals to all the printpoints

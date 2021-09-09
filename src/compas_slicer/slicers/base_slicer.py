@@ -4,7 +4,8 @@ from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
 from compas_slicer.geometry import Layer, VerticalLayer
-from compas_slicer.post_processing import seams_align, unify_paths_orientation
+from compas_slicer.post_processing import seams_align
+# from compas_slicer.post_processing import unify_paths_orientation
 import logging
 import copy
 from abc import abstractmethod
@@ -118,7 +119,7 @@ class BaseSlicer(object):
             for j, path in enumerate(layer.paths):
                 if path.is_closed:  # if the path is closed, first and last point should be the same.
                     if distance_point_point_sqrd(path.points[0], path.points[-1]) > 0.00001:  # if not already the same
-                        print(i, j, ">>>>>>>>> CLOSED A PATH")
+                        logger.warning("Layer %d, Path %d not closed > closed path automatically" % (i, str(layer)))
                         path.points.append(path.points[0])
 
     def remove_invalid_paths_and_layers(self):

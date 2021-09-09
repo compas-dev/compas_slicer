@@ -110,5 +110,6 @@ def seams_align(slicer, align_with="next_path"):
                 if d_start > d_end:
                     layer.paths[j].points.reverse()
 
+
 if __name__ == "__main__":
     pass

@@ -23,10 +23,10 @@ class PlanarSlicer(BaseSlicer):
         Distance between layers (slices).
     slice_height_range: tuple (optional)
         Optional tuple that lets the user slice only a part of the model.
-        Defaults to None which slices the entire model. 
+        Defaults to None which slices the entire model.
         First value is the Z height to start slicing from, second value is the Z height to end.
-
     """
+
     def __init__(self, mesh, slicer_type="default", layer_height=2.0, slice_height_range=None):
         logger.info('PlanarSlicer')
         BaseSlicer.__init__(self, mesh)
