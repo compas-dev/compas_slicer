@@ -68,9 +68,6 @@ def closest_path(ref_point, somepaths):
     ----------
     ref_point: the reference point
     somepaths: list of paths to look into for finding the closest
-
-    Returns
-    -------
     """
     min_dist = distance_point_point(ref_point, somepaths[0].points[0])
     closest_index = 0
