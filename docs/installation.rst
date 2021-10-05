@@ -12,7 +12,7 @@ Basic installation steps
 ========================
 
 Step 1: Install compas slicer
-------------------------------
+-----------------------------
 
 
 The recommended way to install `compas_slicer` is with `conda <https://conda.io/docs/>`_.
@@ -25,7 +25,7 @@ For example, create an environment named ``my-project`` (or replace with your ow
 
 
 Step 2: Optional installation steps
-------------------------------------
+-----------------------------------
 
 * COMPAS Viewers
 
@@ -109,7 +109,7 @@ Make sure you are in the correct environment and type:
     pip install numpy==1.19.3
 
 Fractions error
------------
+---------------
 .. code-block:: bash
 
     ImportError: cannot import name 'gcd' from 'fractions' (C:\ProgramData\Anaconda3\envs\compas_slicer\lib\fractions.py)

@@ -1,8 +1,8 @@
 .. _compas_slicer_example_6:
 
-************************************
+**************************************
 Transferring attributes to PrintPoints
-************************************
+**************************************
 
 Often in 3D printing we need to transfer information from the mesh that is being sliced to the PrintPoints that
 are used in the fabrication process. We might want, for example, to print paths that are generated from different parts of

@@ -24,6 +24,7 @@ Sorting
     sort_into_vertical_layers
     reorder_vertical_layers
     sort_paths_minimum_travel_time
+    zig_zag_open_paths
 
 Additional
 ==========
