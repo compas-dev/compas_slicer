@@ -25,7 +25,7 @@ class PlanarSlicer(BaseSlicer):
         Optional tuple that lets the user slice only a part of the model.
         Defaults to None which slices the entire model.
         First value is the Z height to start slicing from, second value is the Z height to end.
-        The range values are not absolute height values, but relative to the current minimum height value of the mesh. 
+        The range values are not absolute height values, but relative to the current minimum height value of the mesh.
         I.e. if you want to only slice the first 100 mm of the mesh, you use (0,100) regardless of the position of the mesh.
     """
 
