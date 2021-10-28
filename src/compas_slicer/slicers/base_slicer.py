@@ -115,8 +115,8 @@ class BaseSlicer(object):
 
     def close_paths(self):
         """ For paths that are labeled as closed, it makes sure that the first and the last point are identical. """
-        for i, layer in enumerate(self.layers):
-            for j, path in enumerate(layer.paths):
+        for layer in self.layers:
+            for path in layer.paths:
                 if path.is_closed:  # if the path is closed, first and last point should be the same.
                     if distance_point_point_sqrd(path.points[0], path.points[-1]) > 0.00001:  # if not already the same
                         path.points.append(path.points[0])
