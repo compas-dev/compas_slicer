@@ -142,7 +142,9 @@ options: ‘default’, ‘cgal’</p></li>
 <li><p><strong>layer_height</strong> (<em>float</em>) – Distance between layers (slices).</p></li>
 <li><p><strong>slice_height_range</strong> (<em>tuple (optional)</em>) – Optional tuple that lets the user slice only a part of the model.
 Defaults to None which slices the entire model.
-First value is the Z height to start slicing from, second value is the Z height to end.</p></li>
+First value is the Z height to start slicing from, second value is the Z height to end.
+The range values are not absolute height values, but relative to the current minimum height value of the mesh.
+I.e. if you want to only slice the first 100 mm of the mesh, you use (0,100) regardless of the position of the mesh.</p></li>
 </ul>
 </dd>
 </dl>
