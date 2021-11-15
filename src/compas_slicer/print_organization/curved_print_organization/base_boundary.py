@@ -33,9 +33,8 @@ class BaseBoundary:
         else:
             self.up_vectors = self.get_up_vectors()
 
-        self.printpoints = [PrintPoint(pt=pt,  # Create fake print points
-                                       layer_height=1.0,
-                                       mesh_normal=self.normals[i]) for i, pt in enumerate(self.points)]
+        self.printpoints = [PrintPoint(-1, -1, pt, 1.0, self.normals[i], 'contour')  # Create fake print points
+                            for i, pt in enumerate(self.points)]
 
         for i, pp in enumerate(self.printpoints):
             pp.up_vector = self.up_vectors[i]

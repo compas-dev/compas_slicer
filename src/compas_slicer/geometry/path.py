@@ -130,19 +130,19 @@ class Path(object):
     """
 
     def __init__(self, contour):
-        self.travel_to_contour = None
         self.contour = contour
-        self.travel_to_infill = None
-        self.infill = None
+
+        self.travel_to_contour = None  # optional
+        self.travel_to_infill = None  # optional
+        self.infill = None  # optional
 
     def __repr__(self):
         return "<Path object >"
 
     def get_existing_path_types(self):
-        existing_types = []
+        existing_types = ['contour']
         if self.travel_to_contour:
             existing_types.append('travel_to_contour')
-        existing_types.append('contour')
         if self.travel_to_infill:
             existing_types.append('travel_to_infill')
         if self.infill:
@@ -162,11 +162,11 @@ class Path(object):
 
     @classmethod
     def from_data(cls, data):
+        contour = ContourPath.from_data(data['contour'])
         if data['travel_to_contour']:
             travel_to_contour = TravelPath.from_data(data['travel_to_contour'])
         else:
             travel_to_contour = None
-        contour = ContourPath.from_data(data['contour'])
         if data['travel_to_infill']:
             travel_to_infill = TravelPath.from_data(data['travel_to_infill'])
         else:
@@ -183,8 +183,8 @@ class Path(object):
         return path
 
     def to_data(self):
-        data = {'travel_to_contour': self.travel_to_contour.to_data() if self.travel_to_contour else None,
-                'contour': self.contour.to_data(),
+        data = {'contour': self.contour.to_data(),
+                'travel_to_contour': self.travel_to_contour.to_data() if self.travel_to_contour else None,
                 'travel_to_infill': self.travel_to_infill.to_data() if self.travel_to_infill else None,
                 'infill': self.infill.to_data() if self.infill else None}
         return data

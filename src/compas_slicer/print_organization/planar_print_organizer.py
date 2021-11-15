@@ -42,7 +42,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                 normals_contour_pts = [Vector(*self.slicer.mesh.face_normal(fkey)) for fkey in closest_fks]
             else:
                 # default value
-                normals_contour_pts = [Vector(1, 0, 0) for layer in self.slicer.layers for path in layer.paths for pt in
+                normals_contour_pts = [Vector(1, 0, 0) for layer in self.slicer.layers for path in layer.paths for _ in
                                        path.contour.points]
 
             for i, layer in enumerate(self.slicer.layers):

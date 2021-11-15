@@ -42,7 +42,7 @@ class PrintPoint(object):
 
         #  --- basic printpoint
         self.layer_index = i
-        self.layer_index = j
+        self.path_index = j
 
         self.pt = pt
         self.layer_height = layer_height
@@ -65,8 +65,6 @@ class PrintPoint(object):
         #  --- relation to support
         self.closest_support_pt = None  # <compas.geometry.Point>
         self.distance_to_support = None  # float
-
-        self.is_feasible = True  # bool
 
     def __repr__(self):
         x, y, z = self.pt[0], self.pt[1], self.pt[2]
@@ -94,12 +92,19 @@ class PrintPoint(object):
 
         """
         point = {
+            'layer_index': self.layer_index,
+            'path_index': self.path_index,
+
             'point': [self.pt[0], self.pt[1], self.pt[2]],
             'layer_height': self.layer_height,
+
+            'path_type': self.path_type,
 
             'mesh_normal': self.mesh_normal.to_data(),
             'up_vector': self.up_vector.to_data(),
             'frame': self.frame.to_data(),
+
+            'attributes': utils.get_jsonable_attributes(self.attributes),
 
             'extruder_toggle': self.extruder_toggle,
             'velocity': self.velocity,
@@ -107,11 +112,7 @@ class PrintPoint(object):
             'blend_radius': self.blend_radius,
 
             'closest_support_pt': self.closest_support_pt.to_data() if self.closest_support_pt else None,
-            'distance_to_support': self.distance_to_support,
-
-            'is_feasible': self.is_feasible,
-
-            'attributes': utils.get_jsonable_attributes(self.attributes)
+            'distance_to_support': self.distance_to_support
         }
         return point
 
@@ -130,13 +131,14 @@ class PrintPoint(object):
             The constructed PrintPoint.
 
         """
-
-        pp = cls(pt=Point.from_data(data['point']),
-                 layer_height=data['layer_height'],
-                 mesh_normal=Vector.from_data(data['mesh_normal']))
+        pp = cls(int(data['layer_index']), int(data['path_index']), pt=Point.from_data(data['point']),
+                 layer_height=data['layer_height'], mesh_normal=Vector.from_data(data['mesh_normal']),
+                 path_type=['path_type'])
 
         pp.up_vector = Vector.from_data(data['up_vector'])
         pp.frame = Frame.from_data(data['frame'])
+
+        pp.attributes = data['attributes']
 
         pp.extruder_toggle = data['extruder_toggle']
         pp.velocity = data['velocity']
@@ -146,9 +148,6 @@ class PrintPoint(object):
         pp.closest_support_pt = Point.from_data(data['closest_support_pt'])
         pp.distance_to_support = data['distance_to_support']
 
-        pp.is_feasible = data['is_feasible']
-
-        pp.attributes = data['attributes']
         return pp
 
 

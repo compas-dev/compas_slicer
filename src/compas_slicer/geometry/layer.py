@@ -88,9 +88,10 @@ class Layer(object):
         paths_data = data['paths']
         paths = [Path.from_data(paths_data[key]) for key in paths_data]
         layer = cls(paths=paths)
+        layer.min_max_z_height = data['min_max_z_height']
         layer.is_brim = data['is_brim']
         layer.number_of_brim_offsets = data['number_of_brim_offsets']
-        layer.min_max_z_height = data['min_max_z_height']
+        layer.is_raft = data['is_raft']
         return layer
 
     def to_data(self):
@@ -103,9 +104,10 @@ class Layer(object):
         """
         data = {'paths': {i: [] for i in range(len(self.paths))},
                 'layer_type': 'horizontal_layer',
+                'min_max_z_height': self.min_max_z_height,
                 'is_brim': self.is_brim,
                 'number_of_brim_offsets': self.number_of_brim_offsets,
-                'min_max_z_height': self.min_max_z_height}
+                'is_raft': self.is_raft}
         for i, path in enumerate(self.paths):
             data['paths'][i] = path.to_data()
         return data
@@ -156,8 +158,8 @@ class VerticalLayer(Layer):
             The vertical layer's data.
         """
         data = {'paths': {i: [] for i in range(len(self.paths))},
-                'min_max_z_height': self.min_max_z_height,
-                'layer_type': 'vertical_layer'}
+                'layer_type': 'vertical_layer',
+                'min_max_z_height': self.min_max_z_height}
         for i, path in enumerate(self.paths):
             data['paths'][i] = path.to_data()
         return data

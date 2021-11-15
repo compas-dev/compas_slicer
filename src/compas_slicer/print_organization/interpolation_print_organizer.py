@@ -4,7 +4,7 @@ from compas_slicer.print_organization.curved_print_organization import BaseBound
 import compas_slicer
 from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, normalize_vector, Point
 import logging
-from compas_slicer.geometry import Path, PrintPoint
+from compas_slicer.geometry import Path, ContourPath, PrintPoint
 import compas_slicer.utilities as utils
 from compas_slicer.parameters import get_param
 
@@ -98,13 +98,20 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
 
         # (1) --- First add the printpoints of the horizontal brim layer (first layer of print)
         self.printpoints_dict['layer_0'] = {}
+
         if len(self.horizontal_layers) > 0:  # first add horizontal brim layers
             paths = self.horizontal_layers[0].paths
             for j, path in enumerate(paths):
-                self.printpoints_dict['layer_0']['path_%d' % j] = \
-                    [PrintPoint(pt=point, layer_height=get_param(self.parameters, 'avg_layer_height', 'layers'),
-                                mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh))
-                     for k, point in enumerate(path.points)]
+
+                self.printpoints_dict['layer_0']['path_%d' % j] = {
+                    'travel_to_contour': [],
+                    'contour': [PrintPoint(current_layer_index, j, pt=point,
+                                layer_height=get_param(self.parameters, 'avg_layer_height', 'layers'),
+                                mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh),
+                                path_type='contour') for k, point in enumerate(path.contour.points)],
+                    'travel_to_infill': [],
+                    'infill': []
+                }
             current_layer_index += 1
 
         # (2) --- Select order of vertical layers
@@ -117,32 +124,39 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         # (3) --- Then create the printpoints of all the vertical layers in the selected order
         for index, i in enumerate(self.selected_order):
             layer = self.vertical_layers[i]
-            self.printpoints_dict['layer_%d' % current_layer_index] = {}
-            self.printpoints_dict['layer_%d' % current_layer_index] = self.get_layer_ppts(layer, self.base_boundaries[i])
+            self.printpoints_dict['layer_%d' % current_layer_index] = self.get_layer_ppts(layer, current_layer_index,
+                                                                                          self.base_boundaries[i])
             current_layer_index += 1
 
-    def get_layer_ppts(self, layer, base_boundary):
+    def get_layer_ppts(self, layer, layer_index, base_boundary):
         """ Creates the PrintPoints of a single layer."""
         max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='layers')
         min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='layers')
         avg_layer_height = get_param(self.parameters, 'avg_layer_height', 'layers')
 
-        all_pts = [pt for path in layer.paths for pt in path.points]
+        all_pts = [pt for path in layer.paths for pt in path.contour.points]
         closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.slicer.mesh, all_pts)
         normals = [Vector(*self.slicer.mesh.face_normal(fkey)) for fkey in closest_fks]
 
         count = 0
-        crv_to_check = Path(base_boundary.points, True)  # creation of fake path for the lower boundary
+        crv_pts_to_check = base_boundary.points
 
         layer_ppts = {}
-        for i, path in enumerate(layer.paths):
-            layer_ppts['path_%d' % i] = []
 
-            for p in path.points:
-                cp = closest_point_on_polyline(p, Polyline(crv_to_check.points))
+        for i, path in enumerate(layer.paths):
+            layer_ppts['path_%d' % i] = {
+                'travel_to_contour': [],
+                'contour': [],
+                'travel_to_infill': [],
+                'infill': []
+            }
+
+            for p in path.contour.points:
+                cp = closest_point_on_polyline(p, Polyline(crv_pts_to_check))
                 d = distance_point_point(cp, p)
 
-                ppt = PrintPoint(pt=p, layer_height=avg_layer_height, mesh_normal=normals[count])
+                ppt = PrintPoint(layer_index, i, pt=p, layer_height=avg_layer_height, mesh_normal=normals[count],
+                                 path_type='contour')
 
                 ppt.closest_support_pt = Point(*cp)
                 ppt.distance_to_support = d
@@ -150,10 +164,10 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
                 ppt.up_vector = Vector(*normalize_vector(Vector.from_start_end(cp, p)))
                 ppt.frame = ppt.get_frame()
 
-                layer_ppts['path_%d' % i].append(ppt)
+                layer_ppts['path_%d' % i]['contour'].append(ppt)
                 count += 1
 
-            crv_to_check = path
+            crv_pts_to_check = path.contour.points
 
         return layer_ppts
 

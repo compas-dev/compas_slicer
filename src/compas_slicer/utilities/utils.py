@@ -356,9 +356,9 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
 
     # find mesh normal is not really needed in the 2D case of planar slicer
     # instead we only need the normal of the curve based on the neighboring pts
-    if (0 < k < len(path.points) - 1) or path.is_closed:
-        prev_pt = path.points[k - 1]
-        next_pt = path.points[(k + 1) % len(path.points)]
+    if (0 < k < len(path.contour.points) - 1) or path.contour.is_closed:
+        prev_pt = path.contour.points[k - 1]
+        next_pt = path.contour.points[(k + 1) % len(path.contour.points)]
         v1 = np.array(normalize_vector(Vector.from_start_end(prev_pt, point)))
         v2 = np.array(normalize_vector(Vector.from_start_end(point, next_pt)))
         v = (v1 + v2) * 0.5
@@ -366,11 +366,11 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
 
     else:
         if k == 0:
-            next_pt = path.points[k + 1]
+            next_pt = path.contour.points[k + 1]
             v = normalize_vector(Vector.from_start_end(point, next_pt))
             normal = [-v[1], v[0], v[2]]  # rotate 90 degrees COUNTER-clockwise on the xy plane
-        else:  # k == len(path.points)-1:
-            prev_pt = path.points[k - 1]
+        else:  # k == len(path.contour.points)-1:
+            prev_pt = path.contour.points[k - 1]
             v = normalize_vector(Vector.from_start_end(point, prev_pt))
             normal = [v[1], -v[0], v[2]]  # rotate 90 degrees clockwise on the xy plane
 
@@ -540,7 +540,7 @@ def find_next_printpoint(pp_dict, i, j, k):
             next_ppt = pp_dict[layer_key]['path_%d' % (j + 1)][0]
         else:
             if i < len(pp_dict) - 1:  # Otherwise take the next layer if there are more layers in the current slicer
-                next_ppt = pp_dict['layer_%d' % (i + 1)]['path_0'][0]
+                next_ppt = pp_dict['layer_%d' % (i + 1)]['path_0']['contour'][0]
     return next_ppt
 
 
@@ -557,7 +557,7 @@ def find_previous_printpoint(pp_dict, layer_key, path_key, i, j, k):
         else:
             if i > 0:  # Otherwise take the last path of the previous layer if there are more layers in the current slicer
                 last_path_key = len(pp_dict[layer_key]) - 1
-                prev_ppt = pp_dict['layer_%d' % (i - 1)]['path_%d' % (last_path_key)][-1]
+                prev_ppt = pp_dict['layer_%d' % (i - 1)]['path_%d' % (last_path_key)]['contour'][-1]
     return prev_ppt
 
 
