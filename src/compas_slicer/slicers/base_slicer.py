@@ -4,7 +4,8 @@ from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
 from compas.geometry import Polyline
 from compas_slicer.geometry import Layer, VerticalLayer
-from compas_slicer.post_processing import seams_align, unify_paths_orientation
+from compas_slicer.post_processing import seams_align
+# from compas_slicer.post_processing import unify_paths_orientation
 import logging
 import copy
 from abc import abstractmethod
@@ -106,7 +107,7 @@ class BaseSlicer(object):
 
         #  --- Align the seams between layers and unify orientation
         seams_align(self, align_with='x_axis')
-        unify_paths_orientation(self)
+        # unify_paths_orientation(self)
         self.close_paths()
 
         logger.info("Created %d Layers with %d total number of points"

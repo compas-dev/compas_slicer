@@ -48,6 +48,10 @@ def set_extruder_toggle(print_organizer, slicer):
                 interrupt_path = True
                 # the last path of a vertical layer should be interrupted
 
+            if i < len(slicer.layers)-1:
+                if not slicer.layers[i+1].paths[0].is_closed:
+                    interrupt_path = True
+
             # --- create extruder toggles
             path_printpoints = pp_dict[layer_key][path_key]
             for k, printpoint in enumerate(path_printpoints):

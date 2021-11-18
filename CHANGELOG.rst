@@ -11,13 +11,24 @@ Unreleased
 
 **Added**
 * Documentation updates
-* rdp libigl function
+* rdp libigl function (faster than the regular rdp)
+* sort_paths_minimum_travel_time: Function to sort paths by least travel time between contours in a layer
 
 **Changed**
+* Changed the blend radius to add a blend radius of 0 for the first and last point of a path
+* Changed planar_slicing_cgal to add the possibility of slicing open paths with planar_slicing_cgal
+* Added the option to toggle generation of mesh normals on/off in create_printpoints
+* Added the possibility to slice only a certain section of the geometry by using slice_height_range in the PlanarSlicer
 
 **Fixed**
+* Fixed some bugs in seams_align
+* Small bug in extruder_toggle
+* Small bug in simplify_paths_rdp_igl with printing remaining no of points
+* Bug in seams_smooth
 
 **Deprecated**
+
+* close_paths in the BaseSlicer is unused for now, as it should not be necessary
 
 **Removed**
 

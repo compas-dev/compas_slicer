@@ -65,6 +65,7 @@ def simplify_paths_rdp_igl(slicer, threshold):
                     pts = np.array([[pt[0], pt[1], pt[2]] for pt in path.points])
                     S, J, Q = igl.ramer_douglas_peucker(pts, threshold)
                     path.points = [Point(pt[0], pt[1], pt[2]) for pt in S]
+                    remaining_pts_num += len(path.points)
         logger.info('%d Points remaining after rdp simplification' % remaining_pts_num)
 
     except PluginNotInstalledError:

@@ -23,6 +23,8 @@ Sorting
     seams_smooth
     sort_into_vertical_layers
     reorder_vertical_layers
+    sort_paths_minimum_travel_time
+    zig_zag_open_paths
 
 Additional
 ==========
@@ -49,6 +51,7 @@ from .seams_align import *  # noqa: F401 E402 F403
 from .seams_smooth import *  # noqa: F401 E402 F403
 from .sort_into_vertical_layers import *  # noqa: F401 E402 F403
 from .reorder_vertical_layers import *  # noqa: F401 E402 F403
+from .sort_paths_minimum_travel_time import *  # noqa: F401 E402 F403
 
 #  Orienting
 from .unify_paths_orientation import *  # noqa: F401 E402 F403

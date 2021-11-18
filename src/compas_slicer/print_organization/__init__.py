@@ -37,7 +37,8 @@ Functions
     override_extruder_toggle
     set_blend_radius
     add_safety_printpoints
-    set_wait_time
+    set_wait_time_on_sharp_corners
+    set_wait_time_based_on_extruder_toggle
     override_wait_time
     set_linear_velocity_constant
     set_linear_velocity_per_layer

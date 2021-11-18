@@ -9,6 +9,7 @@ from compas_slicer.post_processing import generate_brim
 from compas_slicer.post_processing import generate_raft
 from compas_slicer.post_processing import simplify_paths_rdp_igl
 from compas_slicer.post_processing import seams_smooth
+from compas_slicer.post_processing import seams_align
 from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
@@ -45,7 +46,7 @@ def main():
     # ==========================================================================
     # Move to origin
     # ==========================================================================
-    move_mesh_to_point(compas_mesh, Point(0, 0, 0))
+    # move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
     # ==========================================================================
     # Slicing
@@ -55,6 +56,8 @@ def main():
     # ==========================================================================
     slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
     slicer.slice_model()
+
+    seams_align(slicer, "next_path")
 
     # ==========================================================================
     # Generate brim / raft
