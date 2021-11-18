@@ -142,13 +142,21 @@
 <span class="sd">        options: &#39;default&#39;, &#39;cgal&#39;</span>
 <span class="sd">    layer_height: float</span>
 <span class="sd">        Distance between layers (slices).</span>
+<span class="sd">    slice_height_range: tuple (optional)</span>
+<span class="sd">        Optional tuple that lets the user slice only a part of the model.</span>
+<span class="sd">        Defaults to None which slices the entire model.</span>
+<span class="sd">        First value is the Z height to start slicing from, second value is the Z height to end.</span>
+<span class="sd">        The range values are not absolute height values, but relative to the current minimum height value of the mesh.</span>
+<span class="sd">        I.e. if you want to only slice the first 100 mm of the mesh, you use (0,100) regardless of the position of the mesh.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="PlanarSlicer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.PlanarSlicer.__init__.html#compas_slicer.slicers.PlanarSlicer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">slicer_type</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PlanarSlicer.__init__"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.PlanarSlicer.__init__.html#compas_slicer.slicers.PlanarSlicer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">slicer_type</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">slice_height_range</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;PlanarSlicer&#39;</span><span class="p">)</span>
         <span class="n">BaseSlicer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span> <span class="o">=</span> <span class="n">layer_height</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slicer_type</span> <span class="o">=</span> <span class="n">slicer_type</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slicer_type</span> <span class="o">=</span> <span class="n">slicer_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slice_height_range</span> <span class="o">=</span> <span class="n">slice_height_range</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;PlanarSlicer with </span><span class="si">%d</span><span class="s2"> layers and layer_height : </span><span class="si">%.2f</span><span class="s2"> mm&gt;&quot;</span> <span class="o">%</span> \
@@ -158,11 +166,19 @@
         <span class="sd">&quot;&quot;&quot;Generates the planar slicing paths.&quot;&quot;&quot;</span>
         <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertex_attribute</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span>
         <span class="n">min_z</span><span class="p">,</span> <span class="n">max_z</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slice_height_range</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">min_z</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slice_height_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_z</span> <span class="ow">and</span> <span class="n">min_z</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slice_height_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_z</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Slicing mesh in range from Z = </span><span class="si">%d</span><span class="s2"> to Z = </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slice_height_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">slice_height_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="n">max_z</span> <span class="o">=</span> <span class="n">min_z</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">slice_height_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">min_z</span> <span class="o">=</span> <span class="n">min_z</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">slice_height_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Slice height range out of bounds of geometry, slice height range not used.&quot;</span><span class="p">)</span>
+
         <span class="n">d</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">min_z</span> <span class="o">-</span> <span class="n">max_z</span><span class="p">)</span>
         <span class="n">no_of_layers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">normal</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">planes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Plane</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">min_z</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span><span class="p">),</span> <span class="n">normal</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no_of_layers</span><span class="p">)]</span>
-        <span class="c1"># planes.pop(0)  # remove planes that are on the print platform</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slicer_type</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -296,10 +312,6 @@
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -312,6 +324,13 @@
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

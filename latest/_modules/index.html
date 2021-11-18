@@ -127,7 +127,9 @@
 <li><a href="compas_slicer/post_processing/seams_smooth.html">compas_slicer.post_processing.seams_smooth</a></li>
 <li><a href="compas_slicer/post_processing/simplify_paths_rdp.html">compas_slicer.post_processing.simplify_paths_rdp</a></li>
 <li><a href="compas_slicer/post_processing/sort_into_vertical_layers.html">compas_slicer.post_processing.sort_into_vertical_layers</a></li>
+<li><a href="compas_slicer/post_processing/sort_paths_minimum_travel_time.html">compas_slicer.post_processing.sort_paths_minimum_travel_time</a></li>
 <li><a href="compas_slicer/post_processing/spiralize_contours.html">compas_slicer.post_processing.spiralize_contours</a></li>
+<li><a href="compas_slicer/post_processing/zig_zag_open_paths.html">compas_slicer.post_processing.zig_zag_open_paths</a></li>
 <li><a href="compas_slicer/pre_processing/positioning.html">compas_slicer.pre_processing.positioning</a></li>
 <li><a href="compas_slicer/print_organization/base_print_organizer.html">compas_slicer.print_organization.base_print_organizer</a></li>
 <li><a href="compas_slicer/print_organization/interpolation_print_organizer.html">compas_slicer.print_organization.interpolation_print_organizer</a></li>
@@ -256,10 +258,6 @@
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -272,6 +270,13 @@
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

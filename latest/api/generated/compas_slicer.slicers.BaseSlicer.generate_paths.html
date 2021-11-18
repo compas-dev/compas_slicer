@@ -132,7 +132,7 @@
 <h1>BaseSlicer.generate_paths</h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="compas_slicer.slicers.BaseSlicer.generate_paths">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-prename descclassname"><span class="pre">BaseSlicer.</span></span><span class="sig-name descname"><span class="pre">generate_paths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/base_slicer.html#BaseSlicer.generate_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BaseSlicer.</span></span><span class="sig-name descname"><span class="pre">generate_paths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/base_slicer.html#BaseSlicer.generate_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>To be implemented by the inheriting classes.</p>
 </dd></dl>
 
@@ -283,10 +283,6 @@
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -299,6 +295,13 @@
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

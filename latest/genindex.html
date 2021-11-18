@@ -117,7 +117,7 @@
 <section class="genindex-section">
   <h1>Index</h1>
   <div class="">
-  <a href="#_"><strong>_</strong></a> | <a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#V"><strong>V</strong></a>
+  <a href="#_"><strong>_</strong></a> | <a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#Z"><strong>Z</strong></a>
   </div>
 </section>
 <section id="_" class="">
@@ -538,9 +538,13 @@
 </li>
         <li><a href="api/generated/compas_slicer.print_organization.set_linear_velocity_constant.html#compas_slicer.print_organization.set_linear_velocity_constant">set_linear_velocity_constant() (in module compas_slicer.print_organization)</a>
 </li>
+        <li><a href="api/generated/compas_slicer.print_organization.set_linear_velocity_per_layer.html#compas_slicer.print_organization.set_linear_velocity_per_layer">set_linear_velocity_per_layer() (in module compas_slicer.print_organization)</a>
+</li>
     </ul></td>
     <td><ul>
-        <li><a href="api/generated/compas_slicer.print_organization.set_linear_velocity_per_layer.html#compas_slicer.print_organization.set_linear_velocity_per_layer">set_linear_velocity_per_layer() (in module compas_slicer.print_organization)</a>
+        <li><a href="api/generated/compas_slicer.print_organization.set_wait_time_based_on_extruder_toggle.html#compas_slicer.print_organization.set_wait_time_based_on_extruder_toggle">set_wait_time_based_on_extruder_toggle() (in module compas_slicer.print_organization)</a>
+</li>
+        <li><a href="api/generated/compas_slicer.print_organization.set_wait_time_on_sharp_corners.html#compas_slicer.print_organization.set_wait_time_on_sharp_corners">set_wait_time_on_sharp_corners() (in module compas_slicer.print_organization)</a>
 </li>
         <li><a href="api/generated/compas_slicer.post_processing.simplify_paths_rdp.html#compas_slicer.post_processing.simplify_paths_rdp">simplify_paths_rdp() (in module compas_slicer.post_processing)</a>
 </li>
@@ -555,6 +559,8 @@
         <li><a href="api/generated/compas_slicer.utilities.smooth_vectors.html#compas_slicer.utilities.smooth_vectors">smooth_vectors() (in module compas_slicer.utilities)</a>
 </li>
         <li><a href="api/generated/compas_slicer.post_processing.sort_into_vertical_layers.html#compas_slicer.post_processing.sort_into_vertical_layers">sort_into_vertical_layers() (in module compas_slicer.post_processing)</a>
+</li>
+        <li><a href="api/generated/compas_slicer.post_processing.sort_paths_minimum_travel_time.html#compas_slicer.post_processing.sort_paths_minimum_travel_time">sort_paths_minimum_travel_time() (in module compas_slicer.post_processing)</a>
 </li>
         <li><a href="api/generated/compas_slicer.post_processing.spiralize_contours.html#compas_slicer.post_processing.spiralize_contours">spiralize_contours() (in module compas_slicer.post_processing)</a>
 </li>
@@ -612,6 +618,16 @@
           <li><a href="api/generated/compas_slicer.slicers.PlanarSlicer.visualize_on_viewer.html#compas_slicer.slicers.PlanarSlicer.visualize_on_viewer">(compas_slicer.slicers.PlanarSlicer method)</a>
 </li>
         </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="Z" class="">
+  <h2>Z</h2>
+  <table class=""><tr>
+    <td><ul>
+        <li><a href="api/generated/compas_slicer.post_processing.zig_zag_open_paths.html#compas_slicer.post_processing.zig_zag_open_paths">zig_zag_open_paths() (in module compas_slicer.post_processing)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -731,10 +747,6 @@
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -747,6 +759,13 @@
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

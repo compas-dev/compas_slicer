@@ -130,7 +130,7 @@
 <h1>PlanarSlicer</h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="compas_slicer.slicers.PlanarSlicer">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">compas_slicer.slicers.</span></span><span class="sig-name descname"><span class="pre">PlanarSlicer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slicer_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/planar_slicer.html#PlanarSlicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_slicer.slicers.</span></span><span class="sig-name descname"><span class="pre">PlanarSlicer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slicer_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_height_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/planar_slicer.html#PlanarSlicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer" title="compas_slicer.slicers.base_slicer.BaseSlicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.base_slicer.BaseSlicer</span></code></a></p>
 <p>Generates planar contours on a mesh that are parallel to the xy plane.</p>
 <dl class="field-list simple">
@@ -140,6 +140,11 @@
 <li><p><strong>slicer_type</strong> (<em>str</em>) – String representing which slicing method to use.
 options: ‘default’, ‘cgal’</p></li>
 <li><p><strong>layer_height</strong> (<em>float</em>) – Distance between layers (slices).</p></li>
+<li><p><strong>slice_height_range</strong> (<em>tuple (optional)</em>) – Optional tuple that lets the user slice only a part of the model.
+Defaults to None which slices the entire model.
+First value is the Z height to start slicing from, second value is the Z height to end.
+The range values are not absolute height values, but relative to the current minimum height value of the mesh.
+I.e. if you want to only slice the first 100 mm of the mesh, you use (0,100) regardless of the position of the mesh.</p></li>
 </ul>
 </dd>
 </dl>
@@ -183,7 +188,7 @@ options: ‘default’, ‘cgal’</p></li>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.__init__.html#compas_slicer.slicers.PlanarSlicer.__init__" title="compas_slicer.slicers.PlanarSlicer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(mesh[, slicer_type, layer_height])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.__init__.html#compas_slicer.slicers.PlanarSlicer.__init__" title="compas_slicer.slicers.PlanarSlicer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(mesh[, slicer_type, layer_height, ...])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.generate_paths.html#compas_slicer.slicers.PlanarSlicer.generate_paths" title="compas_slicer.slicers.PlanarSlicer.generate_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_paths</span></code></a>()</p></td>
@@ -228,7 +233,7 @@ options: ‘default’, ‘cgal’</p></li>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.to_json.html#compas_slicer.slicers.PlanarSlicer.to_json" title="compas_slicer.slicers.PlanarSlicer.to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_json</span></code></a>(filepath, name)</p></td>
 <td><p>Writes the slicer to a JSON file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.visualize_on_viewer.html#compas_slicer.slicers.PlanarSlicer.visualize_on_viewer" title="compas_slicer.slicers.PlanarSlicer.visualize_on_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_on_viewer</span></code></a>(viewer[, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.visualize_on_viewer.html#compas_slicer.slicers.PlanarSlicer.visualize_on_viewer" title="compas_slicer.slicers.PlanarSlicer.visualize_on_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_on_viewer</span></code></a>(viewer[, ...])</p></td>
 <td><p>Visualizes slicing result using compas.viewers.</p></td>
 </tr>
 </tbody>
@@ -384,10 +389,6 @@ options: ‘default’, ‘cgal’</p></li>
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -400,6 +401,13 @@ options: ‘default’, ‘cgal’</p></li>
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

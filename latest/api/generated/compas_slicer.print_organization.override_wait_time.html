@@ -23,7 +23,7 @@
   
 
   
-    <link rel="prev" title="add_safety_printpoints" href="compas_slicer.print_organization.add_safety_printpoints.html" />
+    <link rel="prev" title="set_wait_time_based_on_extruder_toggle" href="compas_slicer.print_organization.set_wait_time_based_on_extruder_toggle.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -202,11 +202,11 @@
   <footer class="compas-footer">
     <nav class="nav p-2">
       
-        <a href="compas_slicer.print_organization.add_safety_printpoints.html" title="add_safety_printpoints" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+        <a href="compas_slicer.print_organization.set_wait_time_based_on_extruder_toggle.html" title="set_wait_time_based_on_extruder_toggle" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
           <div class="nav-title flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Previous</div>
-            add_safety_printpoints
+            set_wait_time_based_on_extruder_toggle
           </div>
         </a>
       
@@ -289,10 +289,6 @@
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -305,6 +301,13 @@
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

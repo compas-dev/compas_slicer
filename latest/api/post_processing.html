@@ -160,6 +160,12 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/compas_slicer.post_processing.reorder_vertical_layers.html#compas_slicer.post_processing.reorder_vertical_layers" title="compas_slicer.post_processing.reorder_vertical_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reorder_vertical_layers</span></code></a></p></td>
 <td><p>Re-orders the vertical layers in a specific way</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.post_processing.sort_paths_minimum_travel_time.html#compas_slicer.post_processing.sort_paths_minimum_travel_time" title="compas_slicer.post_processing.sort_paths_minimum_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_paths_minimum_travel_time</span></code></a></p></td>
+<td><p>Sorts the paths within a horizontal layer to reduce total travel time.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_slicer.post_processing.zig_zag_open_paths.html#compas_slicer.post_processing.zig_zag_open_paths" title="compas_slicer.post_processing.zig_zag_open_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zig_zag_open_paths</span></code></a></p></td>
+<td><p>Reverses half of the open paths of the slicer, so that they can be printed in a zig zag motion.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -335,10 +341,6 @@
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -351,6 +353,13 @@
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

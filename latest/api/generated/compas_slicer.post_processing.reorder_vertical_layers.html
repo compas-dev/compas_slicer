@@ -19,7 +19,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="generate_brim" href="compas_slicer.post_processing.generate_brim.html" />
+    <link rel="next" title="sort_paths_minimum_travel_time" href="compas_slicer.post_processing.sort_paths_minimum_travel_time.html" />
   
 
   
@@ -214,10 +214,10 @@ Point(x,y,z) = reorders the vertical layers starting from a given Point</p></li>
       
 
       
-        <a href="compas_slicer.post_processing.generate_brim.html" title="generate_brim" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+        <a href="compas_slicer.post_processing.sort_paths_minimum_travel_time.html" title="sort_paths_minimum_travel_time" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
           <div class="nav-title footer-link flex-grow-1 align-self-center">
             <div class="nav-direction small font-weight-light">Next</div>
-            generate_brim
+            sort_paths_minimum_travel_time
           </div>
           <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
         </a>
@@ -291,10 +291,6 @@ Point(x,y,z) = reorders the vertical layers starting from a given Point</p></li>
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -307,6 +303,13 @@ Point(x,y,z) = reorders the vertical layers starting from a given Point</p></li>
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

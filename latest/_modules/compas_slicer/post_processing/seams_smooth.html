@@ -145,23 +145,25 @@
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">VerticalLayer</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
-                <span class="n">pt0</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="c1"># only points in the first half of a path should be evaluated</span>
-                <span class="n">half_of_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span>
-                <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">half_of_path</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">distance_point_point</span><span class="p">(</span><span class="n">pt0</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">smooth_distance</span><span class="p">:</span>
-                        <span class="c1"># remove points if within smooth_distance</span>
-                        <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># create new point at a distance of the</span>
-                        <span class="c1"># &#39;smooth_distance&#39; from the first point,</span>
-                        <span class="c1"># so that all seams are of equal length</span>
-                        <span class="n">vect</span> <span class="o">=</span> <span class="n">Vector</span><span class="o">.</span><span class="n">from_start_end</span><span class="p">(</span><span class="n">pt0</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span>
-                        <span class="n">vect</span><span class="o">.</span><span class="n">unitize</span><span class="p">()</span>
-                        <span class="n">new_pt</span> <span class="o">=</span> <span class="n">pt0</span> <span class="o">+</span> <span class="p">(</span><span class="n">vect</span> <span class="o">*</span> <span class="n">smooth_distance</span><span class="p">)</span>
-                        <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_pt</span><span class="p">)</span>
-                        <span class="k">break</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>  <span class="c1"># only for closed paths</span>
+                    <span class="n">pt0</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="c1"># only points in the first half of a path should be evaluated</span>
+                    <span class="n">half_of_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span>
+                    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">half_of_path</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">distance_point_point</span><span class="p">(</span><span class="n">pt0</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">smooth_distance</span><span class="p">:</span>
+                            <span class="c1"># remove points if within smooth_distance</span>
+                            <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># create new point at a distance of the</span>
+                            <span class="c1"># &#39;smooth_distance&#39; from the first point,</span>
+                            <span class="c1"># so that all seams are of equal length</span>
+                            <span class="n">vect</span> <span class="o">=</span> <span class="n">Vector</span><span class="o">.</span><span class="n">from_start_end</span><span class="p">(</span><span class="n">pt0</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span>
+                            <span class="n">vect</span><span class="o">.</span><span class="n">unitize</span><span class="p">()</span>
+                            <span class="n">new_pt</span> <span class="o">=</span> <span class="n">pt0</span> <span class="o">+</span> <span class="p">(</span><span class="n">vect</span> <span class="o">*</span> <span class="n">smooth_distance</span><span class="p">)</span>
+                            <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_pt</span><span class="p">)</span>
+                            <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># remove last point</span>
+                            <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Smooth seams only works for layers consisting out of a single path, or for vertical layers.&quot;</span>
                            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Paths were not changed, seam smoothing skipped for layer </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span></div>
@@ -285,10 +287,6 @@
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -301,6 +299,13 @@
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

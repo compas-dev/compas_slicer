@@ -130,8 +130,8 @@
 <h1>BasePrintOrganizer</h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="compas_slicer.print_organization.BasePrintOrganizer">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">compas_slicer.print_organization.</span></span><span class="sig-name descname"><span class="pre">BasePrintOrganizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slicer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/base_print_organizer.html#BasePrintOrganizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_slicer.print_organization.</span></span><span class="sig-name descname"><span class="pre">BasePrintOrganizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slicer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/print_organization/base_print_organizer.html#BasePrintOrganizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base class for organizing the printing process.
 This class is meant to be extended for the implementation of the various print organizers.
 Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or InterpolationPrintOrganizer.</p>
@@ -186,7 +186,7 @@ Do not use this class directly in your python code. Instead use PlanarPrintOrgan
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.create_printpoints.html#compas_slicer.print_organization.BasePrintOrganizer.create_printpoints" title="compas_slicer.print_organization.BasePrintOrganizer.create_printpoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_printpoints</span></code></a>()</p></td>
 <td><p>To be implemented by the inheriting classes</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items" title="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_printpoint_neighboring_items</span></code></a>(layer_key, …)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items" title="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_printpoint_neighboring_items</span></code></a>(layer_key, ...)</p></td>
 <td><p>layer_key: str</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute" title="compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_printpoints_attribute</span></code></a>(attr_name)</p></td>
@@ -210,10 +210,10 @@ Do not use this class directly in your python code. Instead use PlanarPrintOrgan
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator.html#compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator" title="compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">printpoints_iterator</span></code></a>()</p></td>
 <td><p>Iterate over the printpoints of the print organizer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path.html#compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path" title="compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_duplicate_points_in_path</span></code></a>(layer_key, …)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path.html#compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path" title="compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_duplicate_points_in_path</span></code></a>(layer_key, ...)</p></td>
 <td><p>Remove subsequent points that are within a certain threshold.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer.html#compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer" title="compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_on_viewer</span></code></a>(viewer, …)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer.html#compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer" title="compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_on_viewer</span></code></a>(viewer, ...)</p></td>
 <td><p>Visualize printpoints on the compas_viewer.</p></td>
 </tr>
 </tbody>
@@ -376,10 +376,6 @@ Do not use this class directly in your python code. Instead use PlanarPrintOrgan
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -392,6 +388,13 @@ Do not use this class directly in your python code. Instead use PlanarPrintOrgan
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

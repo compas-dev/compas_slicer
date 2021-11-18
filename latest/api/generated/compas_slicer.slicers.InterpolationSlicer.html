@@ -130,7 +130,7 @@
 <h1>InterpolationSlicer</h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="compas_slicer.slicers.InterpolationSlicer">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">compas_slicer.slicers.</span></span><span class="sig-name descname"><span class="pre">InterpolationSlicer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocessor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/interpolation_slicer.html#InterpolationSlicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_slicer.slicers.</span></span><span class="sig-name descname"><span class="pre">InterpolationSlicer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocessor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/interpolation_slicer.html#InterpolationSlicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer" title="compas_slicer.slicers.base_slicer.BaseSlicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.base_slicer.BaseSlicer</span></code></a></p>
 <p>Generates non-planar contours that interpolate user-defined boundaries.</p>
 <dl class="field-list simple">
@@ -229,7 +229,7 @@ We recommend to 1)re-topologize, 2) triangulate, and 3) weld your mesh in advanc
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.slicers.InterpolationSlicer.to_json.html#compas_slicer.slicers.InterpolationSlicer.to_json" title="compas_slicer.slicers.InterpolationSlicer.to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_json</span></code></a>(filepath, name)</p></td>
 <td><p>Writes the slicer to a JSON file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.InterpolationSlicer.visualize_on_viewer.html#compas_slicer.slicers.InterpolationSlicer.visualize_on_viewer" title="compas_slicer.slicers.InterpolationSlicer.visualize_on_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_on_viewer</span></code></a>(viewer[, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.InterpolationSlicer.visualize_on_viewer.html#compas_slicer.slicers.InterpolationSlicer.visualize_on_viewer" title="compas_slicer.slicers.InterpolationSlicer.visualize_on_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_on_viewer</span></code></a>(viewer[, ...])</p></td>
 <td><p>Visualizes slicing result using compas.viewers.</p></td>
 </tr>
 </tbody>
@@ -385,10 +385,6 @@ We recommend to 1)re-topologize, 2) triangulate, and 3) weld your mesh in advanc
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -401,6 +397,13 @@ We recommend to 1)re-topologize, 2) triangulate, and 3) weld your mesh in advanc
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

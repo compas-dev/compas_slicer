@@ -153,10 +153,10 @@
 <td><p>Finds the closest vertex normal to the point.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.utilities.get_closest_pt_index.html#compas_slicer.utilities.get_closest_pt_index" title="compas_slicer.utilities.get_closest_pt_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_closest_pt_index</span></code></a></p></td>
-<td><p>Finds the index of the closest point of ‘pt’ in the point cloud ‘pts’.</p></td>
+<td><p>Finds the index of the closest point of 'pt' in the point cloud 'pts'.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/compas_slicer.utilities.get_closest_pt.html#compas_slicer.utilities.get_closest_pt" title="compas_slicer.utilities.get_closest_pt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_closest_pt</span></code></a></p></td>
-<td><p>Finds the closest point of ‘pt’ in the point cloud ‘pts’.</p></td>
+<td><p>Finds the closest point of 'pt' in the point cloud 'pts'.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_slicer.utilities.plot_networkx_graph.html#compas_slicer.utilities.plot_networkx_graph" title="compas_slicer.utilities.plot_networkx_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_networkx_graph</span></code></a></p></td>
 <td><p>Plots the graph G</p></td>
@@ -329,10 +329,6 @@
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -345,6 +341,13 @@
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>

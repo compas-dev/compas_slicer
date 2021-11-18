@@ -125,7 +125,8 @@
 <span class="kn">from</span> <span class="nn">compas_slicer.utilities</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polyline</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.geometry</span> <span class="kn">import</span> <span class="n">Layer</span><span class="p">,</span> <span class="n">VerticalLayer</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_align</span><span class="p">,</span> <span class="n">unify_paths_orientation</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_align</span>
+<span class="c1"># from compas_slicer.post_processing import unify_paths_orientation</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
@@ -227,7 +228,7 @@
 
         <span class="c1">#  --- Align the seams between layers and unify orientation</span>
         <span class="n">seams_align</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">align_with</span><span class="o">=</span><span class="s1">&#39;x_axis&#39;</span><span class="p">)</span>
-        <span class="n">unify_paths_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># unify_paths_orientation(self)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_paths</span><span class="p">()</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created </span><span class="si">%d</span><span class="s2"> Layers with </span><span class="si">%d</span><span class="s2"> total number of points&quot;</span>
@@ -520,10 +521,6 @@
     hljs.initHighlighting();
     anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
   });
 
 
@@ -536,6 +533,13 @@
       lines.forEach(version => {
         $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
       });
+
+      var selected_version = $('.nav-versions .dropdown-item').filter(function(i, ver) {
+        return window.location.href.startsWith(ver.href);
+      });
+      selected_version.addClass('active');
+      $("#bd-versions").text(selected_version.text());
+
     })
   }
   </script>
