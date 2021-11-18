@@ -47,9 +47,12 @@ class PlanarSlicer(BaseSlicer):
         min_z, max_z = min(z), max(z)
 
         if self.slice_height_range:
-            logger.info("Slicing mesh in range from Z = %d to Z = %d." % (self.slice_height_range[0], self.slice_height_range[1]))
-            max_z = min_z + self.slice_height_range[1]
-            min_z = min_z + self.slice_height_range[0]
+            if min_z <= self.slice_height_range[0] <= max_z and min_z <= self.slice_height_range[1] <= max_z:
+                logger.info("Slicing mesh in range from Z = %d to Z = %d." % (self.slice_height_range[0], self.slice_height_range[1]))
+                max_z = min_z + self.slice_height_range[1]
+                min_z = min_z + self.slice_height_range[0]
+            else:
+                logger.warning("Slice height range out of bounds of geometry, slice height range not used.")
 
         d = abs(min_z - max_z)
         no_of_layers = int(d / self.layer_height) + 1
