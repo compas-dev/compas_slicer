@@ -10,6 +10,19 @@ Unreleased
 ----------
 
 **Added**
+
+**Changed**
+
+**Fixed**
+
+**Deprecated**
+
+**Removed**
+
+0.4.0
+----------
+
+**Added**
 * Documentation updates
 * rdp libigl function (faster than the regular rdp)
 * sort_paths_minimum_travel_time: Function to sort paths by least travel time between contours in a layer
