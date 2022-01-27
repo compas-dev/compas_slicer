@@ -11,6 +11,8 @@ Unreleased
 
 **Added**
 
+* Zenodo integration
+
 **Changed**
 
 **Fixed**
