@@ -3,6 +3,9 @@
 [![build](https://github.com/compas-dev/compas_slicer/workflows/build/badge.svg)](https://github.com/compas-dev/compas_slicer/actions)
 [![GitHub - License](https://img.shields.io/github/license/compas-dev/compas_slicer.svg)](https://github.com/compas-dev/compas_slicer/blob/master/LICENSE) 
 [![PyPI - Latest Release](https://img.shields.io/pypi/v/COMPAS-SLICER.svg)](https://pypi.python.org/project/COMPAS-SLICER)
+[![DOI](https://zenodo.org/badge/226364384.svg)](https://zenodo.org/badge/latestdoi/226364384)
+
+
 
 Slicing package for FDM 3D Printing with COMPAS.
 
