@@ -28,7 +28,7 @@ optional_requirements = {}
 
 setup(
     name="compas_slicer",
-    version="0.4.0",
+    version="0.5.0",
     description="Slicing package for FDM 3D Printing with COMPAS",
     long_description=long_description,
     long_description_content_type="text/markdown",
