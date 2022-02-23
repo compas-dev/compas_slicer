@@ -312,16 +312,14 @@ def tool_visualization(origin_coords, mesh, planes, i):
 #######################################
 # --- Create_targets (Curved slicing)
 
-def create_targets(mesh, targets, resolution_mult, path, folder_name, json_name):
+def create_targets(mesh, targets, path, folder_name, json_name):
     """ Creation of targets for curved slicing. """
 
-    avg_face_area = max(rs.MeshArea([mesh])) / rs.MeshFaceCount(mesh)
-    div_num = max(20, int(resolution_mult * avg_face_area))
+    avg_face_area = rs.MeshArea([mesh])[1] / rs.MeshFaceCount(mesh)
 
     pts = []
     for target in targets:
-        print(div_num)
-        pts.extend(rs.DivideCurve(target, div_num))
+        pts.extend(rs.DivideCurveEquidistant(target, 0.25*avg_face_area))
 
     vs = rs.MeshVertices(mesh)
     vertices = []
@@ -330,7 +328,7 @@ def create_targets(mesh, targets, resolution_mult, path, folder_name, json_name)
         closest_vi = get_closest_point_index(p, vs)
         if closest_vi not in vertex_indices:
             ds_from_targets = [distance_of_pt_from_crv(vs[closest_vi], target) for target in targets]
-            if min(ds_from_targets) < 0.5:  # hardcoded threshold value
+            if min(ds_from_targets) < 0.01:  # hardcoded threshold value
                 vertices.append(vs[closest_vi])
                 vertex_indices.append(closest_vi)
 
