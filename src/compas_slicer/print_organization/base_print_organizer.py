@@ -256,6 +256,27 @@ class BasePrintOrganizer(object):
         logger.info("Generated %d print points" % count)
         return data
 
+    def output_nested_printpoints_dict(self):
+        """Creates a nested PrintPoints as a dictionary.
+
+        Returns
+        ----------
+        dict, with printpoints that can be saved as json
+        """
+        data = {}
+
+        count = 0
+        for layer_key in self.printpoints_dict:
+            data[layer_key] = {}
+            for path_key in self.printpoints_dict[layer_key]:
+                data[layer_key][path_key] = {}
+                self.remove_duplicate_points_in_path(layer_key, path_key)
+                for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
+                    data[layer_key][path_key][i] = printpoint.to_data()
+
+        logger.info("Generated %d print points" % count)
+        return data
+
     def output_gcode(self, parameters):
         """ Gets a gcode text file using the function that creates gcode
         Parameters

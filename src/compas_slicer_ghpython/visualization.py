@@ -62,6 +62,86 @@ def load_slicer(path, folder_name, json_name):
 #######################################
 # --- Printpoints
 
+class PrintPointGH:
+    def __init__(self, pt):
+        self.pt = pt
+        self.frame = None
+        self.layer_height = None
+        self.up_vector = None
+        self.mesh_normal = None
+        self.closest_support_pt = None
+
+        self.velocity = None
+        self.wait_time = None
+        self.blend_radius = None
+        self.extruder_toggle = None
+
+
+class PathGH:
+    def __init__(self):
+        self.ppts = []
+
+
+class LayerGH:
+    def __init__(self):
+        self.paths = []
+
+
+def load_nested_printpoints(path, folder_name, json_name, load_frames, load_layer_heights, load_up_vectors,
+                            load_normals, load_closest_support_pt, load_velocities, load_wait_times,
+                            load_blend_radiuses, load_extruder_toggles):
+    """ Loads a dict of compas_slicer printpoints. """
+
+    data = load_json_file(path, folder_name, json_name)
+    layers = []
+
+    if data:
+        for i in range(len(data)):
+            layer_key = 'layer_' + str(i)
+            layer = LayerGH()
+            for j in range(len(data[layer_key])):
+                path_key = 'path_' + str(j)
+                path = PathGH()
+                for k in range(len(data[layer_key][path_key])):
+                    ppt_data = data[layer_key][path_key][str(k)]
+                    ppt = PrintPointGH(rg.Point3d(ppt_data["point"][0], ppt_data["point"][1], ppt_data["point"][2]))
+
+                    if load_frames:
+                        compas_frame = Frame.from_data(ppt_data["frame"])
+                        pt, x_axis, y_axis = compas_frame.point, compas_frame.xaxis, compas_frame.yaxis
+                        ppt.frame = rs.PlaneFromFrame(pt, x_axis, y_axis)
+
+                    if load_layer_heights:
+                        ppt.layer_height = ppt_data["layer_height"]
+
+                    if load_up_vectors:
+                        ppt.up_vector = rg.Vector3d(ppt_data["up_vector"][0], ppt_data["up_vector"][1], ppt_data["up_vector"][2])
+
+                    if load_normals:
+                        ppt.mesh_normal = rg.Vector3d(ppt_data["mesh_normal"][0], ppt_data["mesh_normal"][1], ppt_data["mesh_normal"][2])
+
+                    if load_closest_support_pt:
+                        cp = ppt_data["closest_support_pt"]
+                        if cp:
+                            ppt.closest_support_pt = rg.Point3d(cp[0], cp[1], cp[2])
+                        else:
+                            ppt.closest_support_pt = ppt.pt  # dummy value to have the same number of pts and cpts
+
+                    if load_velocities:
+                        ppt.velocity = ppt_data["velocity"]
+                    if load_wait_times:
+                        ppt.wait_time = ppt_data["wait_time"]
+                    if load_blend_radiuses:
+                        ppt.blend_radius = ppt_data["blend_radius"]
+                    if load_extruder_toggles:
+                        ppt.extruder_toggle = ppt_data["extruder_toggle"]
+
+                    path.ppts.append(ppt)
+                layer.paths.append(path)
+            layers.append(layer)
+    return layers
+
+
 def load_printpoints(path, folder_name, json_name):
     """ Loads a dict of compas_slicer printpoints. """
     data = load_json_file(path, folder_name, json_name)
@@ -272,6 +352,7 @@ def load_multiple_meshes(starts_with, ends_with, path, folder_name):
         color = get_color(i, total=len(meshes))
         mesh = artist.draw(color)
         loaded_meshes.append(mesh)
+        print(mesh[0:10])
 
     return loaded_meshes
 
