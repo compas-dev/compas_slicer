@@ -203,7 +203,7 @@ def load_printpoints(path, folder_name, json_name):
 #######################################
 # --- Lightweight path visualization
 
-def lightweight_path_visualization(points, extruder_toggles, domain_start, domain_end, diameter, pipe_resolution):
+def lightweight_path_visualization(points, extruder_toggles, diameter, pipe_resolution):
     """ Visualize print paths with simple lines or pipes. """
     #  check input
     assert len(points) == len(extruder_toggles), \
@@ -212,10 +212,6 @@ def lightweight_path_visualization(points, extruder_toggles, domain_start, domai
     print_path_pipes = []
     travel_path_lines = []
 
-    domain_end = min(domain_end, len(points))  # make sure domain_end does not exceed len of pts
-
-    points = points[domain_start:domain_end]
-    extruder_toggles = extruder_toggles[domain_start:domain_end]
     for i in range(len(points) - 1):
         if extruder_toggles[i]:
             line = rg.Curve.CreateControlPointCurve([points[i], points[i + 1]])  # create line
