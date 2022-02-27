@@ -108,7 +108,10 @@ def main():
 
             # --- Save printpoints dictionary to json file
             printpoints_data = print_organizer.output_printpoints_dict()
-            utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints_%d.json' % i)
+            utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints_flat_%d.json' % i)
+
+            printpoints_data = print_organizer.output_nested_printpoints_dict()
+            utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints_nested_%d.json' % i)
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")

@@ -25,6 +25,10 @@ def load_slicer(path, folder_name, json_name):
         if 'mesh' in data:
             compas_mesh = Mesh.from_data(data['mesh'])
             artist = MeshArtist(compas_mesh)
+            artist.show_mesh = True
+            artist.show_vertices = False
+            artist.show_edges = False
+            artist.show_faces = False
             mesh = artist.draw()
         else:
             print('No mesh has been saved in the json file.')
@@ -343,10 +347,13 @@ def load_multiple_meshes(starts_with, ends_with, path, folder_name):
     loaded_meshes = []
     for i, m in enumerate(meshes):
         artist = MeshArtist(m)
+        artist.show_mesh = True
+        artist.show_vertices = False
+        artist.show_edges = False
+        artist.show_faces = False
         color = get_color(i, total=len(meshes))
         mesh = artist.draw(color)
-        loaded_meshes.append(mesh)
-        print(mesh[0:10])
+        loaded_meshes.append(mesh[0])
 
     return loaded_meshes
 
