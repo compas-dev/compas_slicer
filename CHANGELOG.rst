@@ -12,6 +12,7 @@ Unreleased
 **Added**
 
 **Changed**
+* Updates in the visualization of PrintPoints
 
 **Fixed**
 
