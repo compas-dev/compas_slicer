@@ -3,6 +3,8 @@ import json
 import logging
 from compas.geometry import Point, distance_point_point_sqrd, normalize_vector
 from compas.geometry import Vector, length_vector, closest_point_in_cloud, closest_point_on_plane
+from compas.geometry import Polyline, Line, closest_point_on_polyline, is_point_on_polyline, distance_point_point
+from compas.utilities import pairwise
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
@@ -39,7 +41,8 @@ __all__ = ['remap',
            'get_normal_of_path_on_xy_plane',
            'get_all_files_with_name',
            'get_closest_mesh_normal_to_pt',
-           'check_package_is_installed']
+           'check_package_is_installed', 
+           'find_polyline_closest_parameter']
 
 
 def remap(input_val, in_from, in_to, out_from, out_to):
@@ -337,6 +340,35 @@ def get_mesh_vertex_coords_with_attribute(mesh, attr, value):
             pts.append(Point(*mesh.vertex_coordinates(vkey)))
     return pts
 
+def find_polyline_closest_parameter(polyline, point):
+    """ 
+    Returns the normalized parameter t (in the range 0-1) 
+    
+    polyline : compas.geometry.polyline
+    point: compas.geometry.Point
+    """
+    # project point on Polyline
+    projection = closest_point_on_polyline(point, polyline)
+    
+    # find in which segment lies the projection
+    segment_index = -1
+    segment_p1 = Point(0.0, 0.0, 0.0)
+    for i, (p1, p2) in enumerate(pairwise(polyline.points)):
+        if is_point_on_polyline(projection, Polyline([p1, p2])):
+            segment_index = i
+            segment_p1 = p1
+    assert segment_index >= 0, "The projected point is not inside any of the polyline segments. Please check your input geometry."
+    
+    # find the parameter t
+    passed_length = 0.0
+    for i in range(segment_index):
+        line = Line(polyline.points[i], polyline.points[i+1])
+        passed_length += line.length
+    
+    passed_length += distance_point_point(segment_p1, projection)
+    t = passed_length / polyline.length
+    
+    return t
 
 def get_normal_of_path_on_xy_plane(k, point, path, mesh):
     """
