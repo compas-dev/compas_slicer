@@ -5,7 +5,7 @@ import logging
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing import move_mesh_to_point
 from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.post_processing.infill import fermat_spiral
+from compas_slicer.post_processing import fermat_spiral
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import PlanarPrintOrganizer
@@ -13,8 +13,8 @@ from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.print_organization import set_linear_velocity_constant
 from compas_slicer.print_organization import set_blend_radius
-from compas_slicer.utilities import save_to_json
-from compas_view2 import app
+from compas_slicer.utilities import save_to_json, load_from_json
+# from compas_view2 import app
 
 from compas.datastructures import Mesh
 from compas.geometry import Point
@@ -34,6 +34,7 @@ MODEL = 'simple_vase_open_low_res.obj'
 
 
 def main():
+
     start_time = time.time()
 
     # ==========================================================================
@@ -54,7 +55,6 @@ def main():
     # ==========================================================================
     slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=30.0)
     slicer.slice_model()
-
     
     # ==========================================================================
     # Generate infill
@@ -77,6 +77,8 @@ def main():
     # Save slicer data to JSON
     # ==========================================================================
     save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
+    # slicer_data = load_from_json(OUTPUT_DIR, 'slicer_data.json')
+    # slicer = PlanarSlicer.from_data(slicer_data)
 
     # ==========================================================================
     # Initializes the PlanarPrintOrganizer and creates PrintPoints
@@ -88,7 +90,7 @@ def main():
     # Set fabrication-related parameters
     # ==========================================================================
     set_extruder_toggle(print_organizer, slicer)
-    add_safety_printpoints(print_organizer, z_hop=0.0)
+    # add_safety_printpoints(print_organizer, z_hop=0.0)
     set_linear_velocity_constant(print_organizer, v=25.0)
     set_blend_radius(print_organizer, d_fillet=10.0)
 
@@ -106,10 +108,10 @@ def main():
     # ==========================================================================
     # Initializes the compas_viewer and visualizes results
     # ==========================================================================
-    viewer = app.App(width=1600, height=1000)
+    # viewer = app.App(width=1600, height=1000)
     # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
-    print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
-    viewer.show()
+    # print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
+    # viewer.show()
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")

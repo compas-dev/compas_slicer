@@ -10,7 +10,7 @@ from compas_slicer.post_processing.contour_offsets_layer import contour_offsets_
 
 logger = logging.getLogger('logger')
 
-__all__ = ['infill_fermat_spiral']
+__all__ = ['fermat_spiral']
 
 # TODO add simple spiral function
 
@@ -44,7 +44,7 @@ def fermat_spiral(slicer, layer_width, seam_parameter, max_offsets=20, reverse=F
     for i, layer in enumerate(slicer.layers):
         slicer.layers[i] = contour_offsets_layer(layer, layer_width, max_offsets=max_offsets)
 
-    pl_layer = []
+    pl_layers = []
 
     with progressbar.ProgressBar(max_value=len(slicer.layers)) as bar:
         for i, layer in enumerate(slicer.layers):
@@ -72,7 +72,8 @@ def fermat_spiral(slicer, layer_width, seam_parameter, max_offsets=20, reverse=F
                             par_1 = seam_parameter
                         # above bottom layer
                         else:
-                            pt_1 = compas.geometry.closest_point_on_polyline(pl_layer[i-1][1], pl)
+                            lower_pt = pl_layers[i-1][1]
+                            pt_1 = compas.geometry.closest_point_on_polyline(lower_pt, pl)
                             par_1 = find_polyline_closest_parameter(pl, pt_1)
                     else:
                         pt = compas.geometry.closest_point_on_polyline(pt_2, pl)
@@ -138,15 +139,15 @@ def fermat_spiral(slicer, layer_width, seam_parameter, max_offsets=20, reverse=F
                         pl_2_pts.extend(pts_in)
                 
                 # add all pts in layer (pl_1 + reverse pl_2)
-                pl_layer.append(pl_1_pts + pl_2_pts[::-1])
+                pl_layers.append(pl_1_pts + pl_2_pts[::-1])
 
                 # workaround to replace tuples with points
-                for k, point in enumerate(pl_layer[i]):
+                for k, point in enumerate(pl_layers[i]):
                     if isinstance(point, list):
-                        pl_layer[i][k] = Point(point[0], point[1], point[2])
+                        pl_layers[i][k] = Point(point[0], point[1], point[2])
 
                 # make path and add to layer
-                new_path = Path(points=pl_layer[i], is_closed=False)
+                new_path = Path(points=pl_layers[i], is_closed=False)
 
                 # replace layer in slicer
                 slicer.layers[i] = Layer(paths=[new_path])
