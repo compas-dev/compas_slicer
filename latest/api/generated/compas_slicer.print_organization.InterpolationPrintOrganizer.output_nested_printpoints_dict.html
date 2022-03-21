@@ -3,7 +3,7 @@
 
 <head>
   
-  <title>compas_slicer - get_mid_pt_base</title>
+  <title>compas_slicer - InterpolationPrintOrganizer.output_nested_printpoints_dict</title>
   
 
   <meta charset="utf-8" />
@@ -20,11 +20,11 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
 
   
-  <link rel="next" title="post_processing" href="../post_processing.html" />
+  <link rel="next" title="InterpolationPrintOrganizer.output_printpoints_dict" href="compas_slicer.print_organization.InterpolationPrintOrganizer.output_printpoints_dict.html" />
   
 
   
-  <link rel="prev" title="move_mesh_to_point" href="compas_slicer.pre_processing.move_mesh_to_point.html" />
+  <link rel="prev" title="InterpolationPrintOrganizer.output_gcode" href="compas_slicer.print_organization.InterpolationPrintOrganizer.output_gcode.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -121,27 +121,26 @@
             
             <li class="breadcrumb-item"><a href="../compas_slicer.html">compas_slicer</a></li>
             
-            <li class="breadcrumb-item"><a href="../pre_processing.html">pre_processing</a></li>
+            <li class="breadcrumb-item"><a href="../print_organization.html">print_organization</a></li>
             
-            <!-- <li class="breadcrumb-item active" aria-current="page">get_mid_pt_base</li> -->
+            <li class="breadcrumb-item"><a href="compas_slicer.print_organization.InterpolationPrintOrganizer.html">InterpolationPrintOrganizer</a></li>
+            
+            <!-- <li class="breadcrumb-item active" aria-current="page">InterpolationPrintOrganizer.output_nested_printpoints_dict</li> -->
           </ol>
         </nav>
         
 
         
         
-        <section class="detail" id="get-mid-pt-base">
-<h1>get_mid_pt_base</h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="compas_slicer.pre_processing.get_mid_pt_base">
-<span class="sig-prename descclassname"><span class="pre">compas_slicer.pre_processing.</span></span><span class="sig-name descname"><span class="pre">get_mid_pt_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/pre_processing/positioning.html#get_mid_pt_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Gets the middle point of the base (bottom) of the mesh.</p>
+        <section class="detail" id="interpolationprintorganizer-output-nested-printpoints-dict">
+<h1>InterpolationPrintOrganizer.output_nested_printpoints_dict</h1>
+<dl class="py method">
+<dt class="sig sig-object py" id="compas_slicer.print_organization.InterpolationPrintOrganizer.output_nested_printpoints_dict">
+<span class="sig-prename descclassname"><span class="pre">InterpolationPrintOrganizer.</span></span><span class="sig-name descname"><span class="pre">output_nested_printpoints_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Creates a nested PrintPoints as a dictionary.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mesh</strong> (<a class="reference external" href="https://compas.dev/compas/latest/api/generated/compas.datastructures.Mesh.html#compas.datastructures.Mesh" title="(in COMPAS v1.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.datastructures.Mesh</span></code></a>) – A compas mesh.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>mesh_mid_pt</strong> (<a class="reference external" href="https://compas.dev/compas/latest/api/generated/compas.geometry.Point.html#compas.geometry.Point" title="(in COMPAS v1.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.geometry.Point</span></code></a>) – Middle point of the base of the mesh.</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>dict, with printpoints that can be saved as json</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -185,8 +184,8 @@
 <li class="toctree-l2 nav-item active"><a class="nav-link reference internal" href="../compas_slicer.html">compas_slicer</a><ul class="nav flex-column collapse show active">
 <li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../geometry.html">geometry</a></li>
 <li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../slicers.html">slicers</a></li>
-<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../print_organization.html">print_organization</a></li>
-<li class="toctree-l3 nav-item active"><a class="nav-link reference internal" href="../pre_processing.html">pre_processing</a></li>
+<li class="toctree-l3 nav-item active"><a class="nav-link reference internal" href="../print_organization.html">print_organization</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../pre_processing.html">pre_processing</a></li>
 <li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../post_processing.html">post_processing</a></li>
 <li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../utilities.html">utilities</a></li>
 </ul>
@@ -206,7 +205,7 @@
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">get_mid_pt_base</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">InterpolationPrintOrganizer.output_nested_printpoints_dict</a></li>
 </ul>
 
       </div>
@@ -218,20 +217,20 @@
   <footer class="compas-footer">
     <nav class="nav p-2">
       
-      <a href="compas_slicer.pre_processing.move_mesh_to_point.html" title="move_mesh_to_point" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+      <a href="compas_slicer.print_organization.InterpolationPrintOrganizer.output_gcode.html" title="InterpolationPrintOrganizer.output_gcode" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
         <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
         <div class="nav-title flex-grow-1 align-self-center">
           <div class="nav-direction small font-weight-light">Previous</div>
-          move_mesh_to_point
+          InterpolationPrintOrganizer.output_gcode
         </div>
       </a>
       
 
       
-      <a href="../post_processing.html" title="post_processing" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+      <a href="compas_slicer.print_organization.InterpolationPrintOrganizer.output_printpoints_dict.html" title="InterpolationPrintOrganizer.output_printpoints_dict" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
         <div class="nav-title footer-link flex-grow-1 align-self-center">
           <div class="nav-direction small font-weight-light">Next</div>
-          post_processing
+          InterpolationPrintOrganizer.output_printpoints_dict
         </div>
         <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
       </a>
