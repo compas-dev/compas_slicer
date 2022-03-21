@@ -274,6 +274,8 @@ class BasePrintOrganizer(object):
                 for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
                     data[layer_key][path_key][i] = printpoint.to_data()
 
+                    count += 1
+
         logger.info("Generated %d print points" % count)
         return data
 
