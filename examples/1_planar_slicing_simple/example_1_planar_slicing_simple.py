@@ -46,7 +46,7 @@ def main():
     # ==========================================================================
     # Move to origin
     # ==========================================================================
-    # move_mesh_to_point(compas_mesh, Point(0, 0, 0))
+    move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
     # ==========================================================================
     # Slicing
@@ -97,7 +97,7 @@ def main():
     # Initializes the PlanarPrintOrganizer and creates PrintPoints
     # ==========================================================================
     print_organizer = PlanarPrintOrganizer(slicer)
-    print_organizer.create_printpoints()
+    print_organizer.create_printpoints(generate_mesh_normals=False)
 
     # ==========================================================================
     # Set fabrication-related parameters
@@ -118,11 +118,14 @@ def main():
     printpoints_data = print_organizer.output_printpoints_dict()
     utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints.json')
 
+    printpoints_data = print_organizer.output_nested_printpoints_dict()
+    utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints_nested.json')
+
     # ==========================================================================
     # Initializes the compas_viewer and visualizes results
     # ==========================================================================
     viewer = app.App(width=1600, height=1000)
-    # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
+    slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
     print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
     viewer.show()
 

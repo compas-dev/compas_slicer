@@ -61,6 +61,7 @@ class InterpolationSlicingPreprocessor:
         geodesics_method = get_param(self.parameters, key='target_HIGH_geodesics_method',
                                      defaults_type='interpolation_slicing')
         method, params = get_union_method(self.parameters)
+        logger.info("Creating target with union type : " + method + " and params : " + str(params))
         self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH,
                                           union_method=method,
                                           union_params=params,

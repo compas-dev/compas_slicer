@@ -12,7 +12,7 @@ from compas_slicer.print_organization import InterpolationPrintOrganizer
 from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import smooth_printpoints_up_vectors, smooth_printpoints_layer_heights
 from compas_slicer.post_processing import generate_brim
-from compas_view2 import app
+#from compas_view2 import app
 import time
 
 logger = logging.getLogger('logger')
@@ -73,13 +73,16 @@ def main():
 
     # --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()
-    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
+    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints_flat.json')
+
+    printpoints_data = print_organizer.output_nested_printpoints_dict()
+    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints_nested.json')
 
     # ----- Visualize
-    viewer = app.App(width=1600, height=1000)
+    #viewer = app.App(width=1600, height=1000)
     # slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)
-    print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
-    viewer.show()
+    #print_organizer.visualize_on_viewer(viewer, visualize_printpoints=True)
+    #viewer.show()
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")

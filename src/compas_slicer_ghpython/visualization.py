@@ -25,6 +25,10 @@ def load_slicer(path, folder_name, json_name):
         if 'mesh' in data:
             compas_mesh = Mesh.from_data(data['mesh'])
             artist = MeshArtist(compas_mesh)
+            artist.show_mesh = True
+            artist.show_vertices = False
+            artist.show_edges = False
+            artist.show_faces = False
             mesh = artist.draw()
         else:
             print('No mesh has been saved in the json file.')
@@ -61,6 +65,86 @@ def load_slicer(path, folder_name, json_name):
 
 #######################################
 # --- Printpoints
+
+class PrintPointGH:
+    def __init__(self, pt):
+        self.pt = pt
+        self.frame = None
+        self.layer_height = None
+        self.up_vector = None
+        self.mesh_normal = None
+        self.closest_support_pt = None
+
+        self.velocity = None
+        self.wait_time = None
+        self.blend_radius = None
+        self.extruder_toggle = None
+
+
+class PathGH:
+    def __init__(self):
+        self.ppts = []
+
+
+class LayerGH:
+    def __init__(self):
+        self.paths = []
+
+
+def load_nested_printpoints(path, folder_name, json_name, load_frames, load_layer_heights, load_up_vectors,
+                            load_normals, load_closest_support_pt, load_velocities, load_wait_times,
+                            load_blend_radiuses, load_extruder_toggles):
+    """ Loads a dict of compas_slicer printpoints. """
+
+    data = load_json_file(path, folder_name, json_name)
+    layers = []
+
+    if data:
+        for i in range(len(data)):
+            layer_key = 'layer_' + str(i)
+            layer = LayerGH()
+            for j in range(len(data[layer_key])):
+                path_key = 'path_' + str(j)
+                path = PathGH()
+                for k in range(len(data[layer_key][path_key])):
+                    ppt_data = data[layer_key][path_key][str(k)]
+                    ppt = PrintPointGH(rg.Point3d(ppt_data["point"][0], ppt_data["point"][1], ppt_data["point"][2]))
+
+                    if load_frames:
+                        compas_frame = Frame.from_data(ppt_data["frame"])
+                        pt, x_axis, y_axis = compas_frame.point, compas_frame.xaxis, compas_frame.yaxis
+                        ppt.frame = rs.PlaneFromFrame(pt, x_axis, y_axis)
+
+                    if load_layer_heights:
+                        ppt.layer_height = ppt_data["layer_height"]
+
+                    if load_up_vectors:
+                        ppt.up_vector = rg.Vector3d(ppt_data["up_vector"][0], ppt_data["up_vector"][1], ppt_data["up_vector"][2])
+
+                    if load_normals:
+                        ppt.mesh_normal = rg.Vector3d(ppt_data["mesh_normal"][0], ppt_data["mesh_normal"][1], ppt_data["mesh_normal"][2])
+
+                    if load_closest_support_pt:
+                        cp = ppt_data["closest_support_pt"]
+                        if cp:
+                            ppt.closest_support_pt = rg.Point3d(cp[0], cp[1], cp[2])
+                        else:
+                            ppt.closest_support_pt = ppt.pt  # dummy value to have the same number of pts and cpts
+
+                    if load_velocities:
+                        ppt.velocity = ppt_data["velocity"]
+                    if load_wait_times:
+                        ppt.wait_time = ppt_data["wait_time"]
+                    if load_blend_radiuses:
+                        ppt.blend_radius = ppt_data["blend_radius"]
+                    if load_extruder_toggles:
+                        ppt.extruder_toggle = ppt_data["extruder_toggle"]
+
+                    path.ppts.append(ppt)
+                layer.paths.append(path)
+            layers.append(layer)
+    return layers
+
 
 def load_printpoints(path, folder_name, json_name):
     """ Loads a dict of compas_slicer printpoints. """
@@ -123,7 +207,7 @@ def load_printpoints(path, folder_name, json_name):
 #######################################
 # --- Lightweight path visualization
 
-def lightweight_path_visualization(points, extruder_toggles, domain_start, domain_end, diameter, pipe_resolution):
+def lightweight_path_visualization(points, extruder_toggles, diameter, pipe_resolution):
     """ Visualize print paths with simple lines or pipes. """
     #  check input
     assert len(points) == len(extruder_toggles), \
@@ -132,10 +216,6 @@ def lightweight_path_visualization(points, extruder_toggles, domain_start, domai
     print_path_pipes = []
     travel_path_lines = []
 
-    domain_end = min(domain_end, len(points))  # make sure domain_end does not exceed len of pts
-
-    points = points[domain_start:domain_end]
-    extruder_toggles = extruder_toggles[domain_start:domain_end]
     for i in range(len(points) - 1):
         if extruder_toggles[i]:
             line = rg.Curve.CreateControlPointCurve([points[i], points[i + 1]])  # create line
@@ -232,16 +312,14 @@ def tool_visualization(origin_coords, mesh, planes, i):
 #######################################
 # --- Create_targets (Curved slicing)
 
-def create_targets(mesh, targets, resolution_mult, path, folder_name, json_name):
+def create_targets(mesh, targets, path, folder_name, json_name):
     """ Creation of targets for curved slicing. """
 
-    avg_face_area = max(rs.MeshArea([mesh])) / rs.MeshFaceCount(mesh)
-    div_num = max(20, int(resolution_mult * avg_face_area))
+    avg_face_area = rs.MeshArea([mesh])[1] / rs.MeshFaceCount(mesh)
 
     pts = []
     for target in targets:
-        print(div_num)
-        pts.extend(rs.DivideCurve(target, div_num))
+        pts.extend(rs.DivideCurveEquidistant(target, 0.25*avg_face_area))
 
     vs = rs.MeshVertices(mesh)
     vertices = []
@@ -250,7 +328,7 @@ def create_targets(mesh, targets, resolution_mult, path, folder_name, json_name)
         closest_vi = get_closest_point_index(p, vs)
         if closest_vi not in vertex_indices:
             ds_from_targets = [distance_of_pt_from_crv(vs[closest_vi], target) for target in targets]
-            if min(ds_from_targets) < 0.5:  # hardcoded threshold value
+            if min(ds_from_targets) < 0.01:  # hardcoded threshold value
                 vertices.append(vs[closest_vi])
                 vertex_indices.append(closest_vi)
 
@@ -269,9 +347,13 @@ def load_multiple_meshes(starts_with, ends_with, path, folder_name):
     loaded_meshes = []
     for i, m in enumerate(meshes):
         artist = MeshArtist(m)
+        artist.show_mesh = True
+        artist.show_vertices = False
+        artist.show_edges = False
+        artist.show_faces = False
         color = get_color(i, total=len(meshes))
         mesh = artist.draw(color)
-        loaded_meshes.append(mesh)
+        loaded_meshes.append(mesh[0])
 
     return loaded_meshes
 
