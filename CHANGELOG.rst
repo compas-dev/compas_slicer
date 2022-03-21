@@ -14,6 +14,9 @@ Unreleased
 
 **Changed**
 * Updates in the visualization of PrintPoints
+* Added seams_align(next_path) to the standard planar slicing routine
+* Added unify_path_orientation back into the standard planar slicing routine
+
 
 **Fixed**
 
