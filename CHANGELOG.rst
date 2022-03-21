@@ -10,6 +10,7 @@ Unreleased
 ----------
 
 **Added**
+* Output nested printpoints  
 
 **Changed**
 * Updates in the visualization of PrintPoints
