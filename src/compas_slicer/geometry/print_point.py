@@ -42,6 +42,10 @@ class PrintPoint(object):
         self.pt = pt
         self.layer_height = layer_height
 
+        # --- layer, path index attributes
+        self.layer_index = None
+        self.path_index = None
+
         self.mesh_normal = mesh_normal  # compas.geometry.Vector
         self.up_vector = Vector(0, 0, 1)  # default value that can be updated
         self.frame = self.get_frame()  # compas.geometry.Frame
@@ -89,6 +93,9 @@ class PrintPoint(object):
         point = {
             'point': [self.pt[0], self.pt[1], self.pt[2]],
             'layer_height': self.layer_height,
+
+            'layer_index': self.layer_index,
+            'path_index': self.path_index,
 
             'mesh_normal': self.mesh_normal.to_data(),
             'up_vector': self.up_vector.to_data(),

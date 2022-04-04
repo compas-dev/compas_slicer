@@ -60,6 +60,9 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                         n = normals[count] if generate_mesh_normals else Vector(0, 0, 1)
                         printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height, mesh_normal=n)
 
+                        printpoint.layer_index = i
+                        printpoint.path_index = j
+
                         self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
                         bar.update(count)
                         count += 1
