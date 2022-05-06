@@ -111,7 +111,5 @@ def seams_align(slicer, align_with="next_path", reverse_open_paths=False):
                         path.points.reverse()
 
 
-
-
 if __name__ == "__main__":
     pass

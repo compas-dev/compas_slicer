@@ -23,13 +23,12 @@ def create_planar_paths_cgal(mesh, planes):
 
     try:
         from compas_cgal.slicer import slice_mesh
-    except:
+    except Exception:
         raise PluginNotInstalledError("--------ATTENTION! ----------- \
                         Compas_cgal library is missing! \
                         You can't use this planar slicing method without it. \
                         Check the README instructions for how to install it, \
                         or use another planar slicing method.")
-
 
     # prepare mesh for slicing
     M = mesh.to_vertices_and_faces()

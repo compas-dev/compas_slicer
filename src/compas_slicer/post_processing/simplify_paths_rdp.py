@@ -3,7 +3,6 @@ import numpy as np
 import logging
 import progressbar
 from compas.geometry import Point
-import compas_slicer.utilities as utils
 from compas.plugins import PluginNotInstalledError
 
 logger = logging.getLogger('logger')
