@@ -15,6 +15,8 @@ def sort_paths_minimum_travel_time(slicer, reverse_open_paths=False):
     ----------
     slicer: :class:`compas_slicer.slicers.BaseSlicer`
         An instance of one of the compas_slicer.slicers classes.
+    reverse_open_paths: bool (defaults to False)
+        Boolean toggle whether to reverse the direction of open paths or not.
     """
     logger.info("Sorting contours to minimize travel time")
 

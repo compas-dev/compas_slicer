@@ -22,6 +22,8 @@ def seams_align(slicer, align_with="next_path", reverse_open_paths=False):
         x_axis       = orients the seam to the x_axis
         y_axis       = orients the seam to the y_axis
         Point(x,y,z) = orients the seam according to the given point
+    reverse_open_paths: bool (defaults to False)
+        Boolean toggle whether to reverse the direction of open paths or not.
 
     Returns
     -------
