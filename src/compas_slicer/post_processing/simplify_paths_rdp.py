@@ -3,12 +3,7 @@ import numpy as np
 import logging
 import progressbar
 from compas.geometry import Point
-import compas_slicer.utilities as utils
 from compas.plugins import PluginNotInstalledError
-
-packages = utils.TerminalCommand('conda list').get_split_output_strings()
-if 'igl' in packages:
-    import igl
 
 logger = logging.getLogger('logger')
 
@@ -55,7 +50,7 @@ def simplify_paths_rdp_igl(slicer, threshold):
         Low threshold removes few points, high threshold removes many points.
     """
     try:
-        utils.check_package_is_installed('igl')
+        import igl
         logger.info("Paths simplification rdp - igl")
         remaining_pts_num = 0
 

@@ -8,7 +8,7 @@ logger = logging.getLogger('logger')
 __all__ = ['seams_align']
 
 
-def seams_align(slicer, align_with="next_path"):
+def seams_align(slicer, align_with="next_path", reverse_open_paths=False):
     """Aligns the seams (start- and endpoint) of a print.
 
     Parameters
@@ -22,6 +22,8 @@ def seams_align(slicer, align_with="next_path"):
         x_axis       = orients the seam to the x_axis
         y_axis       = orients the seam to the y_axis
         Point(x,y,z) = orients the seam according to the given point
+    reverse_open_paths: bool (defaults to False)
+        Boolean toggle whether to reverse the direction of open paths or not.
 
     Returns
     -------
@@ -39,24 +41,23 @@ def seams_align(slicer, align_with="next_path"):
                 #  determines the correct point to align the current path with
                 if len(layer.paths) == 1 and i == 0:
                     #  if ONE PATH and FIRST LAYER
-                    #  >>> align with second layer
-                    pt_to_align_with = slicer.layers[i + 1].paths[0].points[0]
+                    #  >>> align with first point of first layer (no change)
+                    pt_to_align_with = slicer.layers[0].paths[0].points[0]
                 if len(layer.paths) == 1 and i != 0:
-                    last_path_index = len(slicer.layers[i - 1].paths) - 1
                     #  if ONE PATH and NOT FIRST LAYER
-                    #  >>> align with previous layer
-                    pt_to_align_with = slicer.layers[i - 1].paths[last_path_index].points[-1]
+                    #  >>> align with last point of previous layer
+                    pt_to_align_with = slicer.layers[i - 1].paths[0].points[-1]
                 if len(layer.paths) != 1 and i == 0 and j == 0:
                     #  if MULTIPLE PATHS and FIRST LAYER and FIRST PATH
-                    #  >>> align with second path of first layer
+                    #  >>> align with last point of next path of first layer
                     pt_to_align_with = slicer.layers[i].paths[i + 1].points[-1]
                 if len(layer.paths) != 1 and j != 0:
                     #  if MULTIPLE PATHS and NOT FIRST PATH
-                    #  >>> align with previous path
+                    #  >>> align with last point of previous path
                     pt_to_align_with = slicer.layers[i].paths[j - 1].points[-1]
                 if len(layer.paths) != 1 and i != 0 and j == 0:
-                    #  if MULTIPLE PATHS and NOT FIRST LAYER and FIRST PATH
-                    #  >>> align with first path of previous layer
+                    #  if MULTIPLE PATHS and NOT FIRST LAYER and NOT FIRST PATH
+                    #  >>> align with last point of previous path of previous layer
                     last_path_index = len(slicer.layers[i - 1].paths) - 1
                     pt_to_align_with = slicer.layers[i - 1].paths[last_path_index].points[-1]
 
@@ -74,7 +75,7 @@ def seams_align(slicer, align_with="next_path"):
             # CLOSED PATHS
             if path.is_closed:
                 #  get the points of the current layer and path
-                path_to_change = layer.paths[j].points
+                path_to_change = path.points
 
                 # check if start- and end-points are the same point
                 if path_to_change[0] == path_to_change[-1]:
@@ -94,11 +95,11 @@ def seams_align(slicer, align_with="next_path"):
                 if first_last_point_the_same:
                     shift_list = shift_list + [shift_list[0]]
 
-                layer.paths[j].points = shift_list
+                path.points = shift_list
 
             else:
                 # OPEN PATHS
-                path_to_change = layer.paths[j].points
+                path_to_change = path.points
 
                 # get the distance between the align point and the start/end point
                 start = path_to_change[0]
@@ -107,8 +108,9 @@ def seams_align(slicer, align_with="next_path"):
                 d_end = distance_point_point(end, pt_to_align_with)
 
                 # if closer to end point > reverse list
-                if d_start > d_end:
-                    layer.paths[j].points.reverse()
+                if reverse_open_paths:
+                    if d_start > d_end:
+                        path.points.reverse()
 
 
 if __name__ == "__main__":

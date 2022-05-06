@@ -19,14 +19,15 @@ def unify_paths_orientation(slicer):
 
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
-            reference_points = None  # find reference points for each path, if possible
-            if j > 0:
-                reference_points = layer.paths[0].points
-            elif i > 0 and j == 0:
-                reference_points = slicer.layers[i - 1].paths[0].points
+            if path.is_closed:
+                reference_points = None  # find reference points for each path, if possible
+                if j > 0:
+                    reference_points = layer.paths[0].points
+                elif i > 0 and j == 0:
+                    reference_points = slicer.layers[i - 1].paths[0].points
 
-            if reference_points:  # then reorient current pts based on reference
-                path.points = match_paths_orientations(path.points, reference_points, path.is_closed)
+                if reference_points:  # then reorient current pts based on reference
+                    path.points = match_paths_orientations(path.points, reference_points, path.is_closed)
 
 
 def match_paths_orientations(pts, reference_points, is_closed):
