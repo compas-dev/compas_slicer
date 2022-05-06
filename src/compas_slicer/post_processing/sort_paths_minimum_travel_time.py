@@ -8,7 +8,7 @@ logger = logging.getLogger('logger')
 __all__ = ['sort_paths_minimum_travel_time']
 
 
-def sort_paths_minimum_travel_time(slicer):
+def sort_paths_minimum_travel_time(slicer, reverse_open_paths=False):
     """Sorts the paths within a horizontal layer to reduce total travel time.
 
     Parameters
@@ -23,7 +23,7 @@ def sort_paths_minimum_travel_time(slicer):
     for i, layer in enumerate(slicer.layers):
         sorted_paths = []
         while len(layer.paths) > 0:
-            index = closest_path(ref_point, layer.paths)  # find the closest path to the reference point
+            index = closest_path(ref_point, layer.paths, reverse_open_paths)  # find the closest path to the reference point
             sorted_paths.append(layer.paths[index])  # add the closest path to the sorted list
             ref_point = layer.paths[index].points[-1]
             layer.paths.pop(index)
@@ -31,7 +31,7 @@ def sort_paths_minimum_travel_time(slicer):
         slicer.layers[i].paths = sorted_paths
 
 
-def adjust_seam_to_closest_pos(ref_point, path):
+def adjust_seam_to_closest_pos(ref_point, path, reverse_open_paths):
     """Aligns the seam (start- and endpoint) of a contour so that it is closest to a given point.
     for open paths, check if the end point closest to the reference point is the start point
 
@@ -57,11 +57,12 @@ def adjust_seam_to_closest_pos(ref_point, path):
         path.points = adjusted_seam
     else:  # if path is open
         #  if end point is closer than start point >> flip
-        if distance_point_point(ref_point, path.points[0]) > distance_point_point(ref_point, path.points[-1]):
-            path.points.reverse()
+        if reverse_open_paths:
+            if distance_point_point(ref_point, path.points[0]) > distance_point_point(ref_point, path.points[-1]):
+                path.points.reverse()
 
 
-def closest_path(ref_point, somepaths):
+def closest_path(ref_point, somepaths, reverse_open_paths):
     """Finds the closest path to a reference point in a list of paths.
 
     Parameters
@@ -74,7 +75,7 @@ def closest_path(ref_point, somepaths):
 
     for i, path in enumerate(somepaths):
         #  for each path, adjust the seam to be in the closest vertex to ref_point
-        adjust_seam_to_closest_pos(ref_point, path)
+        adjust_seam_to_closest_pos(ref_point, path, reverse_open_paths)
         #  calculate the minimum distance to the nearest seam of each path
         min_dist_temp = distance_point_point(ref_point, path.points[0])
         if min_dist_temp < min_dist:
