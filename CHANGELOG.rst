@@ -11,14 +11,16 @@ Unreleased
 
 **Added**
 * Output nested printpoints  
+* Added reverse_open_paths argument to seams_align to control if the direction of open paths should be reversed or not. Defaults to False.
+* Added reverse_open_paths argument to sort_paths_minimum_travel_time to control if the direction of open paths should be reversed or not. Defaults to False.
 
 **Changed**
-* Updates in the visualization of PrintPoints
-* Added seams_align(next_path) to the standard planar slicing routine
-* Added unify_path_orientation back into the standard planar slicing routine
-
+* Updates in the visualization of PrintPoints.
+* Added seams_align(next_path) to the standard planar slicing routine.
+* Added unify_path_orientation back into the standard planar slicing routine.
 
 **Fixed**
+* Changed unify_path_orientation to only work for closed paths.
 
 **Deprecated**
 
