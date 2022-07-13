@@ -16,7 +16,8 @@ Unreleased
 * Updates in the visualization of PrintPoints
 * Added seams_align(next_path) to the standard planar slicing routine
 * Added unify_path_orientation back into the standard planar slicing routine
-
+* The way the normal and up_vector are calculated in the print organizers
+* Small updates in grasshopper visualization functions
 
 **Fixed**
 
@@ -28,7 +29,6 @@ Unreleased
 ----------
 
 **Added**
-
 * Zenodo integration
 
 **Changed**
