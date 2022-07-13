@@ -1,5 +1,5 @@
 import networkx as nx
-from compas.geometry import distance_point_point
+from compas.geometry import distance_point_point, distance_point_point_sqrd
 import compas_slicer.utilities as utils
 import logging
 import copy
@@ -283,7 +283,7 @@ class SegmentsDirectedGraph(DirectedGraph):
         root_segments = []
         for i, segment in enumerate(self.segments):
             first_curve_pts = segment.paths[0].points
-            if are_neighboring_point_clouds(boundary_pts, first_curve_pts, 2* self.max_d_threshold):
+            if are_neighboring_point_clouds(boundary_pts, first_curve_pts, 2 * self.max_d_threshold):
                 root_segments.append(i)
         return root_segments
 

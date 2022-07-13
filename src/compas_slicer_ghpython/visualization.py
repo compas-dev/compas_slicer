@@ -53,12 +53,9 @@ def load_slicer(path, folder_name, json_name):
                             pt = rs.AddPoint(pt[0], pt[1], pt[2])  # re-create points
                             pts.append(pt)
                         all_points.extend(pts)
-                        try:
-                            path = rs.AddPolyline(pts)
-                            paths_nested_list[-1].append(path)
-                        except:
-                            print('Could not add Polyline')
-                            print('len(pts) : ', len(pts))
+                        path = rs.AddPolyline(pts)
+                        paths_nested_list[-1].append(path)
+
         else:
             print('No layers have been saved in the json file. Is this the correct json?')
 

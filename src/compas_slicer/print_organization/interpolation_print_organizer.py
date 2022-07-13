@@ -2,7 +2,7 @@ from compas_slicer.print_organization import BasePrintOrganizer
 from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
 import compas_slicer
-from compas.geometry import norm_vector, closest_point_on_polyline, distance_point_point, Polyline, Vector, normalize_vector, Point, Vector, cross_vectors, normalize_vector, subtract_vectors, scale_vector
+from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, Point
 import logging
 from compas_slicer.geometry import Path, PrintPoint
 import compas_slicer.utilities as utils

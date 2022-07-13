@@ -2,7 +2,7 @@ import logging
 from compas_slicer.print_organization import BasePrintOrganizer
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintPoint
-from compas.geometry import Vector, cross_vectors, normalize_vector, subtract_vectors, scale_vector, norm_vector
+from compas.geometry import Vector
 import progressbar
 import compas_slicer
 
