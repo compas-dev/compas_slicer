@@ -292,7 +292,10 @@ def render_path_visualization(points, mesh_normals, layer_heights, up_vectors, e
 def tool_visualization(origin_coords, mesh, planes, i):
     """ Visualize example tool motion. """
 
-    if len(planes) == 0 or planes[0] == None:
+    if len(planes) == 0:
+        print('Please provide valid planes')
+        return None, None
+    if not planes[0]:
         print('Please provide valid planes')
         return None, None
 
