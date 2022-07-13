@@ -1,6 +1,7 @@
 import compas_slicer
 import logging
-from compas.geometry import Polyline, distance_point_point
+from compas.geometry import Vector, Polyline, distance_point_point, norm_vector, normalize_vector, subtract_vectors, \
+    cross_vectors, scale_vector
 from compas.utilities import pairwise
 import numpy as np
 from abc import abstractmethod
@@ -231,6 +232,32 @@ class BasePrintOrganizer(object):
 
         polyline = Polyline(all_pts)
         viewer.add(polyline, show_points=visualize_printpoints, pointcolor=(0, 0, 1), linecolor=(1, 0, 1), linewidth=1)
+
+    def get_printpoint_up_vector(self, path, k, normal):
+        """
+        Returns the printpoint up-vector so that it is orthogonal to the path direction and the normal
+
+        Parameters
+        ----------
+        path: :class:`compas_slicer.geometry.Path`
+        k: the index of the point in path.points that the PrintPoint represents
+        normal: :class:`compas.geometry.Vector`
+        """
+
+        p = path.points[k]
+        if k < len(path.points) - 1:
+            negative = False
+            other_pt = path.points[k + 1]
+        else:
+            negative = True
+            other_pt = path.points[k - 1]
+        diff = normalize_vector(subtract_vectors(p, other_pt))
+        up_vec = normalize_vector(cross_vectors(normal, diff))
+        if negative:
+            up_vec = scale_vector(up_vec, -1.0)
+        if norm_vector(up_vec) == 0:
+            up_vec = Vector(0, 0, 1)
+        return Vector(*up_vec)
 
     ######################
     # Output data

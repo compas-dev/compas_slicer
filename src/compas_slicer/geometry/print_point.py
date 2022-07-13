@@ -1,4 +1,4 @@
-from compas.geometry import Point, Frame, Vector, cross_vectors, dot_vectors
+from compas.geometry import Point, Frame, Vector, cross_vectors, dot_vectors, norm_vector
 import compas_slicer.utilities.utils as utils
 import compas
 
@@ -69,6 +69,10 @@ class PrintPoint(object):
         """ Returns a Frame with x-axis pointing up, y-axis pointing towards the mesh normal. """
         if abs(dot_vectors(self.up_vector, self.mesh_normal)) < 1.0:  # if the normalized vectors are not co-linear
             c = cross_vectors(self.up_vector, self.mesh_normal)
+            if norm_vector(c) == 0:
+                c = Vector(1, 0, 0)
+            if norm_vector(self.mesh_normal) == 0:
+                self.mesh_normal = Vector(0, 1, 0)
             return Frame(self.pt, c, self.mesh_normal)
         else:  # in horizontal surfaces the vectors happen to be co-linear
             return Frame(self.pt, Vector(1, 0, 0), Vector(0, 1, 0))
