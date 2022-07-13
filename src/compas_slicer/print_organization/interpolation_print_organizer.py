@@ -2,7 +2,7 @@ from compas_slicer.print_organization import BasePrintOrganizer
 from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
 import compas_slicer
-from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, Point
+from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, Point, subtract_vectors, dot_vectors, scale_vector
 import logging
 from compas_slicer.geometry import Path, PrintPoint
 import compas_slicer.utilities as utils
@@ -149,6 +149,8 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
                 ppt.distance_to_support = d
                 ppt.layer_height = max(min(d, max_layer_height), min_layer_height)
                 ppt.up_vector = self.get_printpoint_up_vector(path, k, normal)
+                if dot_vectors(subtract_vectors(p, ppt.closest_support_pt), ppt.up_vector) < 0:
+                    ppt.up_vector = Vector(*scale_vector(ppt.up_vector, -1))
                 ppt.frame = ppt.get_frame()
 
                 layer_ppts['path_%d' % i].append(ppt)
