@@ -19,7 +19,6 @@ logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_advanced_example')
 OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection.obj')
-# OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'connection_HIGH_RES.obj')
 
 REGION_SPLIT = True
 SLICER = True
@@ -32,8 +31,8 @@ def main():
     avg_layer_height = 4.0
     parameters = {
         'avg_layer_height': avg_layer_height,  # controls number of curves that will be generated
-        'min_layer_height': 0.2,
-        'max_layer_height': 4.0,
+        'min_layer_height': avg_layer_height * 0.5,
+        'max_layer_height': avg_layer_height * 2.00,
         'uneven_upper_targets_offset': 0,
         'target_HIGH_smooth_union': [True, [25.0]],  # on/off, blend radius
     }
