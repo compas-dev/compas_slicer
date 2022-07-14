@@ -57,8 +57,13 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
 
                     for k, point in enumerate(path.points):
 
-                        n = normals[count] if generate_mesh_normals else Vector(0, 0, 1)
+                        n = normals[count] if generate_mesh_normals else Vector(0, 1, 0)
                         printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height, mesh_normal=n)
+
+                        if layer.is_brim or layer.is_raft:
+                            printpoint.up_vector = Vector(0, 0, 1)
+                        else:
+                            printpoint.up_vector = self.get_printpoint_up_vector(path, k, n)
 
                         self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
                         bar.update(count)

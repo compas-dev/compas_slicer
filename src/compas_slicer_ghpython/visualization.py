@@ -55,6 +55,7 @@ def load_slicer(path, folder_name, json_name):
                         all_points.extend(pts)
                         path = rs.AddPolyline(pts)
                         paths_nested_list[-1].append(path)
+
         else:
             print('No layers have been saved in the json file. Is this the correct json?')
 
@@ -288,6 +289,13 @@ def render_path_visualization(points, mesh_normals, layer_heights, up_vectors, e
 def tool_visualization(origin_coords, mesh, planes, i):
     """ Visualize example tool motion. """
 
+    if len(planes) == 0:
+        print('Please provide valid planes')
+        return None, None
+    if not planes[0]:
+        print('Please provide valid planes')
+        return None, None
+
     i = min(i, len(planes) - 1)  # make sure i doesn't go beyond available number of planes
     passed_path = None
     assert planes[0], 'The planes you have provided are invalid.'
@@ -353,7 +361,7 @@ def load_multiple_meshes(starts_with, ends_with, path, folder_name):
         artist.show_faces = False
         color = get_color(i, total=len(meshes))
         mesh = artist.draw(color)
-        loaded_meshes.append(mesh[0])
+        loaded_meshes.append(mesh)
 
     return loaded_meshes
 
