@@ -140,16 +140,12 @@
 This class is meant to be extended for the implementation of the various print organizers.
 Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or InterpolationPrintOrganizer.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>slicer</strong> (<a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.html#compas_slicer.slicers.PlanarSlicer" title="compas_slicer.slicers.PlanarSlicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.PlanarSlicer</span></code></a>) – An instance of the compas_slicer.slicers.PlanarSlicer.</p>
 </dd>
 </dl>
 <p class="rubric">Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_layers</span></code></p></td>
 <td><p>Number of layers in the PrintOrganizer.</p></td>
@@ -169,20 +165,12 @@ Do not use this class directly in your python code. Instead use PlanarPrintOrgan
 </tbody>
 </table>
 <p class="rubric">Inherited Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.__init__.html#compas_slicer.print_organization.BasePrintOrganizer.__init__" title="compas_slicer.print_organization.BasePrintOrganizer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(slicer)</p></td>
 <td><p></p></td>
@@ -193,44 +181,43 @@ Do not use this class directly in your python code. Instead use PlanarPrintOrgan
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items" title="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_printpoint_neighboring_items</span></code></a>(layer_key, ...)</p></td>
 <td><p>layer_key: str</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute" title="compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_printpoints_attribute</span></code></a>(attr_name)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_up_vector.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_up_vector" title="compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_up_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_printpoint_up_vector</span></code></a>(path, k, normal)</p></td>
+<td><p>Returns the printpoint up-vector so that it is orthogonal to the path direction and the normal</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute" title="compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_printpoints_attribute</span></code></a>(attr_name)</p></td>
 <td><p>Returns a list of printpoint attributes that have key=attr_name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer.html#compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer" title="compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_paths_on_layer</span></code></a>(layer_index)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer.html#compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer" title="compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_paths_on_layer</span></code></a>(layer_index)</p></td>
 <td><p>int: Number of paths within a Layer of the PrintOrganizer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.output_gcode.html#compas_slicer.print_organization.BasePrintOrganizer.output_gcode" title="compas_slicer.print_organization.BasePrintOrganizer.output_gcode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_gcode</span></code></a>(parameters)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.output_gcode.html#compas_slicer.print_organization.BasePrintOrganizer.output_gcode" title="compas_slicer.print_organization.BasePrintOrganizer.output_gcode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_gcode</span></code></a>(parameters)</p></td>
 <td><p>Gets a gcode text file using the function that creates gcode :Parameters: <strong>parameters</strong> (<em>dict with gcode parameters</em>)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.output_nested_printpoints_dict.html#compas_slicer.print_organization.BasePrintOrganizer.output_nested_printpoints_dict" title="compas_slicer.print_organization.BasePrintOrganizer.output_nested_printpoints_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_nested_printpoints_dict</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.output_nested_printpoints_dict.html#compas_slicer.print_organization.BasePrintOrganizer.output_nested_printpoints_dict" title="compas_slicer.print_organization.BasePrintOrganizer.output_nested_printpoints_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_nested_printpoints_dict</span></code></a>()</p></td>
 <td><p>Creates a nested PrintPoints as a dictionary.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict.html#compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict" title="compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_printpoints_dict</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict.html#compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict" title="compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_printpoints_dict</span></code></a>()</p></td>
 <td><p>Creates a flattened PrintPoints as a dictionary.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.printout_info.html#compas_slicer.print_organization.BasePrintOrganizer.printout_info" title="compas_slicer.print_organization.BasePrintOrganizer.printout_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">printout_info</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.printout_info.html#compas_slicer.print_organization.BasePrintOrganizer.printout_info" title="compas_slicer.print_organization.BasePrintOrganizer.printout_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">printout_info</span></code></a>()</p></td>
 <td><p>Prints out information from the PrintOrganizer</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator.html#compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator" title="compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">printpoints_indices_iterator</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator.html#compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator" title="compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">printpoints_indices_iterator</span></code></a>()</p></td>
 <td><p>Iterate over the printpoints of the print organizer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator.html#compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator" title="compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">printpoints_iterator</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator.html#compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator" title="compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">printpoints_iterator</span></code></a>()</p></td>
 <td><p>Iterate over the printpoints of the print organizer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path.html#compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path" title="compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_duplicate_points_in_path</span></code></a>(layer_key, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path.html#compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path" title="compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_duplicate_points_in_path</span></code></a>(layer_key, ...)</p></td>
 <td><p>Remove subsequent points that are within a certain threshold.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer.html#compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer" title="compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_on_viewer</span></code></a>(viewer, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer.html#compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer" title="compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_on_viewer</span></code></a>(viewer, ...)</p></td>
 <td><p>Visualize printpoints on the compas_viewer.</p></td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Inherited Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 </tbody>
 </table>

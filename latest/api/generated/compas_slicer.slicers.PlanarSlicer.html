@@ -135,12 +135,12 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="compas_slicer.slicers.PlanarSlicer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_slicer.slicers.</span></span><span class="sig-name descname"><span class="pre">PlanarSlicer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slicer_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_height_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/planar_slicer.html#PlanarSlicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <a class="reference internal" href="compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer" title="compas_slicer.slicers.base_slicer.BaseSlicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_slicer.slicers.base_slicer.BaseSlicer</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer" title="compas_slicer.slicers.base_slicer.BaseSlicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSlicer</span></code></a></p>
 <p>Generates planar contours on a mesh that are parallel to the xy plane.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mesh</strong> (<a class="reference external" href="https://compas.dev/compas/latest/api/generated/compas.datastructures.Mesh.html#compas.datastructures.Mesh" title="(in COMPAS v1.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.datastructures.Mesh</span></code></a>) – Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).</p></li>
+<li><p><strong>mesh</strong> (<a class="reference external" href="https://compas.dev/compas/latest/api/generated/compas.datastructures.Mesh.html#compas.datastructures.Mesh" title="(in COMPAS v1.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.datastructures.Mesh</span></code></a>) – Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).</p></li>
 <li><p><strong>slicer_type</strong> (<em>str</em>) – String representing which slicing method to use.
 options: ‘default’, ‘cgal’</p></li>
 <li><p><strong>layer_height</strong> (<em>float</em>) – Distance between layers (slices).</p></li>
@@ -153,20 +153,12 @@ I.e. if you want to only slice the first 100 mm of the mesh, you use (0,100) reg
 </dd>
 </dl>
 <p class="rubric">Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 </tbody>
 </table>
 <p class="rubric">Inherited Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">horizontal_layers</span></code></p></td>
 <td><p>Returns a list of all the layers stored in the slicer that are NOT vertical.</p></td>
@@ -186,11 +178,7 @@ I.e. if you want to only slice the first 100 mm of the mesh, you use (0,100) reg
 </tbody>
 </table>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.__init__.html#compas_slicer.slicers.PlanarSlicer.__init__" title="compas_slicer.slicers.PlanarSlicer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(mesh[, slicer_type, layer_height, ...])</p></td>
 <td><p></p></td>
@@ -201,11 +189,7 @@ I.e. if you want to only slice the first 100 mm of the mesh, you use (0,100) reg
 </tbody>
 </table>
 <p class="rubric">Inherited Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.PlanarSlicer.close_paths.html#compas_slicer.slicers.PlanarSlicer.close_paths" title="compas_slicer.slicers.PlanarSlicer.close_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close_paths</span></code></a>()</p></td>
 <td><p>For paths that are labeled as closed, it makes sure that the first and the last point are identical.</p></td>

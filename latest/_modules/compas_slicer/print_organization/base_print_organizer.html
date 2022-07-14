@@ -125,7 +125,8 @@
         <h1>Source code for compas_slicer.print_organization.base_print_organizer</h1><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code>
 <span></span><span class="kn">import</span> <span class="nn">compas_slicer</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polyline</span><span class="p">,</span> <span class="n">distance_point_point</span>
+<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">Polyline</span><span class="p">,</span> <span class="n">distance_point_point</span><span class="p">,</span> <span class="n">norm_vector</span><span class="p">,</span> <span class="n">normalize_vector</span><span class="p">,</span> <span class="n">subtract_vectors</span><span class="p">,</span> \
+    <span class="n">cross_vectors</span><span class="p">,</span> <span class="n">scale_vector</span>
 <span class="kn">from</span> <span class="nn">compas.utilities</span> <span class="kn">import</span> <span class="n">pairwise</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
@@ -356,6 +357,32 @@
 
         <span class="n">polyline</span> <span class="o">=</span> <span class="n">Polyline</span><span class="p">(</span><span class="n">all_pts</span><span class="p">)</span>
         <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">polyline</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="n">visualize_printpoints</span><span class="p">,</span> <span class="n">pointcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasePrintOrganizer.get_printpoint_up_vector"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_up_vector.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_up_vector">[docs]</a>    <span class="k">def</span> <span class="nf">get_printpoint_up_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">normal</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the printpoint up-vector so that it is orthogonal to the path direction and the normal</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path: :class:`compas_slicer.geometry.Path`</span>
+<span class="sd">        k: the index of the point in path.points that the PrintPoint represents</span>
+<span class="sd">        normal: :class:`compas.geometry.Vector`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">negative</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">other_pt</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">negative</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">other_pt</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">normalize_vector</span><span class="p">(</span><span class="n">subtract_vectors</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">other_pt</span><span class="p">))</span>
+        <span class="n">up_vec</span> <span class="o">=</span> <span class="n">normalize_vector</span><span class="p">(</span><span class="n">cross_vectors</span><span class="p">(</span><span class="n">normal</span><span class="p">,</span> <span class="n">diff</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">negative</span><span class="p">:</span>
+            <span class="n">up_vec</span> <span class="o">=</span> <span class="n">scale_vector</span><span class="p">(</span><span class="n">up_vec</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">norm_vector</span><span class="p">(</span><span class="n">up_vec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">up_vec</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Vector</span><span class="p">(</span><span class="o">*</span><span class="n">up_vec</span><span class="p">)</span></div>
 
     <span class="c1">######################</span>
     <span class="c1"># Output data</span>
