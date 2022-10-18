@@ -320,33 +320,6 @@ def tool_visualization(origin_coords, mesh, planes, i):
 #######################################
 # --- Create_targets (Curved slicing)
 
-def create_targets(mesh, targets, path, folder_name, json_name):
-    """ Creation of targets for curved slicing. """
-
-    avg_face_area = rs.MeshArea([mesh])[1] / rs.MeshFaceCount(mesh)
-
-    pts = []
-    for target in targets:
-        pts.extend(rs.DivideCurveEquidistant(target, 0.25*avg_face_area))
-
-    vs = rs.MeshVertices(mesh)
-    vertices = []
-    vertex_indices = []
-    for p in pts:
-        closest_vi = get_closest_point_index(p, vs)
-        if closest_vi not in vertex_indices:
-            ds_from_targets = [distance_of_pt_from_crv(vs[closest_vi], target) for target in targets]
-            if min(ds_from_targets) < 0.01:  # hardcoded threshold value
-                vertices.append(vs[closest_vi])
-                vertex_indices.append(closest_vi)
-
-    save_json_file(vertex_indices, path, folder_name, json_name)
-    return pts, vertices, vertex_indices
-
-
-#######################################
-# --- Create_targets (Curved slicing)
-
 def load_multiple_meshes(starts_with, ends_with, path, folder_name):
     """ Load all the meshes that have the specified name, and print them in different colors. """
     filenames = get_files_with_name(starts_with, ends_with, os.path.join(path, folder_name, 'output'))

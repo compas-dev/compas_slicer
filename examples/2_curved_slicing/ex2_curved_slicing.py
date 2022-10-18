@@ -17,9 +17,9 @@ import time
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_basic_example')
+DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_Y_shape')
 OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
-OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'vase.obj')
+OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'mesh.obj')
 
 
 def main():
@@ -33,12 +33,10 @@ def main():
     high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
     create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)
 
-    avg_layer_height = 15.0
+    avg_layer_height = 5.0
 
     parameters = {
         'avg_layer_height': avg_layer_height,  # controls number of curves that will be generated
-        'min_layer_height': avg_layer_height * 0.5,
-        'max_layer_height': avg_layer_height * 2.00,
     }
 
     preprocessor = InterpolationSlicingPreprocessor(mesh, parameters, DATA_PATH)
@@ -51,8 +49,7 @@ def main():
     # --- slicing
     slicer = InterpolationSlicer(mesh, preprocessor, parameters)
     slicer.slice_model()  # compute_norm_of_gradient contours
-    generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=5)
-    seams_smooth(slicer, smooth_distance=10)
+    seams_smooth(slicer, smooth_distance=6)
 
     simplify_paths_rdp_igl(slicer, threshold=0.5)
     slicer.printout_info()
@@ -62,20 +59,19 @@ def main():
     print_organizer = InterpolationPrintOrganizer(slicer, parameters, DATA_PATH)
     print_organizer.create_printpoints()
 
+    smooth_printpoints_up_vectors(print_organizer, strength=0.5, iterations=10)
+    smooth_printpoints_layer_heights(print_organizer, strength=0.5, iterations=5)
+
     set_linear_velocity_by_range(print_organizer, param_func=lambda ppt: ppt.layer_height,
                                  parameter_range=[avg_layer_height*0.5, avg_layer_height*2.0],
                                  velocity_range=[150, 70], bound_remapping=False)
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
-    smooth_printpoints_up_vectors(print_organizer, strength=0.5, iterations=10)
-    smooth_printpoints_layer_heights(print_organizer, strength=0.5, iterations=5)
+
 
     # --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()
-    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints_flat.json')
-
-    printpoints_data = print_organizer.output_nested_printpoints_dict()
-    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints_nested.json')
+    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")

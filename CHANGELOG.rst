@@ -20,6 +20,8 @@ Unreleased
 * Small updates in grasshopper visualization functions
 
 **Fixed**
+* spiralize_contours : After function points are reprojected on the mesh
+* Curved slicing grasshopper file improved
 
 **Deprecated**
 
