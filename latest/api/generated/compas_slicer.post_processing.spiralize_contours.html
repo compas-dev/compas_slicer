@@ -135,8 +135,8 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="compas_slicer.post_processing.spiralize_contours">
 <span class="sig-prename descclassname"><span class="pre">compas_slicer.post_processing.</span></span><span class="sig-name descname"><span class="pre">spiralize_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slicer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/post_processing/spiralize_contours.html#spiralize_contours"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Spiralizes contours. Only supports a constant layer height.
-Can only be used for geometries consisting out of a single contour (vases).</p>
+<dd><p>Spiralizes contours. Only works for Planar Slicer.
+Can only be used for geometries consisting out of a single closed contour (i.e. vases).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>slicer</strong> (<em>:class: ‘compas_slicer.slicers.PlanarSlicer’</em>) – An instance of the compas_slicer.slicers.PlanarSlicer class.</p>
@@ -204,7 +204,10 @@ Can only be used for geometries consisting out of a single contour (vases).</p>
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">spiralize_contours</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">spiralize_contours</a><ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="#compas_slicer.post_processing.spiralize_contours"><code class="docutils literal notranslate"><span class="pre">spiralize_contours()</span></code></a></li>
+</ul>
+</li>
 </ul>
 
       </div>

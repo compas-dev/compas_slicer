@@ -124,7 +124,9 @@
         
         <h1>Source code for compas_slicer.post_processing.spiralize_contours</h1><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">compas_slicer</span>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.utilities.utils</span> <span class="kn">import</span> <span class="n">pull_pts_to_mesh_faces</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 
@@ -132,31 +134,38 @@
 
 
 <div class="viewcode-block" id="spiralize_contours"><a class="viewcode-back" href="../../../api/generated/compas_slicer.post_processing.spiralize_contours.html#compas_slicer.post_processing.spiralize_contours">[docs]</a><span class="k">def</span> <span class="nf">spiralize_contours</span><span class="p">(</span><span class="n">slicer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Spiralizes contours. Only supports a constant layer height.</span>
-<span class="sd">    Can only be used for geometries consisting out of a single contour (vases).</span>
+    <span class="sd">&quot;&quot;&quot;Spiralizes contours. Only works for Planar Slicer.</span>
+<span class="sd">    Can only be used for geometries consisting out of a single closed contour (i.e. vases).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    slicer: :class: &#39;compas_slicer.slicers.PlanarSlicer&#39;</span>
 <span class="sd">        An instance of the compas_slicer.slicers.PlanarSlicer class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># retrieves layer height by subtracting z of first point of layer 1 from layer 0</span>
-    <span class="n">layer_height</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Spiralizing contours&#39;</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">compas_slicer</span><span class="o">.</span><span class="n">slicers</span><span class="o">.</span><span class="n">PlanarSlicer</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;spiralize_contours() contours only works for PlanarSlicer. Skipping function.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">layer_height</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">):</span>
-                    <span class="c1"># get the number of points in a layer</span>
-                    <span class="n">no_of_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
-                    <span class="c1"># calculates distance to move</span>
-                    <span class="n">distance_to_move</span> <span class="o">=</span> <span class="n">layer_height</span> <span class="o">/</span> <span class="n">no_of_points</span>
-                    <span class="c1"># adds the distance to move to the z value and create new points</span>
-                    <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">distance_to_move</span><span class="p">))</span>
-                <span class="c1"># removes the first item to create a smooth transition to the next layer</span>
-                <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="c1"># add the distance to move to the z value and create new points</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">d</span> <span class="o">*</span> <span class="n">i</span>
+
+                <span class="c1"># project all points of path back on the mesh surface</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">projected_pts</span> <span class="o">=</span> <span class="n">pull_pts_to_mesh_faces</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">projected_pts</span><span class="p">]</span>
+
+                <span class="c1"># remove the last item to create a smooth transition to the next layer</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Spiralize contours only works for layers consisting out of a single path, contours were not changed, spiralize contour skipped for layer </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Spiralize contours only works for layers consisting out of a single path, contours were &quot;</span>
+                           <span class="s2">&quot;not changed, spiralize contour skipped for layer </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">j</span><span class="p">)</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
