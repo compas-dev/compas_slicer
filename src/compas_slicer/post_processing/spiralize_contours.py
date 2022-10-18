@@ -1,5 +1,7 @@
 import logging
+import compas_slicer
 from compas.geometry import Point
+from compas_slicer.utilities.utils import pull_pts_to_mesh_faces
 
 logger = logging.getLogger('logger')
 
@@ -15,23 +17,30 @@ def spiralize_contours(slicer):
     slicer: :class: 'compas_slicer.slicers.PlanarSlicer'
         An instance of the compas_slicer.slicers.PlanarSlicer class.
     """
-    # retrieves layer height by subtracting z of first point of layer 1 from layer 0
-    layer_height = slicer.layers[1].paths[0].points[0][2] - slicer.layers[0].paths[0].points[0][2]
+    logger.info('Spiralizing contours')
 
-    for i, layer in enumerate(slicer.layers):
+    if not isinstance(slicer, compas_slicer.slicers.PlanarSlicer):
+        logger.warning("spiralize_contours() contours only works for PlanarSlicer. Skipping function.")
+        return
+
+    for j, layer in enumerate(slicer.layers):
         if len(layer.paths) == 1:
             for path in layer.paths:
+                d = slicer.layer_height / (len(path.points) - 1)
                 for i, point in enumerate(path.points):
-                    # get the number of points in a layer
-                    no_of_points = len(path.points)
-                    # calculates distance to move
-                    distance_to_move = layer_height / no_of_points
-                    # adds the distance to move to the z value and create new points
-                    path.points[i] = Point(point[0], point[1], point[2] + (i*distance_to_move))
-                # removes the first item to create a smooth transition to the next layer
-                path.points.pop(0)
+                    # add the distance to move to the z value and create new points
+                    path.points[i][2] += d * i
+
+                # project all points of path on the mesh
+                _, projected_pts = pull_pts_to_mesh_faces(slicer.mesh, path.points)
+                path.points = [Point(p[0], p[1], p[2]) for p in projected_pts]
+
+                # remove the last item to create a smooth transition to the next layer
+                path.points.pop(len(path.points) - 1)
+
         else:
-            logger.warning("Spiralize contours only works for layers consisting out of a single path, contours were not changed, spiralize contour skipped for layer %i" % i)
+            logger.warning("Spiralize contours only works for layers consisting out of a single path, contours were "
+                           "not changed, spiralize contour skipped for layer %i" % j)
 
 
 if __name__ == "__main__":
