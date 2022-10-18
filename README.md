@@ -33,11 +33,11 @@ For example, create an environment named ``my-project`` (or replace with your ow
 
 Follow the instructions to install `compas_view2` (https://github.com/compas-dev/compas_view2).
 
-#### COMPAS CGAL
+#### COMPAS CGAL (for planar slicing)
 
     conda install -n my-project compas_cgal
 
-#### LIBIGL python bindings
+#### LIBIGL python bindings (for curved slicing)
 
     conda install -c conda-forge igl
 
