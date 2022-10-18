@@ -31,16 +31,16 @@ def spiralize_contours(slicer):
                     # add the distance to move to the z value and create new points
                     path.points[i][2] += d * i
 
-                # project all points of path on the mesh
+                # project all points of path back on the mesh surface
                 _, projected_pts = pull_pts_to_mesh_faces(slicer.mesh, path.points)
-                path.points = [Point(p[0], p[1], p[2]) for p in projected_pts]
+                path.points = [Point(*p) for p in projected_pts]
 
                 # remove the last item to create a smooth transition to the next layer
                 path.points.pop(len(path.points) - 1)
 
         else:
             logger.warning("Spiralize contours only works for layers consisting out of a single path, contours were "
-                           "not changed, spiralize contour skipped for layer %i" % j)
+                           "not changed, spiralize contour skipped for layer %d" % j)
 
 
 if __name__ == "__main__":
