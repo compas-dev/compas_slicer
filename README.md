@@ -37,6 +37,10 @@ Follow the instructions to install `compas_view2` (https://github.com/compas-dev
 
     conda install -n my-project compas_cgal
 
+#### LIBIGL python bindings
+
+    conda install -c conda-forge igl
+
 #### Grasshopper
 
 The Grasshopper components are automatically installed with the `compas_rhino` installation, e.g.:
