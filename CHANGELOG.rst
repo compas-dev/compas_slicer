@@ -22,6 +22,7 @@ Unreleased
 **Fixed**
 * spiralize_contours : After function points are reprojected on the mesh
 * Curved slicing grasshopper file improved
+* Bug in post-processing of slicer paths generation
 
 **Deprecated**
 
