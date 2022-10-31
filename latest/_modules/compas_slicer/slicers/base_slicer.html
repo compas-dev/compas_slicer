@@ -229,15 +229,14 @@
 
 <div class="viewcode-block" id="BaseSlicer.post_processing"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.post_processing.html#compas_slicer.slicers.BaseSlicer.post_processing">[docs]</a>    <span class="k">def</span> <span class="nf">post_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Applies standard post-processing operations: seams_align and unify_paths.&quot;&quot;&quot;</span>
-
-        <span class="c1">#  --- Align the seams between layers and unify orientation</span>
-        <span class="n">seams_align</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">align_with</span><span class="o">=</span><span class="s1">&#39;x_axis&#39;</span><span class="p">)</span>
-        <span class="n">seams_align</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">align_with</span><span class="o">=</span><span class="s1">&#39;next_path&#39;</span><span class="p">)</span>
-        <span class="n">unify_paths_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_paths</span><span class="p">()</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created </span><span class="si">%d</span><span class="s2"> Layers with </span><span class="si">%d</span><span class="s2"> total number of points&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_points</span><span class="p">))</span></div>
+        <span class="c1">#  --- Align the seams between layers and unify orientation</span>
+        <span class="n">seams_align</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">align_with</span><span class="o">=</span><span class="s1">&#39;next_path&#39;</span><span class="p">)</span>
+        <span class="n">unify_paths_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_paths</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created </span><span class="si">%d</span><span class="s2"> Layers with </span><span class="si">%d</span><span class="s2"> total number of points&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_points</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.close_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.close_paths.html#compas_slicer.slicers.BaseSlicer.close_paths">[docs]</a>    <span class="k">def</span> <span class="nf">close_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; For paths that are labeled as closed, it makes sure that the first and the last point are identical. &quot;&quot;&quot;</span>
