@@ -21,7 +21,7 @@ def unify_paths_orientation(slicer):
         for j, path in enumerate(layer.paths):
             reference_points = None  # find reference points for each path, if possible
             if j > 0:
-                reference_points = layer.paths[0].points
+                reference_points = layer.paths[j-1].points
             elif i > 0 and j == 0:
                 reference_points = slicer.layers[i - 1].paths[0].points
 

@@ -104,15 +104,14 @@ class BaseSlicer(object):
 
     def post_processing(self):
         """Applies standard post-processing operations: seams_align and unify_paths."""
-
-        #  --- Align the seams between layers and unify orientation
-        seams_align(self, align_with='x_axis')
-        seams_align(self, align_with='next_path')
-        unify_paths_orientation(self)
         self.close_paths()
 
-        logger.info("Created %d Layers with %d total number of points"
-                    % (len(self.layers), self.number_of_points))
+        #  --- Align the seams between layers and unify orientation
+        seams_align(self, align_with='next_path')
+        unify_paths_orientation(self)
+
+        self.close_paths()
+        logger.info("Created %d Layers with %d total number of points" % (len(self.layers), self.number_of_points))
 
     def close_paths(self):
         """ For paths that are labeled as closed, it makes sure that the first and the last point are identical. """
