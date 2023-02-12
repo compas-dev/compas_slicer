@@ -239,8 +239,6 @@ class VerticalLayersManager:
                     if min_dist > 3.0 * self.avg_layer_height or max_dist > 8.0 * self.avg_layer_height:
                         selected_layer = None
 
-
-
             if not selected_layer:  # then create new layer
                 selected_layer = VerticalLayer(id=self.layers[-1].id + 1)
                 self.layers.append(selected_layer)
