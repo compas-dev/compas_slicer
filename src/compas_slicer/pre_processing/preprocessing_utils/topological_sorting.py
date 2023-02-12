@@ -334,7 +334,7 @@ def are_neighboring_point_clouds(pts1, pts2, threshold):
         d = distance_point_point(pt, utils.get_closest_pt(pt, pts2))
         if d < threshold:
             count += 1
-            if count > 2:
+            if count > 5:
                 return True
     return False
 
