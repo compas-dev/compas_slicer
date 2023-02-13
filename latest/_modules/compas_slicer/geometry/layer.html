@@ -141,7 +141,7 @@
 
 
 <div class="viewcode-block" id="Layer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.html#compas_slicer.geometry.Layer">[docs]</a><span class="k">class</span> <span class="nc">Layer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Layer stores a group of ordered paths that are generated when a geometry is sliced.</span>
 <span class="sd">    Layers are typically organized horizontally, but can also be organized vertically (see VerticalLayer).</span>
 <span class="sd">    A Layer consists of one, or multiple Paths (depending on the geometry).</span>
@@ -183,14 +183,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">total_number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the total number of points within the layer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the total number of points within the layer.&quot;&quot;&quot;</span>
         <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
             <span class="n">num</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">printpoints</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">num</span>
 
 <div class="viewcode-block" id="Layer.calculate_z_bounds"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.calculate_z_bounds.html#compas_slicer.geometry.Layer.calculate_z_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_z_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Fills in the attribute self.min_max_z_height. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Fills in the attribute self.min_max_z_height. &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;You cannot calculate z_bounds because the list of paths is empty.&quot;</span>
         <span class="n">z_min</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">32</span>  <span class="c1"># very big number</span>
         <span class="n">z_max</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">32</span>  <span class="c1"># very small number</span>
@@ -202,7 +202,7 @@
 
 <div class="viewcode-block" id="Layer.from_data"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.from_data.html#compas_slicer.geometry.Layer.from_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Construct a layer from its data representation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a layer from its data representation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -223,7 +223,7 @@
         <span class="k">return</span> <span class="n">layer</span></div>
 
 <div class="viewcode-block" id="Layer.to_data"><a class="viewcode-back" href="../../../api/generated/compas_slicer.geometry.Layer.to_data.html#compas_slicer.geometry.Layer.to_data">[docs]</a>    <span class="k">def</span> <span class="nf">to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a dictionary of structured data representing the data structure.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dictionary of structured data representing the data structure.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -241,7 +241,7 @@
 
 
 <span class="k">class</span> <span class="nc">VerticalLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Vertical ordering. A VerticalLayer stores the print paths sorted in vertical groups.</span>
 <span class="sd">    It is created with an empty list of paths that is filled in afterwards.</span>
 
@@ -261,23 +261,23 @@
         <span class="k">return</span> <span class="s2">&quot;&lt;Vertical Layer object with id : </span><span class="si">%d</span><span class="s2"> and </span><span class="si">%d</span><span class="s2"> paths&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">no_of_paths</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">append_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Add path to self.paths list. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Add path to self.paths list. &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compute_head_centroid</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calculate_z_bounds</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">compute_head_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Find the centroid of all the points of the last path in the self.paths list&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Find the centroid of all the points of the last path in the self.paths list&quot;&quot;&quot;</span>
         <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head_centroid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">printout_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Prints the details of the class. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Prints the details of the class. &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;VerticalLayer id : </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Total number of paths : </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a dictionary of structured data representing the data structure.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dictionary of structured data representing the data structure.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -293,7 +293,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Construct a vertical layer from its data representation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a vertical layer from its data representation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -314,7 +314,7 @@
 
 
 <span class="k">class</span> <span class="nc">VerticalLayersManager</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates empty vertical layers and assigns to the input paths to the fitting vertical layer using the add() function.</span>
 <span class="sd">    The criterion for grouping paths to VerticalLayers is based on the proximity of the centroids of the paths.</span>
 <span class="sd">    If the input paths don&#39;t fit in any vertical layer, then new vertical layer is created with that path.</span>
@@ -329,9 +329,10 @@
 <span class="sd">        If None, then the vertical layer has an unlimited number of layers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold_max_centroid_dist</span><span class="o">=</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">max_paths_per_layer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold_max_centroid_dist</span><span class="p">,</span> <span class="n">avg_layer_height</span><span class="p">,</span> <span class="n">max_paths_per_layer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="n">VerticalLayer</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>  <span class="c1"># vertical_layers_print_data that contain isocurves (compas_slicer.Path)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threshold_max_centroid_dist</span> <span class="o">=</span> <span class="n">threshold_max_centroid_dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avg_layer_height</span> <span class="o">=</span> <span class="n">avg_layer_height</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_paths_per_layer</span> <span class="o">=</span> <span class="n">max_paths_per_layer</span>
 
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
@@ -353,6 +354,20 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">selected_layer</span> <span class="o">=</span> <span class="n">candidate_layer</span>
 
+                <span class="k">if</span> <span class="n">selected_layer</span><span class="p">:</span>  <span class="c1"># also check that the actual distance between the layers is acceptable</span>
+                    <span class="n">pts_selected_layer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">candidate_layer</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+                    <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+                    <span class="c1"># find min distance between pts_selected_layer and pts</span>
+                    <span class="n">min_dist</span> <span class="o">=</span> <span class="mf">1e10</span>  <span class="c1"># some large number</span>
+                    <span class="n">max_dist</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># some small number</span>
+                    <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">pts</span><span class="p">:</span>
+                        <span class="n">pt_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="p">(</span><span class="n">pts_selected_layer</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+                        <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pts_selected_layer</span> <span class="o">-</span> <span class="n">pt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="n">min_dist</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dists</span><span class="p">),</span> <span class="n">min_dist</span><span class="p">)</span>
+                        <span class="n">max_dist</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dists</span><span class="p">),</span> <span class="n">max_dist</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">min_dist</span> <span class="o">&gt;</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg_layer_height</span> <span class="ow">or</span> <span class="n">max_dist</span> <span class="o">&gt;</span> <span class="mf">8.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg_layer_height</span><span class="p">:</span>
+                        <span class="n">selected_layer</span> <span class="o">=</span> <span class="kc">None</span>
+
             <span class="k">if</span> <span class="ow">not</span> <span class="n">selected_layer</span><span class="p">:</span>  <span class="c1"># then create new layer</span>
                 <span class="n">selected_layer</span> <span class="o">=</span> <span class="n">VerticalLayer</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">selected_layer</span><span class="p">)</span>
@@ -361,7 +376,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_vertical_layers_centroids_list</span><span class="p">(</span><span class="n">vert_layers</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Returns a list with points that are the centroids of the heads of all vertical_layers_print_data. The head</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a list with points that are the centroids of the heads of all vertical_layers_print_data. The head</span>
 <span class="sd">    of a vertical_layer is its last path. &quot;&quot;&quot;</span>
     <span class="n">head_centroids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">vert_layer</span> <span class="ow">in</span> <span class="n">vert_layers</span><span class="p">:</span>

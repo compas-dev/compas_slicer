@@ -142,7 +142,7 @@
 
 
 <div class="viewcode-block" id="InterpolationSlicer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.InterpolationSlicer.html#compas_slicer.slicers.InterpolationSlicer">[docs]</a><span class="k">class</span> <span class="nc">InterpolationSlicer</span><span class="p">(</span><span class="n">BaseSlicer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates non-planar contours that interpolate user-defined boundaries.</span>
 
 <span class="sd">    Attributes</span>
@@ -167,7 +167,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_multiplier</span> <span class="o">=</span> <span class="mf">1.0</span></div>
 
 <div class="viewcode-block" id="InterpolationSlicer.generate_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.InterpolationSlicer.generate_paths.html#compas_slicer.slicers.InterpolationSlicer.generate_paths">[docs]</a>    <span class="k">def</span> <span class="nf">generate_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Generates curved paths. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Generates curved paths. &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessor</span><span class="p">,</span> <span class="s1">&#39;You need to provide a pre-processor in order to generate paths.&#39;</span>
 
         <span class="n">avg_layer_height</span> <span class="o">=</span> <span class="n">get_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;avg_layer_height&#39;</span><span class="p">,</span> <span class="n">defaults_type</span><span class="o">=</span><span class="s1">&#39;layers&#39;</span><span class="p">)</span>
@@ -176,7 +176,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> paths will be generated&#39;</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
 
         <span class="n">max_dist</span> <span class="o">=</span> <span class="n">get_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;vertical_layers_max_centroid_dist&#39;</span><span class="p">,</span> <span class="n">defaults_type</span><span class="o">=</span><span class="s1">&#39;layers&#39;</span><span class="p">)</span>
-        <span class="n">vertical_layers_manager</span> <span class="o">=</span> <span class="n">VerticalLayersManager</span><span class="p">(</span><span class="n">max_dist</span><span class="p">)</span>
+        <span class="n">vertical_layers_manager</span> <span class="o">=</span> <span class="n">VerticalLayersManager</span><span class="p">(</span><span class="n">max_dist</span><span class="p">,</span> <span class="n">avg_layer_height</span><span class="p">)</span>
 
         <span class="c1"># create paths + layers</span>
         <span class="k">with</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">max_value</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">params_list</span><span class="p">))</span> <span class="k">as</span> <span class="n">bar</span><span class="p">:</span>
@@ -193,7 +193,7 @@
 
 
 <span class="k">def</span> <span class="nf">find_no_of_isocurves</span><span class="p">(</span><span class="n">target_0</span><span class="p">,</span> <span class="n">target_1</span><span class="p">,</span> <span class="n">avg_layer_height</span><span class="o">=</span><span class="mf">1.1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Returns the average number of isocurves that can cover the get_distance from target_0 to target_1. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the average number of isocurves that can cover the get_distance from target_0 to target_1. &quot;&quot;&quot;</span>
     <span class="n">avg_ds0</span> <span class="o">=</span> <span class="n">target_0</span><span class="o">.</span><span class="n">get_avg_distances_from_other_target</span><span class="p">(</span><span class="n">target_1</span><span class="p">)</span>
     <span class="n">avg_ds1</span> <span class="o">=</span> <span class="n">target_1</span><span class="o">.</span><span class="n">get_avg_distances_from_other_target</span><span class="p">(</span><span class="n">target_0</span><span class="p">)</span>
     <span class="n">number_of_curves</span> <span class="o">=</span> <span class="p">((</span><span class="n">avg_ds0</span> <span class="o">+</span> <span class="n">avg_ds1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">/</span> <span class="n">avg_layer_height</span>
@@ -201,7 +201,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_interpolation_parameters_list</span><span class="p">(</span><span class="n">number_of_curves</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Returns a list of #number_of_curves floats from 0.001 to 0.997. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a list of #number_of_curves floats from 0.001 to 0.997. &quot;&quot;&quot;</span>
     <span class="c1"># t_list = [0.001]</span>
     <span class="n">t_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">a</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">number_of_curves</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">number_of_curves</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>

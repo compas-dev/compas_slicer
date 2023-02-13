@@ -141,7 +141,7 @@
 
 
 <div class="viewcode-block" id="BasePrintOrganizer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.html#compas_slicer.print_organization.BasePrintOrganizer">[docs]</a><span class="k">class</span> <span class="nc">BasePrintOrganizer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for organizing the printing process.</span>
 <span class="sd">    This class is meant to be extended for the implementation of the various print organizers.</span>
 <span class="sd">    Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or InterpolationPrintOrganizer.</span>
@@ -167,14 +167,14 @@
 
 <div class="viewcode-block" id="BasePrintOrganizer.create_printpoints"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.create_printpoints.html#compas_slicer.print_organization.BasePrintOrganizer.create_printpoints">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">create_printpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
     <span class="c1">######################</span>
     <span class="c1"># Iterators</span>
     <span class="c1">######################</span>
 <div class="viewcode-block" id="BasePrintOrganizer.printpoints_iterator"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator.html#compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">printpoints_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterate over the printpoints of the print organizer.</span>
 
 <span class="sd">        Yields</span>
@@ -188,7 +188,7 @@
                     <span class="k">yield</span> <span class="n">printpoint</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.printpoints_indices_iterator"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator.html#compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">printpoints_indices_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterate over the printpoints of the print organizer.</span>
 
 <span class="sd">        Yields</span>
@@ -210,7 +210,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">number_of_printpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;int: Total number of points in the PrintOrganizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;int: Total number of points in the PrintOrganizer.&quot;&quot;&quot;</span>
         <span class="n">total_number_of_pts</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
@@ -228,12 +228,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">number_of_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;int: Number of layers in the PrintOrganizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;int: Number of layers in the PrintOrganizer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">total_length_of_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the total length of all paths. Does not consider extruder toggle. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the total length of all paths. Does not consider extruder toggle. &quot;&quot;&quot;</span>
         <span class="n">total_length</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">path_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">]:</span>
@@ -244,7 +244,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">total_print_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; If the print speed is defined, it returns the total time of the print, else returns None&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; If the print speed is defined, it returns the total time of the print, else returns None&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_0&#39;</span><span class="p">][</span><span class="s1">&#39;path_0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">velocity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># assume that all ppts are set or none</span>
             <span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">layer_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">:</span>
@@ -255,7 +255,7 @@
             <span class="k">return</span> <span class="n">total_time</span>
 
 <div class="viewcode-block" id="BasePrintOrganizer.number_of_paths_on_layer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer.html#compas_slicer.print_organization.BasePrintOrganizer.number_of_paths_on_layer">[docs]</a>    <span class="k">def</span> <span class="nf">number_of_paths_on_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_index</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;int: Number of paths within a Layer of the PrintOrganizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;int: Number of paths within a Layer of the PrintOrganizer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">layer_index</span><span class="p">])</span></div>
 
     <span class="c1">######################</span>
@@ -263,7 +263,7 @@
     <span class="c1">######################</span>
 
 <div class="viewcode-block" id="BasePrintOrganizer.remove_duplicate_points_in_path"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path.html#compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate_points_in_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove subsequent points that are within a certain threshold.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove subsequent points that are within a certain threshold.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -288,8 +288,8 @@
         <span class="c1"># warn user</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">duplicate_ppts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s1">&#39;Attention! </span><span class="si">%d</span><span class="s1"> Duplicate printpoint(s) &#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">duplicate_ppts</span><span class="p">)</span>
-                <span class="o">+</span> <span class="s1">&#39;on &#39;</span> <span class="o">+</span> <span class="n">layer_key</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">path_key</span> <span class="o">+</span> <span class="s1">&#39;, indices: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dup_index</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;. They will be removed.&#39;</span><span class="p">)</span>
+                <span class="s1">&#39;Attention! </span><span class="si">%d</span><span class="s1"> Duplicate printpoint(s) &#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">duplicate_ppts</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;on &#39;</span> <span class="o">+</span> <span class="n">layer_key</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">path_key</span> <span class="o">+</span>
+                <span class="s1">&#39;, indices: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dup_index</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;. They will be removed.&#39;</span><span class="p">)</span>
 
         <span class="c1"># remove duplicates</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">duplicate_ppts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -297,7 +297,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ppt</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.get_printpoint_neighboring_items"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_neighboring_items">[docs]</a>    <span class="k">def</span> <span class="nf">get_printpoint_neighboring_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        layer_key: str</span>
 <span class="sd">            They key of the layer the current printpoint belongs to.</span>
 <span class="sd">        path_key: str</span>
@@ -321,7 +321,7 @@
         <span class="k">return</span> <span class="n">neighboring_items</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.printout_info"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.printout_info.html#compas_slicer.print_organization.BasePrintOrganizer.printout_info">[docs]</a>    <span class="k">def</span> <span class="nf">printout_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Prints out information from the PrintOrganizer&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prints out information from the PrintOrganizer&quot;&quot;&quot;</span>
         <span class="n">ppts_attributes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_0&#39;</span><span class="p">][</span><span class="s1">&#39;path_0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
             <span class="n">ppts_attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">printpoints_dict</span><span class="p">[</span><span class="s1">&#39;layer_0&#39;</span><span class="p">][</span><span class="s1">&#39;path_0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
@@ -345,7 +345,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.visualize_on_viewer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer.html#compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_on_viewer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_printpoints</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Visualize printpoints on the compas_viewer.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visualize printpoints on the compas_viewer.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -363,7 +363,7 @@
         <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">polyline</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="n">visualize_printpoints</span><span class="p">,</span> <span class="n">pointcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.get_printpoint_up_vector"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_up_vector.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoint_up_vector">[docs]</a>    <span class="k">def</span> <span class="nf">get_printpoint_up_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">normal</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the printpoint up-vector so that it is orthogonal to the path direction and the normal</span>
 
 <span class="sd">        Parameters</span>
@@ -393,7 +393,7 @@
     <span class="c1">######################</span>
 
 <div class="viewcode-block" id="BasePrintOrganizer.output_printpoints_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict.html#compas_slicer.print_organization.BasePrintOrganizer.output_printpoints_dict">[docs]</a>    <span class="k">def</span> <span class="nf">output_printpoints_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Creates a flattened PrintPoints as a dictionary.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a flattened PrintPoints as a dictionary.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
@@ -413,7 +413,7 @@
         <span class="k">return</span> <span class="n">data</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.output_nested_printpoints_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.output_nested_printpoints_dict.html#compas_slicer.print_organization.BasePrintOrganizer.output_nested_printpoints_dict">[docs]</a>    <span class="k">def</span> <span class="nf">output_nested_printpoints_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Creates a nested PrintPoints as a dictionary.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a nested PrintPoints as a dictionary.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
@@ -436,7 +436,7 @@
         <span class="k">return</span> <span class="n">data</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.output_gcode"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.output_gcode.html#compas_slicer.print_organization.BasePrintOrganizer.output_gcode">[docs]</a>    <span class="k">def</span> <span class="nf">output_gcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Gets a gcode text file using the function that creates gcode</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Gets a gcode text file using the function that creates gcode</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        parameters: dict with gcode parameters</span>
@@ -451,7 +451,7 @@
         <span class="k">return</span> <span class="n">gcode</span></div>
 
 <div class="viewcode-block" id="BasePrintOrganizer.get_printpoints_attribute"><a class="viewcode-back" href="../../../api/generated/compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute.html#compas_slicer.print_organization.BasePrintOrganizer.get_printpoints_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_printpoints_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of printpoint attributes that have key=attr_name.</span>
 
 <span class="sd">        Parameters</span>

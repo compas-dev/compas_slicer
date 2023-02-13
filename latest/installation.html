@@ -137,8 +137,8 @@
 <h3>Step 1: Install compas slicer</h3>
 <p>The recommended way to install <cite>compas_slicer</cite> is with <a class="reference external" href="https://conda.io/docs/">conda</a>.
 For example, create an environment named <code class="docutils literal notranslate"><span class="pre">my-project</span></code> (or replace with your own environment name) and install as follows:</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda config --add channels conda-forge
-conda create -n my-project compas_slicer
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>my-project<span class="w"> </span>compas_slicer
 </code></pre></div>
 </div>
 </section>
@@ -151,23 +151,23 @@ conda create -n my-project compas_slicer
 <ul class="simple">
 <li><p>COMPAS CGAL</p></li>
 </ul>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda install -n my-project compas_cgal
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>install<span class="w"> </span>-n<span class="w"> </span>my-project<span class="w"> </span>compas_cgal
 </code></pre></div>
 </div>
 <ul class="simple">
 <li><p>Grasshopper</p></li>
 </ul>
 <p>The Grasshopper components are automatically installed with the <cite>compas_rhino</cite> installation, e.g.:</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda activate my-project
-python -m compas_rhino.install -v <span class="m">6</span>.0
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>activate<span class="w"> </span>my-project
+python<span class="w"> </span>-m<span class="w"> </span>compas_rhino.install<span class="w"> </span>-v<span class="w"> </span><span class="m">6</span>.0
 </code></pre></div>
 </div>
 </section>
 <section id="step-4-test-if-the-library-works">
 <h3>Step 4. Test if the library works</h3>
 <p>Activate your environment and run the following command:</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda activate my-project
-python -m compas_slicer
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>activate<span class="w"> </span>my-project
+python<span class="w"> </span>-m<span class="w"> </span>compas_slicer
 </code></pre></div>
 </div>
 <p>Enjoy!</p>
@@ -179,18 +179,18 @@ python -m compas_slicer
 using the <a class="reference external" href="https://github.com/compas-dev/compas_slicer/issues">Issue Tracker</a>.</p>
 <section id="installing-planarity">
 <h3>Installing Planarity</h3>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>ModuleNotFoundError: No module named <span class="s1">&#39;Cython&#39;</span>
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>ModuleNotFoundError:<span class="w"> </span>No<span class="w"> </span>module<span class="w"> </span>named<span class="w"> </span><span class="s1">&#39;Cython&#39;</span>
 </code></pre></div>
 </div>
 <p>The installation process with pip can fail while installing planarity because Cython is not installed.
 In that case, install cython using pip (or conda) and then run the installation of COMPAS_SLICER again.</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>pip install cython --install-option<span class="o">=</span><span class="s2">&quot;--no-cython-compile&quot;</span>
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>pip<span class="w"> </span>install<span class="w"> </span>cython<span class="w"> </span>--install-option<span class="o">=</span><span class="s2">&quot;--no-cython-compile&quot;</span>
 </code></pre></div>
 </div>
 </section>
 <section id="microsoft-visual-c-build-tools">
 <h3>Microsoft Visual C++ Build Tools</h3>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>error: Microsoft Visual C++ <span class="m">14</span>.0 or greater is required. Get it with <span class="s2">&quot;Microsoft C++ Build Tools&quot;</span>: https://visualstudio.microsoft.com/visual-cpp-build-tools/
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>error:<span class="w"> </span>Microsoft<span class="w"> </span>Visual<span class="w"> </span>C++<span class="w"> </span><span class="m">14</span>.0<span class="w"> </span>or<span class="w"> </span>greater<span class="w"> </span>is<span class="w"> </span>required.<span class="w"> </span>Get<span class="w"> </span>it<span class="w"> </span>with<span class="w"> </span><span class="s2">&quot;Microsoft C++ Build Tools&quot;</span>:<span class="w"> </span>https://visualstudio.microsoft.com/visual-cpp-build-tools/
 </code></pre></div>
 </div>
 <p>The installation with pip can fail because “Microsoft Visual C++ Build Tools are missing”.
@@ -200,23 +200,23 @@ Then run the pip installation commands again.</p>
 </section>
 <section id="numpy-error">
 <h3>Numpy error</h3>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>RuntimeError: The current Numpy installation <span class="o">(</span><span class="s1">&#39;C:\\Users\\&lt;username&gt;\\.conda\\envs\\compas_slicer\\lib\\site-packages\\numpy\\__init__.py&#39;</span><span class="o">)</span> fails to pass a sanity check due to a bug <span class="k">in</span> the windows runtime. See this issue <span class="k">for</span> more information: https://tinyurl.com/y3dm3h86
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>RuntimeError:<span class="w"> </span>The<span class="w"> </span>current<span class="w"> </span>Numpy<span class="w"> </span>installation<span class="w"> </span><span class="o">(</span><span class="s1">&#39;C:\\Users\\&lt;username&gt;\\.conda\\envs\\compas_slicer\\lib\\site-packages\\numpy\\__init__.py&#39;</span><span class="o">)</span><span class="w"> </span>fails<span class="w"> </span>to<span class="w"> </span>pass<span class="w"> </span>a<span class="w"> </span>sanity<span class="w"> </span>check<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>a<span class="w"> </span>bug<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>windows<span class="w"> </span>runtime.<span class="w"> </span>See<span class="w"> </span>this<span class="w"> </span>issue<span class="w"> </span><span class="k">for</span><span class="w"> </span>more<span class="w"> </span>information:<span class="w"> </span>https://tinyurl.com/y3dm3h86
 </code></pre></div>
 </div>
 <p>A conflict between Numpy and Python can appear, in order to fix this you need to downgrade Numpy to 1.19.3 (from 1.19.4).
 Make sure you are in the correct environment and type:</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>pip install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.19.3
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.19.3
 </code></pre></div>
 </div>
 </section>
 <section id="fractions-error">
 <h3>Fractions error</h3>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>ImportError: cannot import name <span class="s1">&#39;gcd&#39;</span> from <span class="s1">&#39;fractions&#39;</span> <span class="o">(</span>C:<span class="se">\P</span>rogramData<span class="se">\A</span>naconda3<span class="se">\e</span>nvs<span class="se">\c</span>ompas_slicer<span class="se">\l</span>ib<span class="se">\f</span>ractions.py<span class="o">)</span>
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>ImportError:<span class="w"> </span>cannot<span class="w"> </span>import<span class="w"> </span>name<span class="w"> </span><span class="s1">&#39;gcd&#39;</span><span class="w"> </span>from<span class="w"> </span><span class="s1">&#39;fractions&#39;</span><span class="w"> </span><span class="o">(</span>C:<span class="se">\P</span>rogramData<span class="se">\A</span>naconda3<span class="se">\e</span>nvs<span class="se">\c</span>ompas_slicer<span class="se">\l</span>ib<span class="se">\f</span>ractions.py<span class="o">)</span>
 </code></pre></div>
 </div>
 <p>This issue can be solved, as explained here:  <a class="reference external" href="https://stackoverflow.com/questions/66174862/import-error-cant-import-name-gcd-from-fractions">https://stackoverflow.com/questions/66174862/import-error-cant-import-name-gcd-from-fractions</a>
 by typing the following command (make sure you are in the correct environment)</p>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda install -c conda-forge <span class="nv">networkx</span><span class="o">=</span><span class="m">2</span>.5
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">networkx</span><span class="o">=</span><span class="m">2</span>.5
 </code></pre></div>
 </div>
 </section>

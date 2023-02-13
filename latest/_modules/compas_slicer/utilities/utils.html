@@ -172,7 +172,7 @@
 
 
 <span class="k">def</span> <span class="nf">remap</span><span class="p">(</span><span class="n">input_val</span><span class="p">,</span> <span class="n">in_from</span><span class="p">,</span> <span class="n">in_to</span><span class="p">,</span> <span class="n">out_from</span><span class="p">,</span> <span class="n">out_to</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Bounded remap. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Bounded remap. &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">input_val</span> <span class="o">&lt;=</span> <span class="n">in_from</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">out_from</span>
     <span class="k">elif</span> <span class="n">input_val</span> <span class="o">&gt;=</span> <span class="n">in_to</span><span class="p">:</span>
@@ -182,7 +182,7 @@
 
 
 <span class="k">def</span> <span class="nf">remap_unbound</span><span class="p">(</span><span class="n">input_val</span><span class="p">,</span> <span class="n">in_from</span><span class="p">,</span> <span class="n">in_to</span><span class="p">,</span> <span class="n">out_from</span><span class="p">,</span> <span class="n">out_to</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remaps input_val from source domain to target domain.</span>
 <span class="sd">    No clamping is performed, the result can be outside of the target domain</span>
 <span class="sd">    if the input is outside of the source domain.</span>
@@ -196,7 +196,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_output_directory</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if a directory with the name &#39;output&#39; exists in the path. If not it creates it.</span>
 
 <span class="sd">    Parameters</span>
@@ -216,7 +216,7 @@
 
 
 <div class="viewcode-block" id="get_closest_pt_index"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.get_closest_pt_index.html#compas_slicer.utilities.get_closest_pt_index">[docs]</a><span class="k">def</span> <span class="nf">get_closest_pt_index</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">pts</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the index of the closest point of &#39;pt&#39; in the point cloud &#39;pts&#39;.</span>
 
 <span class="sd">    Parameters</span>
@@ -236,7 +236,7 @@
 
 
 <div class="viewcode-block" id="get_closest_pt"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.get_closest_pt.html#compas_slicer.utilities.get_closest_pt">[docs]</a><span class="k">def</span> <span class="nf">get_closest_pt</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">pts</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     Finds the closest point of &#39;pt&#39; in the point cloud &#39;pts&#39;.</span>
 
 <span class="sd">    Parameters</span>
@@ -254,7 +254,7 @@
 
 
 <span class="k">def</span> <span class="nf">pull_pts_to_mesh_faces</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Very fast method for projecting a list of points on a mesh, and finding their closest face keys.</span>
 
 <span class="sd">    Parameters</span>
@@ -277,7 +277,7 @@
 
 
 <div class="viewcode-block" id="smooth_vectors"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.smooth_vectors.html#compas_slicer.utilities.smooth_vectors">[docs]</a><span class="k">def</span> <span class="nf">smooth_vectors</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="n">strength</span><span class="p">,</span> <span class="n">iterations</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Smooths the vector iteratively, with the given number of iterations and strength per iteration</span>
 
 <span class="sd">    Parameters</span>
@@ -306,7 +306,7 @@
 <span class="c1">#  json</span>
 
 <div class="viewcode-block" id="save_to_json"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.save_to_json.html#compas_slicer.utilities.save_to_json">[docs]</a><span class="k">def</span> <span class="nf">save_to_json</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the provided data to json on the filepath, with the given name</span>
 
 <span class="sd">    Parameters</span>
@@ -323,7 +323,7 @@
 
 
 <div class="viewcode-block" id="load_from_json"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.load_from_json.html#compas_slicer.utilities.load_from_json">[docs]</a><span class="k">def</span> <span class="nf">load_from_json</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads json from the filepath</span>
 
 <span class="sd">    Parameters</span>
@@ -340,7 +340,7 @@
 
 
 <span class="k">def</span> <span class="nf">is_jsonable</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Returns True if x can be json-serialized, False otherwise. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns True if x can be json-serialized, False otherwise. &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -367,7 +367,7 @@
 <span class="c1">#  text file</span>
 
 <span class="k">def</span> <span class="nf">save_to_text_file</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the provided text on the filepath, with the given name</span>
 
 <span class="sd">    Parameters</span>
@@ -387,7 +387,7 @@
 <span class="c1">#  mesh utils</span>
 
 <span class="k">def</span> <span class="nf">check_triangular_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if the mesh is triangular. If not, then it raises an error</span>
 
 <span class="sd">    Parameters</span>
@@ -403,7 +403,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_closest_mesh_vkey_to_pt</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the vertex key that is the closest to the point.</span>
 
 <span class="sd">    Parameters</span>
@@ -425,7 +425,7 @@
 
 
 <div class="viewcode-block" id="get_closest_mesh_normal_to_pt"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.get_closest_mesh_normal_to_pt.html#compas_slicer.utilities.get_closest_mesh_normal_to_pt">[docs]</a><span class="k">def</span> <span class="nf">get_closest_mesh_normal_to_pt</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the closest vertex normal to the point.</span>
 
 <span class="sd">    Parameters</span>
@@ -445,7 +445,7 @@
 
 
 <div class="viewcode-block" id="get_mesh_vertex_coords_with_attribute"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.get_mesh_vertex_coords_with_attribute.html#compas_slicer.utilities.get_mesh_vertex_coords_with_attribute">[docs]</a><span class="k">def</span> <span class="nf">get_mesh_vertex_coords_with_attribute</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the coordinates of all the vertices that have an attribute with key=attr that equals the value.</span>
 
 <span class="sd">    Parameters</span>
@@ -468,7 +468,7 @@
 
 
 <div class="viewcode-block" id="get_normal_of_path_on_xy_plane"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.get_normal_of_path_on_xy_plane.html#compas_slicer.utilities.get_normal_of_path_on_xy_plane">[docs]</a><span class="k">def</span> <span class="nf">get_normal_of_path_on_xy_plane</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">mesh</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the normal of the curve that lies on the xy plane at the point with index k</span>
 
 <span class="sd">    Parameters</span>
@@ -518,7 +518,7 @@
 <span class="c1"># igl utils</span>
 
 <span class="k">def</span> <span class="nf">get_mesh_cotmatrix_igl</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">fix_boundaries</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets the laplace operator of the mesh</span>
 
 <span class="sd">    Parameters</span>
@@ -547,7 +547,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_mesh_cotans_igl</span><span class="p">(</span><span class="n">mesh</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets the cotangent entries of the mesh</span>
 
 
@@ -570,7 +570,7 @@
 <span class="c1">#  networkx graph</span>
 
 <div class="viewcode-block" id="plot_networkx_graph"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.plot_networkx_graph.html#compas_slicer.utilities.plot_networkx_graph">[docs]</a><span class="k">def</span> <span class="nf">plot_networkx_graph</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plots the graph G</span>
 
 <span class="sd">    Parameters</span>
@@ -587,7 +587,7 @@
 <span class="c1">#  dict utils</span>
 
 <div class="viewcode-block" id="point_list_to_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.point_list_to_dict.html#compas_slicer.utilities.point_list_to_dict">[docs]</a><span class="k">def</span> <span class="nf">point_list_to_dict</span><span class="p">(</span><span class="n">pts_list</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Turns a list of compas.geometry.Point into a dictionary, so that it can be saved to Json. Works identically for</span>
 <span class="sd">    3D vectors.</span>
 
@@ -606,7 +606,7 @@
 
 
 <span class="k">def</span> <span class="nf">point_list_from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Turns a dictionary of pts to a list of Compas.geometry.Point. Works identically for 3D vectors.</span>
 
 <span class="sd">    Parameters</span>
@@ -622,7 +622,7 @@
 
 <span class="c1">#  --- Flattened list of dictionary</span>
 <div class="viewcode-block" id="flattened_list_of_dictionary"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.flattened_list_of_dictionary.html#compas_slicer.utilities.flattened_list_of_dictionary">[docs]</a><span class="k">def</span> <span class="nf">flattened_list_of_dictionary</span><span class="p">(</span><span class="n">dictionary</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Turns the dictionary into a flat list</span>
 
 <span class="sd">    Parameters</span>
@@ -640,7 +640,7 @@
 
 
 <div class="viewcode-block" id="get_dict_key_from_value"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.get_dict_key_from_value.html#compas_slicer.utilities.get_dict_key_from_value">[docs]</a><span class="k">def</span> <span class="nf">get_dict_key_from_value</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the key of a dictionary that stores the val</span>
 
 <span class="sd">    Parameters</span>
@@ -657,7 +657,7 @@
 
 
 <span class="k">def</span> <span class="nf">find_next_printpoint</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the next printpoint from the current printpoint if it exists, otherwise returns None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">next_ppt</span> <span class="o">=</span> <span class="kc">None</span>
@@ -674,7 +674,7 @@
 
 
 <span class="k">def</span> <span class="nf">find_previous_printpoint</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">,</span> <span class="n">layer_key</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the previous printpoint from the current printpoint if it exists, otherwise returns None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">prev_ppt</span> <span class="o">=</span> <span class="kc">None</span>
@@ -694,7 +694,7 @@
 <span class="c1">#  control flow</span>
 
 <div class="viewcode-block" id="interrupt"><a class="viewcode-back" href="../../../api/generated/compas_slicer.utilities.interrupt.html#compas_slicer.utilities.interrupt">[docs]</a><span class="k">def</span> <span class="nf">interrupt</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interrupts the flow of the code while it is running.</span>
 <span class="sd">    It asks for the user to press a enter to continue or abort.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -710,7 +710,7 @@
 <span class="c1">#  load all files with name</span>
 
 <span class="k">def</span> <span class="nf">get_all_files_with_name</span><span class="p">(</span><span class="n">startswith</span><span class="p">,</span> <span class="n">endswith</span><span class="p">,</span> <span class="n">DATA_PATH</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds all the filenames in the DATA_PATH that start and end with the provided strings</span>
 
 <span class="sd">    Parameters</span>
@@ -739,7 +739,7 @@
 
 
 <span class="k">def</span> <span class="nf">check_package_is_installed</span><span class="p">(</span><span class="n">package_name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Throws an error if igl python bindings are not installed in the current environment. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Throws an error if igl python bindings are not installed in the current environment. &quot;&quot;&quot;</span>
     <span class="n">packages</span> <span class="o">=</span> <span class="n">TerminalCommand</span><span class="p">(</span><span class="s1">&#39;conda list&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_split_output_strings</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">package_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">packages</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">PluginNotInstalledError</span><span class="p">(</span><span class="s2">&quot; ATTENTION! Package : &quot;</span> <span class="o">+</span> <span class="n">package_name</span> <span class="o">+</span>

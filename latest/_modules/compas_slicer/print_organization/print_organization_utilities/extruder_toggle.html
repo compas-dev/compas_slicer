@@ -138,7 +138,7 @@
 
 
 <div class="viewcode-block" id="set_extruder_toggle"><a class="viewcode-back" href="../../../../api/generated/compas_slicer.print_organization.set_extruder_toggle.html#compas_slicer.print_organization.set_extruder_toggle">[docs]</a><span class="k">def</span> <span class="nf">set_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">slicer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Sets the extruder_toggle value for the printpoints.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets the extruder_toggle value for the printpoints.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -200,7 +200,7 @@
 
 
 <div class="viewcode-block" id="override_extruder_toggle"><a class="viewcode-back" href="../../../../api/generated/compas_slicer.print_organization.override_extruder_toggle.html#compas_slicer.print_organization.override_extruder_toggle">[docs]</a><span class="k">def</span> <span class="nf">override_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">override_value</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Overrides the extruder_toggle value for the printpoints with a user-defined value.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Overrides the extruder_toggle value for the printpoints with a user-defined value.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -215,7 +215,7 @@
 
 
 <span class="k">def</span> <span class="nf">check_assigned_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Checks that all the printpoints have an assigned extruder toggle. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Checks that all the printpoints have an assigned extruder toggle. &quot;&quot;&quot;</span>
     <span class="n">all_toggles_assigned</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">printpoints_iterator</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">printpoint</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

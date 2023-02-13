@@ -138,7 +138,7 @@
 
 
 <div class="viewcode-block" id="PlanarSlicer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.PlanarSlicer.html#compas_slicer.slicers.PlanarSlicer">[docs]</a><span class="k">class</span> <span class="nc">PlanarSlicer</span><span class="p">(</span><span class="n">BaseSlicer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates planar contours on a mesh that are parallel to the xy plane.</span>
 
 <span class="sd">    Attributes</span>
@@ -171,7 +171,7 @@
                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_height</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PlanarSlicer.generate_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.PlanarSlicer.generate_paths.html#compas_slicer.slicers.PlanarSlicer.generate_paths">[docs]</a>    <span class="k">def</span> <span class="nf">generate_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generates the planar slicing paths.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates the planar slicing paths.&quot;&quot;&quot;</span>
         <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertex_attribute</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span>
         <span class="n">min_z</span><span class="p">,</span> <span class="n">max_z</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 

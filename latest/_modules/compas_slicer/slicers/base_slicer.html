@@ -147,7 +147,7 @@
 
 
 <div class="viewcode-block" id="BaseSlicer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.html#compas_slicer.slicers.BaseSlicer">[docs]</a><span class="k">class</span> <span class="nc">BaseSlicer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is an organizational class that holds all the information for the slice process.</span>
 <span class="sd">    Do not use this class directly in your python code. Instead use PlanarSlicer or InterpolationSlicer.</span>
 <span class="sd">    This class is meant to be extended for the implementation of the various slicers.</span>
@@ -178,7 +178,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">number_of_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns int: Total number of points in the slicer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns int: Total number of points in the slicer.&quot;&quot;&quot;</span>
         <span class="n">total_number_of_pts</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
@@ -187,12 +187,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">number_of_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns int: Total number of layers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns int: Total number of layers.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">number_of_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns tuple (int, int, int): Total number of paths, number of open paths, number of closed paths. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns tuple (int, int, int): Total number of paths, number of open paths, number of closed paths. &quot;&quot;&quot;</span>
         <span class="n">total_number_of_paths</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">closed_paths</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">open_paths</span> <span class="o">=</span> <span class="mi">0</span>
@@ -208,19 +208,19 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">vertical_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a list of all the vertical layers stored in the slicer. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns a list of all the vertical layers stored in the slicer. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">layer</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">VerticalLayer</span><span class="p">)]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">horizontal_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a list of all the layers stored in the slicer that are NOT vertical. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns a list of all the layers stored in the slicer that are NOT vertical. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">layer</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">VerticalLayer</span><span class="p">)]</span>
 
     <span class="c1">##############################</span>
     <span class="c1">#  --- Functions</span>
 
 <div class="viewcode-block" id="BaseSlicer.slice_model"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.slice_model.html#compas_slicer.slicers.BaseSlicer.slice_model">[docs]</a>    <span class="k">def</span> <span class="nf">slice_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Slices the model and applies standard post-processing and removing of invalid paths.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Slices the model and applies standard post-processing and removing of invalid paths.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">generate_paths</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remove_invalid_paths_and_layers</span><span class="p">()</span>
@@ -228,11 +228,11 @@
 
 <div class="viewcode-block" id="BaseSlicer.generate_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.generate_paths.html#compas_slicer.slicers.BaseSlicer.generate_paths">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">generate_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;To be implemented by the inheriting classes. &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.post_processing"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.post_processing.html#compas_slicer.slicers.BaseSlicer.post_processing">[docs]</a>    <span class="k">def</span> <span class="nf">post_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Applies standard post-processing operations: seams_align and unify_paths.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies standard post-processing operations: seams_align and unify_paths.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close_paths</span><span class="p">()</span>
 
         <span class="c1">#  --- Align the seams between layers and unify orientation</span>
@@ -243,7 +243,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created </span><span class="si">%d</span><span class="s2"> Layers with </span><span class="si">%d</span><span class="s2"> total number of points&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_points</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.close_paths"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.close_paths.html#compas_slicer.slicers.BaseSlicer.close_paths">[docs]</a>    <span class="k">def</span> <span class="nf">close_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; For paths that are labeled as closed, it makes sure that the first and the last point are identical. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; For paths that are labeled as closed, it makes sure that the first and the last point are identical. &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>  <span class="c1"># if the path is closed, first and last point should be the same.</span>
@@ -251,7 +251,7 @@
                         <span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.remove_invalid_paths_and_layers"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.remove_invalid_paths_and_layers.html#compas_slicer.slicers.BaseSlicer.remove_invalid_paths_and_layers">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid_paths_and_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes invalid layers and paths from the slicer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes invalid layers and paths from the slicer.&quot;&quot;&quot;</span>
 
         <span class="n">paths_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">layers_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
@@ -301,7 +301,7 @@
     <span class="c1">#  --- Output</span>
 
 <div class="viewcode-block" id="BaseSlicer.printout_info"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.printout_info.html#compas_slicer.slicers.BaseSlicer.printout_info">[docs]</a>    <span class="k">def</span> <span class="nf">printout_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Prints out information from the slicing process.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prints out information from the slicing process.&quot;&quot;&quot;</span>
         <span class="n">no_of_paths</span><span class="p">,</span> <span class="n">closed_paths</span><span class="p">,</span> <span class="n">open_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_paths</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">---- Slicer Info ----&quot;</span><span class="p">)</span>
@@ -311,7 +311,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.visualize_on_viewer"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.visualize_on_viewer.html#compas_slicer.slicers.BaseSlicer.visualize_on_viewer">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_on_viewer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_mesh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">visualize_paths</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Visualizes slicing result using compas.viewers.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visualizes slicing result using compas.viewers.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -340,7 +340,7 @@
 
 <div class="viewcode-block" id="BaseSlicer.from_data"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.from_data.html#compas_slicer.slicers.BaseSlicer.from_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Construct a slicer from its data representation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a slicer from its data representation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -365,11 +365,11 @@
         <span class="k">return</span> <span class="n">slicer</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.to_json"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.to_json.html#compas_slicer.slicers.BaseSlicer.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Writes the slicer to a JSON file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes the slicer to a JSON file.&quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.to_data"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.to_data.html#compas_slicer.slicers.BaseSlicer.to_data">[docs]</a>    <span class="k">def</span> <span class="nf">to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a dictionary of structured data representing the data structure.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dictionary of structured data representing the data structure.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -403,7 +403,7 @@
         <span class="k">return</span> <span class="n">data</span></div>
 
 <div class="viewcode-block" id="BaseSlicer.get_layers_dict"><a class="viewcode-back" href="../../../api/generated/compas_slicer.slicers.BaseSlicer.get_layers_dict.html#compas_slicer.slicers.BaseSlicer.get_layers_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_layers_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a dictionary consisting of the layers.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dictionary consisting of the layers.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
