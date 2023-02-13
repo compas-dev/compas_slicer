@@ -46,22 +46,32 @@ def smooth_printpoint_attribute(print_organizer, iterations, strength, get_attr_
         attrs = new_values
 
         # in the end assign the new (smoothened) values to the printpoints
-        if iteration == iterations-1:
+        if iteration == iterations - 1:
             for i, ppt in enumerate(print_organizer.printpoints_iterator()):
                 set_attr_value(ppt, attrs[i])
 
 
 def smooth_printpoints_layer_heights(print_organizer, iterations, strength):
     """ This function is an example for how the 'smooth_printpoint_attribute' function can be used. """
-    def get_ppt_layer_height(printpoint): return printpoint.layer_height  # get value
-    def set_ppt_layer_height(printpoint, v): printpoint.layer_height = v  # set value
+
+    def get_ppt_layer_height(printpoint):
+        return printpoint.layer_height  # get value
+
+    def set_ppt_layer_height(printpoint, v):
+        printpoint.layer_height = v  # set value
+
     smooth_printpoint_attribute(print_organizer, iterations, strength, get_ppt_layer_height, set_ppt_layer_height)
 
 
 def smooth_printpoints_up_vectors(print_organizer, iterations, strength):
     """ This function is an example for how the 'smooth_printpoint_attribute' function can be used. """
-    def get_ppt_up_vec(printpoint): return printpoint.up_vector  # get value
-    def set_ppt_up_vec(printpoint, v): printpoint.up_vector = v  # set value
+
+    def get_ppt_up_vec(printpoint):
+        return printpoint.up_vector  # get value
+
+    def set_ppt_up_vec(printpoint, v):
+        printpoint.up_vector = v  # set value
+
     smooth_printpoint_attribute(print_organizer, iterations, strength, get_ppt_up_vec, set_ppt_up_vec)
     # finally update any values in the printpoints that are affected by the changed attribute
     for ppt in print_organizer.printpoints_iterator():

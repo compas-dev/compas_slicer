@@ -159,8 +159,8 @@ class BasePrintOrganizer(object):
         # warn user
         if len(duplicate_ppts) > 0:
             logger.warning(
-                'Attention! %d Duplicate printpoint(s) ' % len(duplicate_ppts)
-                + 'on ' + layer_key + ', ' + path_key + ', indices: ' + str(dup_index) + '. They will be removed.')
+                'Attention! %d Duplicate printpoint(s) ' % len(duplicate_ppts) + 'on ' + layer_key + ', ' + path_key +
+                ', indices: ' + str(dup_index) + '. They will be removed.')
 
         # remove duplicates
         if len(duplicate_ppts) > 0:

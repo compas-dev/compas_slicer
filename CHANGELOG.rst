@@ -10,10 +10,12 @@ Unreleased
 ----------
 
 **Added**
+* Costa surface on curved slicing example
 
 **Changed**
 
 **Fixed**
+* Fixed bug in sorting to vertical layers
 
 **Deprecated**
 

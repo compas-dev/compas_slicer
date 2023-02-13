@@ -47,7 +47,7 @@ class InterpolationSlicer(BaseSlicer):
         logger.info('%d paths will be generated' % n)
 
         max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='layers')
-        vertical_layers_manager = VerticalLayersManager(max_dist)
+        vertical_layers_manager = VerticalLayersManager(max_dist, avg_layer_height)
 
         # create paths + layers
         with progressbar.ProgressBar(max_value=len(params_list)) as bar:
