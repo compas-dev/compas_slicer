@@ -21,7 +21,7 @@ def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
     mesh: :class: 'compas.datastructures.Mesh'
     vertices_start: list, int
     """
-    utils.check_package_is_installed('igl')
+    # utils.check_package_is_installed('igl')
     import igl
 
     v, f = mesh.to_vertices_and_faces()
@@ -61,7 +61,7 @@ class GeodesicsSolver:
     """
 
     def __init__(self, mesh, OUTPUT_PATH):
-        utils.check_package_is_installed('igl')
+        # utils.check_package_is_installed('igl')
         import igl
 
         logger.info('GeodesicsSolver')
