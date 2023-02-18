@@ -59,7 +59,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         other parts it lies on, and which other parts lie on it."""
         avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='layers')
         self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.vertical_layers,
-                                                               10 * avg_layer_height, DATA_PATH=self.DATA_PATH)
+                                                               4 * avg_layer_height, DATA_PATH=self.DATA_PATH)
 
     def create_base_boundaries(self):
         """ Creates one BaseBoundary per vertical_layer."""
