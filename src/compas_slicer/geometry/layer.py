@@ -192,17 +192,13 @@ class VerticalLayersManager:
 
     Attributes
     ----------
-    threshold_max_centroid_dist:
-        float. The maximum get_distance that the centroids of two successive paths can have to belong in the same
-        VerticalLayer.
     max_paths_per_layer: int
         Maximum number of layers that a vertical layer can consist of.
         If None, then the vertical layer has an unlimited number of layers.
     """
 
-    def __init__(self, threshold_max_centroid_dist, avg_layer_height, max_paths_per_layer=None):
+    def __init__(self, avg_layer_height, max_paths_per_layer=None):
         self.layers = [VerticalLayer(id=0)]  # vertical_layers_print_data that contain isocurves (compas_slicer.Path)
-        self.threshold_max_centroid_dist = threshold_max_centroid_dist
         self.avg_layer_height = avg_layer_height
         self.max_paths_per_layer = max_paths_per_layer
 
@@ -218,7 +214,8 @@ class VerticalLayersManager:
             other_centroids = get_vertical_layers_centroids_list(self.layers)
             candidate_layer = self.layers[utils.get_closest_pt_index(centroid, other_centroids)]
 
-            if np.linalg.norm(candidate_layer.head_centroid - centroid) < self.threshold_max_centroid_dist:
+            threshold_max_centroid_dist = 5 * self.avg_layer_height
+            if np.linalg.norm(candidate_layer.head_centroid - centroid) < threshold_max_centroid_dist:
                 if self.max_paths_per_layer:
                     if len(candidate_layer.paths) < self.max_paths_per_layer:
                         selected_layer = candidate_layer

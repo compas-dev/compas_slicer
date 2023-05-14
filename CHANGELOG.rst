@@ -15,7 +15,7 @@ Unreleased
 **Changed**
 
 **Fixed**
-* Fixed bug in sorting to vertical layers
+* Fixed bug in sorting to vertical layers 
 
 **Deprecated**
 
