@@ -36,7 +36,7 @@ def create_planar_paths_igl(mesh, n):
         The mesh to be sliced
     n: number of contours
     """
-    utils.check_package_is_installed('igl')
+    # utils.check_package_is_installed('igl')
     import igl
     v, f = mesh.to_vertices_and_faces()
 

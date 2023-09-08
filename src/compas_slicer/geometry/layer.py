@@ -192,17 +192,14 @@ class VerticalLayersManager:
 
     Attributes
     ----------
-    threshold_max_centroid_dist:
-        float. The maximum get_distance that the centroids of two successive paths can have to belong in the same
-        VerticalLayer.
     max_paths_per_layer: int
         Maximum number of layers that a vertical layer can consist of.
         If None, then the vertical layer has an unlimited number of layers.
     """
 
-    def __init__(self, threshold_max_centroid_dist=25.0, max_paths_per_layer=None):
+    def __init__(self, avg_layer_height, max_paths_per_layer=None):
         self.layers = [VerticalLayer(id=0)]  # vertical_layers_print_data that contain isocurves (compas_slicer.Path)
-        self.threshold_max_centroid_dist = threshold_max_centroid_dist
+        self.avg_layer_height = avg_layer_height
         self.max_paths_per_layer = max_paths_per_layer
 
     def add(self, path):
@@ -217,12 +214,27 @@ class VerticalLayersManager:
             other_centroids = get_vertical_layers_centroids_list(self.layers)
             candidate_layer = self.layers[utils.get_closest_pt_index(centroid, other_centroids)]
 
-            if np.linalg.norm(candidate_layer.head_centroid - centroid) < self.threshold_max_centroid_dist:
+            threshold_max_centroid_dist = 5 * self.avg_layer_height
+            if np.linalg.norm(candidate_layer.head_centroid - centroid) < threshold_max_centroid_dist:
                 if self.max_paths_per_layer:
                     if len(candidate_layer.paths) < self.max_paths_per_layer:
                         selected_layer = candidate_layer
                 else:
                     selected_layer = candidate_layer
+
+                if selected_layer:  # also check that the actual distance between the layers is acceptable
+                    pts_selected_layer = np.array(candidate_layer.paths[-1].points)
+                    pts = np.array(path.points)
+                    # find min distance between pts_selected_layer and pts
+                    min_dist = 1e10  # some large number
+                    max_dist = 0.0  # some small number
+                    for pt in pts:
+                        pt_array = np.tile(pt, (pts_selected_layer.shape[0], 1))
+                        dists = np.linalg.norm(pts_selected_layer - pt_array, axis=1)
+                        min_dist = min(np.min(dists), min_dist)
+                        max_dist = max(np.min(dists), max_dist)
+                    if min_dist > 3.0 * self.avg_layer_height or max_dist > 8.0 * self.avg_layer_height:
+                        selected_layer = None
 
             if not selected_layer:  # then create new layer
                 selected_layer = VerticalLayer(id=self.layers[-1].id + 1)

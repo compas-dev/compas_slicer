@@ -63,9 +63,9 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         """ When the print consists of various paths, this function initializes a class that creates
         a directed graph with all these parts, with the connectivity of each part reflecting which
         other parts it lies on, and which other parts lie on it."""
-        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='layers')
+        avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='layers')
         self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.vertical_layers,
-                                                               max_layer_height, DATA_PATH=self.DATA_PATH)
+                                                               4 * avg_layer_height, DATA_PATH=self.DATA_PATH)
 
     def create_base_boundaries(self):
         """ Creates one BaseBoundary per vertical_layer."""

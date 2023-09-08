@@ -55,7 +55,7 @@ def simplify_paths_rdp_igl(slicer, threshold):
         Low threshold removes few points, high threshold removes many points.
     """
     try:
-        utils.check_package_is_installed('igl')
+        # utils.check_package_is_installed('igl')
         logger.info("Paths simplification rdp - igl")
         remaining_pts_num = 0
 

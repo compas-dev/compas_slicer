@@ -33,7 +33,7 @@ def main():
     high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
     create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)
 
-    avg_layer_height = 3.0
+    avg_layer_height = 2.0
 
     parameters = {
         'avg_layer_height': avg_layer_height,  # controls number of curves that will be generated
@@ -50,8 +50,8 @@ def main():
     slicer = InterpolationSlicer(mesh, preprocessor, parameters)
     slicer.slice_model()  # compute_norm_of_gradient contours
 
-    simplify_paths_rdp_igl(slicer, threshold=0.5)
-    seams_smooth(slicer, smooth_distance=4)
+    simplify_paths_rdp_igl(slicer, threshold=0.25)
+    seams_smooth(slicer, smooth_distance=3)
     slicer.printout_info()
     utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer.json')
 

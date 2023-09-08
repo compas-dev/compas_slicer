@@ -307,10 +307,13 @@ class SegmentsDirectedGraph(DirectedGraph):
         children = []
         root_segment = self.segments[root]
         root_last_crv_pts = root_segment.paths[-1].points
+        # utils.save_to_json(utils.point_list_to_dict(root_last_crv_pts), self.OUTPUT_PATH, "root_last_crv_pts.json")
 
         for i, segment in enumerate(self.segments):
             if i != root:
                 segment_first_curve_pts = segment.paths[0].points
+                # utils.save_to_json(utils.point_list_to_dict(segment_first_curve_pts), self.OUTPUT_PATH,
+                #                    "segment_first_curve_pts.json")
                 if are_neighboring_point_clouds(root_last_crv_pts, segment_first_curve_pts, self.max_d_threshold):
                     children.append(i)
         return children, [None for _ in children]  # None because this graph doesn't have cut ids
@@ -334,7 +337,7 @@ def are_neighboring_point_clouds(pts1, pts2, threshold):
         d = distance_point_point(pt, utils.get_closest_pt(pt, pts2))
         if d < threshold:
             count += 1
-            if count > 2:
+            if count > 5:
                 return True
     return False
 

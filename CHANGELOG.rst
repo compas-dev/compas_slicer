@@ -10,6 +10,34 @@ Unreleased
 ----------
 
 **Added**
+* Costa surface on curved slicing example
+
+**Changed**
+
+**Fixed**
+* Fixed bug in sorting to vertical layers 
+
+**Deprecated**
+
+**Removed**
+
+0.6.1
+----------
+
+**Added**
+
+**Changed**
+
+**Fixed**
+
+**Deprecated**
+
+**Removed**
+
+0.6.0
+----------
+
+**Added**
 * Output nested printpoints  
 
 **Changed**
