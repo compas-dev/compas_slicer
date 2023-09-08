@@ -49,8 +49,11 @@ def add_safety_printpoints(print_organizer, z_hop=10.0):
                             pp_copy_dict[layer_key][path_key].append(create_safety_printpoint(next_ppt, z_hop, False))
 
     #  finally, insert a safety print point at the beginning of the entire print
-    safety_printpoint = create_safety_printpoint(pp_dict['layer_0']['path_0'][0], z_hop, False)
-    pp_copy_dict['layer_0']['path_0'].insert(0, safety_printpoint)
+    try:
+        safety_printpoint = create_safety_printpoint(pp_dict['layer_0']['path_0'][0], z_hop, False)
+        pp_copy_dict['layer_0']['path_0'].insert(0, safety_printpoint)
+    except KeyError as e:
+        logger.exception(e)
 
     #  the safety printpoint has already been added at the end since the last printpoint extruder_toggle_type is False
     print_organizer.printpoints_dict = pp_copy_dict
