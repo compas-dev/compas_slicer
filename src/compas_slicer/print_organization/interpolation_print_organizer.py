@@ -44,7 +44,13 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         # topological sorting of vertical layers depending on their connectivity
         self.topo_sort_graph = None
         if len(self.vertical_layers) > 1:
-            self.topological_sorting()
+            try:
+                self.topological_sorting()
+            except AssertionError as e:
+                logger.exception("topology sorting failed\n")
+                logger.critical("integrity of the output data ")
+                # TODO: perhaps its better to be even more explicit and add a
+                #  FAILED-timestamp.txt file?
         self.selected_order = None
 
         # creation of one base boundary per vertical_layer
@@ -67,20 +73,29 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
 
-        if len(self.vertical_layers) > 1:
-            for i, vertical_layer in enumerate(self.vertical_layers):
-                parents_of_current_node = self.topo_sort_graph.get_parents_of_node(i)
-                if len(parents_of_current_node) == 0:
-                    boundary = root_boundary
-                else:
-                    boundary_pts = []
-                    for parent_index in parents_of_current_node:
-                        parent = self.vertical_layers[parent_index]
-                        boundary_pts.extend(parent.paths[-1].points)
-                    boundary = BaseBoundary(self.slicer.mesh, boundary_pts)
-                bs.append(boundary)
+        if self.topo_sort_graph:
+            if len(self.vertical_layers) > 1:
+                for i, vertical_layer in enumerate(self.vertical_layers):
+                    parents_of_current_node = self.topo_sort_graph.get_parents_of_node(i)
+                    if len(parents_of_current_node) == 0:
+                        boundary = root_boundary
+                    else:
+                        boundary_pts = []
+                        for parent_index in parents_of_current_node:
+                            parent = self.vertical_layers[parent_index]
+                            boundary_pts.extend(parent.paths[-1].points)
+                        boundary = BaseBoundary(self.slicer.mesh, boundary_pts)
+                    bs.append(boundary)
+            else:
+                bs.append(root_boundary)
         else:
-            bs.append(root_boundary)
+            logger.critical("""no topology graph was created, no base boundaries created, 
+            output will be degenerated. 
+             
+             a likely cause for topology sorting to fail is that 
+                         non-continuous paths were created. When creating paths with variable 
+                         layer heights, it may very well be that the non-continuous paths are 
+                         created, while this is not yet a supported feature""")
 
         # save intermediary outputs
         b_data = {i: b.to_data() for i, b in enumerate(bs)}
@@ -109,8 +124,13 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
 
         # (2) --- Select order of vertical layers
         if len(self.vertical_layers) > 1:  # the you need to select one topological order
-            all_orders = self.topo_sort_graph.get_all_topological_orders()
-            self.selected_order = all_orders[0]  # TODO: add more elaborate selection strategy
+
+            if not self.topo_sort_graph:
+                logger.error("no topology graph found, cannnot set the order of vertical layers")
+                self.selected_order = [0]
+            else:
+                all_orders = self.topo_sort_graph.get_all_topological_orders()
+                self.selected_order = all_orders[0]  # TODO: add more elaborate selection strategy
         else:
             self.selected_order = [0]  # there is only one segment, only this option
 
@@ -118,7 +138,10 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         for index, i in enumerate(self.selected_order):
             layer = self.vertical_layers[i]
             self.printpoints_dict['layer_%d' % current_layer_index] = {}
-            self.printpoints_dict['layer_%d' % current_layer_index] = self.get_layer_ppts(layer, self.base_boundaries[i])
+            try:
+                self.printpoints_dict['layer_%d' % current_layer_index] = self.get_layer_ppts(layer, self.base_boundaries[i])
+            except IndexError:
+                logging.exception("no layer print points found for layer %d" % current_layer_index)
             current_layer_index += 1
 
     def get_layer_ppts(self, layer, base_boundary):

@@ -53,21 +53,29 @@ def set_extruder_toggle(print_organizer, slicer):
                     interrupt_path = True
 
             # --- create extruder toggles
-            path_printpoints = pp_dict[layer_key][path_key]
-            for k, printpoint in enumerate(path_printpoints):
+            try:
+                path_printpoints = pp_dict[layer_key][path_key]
+            except KeyError:
+                logger.exception("no path found for layer %s" % layer_key)
+            else:
+                for k, printpoint in enumerate(path_printpoints):
 
-                if interrupt_path:
-                    if k == len(path_printpoints) - 1:
-                        printpoint.extruder_toggle = False
+                    if interrupt_path:
+                        if k == len(path_printpoints) - 1:
+                            printpoint.extruder_toggle = False
+                        else:
+                            printpoint.extruder_toggle = True
                     else:
                         printpoint.extruder_toggle = True
-                else:
-                    printpoint.extruder_toggle = True
 
         # set extruder toggle of last print point to false
         last_layer_key = 'layer_%d' % (len(pp_dict) - 1)
         last_path_key = 'path_%d' % (len(pp_dict[last_layer_key]) - 1)
-        pp_dict[last_layer_key][last_path_key][-1].extruder_toggle = False
+        try:
+            pp_dict[last_layer_key][last_path_key][-1].extruder_toggle = False
+        except KeyError as e:
+            logger.exception(e)
+
 
 
 def override_extruder_toggle(print_organizer, override_value):
