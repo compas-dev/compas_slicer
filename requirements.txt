@@ -2,7 +2,7 @@ attrs>=19.2.0
 compas>=1.0.0
 networkx>=2.5
 numpy
-progressbar2>=3.53
+progressbar2>=3.50
 pyclipper>=1.2.0
 rdp>=0.8
 libigl>=2.4.1
