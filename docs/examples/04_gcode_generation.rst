@@ -6,6 +6,7 @@ Gcode generation
 
 While compas slicer has been mostly developed for robotic printing, we can also export the gcode of the generated paths
 to materialize them in a typical desktop 3D printer. The gcode generation is still at a basic level and is a work in progress.
+The following file can be found in `/examples/4_gcode_generation/`. The gcode file is placed in the `/output/` folder.
 
 
 .. code-block:: python
@@ -65,3 +66,7 @@ to materialize them in a typical desktop 3D printer. The gcode generation is sti
         gcode_parameters = {}  # leave all to default
         gcode_text = print_organizer.output_gcode(gcode_parameters)
         utils.save_to_text_file(gcode_text, OUTPUT_DIR, 'my_gcode.gcode')
+
+
+    if __name__ == "__main__":
+        main()

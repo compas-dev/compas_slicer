@@ -1,5 +1,5 @@
 attrs>=19.2.0
-compas>=1.0.0
+compas==1.16.0
 networkx>=2.5
 numpy
 progressbar2>=3.53

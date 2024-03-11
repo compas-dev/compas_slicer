@@ -2,7 +2,15 @@
 Examples
 ********************************************************************************
 
-Here you can find some examples files for compas_slicer
+All of the examples of compas_slicer can be found in the folder `/examples/`.In each example folder you can find:
+
+* the python file that performs the slicing,
+
+* a data folder with all the data required for the slicing
+
+* and a grasshopper file for visualizing the results.
+
+In the links below we go through some of these examples in more detail:
 
 .. toctree::
    :numbered:

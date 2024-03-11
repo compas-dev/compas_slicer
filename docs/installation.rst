@@ -24,7 +24,6 @@ For example, create an environment named ``my-project`` (or replace with your ow
     conda create -n my-project compas_slicer
     conda activate my-project
 
-
 * Install COMPAS CGAL
 
 .. code-block:: bash
@@ -75,9 +74,12 @@ Before contributing code:
 
 - Add your code in the appropriate folder. If you are not sure where to put it, contact [@ioannaMitropoulou](https://github.com/ioannaMitropoulou).
 
+
 - Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly.
 
+
 - Add your name to the authors in README.md.
+
 
 - Create a pull request for the master branch, where you explain in detail what you fixed. When you create a pull request, there is an automatic action that runs the tests for your code again on the server.
 Make sure the pull request passes the automatic tests as well. If not, then inspect the result, find what went wrong, fix it, and push again the result on your branch. The action will run again automatically on the open pull request.
@@ -90,8 +92,16 @@ Troubleshooting
 If you encounter a problem that is not described here, please file an issue 
 using the `Issue Tracker <https://github.com/compas-dev/compas_slicer/issues>`_.
 
-Installing Planarity
---------------------
+* Grasshopper components not working
+
+If despite completing all the compas_slicer installation steps, the compas_slicer grasshopper components still do not work, then
+you can fix this by manually adding the correct folder to your paths in Rhino.
+In Rhino, type "EditPythonScript", go to Tools > Options > Add to search path and add the following folder:
+<path>/compas_slicer/src/grasshopper_visualization'
+
+
+
+* Installing Planarity
 
 .. code-block:: bash
 
@@ -104,8 +114,7 @@ In that case, install cython using pip (or conda) and then run the installation 
 
     pip install cython --install-option="--no-cython-compile"
 
-Microsoft Visual C++ Build Tools
---------------------------------
+* Microsoft Visual C++ Build Tools
 
 .. code-block:: bash
 
@@ -116,8 +125,7 @@ To install the Microsoft Visual C++ Build Tools choose one of the options provid
 https://www.scivision.dev/python-windows-visual-c-14-required/ and just follow the instructions. 
 Then run the pip installation commands again.
 
-Numpy error
------------
+* Numpy error
 
 .. code-block:: bash
 
@@ -130,8 +138,8 @@ Make sure you are in the correct environment and type:
 
     pip install numpy==1.19.3
 
-Fractions error
----------------
+* Fractions error
+
 .. code-block:: bash
 
     ImportError: cannot import name 'gcd' from 'fractions' (C:\ProgramData\Anaconda3\envs\compas_slicer\lib\fractions.py)

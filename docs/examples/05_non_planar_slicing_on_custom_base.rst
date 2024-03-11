@@ -5,7 +5,7 @@ Non-planar slicing on custom base
 ************************************
 
 In this example we describe the process of non-planar slicing of a mesh, generating paths that are an offset to its
-custom base. We are using the ScalarFieldSlicer, which generates paths as contours of a scalar field defined on every
+custom base. We are using the ``ScalarFieldSlicer`` cleass, which generates paths as contours of a scalar field defined on every
 vertex of the mesh. In this case we create a scalar field with the distance of each vertex from the custom base.
 
 .. figure:: figures/05_scalar_field_slicing.PNG
@@ -14,6 +14,9 @@ vertex of the mesh. In this case we create a scalar field with the distance of e
 
     *Result of scalar field slicing considering the distance of each vertex from the custom base.*
 
+The files for this example can be found on the folder `/examples/5_non_planar_slicing_on_custom_base/`. Once you have
+run the python file to generate the results, you can visualize them by opening the grasshopper file
+`visualization_scalar_field_slicing.gh`.
 
 .. code-block:: python
 
@@ -57,6 +60,7 @@ vertex of the mesh. In this case we create a scalar field with the distance of e
         # --- Slice model by generating contours of scalar field
         slicer = ScalarFieldSlicer(mesh, u, no_of_isocurves=50)
         slicer.slice_model()
+        # simplify_paths_rdp(slicer, threshold=0.3)
         slicer_utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'isocontours.json')  # save results to json
 
         # --- Print organization calculations (i.e. generation of printpoints with fabrication-related information)

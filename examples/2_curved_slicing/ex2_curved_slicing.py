@@ -16,7 +16,7 @@ import time
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_vase')
+DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_Y_shape')
 OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'mesh.obj')
 
@@ -66,7 +66,6 @@ def main():
                                  velocity_range=[150, 70], bound_remapping=False)
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
-
 
     # --- Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()

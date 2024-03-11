@@ -17,7 +17,10 @@ from one path to the next, as it is shown in the illustration below.
     *Fabrication path using horizontal sorting (left), and vertical sorting (right). The traveling paths are shown with orange lines.*
 
 In planar slicing, horizontal ordering of paths is the default method, while in non-planar slicing vertical ordering of paths is
-the default method. The example below demonstrates how planar paths can be sorted in a vertical logic.
+the default method. The example below demonstrates how planar paths can be sorted in a vertical logic. Its files can be found in the folder
+`/examples/3_planar_vertical_sorting/`. Once you have
+run the python file to generate the results, you can visualize them by opening the grasshopper file.
+
 
 .. code-block:: python
 
@@ -64,7 +67,7 @@ the default method. The example below demonstrates how planar paths can be sorte
         slicer.slice_model()
 
         # Sorting into vertical layers and reordering
-        sort_into_vertical_layers(slicer, max_paths_per_layer=10)
+        sort_into_vertical_layers(slicer, max_paths_per_layer=25)
         reorder_vertical_layers(slicer, align_with="x_axis")
 
         # Post-processing

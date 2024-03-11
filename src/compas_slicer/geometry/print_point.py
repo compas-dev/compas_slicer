@@ -19,8 +19,6 @@ class PrintPoint(object):
         For planar slicing this is the vertical distance, for curved slicing this is absolute distance.
     mesh_normal: :class:`compas.geometry.Vector`
         Normal of the mesh at this PrintPoint.
-        For planar_slicing it is the projection of the normal on the XY plane.
-        # TODO: should we change that?
     up_vector: :class:`compas.geometry.Vector`
         Vector in up direction. For planar slicing this corresponds to the z axis, for curved slicing it varies.
     frame: :class:`compas.geometry.Frame`

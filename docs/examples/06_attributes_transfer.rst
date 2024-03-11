@@ -6,7 +6,7 @@ Transferring attributes to PrintPoints
 
 Often in 3D printing we need to transfer information from the mesh that is being sliced to the PrintPoints that
 are used in the fabrication process. We might want, for example, to print paths that are generated from different parts of
-the geometry using different parameters. This is enabled by the *transfer_mesh_attributes_to_printpoints()* function, as
+the geometry using different parameters. In compas_slicer this can be done using the *transfer_mesh_attributes_to_printpoints()* function, as
 shown in the example below. During the slicing process each printpoint is projected to the closest mesh face.
 It takes directly all the face attributes, and it takes the averaged vertex attributes of the face vertices using
 barycentric coordinates.

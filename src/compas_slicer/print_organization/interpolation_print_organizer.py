@@ -73,27 +73,22 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
 
-        if self.topo_sort_graph:
-            if len(self.vertical_layers) > 1:
-                for i, vertical_layer in enumerate(self.vertical_layers):
-                    parents_of_current_node = self.topo_sort_graph.get_parents_of_node(i)
-                    if len(parents_of_current_node) == 0:
-                        boundary = root_boundary
-                    else:
-                        boundary_pts = []
-                        for parent_index in parents_of_current_node:
-                            parent = self.vertical_layers[parent_index]
-                            boundary_pts.extend(parent.paths[-1].points)
-                        boundary = BaseBoundary(self.slicer.mesh, boundary_pts)
-                    bs.append(boundary)
-            else:
-                bs.append(root_boundary)
+        if len(self.vertical_layers) > 1:
+            for i, vertical_layer in enumerate(self.vertical_layers):
+                parents_of_current_node = self.topo_sort_graph.get_parents_of_node(i)
+                if len(parents_of_current_node) == 0:
+                    boundary = root_boundary
+                else:
+                    boundary_pts = []
+                    for parent_index in parents_of_current_node:
+                        parent = self.vertical_layers[parent_index]
+                        boundary_pts.extend(parent.paths[-1].points)
+                    boundary = BaseBoundary(self.slicer.mesh, boundary_pts)
+                bs.append(boundary)
         else:
-            logger.critical("""no topology graph was created, no base boundaries created,
-            output will be degenerated. A likely cause for topology sorting to fail is that
-            non-continuous paths were created. When creating paths with variable
-            layer heights, it may very well be that the non-continuous paths are
-            created, while this is not yet a supported feature""")
+            bs.append(root_boundary)
+
+        assert(len(bs) == len(self.vertical_layers))
 
         # save intermediary outputs
         b_data = {i: b.to_data() for i, b in enumerate(bs)}
@@ -121,7 +116,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             current_layer_index += 1
 
         # (2) --- Select order of vertical layers
-        if len(self.vertical_layers) > 1:  # the you need to select one topological order
+        if len(self.vertical_layers) > 1:  # then you need to select one topological order
 
             if not self.topo_sort_graph:
                 logger.error("no topology graph found, cannnot set the order of vertical layers")
@@ -135,11 +130,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         # (3) --- Then create the printpoints of all the vertical layers in the selected order
         for index, i in enumerate(self.selected_order):
             layer = self.vertical_layers[i]
-            self.printpoints_dict['layer_%d' % current_layer_index] = {}
-            try:
-                self.printpoints_dict['layer_%d' % current_layer_index] = self.get_layer_ppts(layer, self.base_boundaries[i])
-            except IndexError:
-                logging.exception("no layer print points found for layer %d" % current_layer_index)
+            self.printpoints_dict['layer_%d' % current_layer_index] = self.get_layer_ppts(layer, self.base_boundaries[i])
             current_layer_index += 1
 
     def get_layer_ppts(self, layer, base_boundary):
