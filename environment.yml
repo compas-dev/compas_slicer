@@ -1,8 +1,7 @@
-name compas_slicer
-channels
+name: compas_slicer
+channels:
   - conda-forge
-
-dependencies
+dependencies:
   - python
   - pip
   - compas=1.0.0
