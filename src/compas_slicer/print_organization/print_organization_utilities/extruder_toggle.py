@@ -77,7 +77,6 @@ def set_extruder_toggle(print_organizer, slicer):
             logger.exception(e)
 
 
-
 def override_extruder_toggle(print_organizer, override_value):
     """Overrides the extruder_toggle value for the printpoints with a user-defined value.
 
