@@ -134,7 +134,7 @@
 <span id="compas-slicer-example-6"></span><h1><span class="section-number">6. </span>Transferring attributes to PrintPoints</h1>
 <p>Often in 3D printing we need to transfer information from the mesh that is being sliced to the PrintPoints that
 are used in the fabrication process. We might want, for example, to print paths that are generated from different parts of
-the geometry using different parameters. This is enabled by the <em>transfer_mesh_attributes_to_printpoints()</em> function, as
+the geometry using different parameters. In compas_slicer this can be done using the <em>transfer_mesh_attributes_to_printpoints()</em> function, as
 shown in the example below. During the slicing process each printpoint is projected to the closest mesh face.
 It takes directly all the face attributes, and it takes the averaged vertex attributes of the face vertices using
 barycentric coordinates.</p>
@@ -258,7 +258,7 @@ barycentric coordinates.</p>
 </li>
 <li class="toctree-l1 nav-item active"><a class="nav-link reference internal" href="../examples.html">Examples</a><ul class="nav flex-column collapse show active">
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="01_planar_slicing_simple.html">1. Simple planar slicing</a></li>
-<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="02_curved_slicing_simple.html">2. Simple curved interpolation slicing</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="02_curved_slicing_simple.html">2. Interpolation slicing</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="03_planar_slicing_vertical_sorting.html">3. Planar slicing with vertical sorting</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="04_gcode_generation.html">4. Gcode generation</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="05_non_planar_slicing_on_custom_base.html">5. Non-planar slicing on custom base</a></li>

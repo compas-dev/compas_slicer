@@ -24,7 +24,7 @@
   
 
   
-  <link rel="prev" title="2. Simple curved interpolation slicing" href="02_curved_slicing_simple.html" />
+  <link rel="prev" title="2. Interpolation slicing" href="02_curved_slicing_simple.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -144,7 +144,9 @@ from one path to the next, as it is shown in the illustration below.</p>
 </figcaption>
 </figure>
 <p>In planar slicing, horizontal ordering of paths is the default method, while in non-planar slicing vertical ordering of paths is
-the default method. The example below demonstrates how planar paths can be sorted in a vertical logic.</p>
+the default method. The example below demonstrates how planar paths can be sorted in a vertical logic. Its files can be found in the folder
+<cite>/examples/3_planar_vertical_sorting/</cite>. Once you have
+run the python file to generate the results, you can visualize them by opening the grasshopper file.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
@@ -188,7 +190,7 @@ the default method. The example below demonstrates how planar paths can be sorte
     <span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>
 
     <span class="c1"># Sorting into vertical layers and reordering</span>
-    <span class="n">sort_into_vertical_layers</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">max_paths_per_layer</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">sort_into_vertical_layers</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">max_paths_per_layer</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
     <span class="n">reorder_vertical_layers</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">align_with</span><span class="o">=</span><span class="s2">&quot;x_axis&quot;</span><span class="p">)</span>
 
     <span class="c1"># Post-processing</span>
@@ -245,7 +247,7 @@ the default method. The example below demonstrates how planar paths can be sorte
 </li>
 <li class="toctree-l1 nav-item active"><a class="nav-link reference internal" href="../examples.html">Examples</a><ul class="nav flex-column collapse show active">
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="01_planar_slicing_simple.html">1. Simple planar slicing</a></li>
-<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="02_curved_slicing_simple.html">2. Simple curved interpolation slicing</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="02_curved_slicing_simple.html">2. Interpolation slicing</a></li>
 <li class="toctree-l2 nav-item active"><a class="nav-link active reference internal" href="#">3. Planar slicing with vertical sorting</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="04_gcode_generation.html">4. Gcode generation</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="05_non_planar_slicing_on_custom_base.html">5. Non-planar slicing on custom base</a></li>
@@ -289,11 +291,11 @@ the default method. The example below demonstrates how planar paths can be sorte
   <footer class="compas-footer">
     <nav class="nav p-2">
       
-      <a href="02_curved_slicing_simple.html" title="<span class="section-number">2. </span>Simple curved interpolation slicing" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+      <a href="02_curved_slicing_simple.html" title="<span class="section-number">2. </span>Interpolation slicing" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
         <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
         <div class="nav-title flex-grow-1 align-self-center">
           <div class="nav-direction small font-weight-light">Previous</div>
-          <span class="section-number">2. </span>Simple curved interpolation slicing
+          <span class="section-number">2. </span>Interpolation slicing
         </div>
       </a>
       

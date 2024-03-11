@@ -3,7 +3,7 @@
 
 <head>
   
-  <title>compas_slicer - 2. Simple curved interpolation slicing</title>
+  <title>compas_slicer - 2. Interpolation slicing</title>
   
 
   <meta charset="utf-8" />
@@ -123,25 +123,36 @@
             
             <li class="breadcrumb-item"><a href="../examples.html">Examples</a></li>
             
-            <!-- <li class="breadcrumb-item active" aria-current="page"><span class="section-number">2. </span>Simple curved interpolation slicing</li> -->
+            <!-- <li class="breadcrumb-item active" aria-current="page"><span class="section-number">2. </span>Interpolation slicing</li> -->
           </ol>
         </nav>
         
 
         
         
-        <section id="simple-curved-interpolation-slicing">
-<span id="compas-slicer-example-2"></span><h1><span class="section-number">2. </span>Simple curved interpolation slicing</h1>
+        <section id="interpolation-slicing">
+<span id="compas-slicer-example-2"></span><h1><span class="section-number">2. </span>Interpolation slicing</h1>
 <p>A general introduction of the concepts organization of compas_slicer can be found in the <a class="reference internal" href="../tutorials/01_introduction.html#compas-slicer-tutorial-1-introduction"><span class="std std-ref">introduction tutorial</span></a>.</p>
 <p>Make sure to read the <a class="reference internal" href="01_planar_slicing_simple.html#compas-slicer-example-1"><span class="std std-ref">example on simple planar slicing</span></a> before reading this example,
 as it explains the main concepts of compas_slicer.
 Having done that, in this example, we go through the basics of using the non-planar interpolation slicer, which generates
 paths by interpolating user-defined boundaries.
-This example uses the method described in <a class="reference external" href="https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408">Print Paths KeyFraming</a>.</p>
+This example uses the method described in <a class="reference external" href="https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408">Print Paths KeyFraming</a>.
+Its files can be found in the folder <cite>/examples/2_curved_slicing/</cite></p>
 <figure class="figure align-default" id="id1">
 <img alt="../_images/02_curved_slicing.PNG" class="figure-img img-fluid" src="../_images/02_curved_slicing.PNG" />
 <figcaption>
 <p><span class="caption-text"><em>Result of simple curved slicing.</em></span></p>
+</figcaption>
+</figure>
+<p>Note that this example has three different data folders (<cite>/data_costa_surface/</cite>, <cite>/data_vase/</cite>, <cite>/data_Y_shape/</cite>). Feel free
+to change the DATA_PATH parameter (in the code block below) to point to any of these folders so that you can slice its contents. To visualize the results,
+open the <cite>curved_slicing_master.gh</cite> and select the desired folder in the inputs section (top left). You will only be able to visualize
+the results after you have run the python file that generates them.</p>
+<figure class="figure align-default" id="id2">
+<img alt="../_images/input_folder.png" class="figure-img img-fluid" src="../_images/input_folder.png" />
+<figcaption>
+<p><span class="caption-text"><em>Selection of input folder in Grasshopper (from `curved_slicing_master.gh`).</em></span></p>
 </figcaption>
 </figure>
 <section id="imports-and-initialization">
@@ -151,7 +162,7 @@ This example uses the method described in <a class="reference external" href="ht
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers</span> <span class="kn">import</span> <span class="n">InterpolationSlicer</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp_igl</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.pre_processing</span> <span class="kn">import</span> <span class="n">InterpolationSlicingPreprocessor</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_extruder_toggle</span><span class="p">,</span> <span class="n">set_linear_velocity_by_range</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">add_safety_printpoints</span>
@@ -159,15 +170,14 @@ This example uses the method described in <a class="reference external" href="ht
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">InterpolationPrintOrganizer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_smooth</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">smooth_printpoints_up_vectors</span><span class="p">,</span> <span class="n">smooth_printpoints_layer_heights</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">generate_brim</span>
-<span class="kn">from</span> <span class="nn">compas_view2</span> <span class="kn">import</span> <span class="n">app</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 
-<span class="n">DATA_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;data_basic_example&#39;</span><span class="p">)</span>
+<span class="n">DATA_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;data_Y_shape&#39;</span><span class="p">)</span> <span class="c1"># set desired folder name</span>
 <span class="n">OUTPUT_PATH</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_output_directory</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">)</span>
-<span class="n">OBJ_INPUT_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;vase.obj&#39;</span><span class="p">)</span>
+<span class="n">OBJ_INPUT_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;mesh.obj&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
 </section>
@@ -177,23 +187,30 @@ This example uses the method described in <a class="reference external" href="ht
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="n">OBJ_INPUT_NAME</span><span class="p">))</span>
 </code></pre></div>
 </div>
-<p>The interpolation slicer works by interpolating boundaries provided by the user. Each boundary is represented by a list
-of vertex indices, that have been saved in the json files.</p>
-<div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="c1"># --- Load targets (boundaries)</span>
-<span class="n">low_boundary_vs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;boundaryLOW.json&#39;</span><span class="p">)</span>
-<span class="n">high_boundary_vs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;boundaryHIGH.json&#39;</span><span class="p">)</span>
-<span class="n">create_mesh_boundary_attributes</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">low_boundary_vs</span><span class="p">,</span> <span class="n">high_boundary_vs</span><span class="p">)</span>
-</code></pre></div>
-</div>
+<p>The interpolation slicer works by interpolating two boundaries provided by the user. Each boundary is represented by a list
+of vertex indices, that have been saved in the json files. You can create these json files using the following grasshopper
+sequence from the file: <cite>curved_slicing_master.gh</cite></p>
+<figure class="figure align-default" id="id3">
+<img alt="../_images/create_boundaries.png" class="figure-img img-fluid" src="../_images/create_boundaries.png" />
+<figcaption>
+<p><span class="caption-text"><em>Creation of boundary json files (from `curved_slicing_master.gh`).</em></span></p>
+</figcaption>
+</figure>
+<p>Then the boundary json files are loaded as follows:
+.. code-block:: python</p>
+<blockquote>
+<div><p># — Load targets (boundaries)
+low_boundary_vs = utils.load_from_json(DATA_PATH, ‘boundaryLOW.json’)
+high_boundary_vs = utils.load_from_json(DATA_PATH, ‘boundaryHIGH.json’)
+create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)</p>
+</div></blockquote>
 <p>The slicing process has a number of configuration parameters. Defaults have been specified for all of those parameters.
 To see the parameters and their default values, look at <code class="docutils literal notranslate"><span class="pre">parameters/defaults_interpolation_slicing.py</span></code>. To override
 parameters, you can create a parameters dictionary with all the parameters that you want to override. The ‘avg_layer_height’
 determines how dense the layers will be generated on the surface.</p>
-<div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="n">avg_layer_height</span> <span class="o">=</span> <span class="mf">15.0</span>
+<div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="n">avg_layer_height</span> <span class="o">=</span> <span class="mf">2.0</span>
 <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;avg_layer_height&#39;</span><span class="p">:</span> <span class="n">avg_layer_height</span><span class="p">,</span>  <span class="c1"># controls number of curves that will be generated</span>
-    <span class="s1">&#39;min_layer_height&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
-    <span class="s1">&#39;max_layer_height&#39;</span><span class="p">:</span> <span class="mf">5.0</span>  <span class="c1"># 2.0,</span>
 <span class="p">}</span>
 </code></pre></div>
 </div>
@@ -213,9 +230,8 @@ options are available for all slicers.</p>
 <span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>  <span class="c1"># compute_norm_of_gradient contours</span>
 
 <span class="c1"># post processing</span>
-<span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">slicer</span><span class="o">.</span><span class="n">printout_info</span><span class="p">()</span>
 <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;curved_slicer.json&#39;</span><span class="p">)</span>
 </code></pre></div>
@@ -229,13 +245,14 @@ that is necessary for the print process.</p>
 <span class="n">print_organizer</span> <span class="o">=</span> <span class="n">InterpolationPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">DATA_PATH</span><span class="p">)</span>
 <span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">()</span>
 
+<span class="n">smooth_printpoints_up_vectors</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">smooth_printpoints_layer_heights</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
 <span class="n">set_linear_velocity_by_range</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">param_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ppt</span><span class="p">:</span> <span class="n">ppt</span><span class="o">.</span><span class="n">layer_height</span><span class="p">,</span>
                              <span class="n">parameter_range</span><span class="o">=</span><span class="p">[</span><span class="n">avg_layer_height</span><span class="o">*</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">avg_layer_height</span><span class="o">*</span><span class="mf">2.0</span><span class="p">],</span>
                              <span class="n">velocity_range</span><span class="o">=</span><span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">70</span><span class="p">],</span> <span class="n">bound_remapping</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">set_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
 <span class="n">add_safety_printpoints</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">z_hop</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
-<span class="n">smooth_printpoints_up_vectors</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">smooth_printpoints_layer_heights</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </code></pre></div>
 </div>
 <p>Output json file with printpoints.</p>
@@ -244,16 +261,8 @@ that is necessary for the print process.</p>
 <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">printpoints_data</span><span class="p">,</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;out_printpoints.json&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
-<p>Visualize the result using compas_viewer2</p>
-<div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="c1"># ----- Visualize</span>
-<span class="n">viewer</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">App</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">1600</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="c1"># slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)</span>
-<span class="n">print_organizer</span><span class="o">.</span><span class="n">visualize_on_viewer</span><span class="p">(</span><span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_printpoints</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</code></pre></div>
-</div>
-<p>Once the slicing process is finished, you can use the compas_slicer grasshopper components to visualize the results,
-described in the <a class="reference internal" href="../tutorials/02_grasshopper_visualization.html#compas-slicer-tutorial-2"><span class="std std-ref">grasshopper tutorial</span></a>.</p>
+<p>Once the slicing process is finished, you can open the <cite>curved_slicing_master.gh to visualize the results. More information on
+this visualization is given in :ref:`grasshopper tutorial &lt;compas_slicer_tutorial_2&gt;</cite>.</p>
 </section>
 <section id="final-script">
 <h2><span class="section-number">2.4. </span>Final script</h2>
@@ -263,7 +272,7 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.slicers</span> <span class="kn">import</span> <span class="n">InterpolationSlicer</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp_igl</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.pre_processing</span> <span class="kn">import</span> <span class="n">InterpolationSlicingPreprocessor</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_extruder_toggle</span><span class="p">,</span> <span class="n">set_linear_velocity_by_range</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">add_safety_printpoints</span>
@@ -271,77 +280,72 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">InterpolationPrintOrganizer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_smooth</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">smooth_printpoints_up_vectors</span><span class="p">,</span> <span class="n">smooth_printpoints_layer_heights</span>
-<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">generate_brim</span>
-<span class="kn">from</span> <span class="nn">compas_view2</span> <span class="kn">import</span> <span class="n">app</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">)</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 
-<span class="n">DATA_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;data_basic_example&#39;</span><span class="p">)</span>
+<span class="n">DATA_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;data_Y_shape&#39;</span><span class="p">)</span>
 <span class="n">OUTPUT_PATH</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_output_directory</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">)</span>
-<span class="n">OBJ_INPUT_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;vase.obj&#39;</span><span class="p">)</span>
+<span class="n">OBJ_INPUT_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;mesh.obj&#39;</span><span class="p">)</span>
 
 
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-<span class="c1"># --- Load initial_mesh</span>
-<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="n">OBJ_INPUT_NAME</span><span class="p">))</span>
+    <span class="c1"># --- Load initial_mesh</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="n">OBJ_INPUT_NAME</span><span class="p">))</span>
 
-<span class="c1"># --- Load targets (boundaries)</span>
-<span class="n">low_boundary_vs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;boundaryLOW.json&#39;</span><span class="p">)</span>
-<span class="n">high_boundary_vs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;boundaryHIGH.json&#39;</span><span class="p">)</span>
-<span class="n">create_mesh_boundary_attributes</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">low_boundary_vs</span><span class="p">,</span> <span class="n">high_boundary_vs</span><span class="p">)</span>
+    <span class="c1"># --- Load targets (boundaries)</span>
+    <span class="n">low_boundary_vs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;boundaryLOW.json&#39;</span><span class="p">)</span>
+    <span class="n">high_boundary_vs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_from_json</span><span class="p">(</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="s1">&#39;boundaryHIGH.json&#39;</span><span class="p">)</span>
+    <span class="n">create_mesh_boundary_attributes</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">low_boundary_vs</span><span class="p">,</span> <span class="n">high_boundary_vs</span><span class="p">)</span>
 
-<span class="n">avg_layer_height</span> <span class="o">=</span> <span class="mf">15.0</span>
+    <span class="n">avg_layer_height</span> <span class="o">=</span> <span class="mf">2.0</span>
 
-<span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;avg_layer_height&#39;</span><span class="p">:</span> <span class="n">avg_layer_height</span><span class="p">,</span>  <span class="c1"># controls number of curves that will be generated</span>
-    <span class="s1">&#39;min_layer_height&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
-    <span class="s1">&#39;max_layer_height&#39;</span><span class="p">:</span> <span class="mf">5.0</span>  <span class="c1"># 2.0,</span>
-<span class="p">}</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;avg_layer_height&#39;</span><span class="p">:</span> <span class="n">avg_layer_height</span><span class="p">,</span>  <span class="c1"># controls number of curves that will be generated</span>
+    <span class="p">}</span>
 
-<span class="n">preprocessor</span> <span class="o">=</span> <span class="n">InterpolationSlicingPreprocessor</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">DATA_PATH</span><span class="p">)</span>
-<span class="n">preprocessor</span><span class="o">.</span><span class="n">create_compound_targets</span><span class="p">()</span>
-<span class="n">g_eval</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">create_gradient_evaluation</span><span class="p">(</span><span class="n">norm_filename</span><span class="o">=</span><span class="s1">&#39;gradient_norm.json&#39;</span><span class="p">,</span> <span class="n">g_filename</span><span class="o">=</span><span class="s1">&#39;gradient.json&#39;</span><span class="p">,</span>
-                                                 <span class="n">target_1</span><span class="o">=</span><span class="n">preprocessor</span><span class="o">.</span><span class="n">target_LOW</span><span class="p">,</span>
-                                                 <span class="n">target_2</span><span class="o">=</span><span class="n">preprocessor</span><span class="o">.</span><span class="n">target_HIGH</span><span class="p">)</span>
-<span class="n">preprocessor</span><span class="o">.</span><span class="n">find_critical_points</span><span class="p">(</span><span class="n">g_eval</span><span class="p">,</span> <span class="n">output_filenames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;minima.json&#39;</span><span class="p">,</span> <span class="s1">&#39;maxima.json&#39;</span><span class="p">,</span> <span class="s1">&#39;saddles.json&#39;</span><span class="p">])</span>
+    <span class="n">preprocessor</span> <span class="o">=</span> <span class="n">InterpolationSlicingPreprocessor</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">DATA_PATH</span><span class="p">)</span>
+    <span class="n">preprocessor</span><span class="o">.</span><span class="n">create_compound_targets</span><span class="p">()</span>
+    <span class="n">g_eval</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">create_gradient_evaluation</span><span class="p">(</span><span class="n">norm_filename</span><span class="o">=</span><span class="s1">&#39;gradient_norm.json&#39;</span><span class="p">,</span> <span class="n">g_filename</span><span class="o">=</span><span class="s1">&#39;gradient.json&#39;</span><span class="p">,</span>
+                                                     <span class="n">target_1</span><span class="o">=</span><span class="n">preprocessor</span><span class="o">.</span><span class="n">target_LOW</span><span class="p">,</span>
+                                                     <span class="n">target_2</span><span class="o">=</span><span class="n">preprocessor</span><span class="o">.</span><span class="n">target_HIGH</span><span class="p">)</span>
+    <span class="n">preprocessor</span><span class="o">.</span><span class="n">find_critical_points</span><span class="p">(</span><span class="n">g_eval</span><span class="p">,</span> <span class="n">output_filenames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;minima.json&#39;</span><span class="p">,</span> <span class="s1">&#39;maxima.json&#39;</span><span class="p">,</span> <span class="s1">&#39;saddles.json&#39;</span><span class="p">])</span>
 
-<span class="c1"># --- slicing</span>
-<span class="n">slicer</span> <span class="o">=</span> <span class="n">InterpolationSlicer</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
-<span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>  <span class="c1"># compute_norm_of_gradient contours</span>
-<span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="c1"># --- slicing</span>
+    <span class="n">slicer</span> <span class="o">=</span> <span class="n">InterpolationSlicer</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>  <span class="c1"># compute_norm_of_gradient contours</span>
 
-<span class="n">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="n">slicer</span><span class="o">.</span><span class="n">printout_info</span><span class="p">()</span>
-<span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;curved_slicer.json&#39;</span><span class="p">)</span>
+    <span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+    <span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">slicer</span><span class="o">.</span><span class="n">printout_info</span><span class="p">()</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;curved_slicer.json&#39;</span><span class="p">)</span>
 
-<span class="c1"># --- Print organizer</span>
-<span class="n">print_organizer</span> <span class="o">=</span> <span class="n">InterpolationPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">DATA_PATH</span><span class="p">)</span>
-<span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">()</span>
+    <span class="c1"># --- Print organizer</span>
+    <span class="n">print_organizer</span> <span class="o">=</span> <span class="n">InterpolationPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">DATA_PATH</span><span class="p">)</span>
+    <span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">()</span>
 
-<span class="n">set_linear_velocity_by_range</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">param_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ppt</span><span class="p">:</span> <span class="n">ppt</span><span class="o">.</span><span class="n">layer_height</span><span class="p">,</span>
-                             <span class="n">parameter_range</span><span class="o">=</span><span class="p">[</span><span class="n">avg_layer_height</span><span class="o">*</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">avg_layer_height</span><span class="o">*</span><span class="mf">2.0</span><span class="p">],</span>
-                             <span class="n">velocity_range</span><span class="o">=</span><span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">70</span><span class="p">],</span> <span class="n">bound_remapping</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">set_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
-<span class="n">add_safety_printpoints</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">z_hop</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
-<span class="n">smooth_printpoints_up_vectors</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">smooth_printpoints_layer_heights</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">smooth_printpoints_up_vectors</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">smooth_printpoints_layer_heights</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
-<span class="c1"># --- Save printpoints dictionary to json file</span>
-<span class="n">printpoints_data</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">output_printpoints_dict</span><span class="p">()</span>
-<span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">printpoints_data</span><span class="p">,</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;out_printpoints.json&#39;</span><span class="p">)</span>
+    <span class="n">set_linear_velocity_by_range</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">param_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ppt</span><span class="p">:</span> <span class="n">ppt</span><span class="o">.</span><span class="n">layer_height</span><span class="p">,</span>
+                                 <span class="n">parameter_range</span><span class="o">=</span><span class="p">[</span><span class="n">avg_layer_height</span><span class="o">*</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">avg_layer_height</span><span class="o">*</span><span class="mf">2.0</span><span class="p">],</span>
+                                 <span class="n">velocity_range</span><span class="o">=</span><span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">70</span><span class="p">],</span> <span class="n">bound_remapping</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">set_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
+    <span class="n">add_safety_printpoints</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">z_hop</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
 
-<span class="c1"># ----- Visualize</span>
-<span class="n">viewer</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">App</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">1600</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="c1"># slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)</span>
-<span class="n">print_organizer</span><span class="o">.</span><span class="n">visualize_on_viewer</span><span class="p">(</span><span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_printpoints</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># --- Save printpoints dictionary to json file</span>
+    <span class="n">printpoints_data</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">output_printpoints_dict</span><span class="p">()</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">printpoints_data</span><span class="p">,</span> <span class="n">OUTPUT_PATH</span><span class="p">,</span> <span class="s1">&#39;out_printpoints.json&#39;</span><span class="p">)</span>
 
-<span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total elapsed time&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total elapsed time&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
 </code></pre></div>
 </div>
 </section>
@@ -373,7 +377,7 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 </li>
 <li class="toctree-l1 nav-item active"><a class="nav-link reference internal" href="../examples.html">Examples</a><ul class="nav flex-column collapse show active">
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="01_planar_slicing_simple.html">1. Simple planar slicing</a></li>
-<li class="toctree-l2 nav-item active"><a class="nav-link active reference internal" href="#">2. Simple curved interpolation slicing</a></li>
+<li class="toctree-l2 nav-item active"><a class="nav-link active reference internal" href="#">2. Interpolation slicing</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="03_planar_slicing_vertical_sorting.html">3. Planar slicing with vertical sorting</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="04_gcode_generation.html">4. Gcode generation</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="05_non_planar_slicing_on_custom_base.html">5. Non-planar slicing on custom base</a></li>
@@ -405,7 +409,7 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">2. Simple curved interpolation slicing</a><ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="#">2. Interpolation slicing</a><ul class="nav flex-column">
 <li class="nav-item"><a class="nav-link reference internal" href="#imports-and-initialization">2.1. Imports and initialization</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#slicing-process">2.2. Slicing process</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#print-organization">2.3. Print organization</a></li>

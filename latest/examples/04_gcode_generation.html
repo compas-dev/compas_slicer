@@ -133,7 +133,8 @@
         <section id="gcode-generation">
 <span id="compas-slicer-example-4"></span><h1><span class="section-number">4. </span>Gcode generation</h1>
 <p>While compas slicer has been mostly developed for robotic printing, we can also export the gcode of the generated paths
-to materialize them in a typical desktop 3D printer. The gcode generation is still at a basic level and is a work in progress.</p>
+to materialize them in a typical desktop 3D printer. The gcode generation is still at a basic level and is a work in progress.
+The following file can be found in <cite>/examples/4_gcode_generation/</cite>. The gcode file is placed in the <cite>/output/</cite> folder.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">compas_slicer.utilities</span> <span class="k">as</span> <span class="nn">utils</span>
@@ -189,6 +190,10 @@ to materialize them in a typical desktop 3D printer. The gcode generation is sti
     <span class="n">gcode_parameters</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># leave all to default</span>
     <span class="n">gcode_text</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">output_gcode</span><span class="p">(</span><span class="n">gcode_parameters</span><span class="p">)</span>
     <span class="n">utils</span><span class="o">.</span><span class="n">save_to_text_file</span><span class="p">(</span><span class="n">gcode_text</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;my_gcode.gcode&#39;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
 </code></pre></div>
 </div>
 </section>
@@ -219,7 +224,7 @@ to materialize them in a typical desktop 3D printer. The gcode generation is sti
 </li>
 <li class="toctree-l1 nav-item active"><a class="nav-link reference internal" href="../examples.html">Examples</a><ul class="nav flex-column collapse show active">
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="01_planar_slicing_simple.html">1. Simple planar slicing</a></li>
-<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="02_curved_slicing_simple.html">2. Simple curved interpolation slicing</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="02_curved_slicing_simple.html">2. Interpolation slicing</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="03_planar_slicing_vertical_sorting.html">3. Planar slicing with vertical sorting</a></li>
 <li class="toctree-l2 nav-item active"><a class="nav-link active reference internal" href="#">4. Gcode generation</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="05_non_planar_slicing_on_custom_base.html">5. Non-planar slicing on custom base</a></li>

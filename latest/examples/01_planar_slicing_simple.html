@@ -20,7 +20,7 @@
   <link rel="stylesheet" type="text/css" href="../_static/css/compas-reference.css" />
 
   
-  <link rel="next" title="2. Simple curved interpolation slicing" href="02_curved_slicing_simple.html" />
+  <link rel="next" title="2. Interpolation slicing" href="02_curved_slicing_simple.html" />
   
 
   
@@ -134,7 +134,7 @@
 <span id="compas-slicer-example-1"></span><h1><span class="section-number">1. </span>Simple planar slicing</h1>
 <p>A general introduction of the concepts organization of compas_slicer can be found in the <a class="reference internal" href="../tutorials/01_introduction.html#compas-slicer-tutorial-1-introduction"><span class="std std-ref">introduction tutorial</span></a>.</p>
 <p>This example describes the planar slicing process for a simple shape, consisting
-out of a shape with a single contour (also known as a ‘vase’).</p>
+out of a shape with a single contour (also known as a ‘vase’). Its files can be found in the folder <cite>/examples/1_planar_slicing_simple/</cite></p>
 <section id="imports-and-initialization">
 <h2><span class="section-number">1.1. </span>Imports and initialization</h2>
 <p>The first step is to import the required functions:</p>
@@ -149,13 +149,13 @@ out of a shape with a single contour (also known as a ‘vase’).</p>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">generate_raft</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp_igl</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_smooth</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_align</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">PlanarPrintOrganizer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_extruder_toggle</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">add_safety_printpoints</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_linear_velocity_constant</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_blend_radius</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.utilities</span> <span class="kn">import</span> <span class="n">save_to_json</span>
-<span class="kn">from</span> <span class="nn">compas_view2</span> <span class="kn">import</span> <span class="n">app</span>
 
 <span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
@@ -173,7 +173,7 @@ In the data folder compas_slicer will create a folder called <code class="docuti
 of the slicing process will be saved. Therefore, we run the command <code class="docutils literal notranslate"><span class="pre">get_output_directory(DATA)</span></code>, which
 checks if the <code class="docutils literal notranslate"><span class="pre">output</span></code> folder exists and if not, it creates it.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="n">DATA</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
-<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_output_directory</span><span class="p">(</span><span class="n">DATA</span><span class="p">)</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_output_directory</span><span class="p">(</span><span class="n">DATA</span><span class="p">)</span>  <span class="c1"># creates &#39;output&#39; folder if it doesn&#39;t already exist</span>
 <span class="n">MODEL</span> <span class="o">=</span> <span class="s1">&#39;simple_vase_open_low_res.obj&#39;</span>
 </code></pre></div>
 </div>
@@ -183,10 +183,6 @@ checks if the <code class="docutils literal notranslate"><span class="pre">outpu
 <p>In the next step we use the Compas function <code class="docutils literal notranslate"><span class="pre">Mesh.from_obj</span></code> to load our <code class="docutils literal notranslate"><span class="pre">.obj</span></code>
 file. We then move it to the origin, but this can be any specified point, such as
 a point on your print bed.</p>
-<div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="n">compas_mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA</span><span class="p">,</span> <span class="n">MODEL</span><span class="p">))</span>
-<span class="n">move_mesh_to_point</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">,</span> <span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-</code></pre></div>
-</div>
 <p>Next, we initialize the <code class="xref py py-class docutils literal notranslate"><span class="pre">PlanarSlicer</span></code> to initialize the slicing process. You need to specify the layer height and
 the <code class="docutils literal notranslate"><span class="pre">slicing_type</span></code> that defines the methods for generating the ‘slices’. Currently, the following methods
 are supported:</p>
@@ -204,6 +200,10 @@ are supported:</p>
 </ul>
 <div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="n">slicer</span> <span class="o">=</span> <span class="n">PlanarSlicer</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">,</span> <span class="n">slicer_type</span><span class="o">=</span><span class="s2">&quot;cgal&quot;</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
 <span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>
+</code></pre></div>
+</div>
+<p>We also align the seams so that the start of each path is as close as possible to the start of the previous path</p>
+<div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="n">seams_align</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="s2">&quot;next_path&quot;</span><span class="p">)</span>
 </code></pre></div>
 </div>
 <p>After the model has been sliced, several post processing operations can be executed.
@@ -225,7 +225,7 @@ that are offset from the bottom layer, to improve adhesion to the build plate
 </code></pre></div>
 </div>
 <p>Depending on the amount of faces that your input mesh has, a very large amount of
-points can be generated. <code class="docutils literal notranslate"><span class="pre">simplify_paths_rdp</span></code> or <code class="docutils literal notranslate"><span class="pre">simplify_paths_rdp_igl</span></code> are functions that remove points
+points can be generated. <code class="docutils literal notranslate"><span class="pre">simplify_paths_rdp_igl</span></code> removes points
 that do not have a high impact on the final shape of the polyline. Increase the
 threshold value to remove more points, decrease it to remove less. For more
 information on how the algorithm works see: <a class="reference external" href="https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm">Ramer–Douglas–Peucker algorithm</a></p>
@@ -235,7 +235,8 @@ information on how the algorithm works see: <a class="reference external" href="
 <p>Currently the ‘seam’ between different layers of our shape is a ‘hard seam’,
 the printer would move up almost vertically to move to the next layer.
 To make the seam more ‘smooth’, and less visible we can use the
-<code class="docutils literal notranslate"><span class="pre">seams_smooth</span></code> function.</p>
+<code class="docutils literal notranslate"><span class="pre">seams_smooth</span></code> function. This function simply removes points within the specified distance to enable
+a smoother motion from one layer to the next.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </code></pre></div>
 </div>
@@ -257,7 +258,7 @@ we can save the slicing result to JSON. In the next steps we will use the
 make our slicing result ready for fabrication. First, we initialize the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">PlanarPrintOrganizer</span></code> and create <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code>. The difference between
 <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code> and the <code class="docutils literal notranslate"><span class="pre">compas.geometry.Points</span></code> we were using in the
-previous step is that the <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code> have all the necessary additional functionality that is
+previous step is that the <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintPoints</span></code> have all the necessary additional information that is
 needed for the fabrication process.</p>
 <div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="n">print_organizer</span> <span class="o">=</span> <span class="n">PlanarPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">)</span>
 <span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">)</span>
@@ -285,15 +286,11 @@ and then export it to a <code class="docutils literal notranslate"><span class="
 <span class="n">save_to_json</span><span class="p">(</span><span class="n">printpoints_data</span><span class="p">,</span> <span class="n">DATA</span><span class="p">,</span> <span class="s1">&#39;out_printpoints.json&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
-<p>Finally, we can use the library <code class="docutils literal notranslate"><span class="pre">compas_view2</span></code> to visualize our results.</p>
-<div class="language-python notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">App</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">1600</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="n">slicer</span><span class="o">.</span><span class="n">visualize_on_viewer</span><span class="p">(</span><span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_mesh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">visualize_paths</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">print_organizer</span><span class="o">.</span><span class="n">visualize_on_viewer</span><span class="p">(</span><span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_printpoints</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</code></pre></div>
-</div>
 <p>Once the slicing process is finished, you can use the compas_slicer grasshopper components to visualize the results,
 described in the <a class="reference internal" href="../tutorials/02_grasshopper_visualization.html#compas-slicer-tutorial-2"><span class="std std-ref">grasshopper tutorial</span></a>.</p>
+<p>To view the results of the slicing process, open the <cite>planar_slicing_master.gh</cite> file in <cite>examples/1_planar_slicing_simple</cite>. This loads the
+json and txt files that have been produced and displays them as Rhino-Grasshopper geometry. You will only be able to visualize
+the results after you have run the python file that generates them.</p>
 </section>
 <section id="final-script">
 <h2><span class="section-number">1.4. </span>Final script</h2>
@@ -309,13 +306,13 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">generate_raft</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">simplify_paths_rdp_igl</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_smooth</span>
+<span class="kn">from</span> <span class="nn">compas_slicer.post_processing</span> <span class="kn">import</span> <span class="n">seams_align</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">PlanarPrintOrganizer</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_extruder_toggle</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">add_safety_printpoints</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_linear_velocity_constant</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.print_organization</span> <span class="kn">import</span> <span class="n">set_blend_radius</span>
 <span class="kn">from</span> <span class="nn">compas_slicer.utilities</span> <span class="kn">import</span> <span class="n">save_to_json</span>
-<span class="kn">from</span> <span class="nn">compas_view2</span> <span class="kn">import</span> <span class="n">app</span>
 
 <span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
 <span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
@@ -334,96 +331,97 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 <span class="n">MODEL</span> <span class="o">=</span> <span class="s1">&#39;simple_vase_open_low_res.obj&#39;</span>
 
 
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Load mesh</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">compas_mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA</span><span class="p">,</span> <span class="n">MODEL</span><span class="p">))</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Load mesh</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="n">compas_mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA</span><span class="p">,</span> <span class="n">MODEL</span><span class="p">))</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Move to origin</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">move_mesh_to_point</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">,</span> <span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Move to origin</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="n">move_mesh_to_point</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">,</span> <span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Slicing</span>
-<span class="c1"># options: &#39;default&#39;: Both for open and closed paths. But slow</span>
-<span class="c1">#          &#39;cgal&#39;:    Very fast. Only for closed paths.</span>
-<span class="c1">#                     Requires additional installation (compas_cgal).</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">slicer</span> <span class="o">=</span> <span class="n">PlanarSlicer</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">,</span> <span class="n">slicer_type</span><span class="o">=</span><span class="s2">&quot;cgal&quot;</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
-<span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Slicing</span>
+    <span class="c1"># options: &#39;default&#39;: Both for open and closed paths. But slow</span>
+    <span class="c1">#          &#39;cgal&#39;:    Very fast. Only for closed paths.</span>
+    <span class="c1">#                     Requires additional installation (compas_cgal).</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="n">slicer</span> <span class="o">=</span> <span class="n">PlanarSlicer</span><span class="p">(</span><span class="n">compas_mesh</span><span class="p">,</span> <span class="n">slicer_type</span><span class="o">=</span><span class="s2">&quot;cgal&quot;</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Generate brim / raft</span>
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># NOTE: Typically you would want to use either a brim OR a raft,</span>
-<span class="c1"># however, in this example both are used to explain the functionality</span>
-<span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">generate_raft</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span>
-              <span class="n">raft_offset</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-              <span class="n">distance_between_paths</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-              <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;xy_diagonal&quot;</span><span class="p">,</span>
-              <span class="n">raft_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">seams_align</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="s2">&quot;next_path&quot;</span><span class="p">)</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Simplify the paths by removing points with a certain threshold</span>
-<span class="c1"># change the threshold value to remove more or less points</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Generate brim / raft</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># NOTE: Typically you would want to use either a brim OR a raft,</span>
+    <span class="c1"># however, in this example both are used to explain the functionality</span>
+    <span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">generate_raft</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span>
+                  <span class="n">raft_offset</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                  <span class="n">distance_between_paths</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                  <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;xy_diagonal&quot;</span><span class="p">,</span>
+                  <span class="n">raft_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Smooth the seams between layers</span>
-<span class="c1"># change the smooth_distance value to achieve smoother, or more abrupt seams</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Simplify the paths by removing points with a certain threshold</span>
+    <span class="c1"># change the threshold value to remove more or less points</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="n">simplify_paths_rdp_igl</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Prints out the info of the slicer</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">slicer</span><span class="o">.</span><span class="n">printout_info</span><span class="p">()</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Smooth the seams between layers</span>
+    <span class="c1"># change the smooth_distance value to achieve smoother, or more abrupt seams</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Save slicer data to JSON</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Prints out the info of the slicer</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="n">slicer</span><span class="o">.</span><span class="n">printout_info</span><span class="p">()</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Initializes the PlanarPrintOrganizer and creates PrintPoints</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">print_organizer</span> <span class="o">=</span> <span class="n">PlanarPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">)</span>
-<span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">()</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Save slicer data to JSON</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="n">save_to_json</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">to_data</span><span class="p">(),</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;slicer_data.json&#39;</span><span class="p">)</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Set fabrication-related parameters</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">set_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
-<span class="n">add_safety_printpoints</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">z_hop</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
-<span class="n">set_linear_velocity_constant</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mf">25.0</span><span class="p">)</span>
-<span class="n">set_blend_radius</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">d_fillet</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Initializes the PlanarPrintOrganizer and creates PrintPoints</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="n">print_organizer</span> <span class="o">=</span> <span class="n">PlanarPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">)</span>
+    <span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">(</span><span class="n">generate_mesh_normals</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Prints out the info of the PrintOrganizer</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">print_organizer</span><span class="o">.</span><span class="n">printout_info</span><span class="p">()</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Set fabrication-related parameters</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="n">set_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
+    <span class="n">add_safety_printpoints</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">z_hop</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+    <span class="n">set_linear_velocity_constant</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mf">25.0</span><span class="p">)</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Converts the PrintPoints to data and saves to JSON</span>
-<span class="c1"># =========================================================================</span>
-<span class="n">printpoints_data</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">output_printpoints_dict</span><span class="p">()</span>
-<span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">printpoints_data</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;out_printpoints.json&#39;</span><span class="p">)</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Prints out the info of the PrintOrganizer</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="n">print_organizer</span><span class="o">.</span><span class="n">printout_info</span><span class="p">()</span>
 
-<span class="c1"># ==========================================================================</span>
-<span class="c1"># Initializes the compas_viewer and visualizes results</span>
-<span class="c1"># ==========================================================================</span>
-<span class="n">viewer</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">App</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">1600</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="c1"># slicer.visualize_on_viewer(viewer, visualize_mesh=False, visualize_paths=True)</span>
-<span class="n">print_organizer</span><span class="o">.</span><span class="n">visualize_on_viewer</span><span class="p">(</span><span class="n">viewer</span><span class="p">,</span> <span class="n">visualize_printpoints</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># ==========================================================================</span>
+    <span class="c1"># Converts the PrintPoints to data and saves to JSON</span>
+    <span class="c1"># =========================================================================</span>
+    <span class="n">printpoints_data</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">output_printpoints_dict</span><span class="p">()</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">printpoints_data</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;out_printpoints.json&#39;</span><span class="p">)</span>
 
-<span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total elapsed time&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
+    <span class="n">printpoints_data</span> <span class="o">=</span> <span class="n">print_organizer</span><span class="o">.</span><span class="n">output_nested_printpoints_dict</span><span class="p">()</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span><span class="n">printpoints_data</span><span class="p">,</span> <span class="n">OUTPUT_DIR</span><span class="p">,</span> <span class="s1">&#39;out_printpoints_nested.json&#39;</span><span class="p">)</span>
+
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total elapsed time&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
 </code></pre></div>
 </div>
 </section>
@@ -455,7 +453,7 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
 </li>
 <li class="toctree-l1 nav-item active"><a class="nav-link reference internal" href="../examples.html">Examples</a><ul class="nav flex-column collapse show active">
 <li class="toctree-l2 nav-item active"><a class="nav-link active reference internal" href="#">1. Simple planar slicing</a></li>
-<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="02_curved_slicing_simple.html">2. Simple curved interpolation slicing</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="02_curved_slicing_simple.html">2. Interpolation slicing</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="03_planar_slicing_vertical_sorting.html">3. Planar slicing with vertical sorting</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="04_gcode_generation.html">4. Gcode generation</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="05_non_planar_slicing_on_custom_base.html">5. Non-planar slicing on custom base</a></li>
@@ -515,10 +513,10 @@ described in the <a class="reference internal" href="../tutorials/02_grasshopper
       
 
       
-      <a href="02_curved_slicing_simple.html" title="<span class="section-number">2. </span>Simple curved interpolation slicing" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+      <a href="02_curved_slicing_simple.html" title="<span class="section-number">2. </span>Interpolation slicing" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
         <div class="nav-title footer-link flex-grow-1 align-self-center">
           <div class="nav-direction small font-weight-light">Next</div>
-          <span class="section-number">2. </span>Simple curved interpolation slicing
+          <span class="section-number">2. </span>Interpolation slicing
         </div>
         <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
       </a>

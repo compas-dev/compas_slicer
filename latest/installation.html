@@ -191,8 +191,16 @@ python<span class="w"> </span>-m<span class="w"> </span>compas_slicer
 <h2>Troubleshooting</h2>
 <p>If you encounter a problem that is not described here, please file an issue
 using the <a class="reference external" href="https://github.com/compas-dev/compas_slicer/issues">Issue Tracker</a>.</p>
-<section id="installing-planarity">
-<h3>Installing Planarity</h3>
+<ul class="simple">
+<li><p>Grasshopper components not working</p></li>
+</ul>
+<p>If despite completing all the compas_slicer installation steps, the compas_slicer grasshopper components still do not work, then
+you can fix this by manually adding the correct folder to your paths in Rhino.
+In Rhino, type “EditPythonScript”, go to Tools &gt; Options &gt; Add to search path and add the following folder:
+&lt;path&gt;/compas_slicer/src/grasshopper_visualization’</p>
+<ul class="simple">
+<li><p>Installing Planarity</p></li>
+</ul>
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>ModuleNotFoundError:<span class="w"> </span>No<span class="w"> </span>module<span class="w"> </span>named<span class="w"> </span><span class="s1">&#39;Cython&#39;</span>
 </code></pre></div>
 </div>
@@ -201,9 +209,9 @@ In that case, install cython using pip (or conda) and then run the installation 
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>pip<span class="w"> </span>install<span class="w"> </span>cython<span class="w"> </span>--install-option<span class="o">=</span><span class="s2">&quot;--no-cython-compile&quot;</span>
 </code></pre></div>
 </div>
-</section>
-<section id="microsoft-visual-c-build-tools">
-<h3>Microsoft Visual C++ Build Tools</h3>
+<ul class="simple">
+<li><p>Microsoft Visual C++ Build Tools</p></li>
+</ul>
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>error:<span class="w"> </span>Microsoft<span class="w"> </span>Visual<span class="w"> </span>C++<span class="w"> </span><span class="m">14</span>.0<span class="w"> </span>or<span class="w"> </span>greater<span class="w"> </span>is<span class="w"> </span>required.<span class="w"> </span>Get<span class="w"> </span>it<span class="w"> </span>with<span class="w"> </span><span class="s2">&quot;Microsoft C++ Build Tools&quot;</span>:<span class="w"> </span>https://visualstudio.microsoft.com/visual-cpp-build-tools/
 </code></pre></div>
 </div>
@@ -211,9 +219,9 @@ In that case, install cython using pip (or conda) and then run the installation 
 To install the Microsoft Visual C++ Build Tools choose one of the options provided here:
 <a class="reference external" href="https://www.scivision.dev/python-windows-visual-c-14-required/">https://www.scivision.dev/python-windows-visual-c-14-required/</a> and just follow the instructions.
 Then run the pip installation commands again.</p>
-</section>
-<section id="numpy-error">
-<h3>Numpy error</h3>
+<ul class="simple">
+<li><p>Numpy error</p></li>
+</ul>
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>RuntimeError:<span class="w"> </span>The<span class="w"> </span>current<span class="w"> </span>Numpy<span class="w"> </span>installation<span class="w"> </span><span class="o">(</span><span class="s1">&#39;C:\\Users\\&lt;username&gt;\\.conda\\envs\\compas_slicer\\lib\\site-packages\\numpy\\__init__.py&#39;</span><span class="o">)</span><span class="w"> </span>fails<span class="w"> </span>to<span class="w"> </span>pass<span class="w"> </span>a<span class="w"> </span>sanity<span class="w"> </span>check<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>a<span class="w"> </span>bug<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>windows<span class="w"> </span>runtime.<span class="w"> </span>See<span class="w"> </span>this<span class="w"> </span>issue<span class="w"> </span><span class="k">for</span><span class="w"> </span>more<span class="w"> </span>information:<span class="w"> </span>https://tinyurl.com/y3dm3h86
 </code></pre></div>
 </div>
@@ -222,9 +230,9 @@ Make sure you are in the correct environment and type:</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.19.3
 </code></pre></div>
 </div>
-</section>
-<section id="fractions-error">
-<h3>Fractions error</h3>
+<ul class="simple">
+<li><p>Fractions error</p></li>
+</ul>
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>ImportError:<span class="w"> </span>cannot<span class="w"> </span>import<span class="w"> </span>name<span class="w"> </span><span class="s1">&#39;gcd&#39;</span><span class="w"> </span>from<span class="w"> </span><span class="s1">&#39;fractions&#39;</span><span class="w"> </span><span class="o">(</span>C:<span class="se">\P</span>rogramData<span class="se">\A</span>naconda3<span class="se">\e</span>nvs<span class="se">\c</span>ompas_slicer<span class="se">\l</span>ib<span class="se">\f</span>ractions.py<span class="o">)</span>
 </code></pre></div>
 </div>
@@ -233,7 +241,6 @@ by typing the following command (make sure you are in the correct environment)</
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">networkx</span><span class="o">=</span><span class="m">2</span>.5
 </code></pre></div>
 </div>
-</section>
 </section>
 </section>
 
@@ -263,7 +270,7 @@ by typing the following command (make sure you are in the correct environment)</
 </li>
 <li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="examples.html">Examples</a><ul class="nav flex-column collapse">
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/01_planar_slicing_simple.html">1. Simple planar slicing</a></li>
-<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/02_curved_slicing_simple.html">2. Simple curved interpolation slicing</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/02_curved_slicing_simple.html">2. Interpolation slicing</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/03_planar_slicing_vertical_sorting.html">3. Planar slicing with vertical sorting</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/04_gcode_generation.html">4. Gcode generation</a></li>
 <li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/05_non_planar_slicing_on_custom_base.html">5. Non-planar slicing on custom base</a></li>
@@ -301,13 +308,7 @@ by typing the following command (make sure you are in the correct environment)</
 </ul>
 </li>
 <li class="nav-item"><a class="nav-link reference internal" href="#contributions">Contributions</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#troubleshooting">Troubleshooting</a><ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="#installing-planarity">Installing Planarity</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#microsoft-visual-c-build-tools">Microsoft Visual C++ Build Tools</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#numpy-error">Numpy error</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#fractions-error">Fractions error</a></li>
-</ul>
-</li>
+<li class="nav-item"><a class="nav-link reference internal" href="#troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
 </ul>
