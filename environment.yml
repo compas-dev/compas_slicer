@@ -7,6 +7,6 @@ dependencies:
   - compas=1.0.0
   - networkx
   - numpy
-  - progressbar2=3.53
+  - progressbar2=3.50
   - pyclipper=1.2.0
   - rdp=0.8
