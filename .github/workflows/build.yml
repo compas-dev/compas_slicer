@@ -28,3 +28,15 @@ jobs:
           auto-update-conda: true
       - name: Conda info
         run: conda info
+      - name: Install project
+        run: |
+          python -m pip install --no-cache-dir -r requirements-dev.txt
+      - name: Test import
+        run: |
+          python -c "import compas_slicer; print('COMPAS Slicer version: ' + compas_slicer.__version__)" 
+      - name: Lint with flake8
+        run: |
+          invoke lint
+      - name: Test with pytest
+        run: |
+          invoke test
