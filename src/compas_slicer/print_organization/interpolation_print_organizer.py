@@ -46,7 +46,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         if len(self.vertical_layers) > 1:
             try:
                 self.topological_sorting()
-            except AssertionError as e:
+            except AssertionError:
                 logger.exception("topology sorting failed\n")
                 logger.critical("integrity of the output data ")
                 # TODO: perhaps its better to be even more explicit and add a
@@ -89,13 +89,11 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             else:
                 bs.append(root_boundary)
         else:
-            logger.critical("""no topology graph was created, no base boundaries created, 
-            output will be degenerated. 
-             
-             a likely cause for topology sorting to fail is that 
-                         non-continuous paths were created. When creating paths with variable 
-                         layer heights, it may very well be that the non-continuous paths are 
-                         created, while this is not yet a supported feature""")
+            logger.critical("""no topology graph was created, no base boundaries created,
+            output will be degenerated. A likely cause for topology sorting to fail is that
+            non-continuous paths were created. When creating paths with variable
+            layer heights, it may very well be that the non-continuous paths are
+            created, while this is not yet a supported feature""")
 
         # save intermediary outputs
         b_data = {i: b.to_data() for i, b in enumerate(bs)}

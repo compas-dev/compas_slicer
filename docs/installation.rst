@@ -11,7 +11,7 @@ COMPAS_SLICER can be easily installed on multiple platforms.
 Basic installation steps
 ========================
 
-Step 1: Install compas slicer
+Install compas slicer
 -----------------------------
 
 
@@ -32,7 +32,7 @@ For example, create an environment named ``my-project`` (or replace with your ow
     conda install -c conda-forge compas_cgal
 
 
-* Grasshopper
+* Install Grasshopper components
 
 The Grasshopper components are automatically installed with the `compas_rhino` installation, e.g.:
 
@@ -42,8 +42,7 @@ The Grasshopper components are automatically installed with the `compas_rhino` i
     python -m compas_rhino.install -v 7.0
 
 
-Step 4. Test if the library works
----------------------------------
+* Test if the library works
 
 Activate your environment and run the following command:
 
@@ -53,6 +52,36 @@ Activate your environment and run the following command:
     python -m compas_slicer
 
 Enjoy!
+
+
+
+Contributions
+===============
+
+Before contributing code:
+
+- Install development dependencies:
+
+.. code-block:: bash
+    pip install -r requirements-dev.txt
+
+- Make sure all tests pass:
+.. code-block:: bash
+    invoke test
+
+- Make sure you pass flake8 tests. (hint: This is the most annoying part of the process)
+.. code-block:: bash
+    invoke lint
+
+- Add your code in the appropriate folder. If you are not sure where to put it, contact [@ioannaMitropoulou](https://github.com/ioannaMitropoulou).
+
+- Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly.
+
+- Add your name to the authors in README.md.
+
+- Create a pull request for the master branch, where you explain in detail what you fixed. When you create a pull request, there is an automatic action that runs the tests for your code again on the server.
+Make sure the pull request passes the automatic tests as well. If not, then inspect the result, find what went wrong, fix it, and push again the result on your branch. The action will run again automatically on the open pull request.
+
 
 
 Troubleshooting
