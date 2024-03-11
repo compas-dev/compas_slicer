@@ -139,14 +139,14 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="compas_slicer.slicers.BaseSlicer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_slicer.slicers.</span></span><span class="sig-name descname"><span class="pre">BaseSlicer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_slicer/slicers/base_slicer.html#BaseSlicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>This is an organizational class that holds all the information for the slice process.
 Do not use this class directly in your python code. Instead use PlanarSlicer or InterpolationSlicer.
 This class is meant to be extended for the implementation of the various slicers.
 See <code class="xref py py-class docutils literal notranslate"><span class="pre">compas.slicer.slicers.PlanarSlicer</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">compas.slicer.slicers.InterpolationSlicer</span></code> as examples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>mesh</strong> (<a class="reference external" href="https://compas.dev/compas/latest/api/generated/compas.datastructures.Mesh.html#compas.datastructures.Mesh" title="(in COMPAS v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.datastructures.Mesh</span></code></a>) – Input mesh, has to be a triangular mesh (i.e. no quads or n-gons allowed)</p>
+<dd class="field-odd"><p><strong>mesh</strong> (<a class="reference external" href="https://compas.dev/compas/latest/api/compas.datastructures.Mesh.html#compas.datastructures.Mesh" title="(in COMPAS vlatest)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.datastructures.Mesh</span></code></a>) – Input mesh, has to be a triangular mesh (i.e. no quads or n-gons allowed)</p>
 </dd>
 </dl>
 <p class="rubric">Attributes</p>
@@ -212,9 +212,6 @@ See <code class="xref py py-class docutils literal notranslate"><span class="pre
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_slicer.slicers.BaseSlicer.to_json.html#compas_slicer.slicers.BaseSlicer.to_json" title="compas_slicer.slicers.BaseSlicer.to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_json</span></code></a>(filepath, name)</p></td>
 <td><p>Writes the slicer to a JSON file.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_slicer.slicers.BaseSlicer.visualize_on_viewer.html#compas_slicer.slicers.BaseSlicer.visualize_on_viewer" title="compas_slicer.slicers.BaseSlicer.visualize_on_viewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_on_viewer</span></code></a>(viewer[, ...])</p></td>
-<td><p>Visualizes slicing result using compas.viewers.</p></td>
 </tr>
 </tbody>
 </table>

@@ -139,19 +139,19 @@
 For example, create an environment named <code class="docutils literal notranslate"><span class="pre">my-project</span></code> (or replace with your own environment name) and install as follows:</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
 conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>my-project<span class="w"> </span>compas_slicer
+conda<span class="w"> </span>activate<span class="w"> </span>my-project
 </code></pre></div>
 </div>
-</section>
-<section id="step-2-optional-installation-steps">
-<h3>Step 2: Optional installation steps</h3>
 <ul class="simple">
-<li><p>COMPAS Viewers</p></li>
+<li><p>Install LIBIGL python bindings</p></li>
 </ul>
-<p>Follow the instructions to install <a class="reference external" href="https://github.com/compas-dev/compas_view2">compas_view2</a>.</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>igl
+</code></pre></div>
+</div>
 <ul class="simple">
-<li><p>COMPAS CGAL</p></li>
+<li><p>Install COMPAS CGAL</p></li>
 </ul>
-<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>install<span class="w"> </span>-n<span class="w"> </span>my-project<span class="w"> </span>compas_cgal
+<div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>compas_cgal
 </code></pre></div>
 </div>
 <ul class="simple">
@@ -159,7 +159,7 @@ conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </
 </ul>
 <p>The Grasshopper components are automatically installed with the <cite>compas_rhino</cite> installation, e.g.:</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>activate<span class="w"> </span>my-project
-python<span class="w"> </span>-m<span class="w"> </span>compas_rhino.install<span class="w"> </span>-v<span class="w"> </span><span class="m">6</span>.0
+python<span class="w"> </span>-m<span class="w"> </span>compas_rhino.install<span class="w"> </span>-v<span class="w"> </span><span class="m">7</span>.0
 </code></pre></div>
 </div>
 </section>
@@ -284,7 +284,6 @@ by typing the following command (make sure you are in the correct environment)</
 <li class="nav-item"><a class="nav-link reference internal" href="#">Installation</a><ul class="nav flex-column">
 <li class="nav-item"><a class="nav-link reference internal" href="#basic-installation-steps">Basic installation steps</a><ul class="nav flex-column">
 <li class="nav-item"><a class="nav-link reference internal" href="#step-1-install-compas-slicer">Step 1: Install compas slicer</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#step-2-optional-installation-steps">Step 2: Optional installation steps</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#step-4-test-if-the-library-works">Step 4. Test if the library works</a></li>
 </ul>
 </li>

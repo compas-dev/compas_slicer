@@ -1,1 +1,2 @@
-installation.rst:18: [redirected with Found] https://conda.io/docs/ to https://conda.io/en/latest/
+installation.rst:18: [redirected with Found] https://conda.io/docs/ to https://conda.io/projects/conda/en/latest/
+examples/02_curved_slicing_simple.rst:10: [redirected with Found] https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408 to https://dl.acm.org/doi/abs/10.1145/3424630.3425408

@@ -42,7 +42,6 @@
 {"filename": "api/generated/compas_slicer.print_organization.BasePrintOrganizer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.BasePrintOrganizer.printpoints_indices_iterator", "info": ""}
 {"filename": "api/generated/compas_slicer.print_organization.BasePrintOrganizer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.BasePrintOrganizer.printpoints_iterator", "info": ""}
 {"filename": "api/generated/compas_slicer.print_organization.BasePrintOrganizer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.BasePrintOrganizer.remove_duplicate_points_in_path", "info": ""}
-{"filename": "api/generated/compas_slicer.print_organization.BasePrintOrganizer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.BasePrintOrganizer.visualize_on_viewer", "info": ""}
 {"filename": "api/print_organization.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.InterpolationPrintOrganizer", "info": ""}
 {"filename": "api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.InterpolationPrintOrganizer.__init__", "info": ""}
 {"filename": "api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.InterpolationPrintOrganizer.create_base_boundaries", "info": ""}
@@ -60,7 +59,6 @@
 {"filename": "api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.InterpolationPrintOrganizer.printpoints_iterator", "info": ""}
 {"filename": "api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.InterpolationPrintOrganizer.remove_duplicate_points_in_path", "info": ""}
 {"filename": "api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.InterpolationPrintOrganizer.topological_sorting", "info": ""}
-{"filename": "api/generated/compas_slicer.print_organization.InterpolationPrintOrganizer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.InterpolationPrintOrganizer.visualize_on_viewer", "info": ""}
 {"filename": "api/print_organization.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.add_safety_printpoints", "info": ""}
 {"filename": "api/print_organization.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.override_extruder_toggle", "info": ""}
 {"filename": "api/print_organization.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.print_organization.override_wait_time", "info": ""}
@@ -85,7 +83,6 @@
 {"filename": "api/generated/compas_slicer.slicers.BaseSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.BaseSlicer.slice_model", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.BaseSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.BaseSlicer.to_data", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.BaseSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.BaseSlicer.to_json", "info": ""}
-{"filename": "api/generated/compas_slicer.slicers.BaseSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.BaseSlicer.visualize_on_viewer", "info": ""}
 {"filename": "api/slicers.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.InterpolationSlicer", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.InterpolationSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.InterpolationSlicer.__init__", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.InterpolationSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.InterpolationSlicer.close_paths", "info": ""}
@@ -99,7 +96,6 @@
 {"filename": "api/generated/compas_slicer.slicers.InterpolationSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.InterpolationSlicer.slice_model", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.InterpolationSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.InterpolationSlicer.to_data", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.InterpolationSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.InterpolationSlicer.to_json", "info": ""}
-{"filename": "api/generated/compas_slicer.slicers.InterpolationSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.InterpolationSlicer.visualize_on_viewer", "info": ""}
 {"filename": "api/generated/compas_slicer.post_processing.generate_brim.rst", "lineno": 3, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.PlanarSlicer", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.PlanarSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.PlanarSlicer.__init__", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.PlanarSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.PlanarSlicer.close_paths", "info": ""}
@@ -113,7 +109,6 @@
 {"filename": "api/generated/compas_slicer.slicers.PlanarSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.PlanarSlicer.slice_model", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.PlanarSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.PlanarSlicer.to_data", "info": ""}
 {"filename": "api/generated/compas_slicer.slicers.PlanarSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.PlanarSlicer.to_json", "info": ""}
-{"filename": "api/generated/compas_slicer.slicers.PlanarSlicer.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.slicers.PlanarSlicer.visualize_on_viewer", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.flattened_list_of_dictionary", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.get_closest_mesh_normal_to_pt", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.get_closest_pt", "info": ""}
@@ -127,16 +122,15 @@
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.point_list_to_dict", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.save_to_json", "info": ""}
 {"filename": "api/utilities.rst", "lineno": 1, "status": "unchecked", "code": 0, "uri": "#compas_slicer.utilities.smooth_vectors", "info": ""}
-{"filename": "api/generated/compas_slicer.pre_processing.get_mid_pt_base.rst", "lineno": 3, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.datastructures.Mesh.html#compas.datastructures.Mesh", "info": ""}
-{"filename": "api/generated/compas_slicer.geometry.PrintPoint.rst", "lineno": 11, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.geometry.Frame.html#compas.geometry.Frame", "info": ""}
-{"filename": "index.rst", "lineno": 10, "status": "working", "code": 0, "uri": "https://compas.dev/", "info": ""}
-{"filename": "api/generated/compas_slicer.geometry.PrintPoint.rst", "lineno": 7, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.geometry.Vector.html#compas.geometry.Vector", "info": ""}
+{"filename": "index.rst", "lineno": 12, "status": "working", "code": 0, "uri": "https://compas.dev/", "info": ""}
 {"filename": "api/generated/compas_slicer.geometry.Path.rst", "lineno": 4, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.geometry.Point.html#compas.geometry.Point", "info": ""}
+{"filename": "api/generated/compas_slicer.geometry.PrintPoint.rst", "lineno": 11, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.geometry.Frame.html#compas.geometry.Frame", "info": ""}
+{"filename": "api/generated/compas_slicer.geometry.PrintPoint.rst", "lineno": 7, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/generated/compas.geometry.Vector.html#compas.geometry.Vector", "info": ""}
+{"filename": "api/generated/compas_slicer.pre_processing.get_mid_pt_base.rst", "lineno": 3, "status": "working", "code": 0, "uri": "https://compas.dev/compas/latest/api/compas.datastructures.Mesh.html#compas.datastructures.Mesh", "info": ""}
 {"filename": "api/generated/compas_slicer.geometry.Layer.rst", "lineno": 1, "status": "working", "code": 0, "uri": "https://docs.python.org/3/library/functions.html#object", "info": ""}
-{"filename": "api/generated/compas_slicer.post_processing.simplify_paths_rdp.rst", "lineno": 1, "status": "working", "code": 0, "uri": "https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm", "info": ""}
-{"filename": "examples/02_curved_slicing_simple.rst", "lineno": 10, "status": "working", "code": 0, "uri": "https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408", "info": ""}
 {"filename": "installation.rst", "lineno": 117, "status": "working", "code": 0, "uri": "https://stackoverflow.com/questions/66174862/import-error-cant-import-name-gcd-from-fractions", "info": ""}
-{"filename": "installation.rst", "lineno": 18, "status": "redirected", "code": 302, "uri": "https://conda.io/docs/", "info": "https://conda.io/en/latest/"}
-{"filename": "index.rst", "lineno": 18, "status": "working", "code": 0, "uri": "https://github.com/compas-dev/compas_slicer/issues", "info": ""}
+{"filename": "api/generated/compas_slicer.post_processing.simplify_paths_rdp.rst", "lineno": 1, "status": "working", "code": 0, "uri": "https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm", "info": ""}
 {"filename": "installation.rst", "lineno": 92, "status": "working", "code": 0, "uri": "https://www.scivision.dev/python-windows-visual-c-14-required/", "info": ""}
-{"filename": "installation.rst", "lineno": 32, "status": "working", "code": 0, "uri": "https://github.com/compas-dev/compas_view2", "info": ""}
+{"filename": "index.rst", "lineno": 17, "status": "working", "code": 0, "uri": "https://github.com/compas-dev/compas_slicer/issues", "info": ""}
+{"filename": "installation.rst", "lineno": 18, "status": "redirected", "code": 302, "uri": "https://conda.io/docs/", "info": "https://conda.io/projects/conda/en/latest/"}
+{"filename": "examples/02_curved_slicing_simple.rst", "lineno": 10, "status": "redirected", "code": 302, "uri": "https://dl.acm.org/doi/fullHtml/10.1145/3424630.3425408", "info": "https://dl.acm.org/doi/abs/10.1145/3424630.3425408"}

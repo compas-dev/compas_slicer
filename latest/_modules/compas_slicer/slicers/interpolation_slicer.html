@@ -175,8 +175,7 @@
         <span class="n">params_list</span> <span class="o">=</span> <span class="n">get_interpolation_parameters_list</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> paths will be generated&#39;</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
 
-        <span class="n">max_dist</span> <span class="o">=</span> <span class="n">get_param</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;vertical_layers_max_centroid_dist&#39;</span><span class="p">,</span> <span class="n">defaults_type</span><span class="o">=</span><span class="s1">&#39;layers&#39;</span><span class="p">)</span>
-        <span class="n">vertical_layers_manager</span> <span class="o">=</span> <span class="n">VerticalLayersManager</span><span class="p">(</span><span class="n">max_dist</span><span class="p">,</span> <span class="n">avg_layer_height</span><span class="p">)</span>
+        <span class="n">vertical_layers_manager</span> <span class="o">=</span> <span class="n">VerticalLayersManager</span><span class="p">(</span><span class="n">avg_layer_height</span><span class="p">)</span>
 
         <span class="c1"># create paths + layers</span>
         <span class="k">with</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">max_value</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">params_list</span><span class="p">))</span> <span class="k">as</span> <span class="n">bar</span><span class="p">:</span>

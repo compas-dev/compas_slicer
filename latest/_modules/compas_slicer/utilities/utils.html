@@ -531,7 +531,7 @@
 <span class="sd">    :class: &#39;scipy.sparse.csr_matrix&#39;</span>
 <span class="sd">        sparse matrix (dimensions: #V x #V), laplace operator, each row i corresponding to v(i, :)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">check_package_is_installed</span><span class="p">(</span><span class="s1">&#39;igl&#39;</span><span class="p">)</span>
+    <span class="c1"># check_package_is_installed(&#39;igl&#39;)</span>
     <span class="kn">import</span> <span class="nn">igl</span>
     <span class="n">v</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">()</span>
     <span class="n">C</span> <span class="o">=</span> <span class="n">igl</span><span class="o">.</span><span class="n">cotmatrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
@@ -560,7 +560,7 @@
 <span class="sd">    :class: &#39;np.array&#39;</span>
 <span class="sd">        Dimensions: F by 3 list of 1/2*cotangents corresponding angles</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">check_package_is_installed</span><span class="p">(</span><span class="s1">&#39;igl&#39;</span><span class="p">)</span>
+    <span class="c1"># check_package_is_installed(&#39;igl&#39;)</span>
     <span class="kn">import</span> <span class="nn">igl</span>
     <span class="n">v</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">igl</span><span class="o">.</span><span class="n">cotmatrix_entries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>

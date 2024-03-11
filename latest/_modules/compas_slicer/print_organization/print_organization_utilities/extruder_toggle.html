@@ -182,21 +182,29 @@
                     <span class="n">interrupt_path</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="c1"># --- create extruder toggles</span>
-            <span class="n">path_printpoints</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path_printpoints</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">path_printpoints</span> <span class="o">=</span> <span class="n">pp_dict</span><span class="p">[</span><span class="n">layer_key</span><span class="p">][</span><span class="n">path_key</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;no path found for layer </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">layer_key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">printpoint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path_printpoints</span><span class="p">):</span>
 
-                <span class="k">if</span> <span class="n">interrupt_path</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">path_printpoints</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="n">printpoint</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">if</span> <span class="n">interrupt_path</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">path_printpoints</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">printpoint</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">printpoint</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">printpoint</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">printpoint</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># set extruder toggle of last print point to false</span>
         <span class="n">last_layer_key</span> <span class="o">=</span> <span class="s1">&#39;layer_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">last_path_key</span> <span class="o">=</span> <span class="s1">&#39;path_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pp_dict</span><span class="p">[</span><span class="n">last_layer_key</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">pp_dict</span><span class="p">[</span><span class="n">last_layer_key</span><span class="p">][</span><span class="n">last_path_key</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="o">=</span> <span class="kc">False</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pp_dict</span><span class="p">[</span><span class="n">last_layer_key</span><span class="p">][</span><span class="n">last_path_key</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">extruder_toggle</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="override_extruder_toggle"><a class="viewcode-back" href="../../../../api/generated/compas_slicer.print_organization.override_extruder_toggle.html#compas_slicer.print_organization.override_extruder_toggle">[docs]</a><span class="k">def</span> <span class="nf">override_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">override_value</span><span class="p">):</span>

@@ -321,17 +321,13 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    threshold_max_centroid_dist:</span>
-<span class="sd">        float. The maximum get_distance that the centroids of two successive paths can have to belong in the same</span>
-<span class="sd">        VerticalLayer.</span>
 <span class="sd">    max_paths_per_layer: int</span>
 <span class="sd">        Maximum number of layers that a vertical layer can consist of.</span>
 <span class="sd">        If None, then the vertical layer has an unlimited number of layers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold_max_centroid_dist</span><span class="p">,</span> <span class="n">avg_layer_height</span><span class="p">,</span> <span class="n">max_paths_per_layer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">avg_layer_height</span><span class="p">,</span> <span class="n">max_paths_per_layer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="n">VerticalLayer</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>  <span class="c1"># vertical_layers_print_data that contain isocurves (compas_slicer.Path)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threshold_max_centroid_dist</span> <span class="o">=</span> <span class="n">threshold_max_centroid_dist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">avg_layer_height</span> <span class="o">=</span> <span class="n">avg_layer_height</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_paths_per_layer</span> <span class="o">=</span> <span class="n">max_paths_per_layer</span>
 
@@ -347,7 +343,8 @@
             <span class="n">other_centroids</span> <span class="o">=</span> <span class="n">get_vertical_layers_centroids_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span>
             <span class="n">candidate_layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">get_closest_pt_index</span><span class="p">(</span><span class="n">centroid</span><span class="p">,</span> <span class="n">other_centroids</span><span class="p">)]</span>
 
-            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">candidate_layer</span><span class="o">.</span><span class="n">head_centroid</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold_max_centroid_dist</span><span class="p">:</span>
+            <span class="n">threshold_max_centroid_dist</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg_layer_height</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">candidate_layer</span><span class="o">.</span><span class="n">head_centroid</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">threshold_max_centroid_dist</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_paths_per_layer</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_layer</span><span class="o">.</span><span class="n">paths</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_paths_per_layer</span><span class="p">:</span>
                         <span class="n">selected_layer</span> <span class="o">=</span> <span class="n">candidate_layer</span>

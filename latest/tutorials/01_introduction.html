@@ -139,7 +139,7 @@
 <li><p><strong>Geometry:</strong> contains all geometrical entities</p></li>
 <li><p><strong>Slicers:</strong> provides the functionality that generates the sliced model</p></li>
 <li><p><strong>Print organizers:</strong> provides the functionality for embedding fabrication related information to the sliced model</p></li>
-<li><p><strong>Visualization:</strong> visualizes the results</p></li>
+<li><p><strong>Visualization:</strong> visualizes the results in the Rhino-Grasshopper environment</p></li>
 </ul>
 <section id="geometry">
 <h3><span class="section-number">1.1.1. </span>Geometry</h3>
@@ -177,20 +177,20 @@ setting the velocity, setting the blend radius, or adding safety printpoints (z-
 </section>
 <section id="visualization">
 <h3><span class="section-number">1.1.4. </span>Visualization</h3>
-<p>Both the Slicer output and the PrintOrganizer output can be visualized in different ways. These are described in Tutorial 2.</p>
+<p>Both the Slicer output and the PrintOrganizer output can be visualized in Grasshopper. More details on this can be found in Tutorial 2.</p>
 </section>
 </section>
 <section id="folder-structure">
 <h2><span class="section-number">1.2. </span>Folder structure</h2>
 <p>The functions of COMPAS SLICER are grouped into different folders:</p>
 <ul class="simple">
-<li><p><strong>geometry:</strong></p></li>
-<li><p><strong>parameters:</strong> Contains functions for interacting with the parameters of the slicing and print organization process.</p></li>
-<li><p><strong>post_processing:</strong> Various functions that are used <em>after</em> a model is sliced, such as different methods of sorting, or adding a brim/raft.</p></li>
-<li><p><strong>pre_processing:</strong> Various functions that are used <em>before slicing a model</em>, such as repositioning, or various operations for curved slicing.</p></li>
-<li><p><strong>print_organization:</strong></p></li>
-<li><p><strong>slicers:</strong></p></li>
-<li><p><strong>utilities:</strong></p></li>
+<li><p><strong>geometry:</strong> Contains the main geometric classes of compas_slicer: <code class="docutils literal notranslate"><span class="pre">Layer</span></code>, <code class="docutils literal notranslate"><span class="pre">Path</span></code>, and <code class="docutils literal notranslate"><span class="pre">PrintPoint</span></code>.</p></li>
+<li><p><strong>parameters:</strong> Contains parameter presets.</p></li>
+<li><p><strong>pre_processing:</strong> Contains various functions that are used <em>before slicing a model</em>, such as repositioning, or various operations for curved slicing.</p></li>
+<li><p><strong>slicers:</strong> Contains the slicer classes.</p></li>
+<li><p><strong>print_organization:</strong> Contains the print organization classes. These take a sliced model and embed on it all necessary fabrication-related information.</p></li>
+<li><p><strong>post_processing:</strong> Contains various functions that are used <em>after</em> a model is sliced, such as different methods of sorting, or adding a brim/raft.</p></li>
+<li><p><strong>utilities:</strong> Contains miscellaneous useful functions.</p></li>
 </ul>
 </section>
 </section>
