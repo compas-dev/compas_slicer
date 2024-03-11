@@ -215,24 +215,6 @@ class BasePrintOrganizer(object):
             print("Print Velocity has not been assigned, thus print time is not calculated.")
         print("")
 
-    def visualize_on_viewer(self, viewer, visualize_printpoints):
-        """Visualize printpoints on the compas_viewer.
-
-        Parameters
-        ----------
-        viewer: :class:`compas_view2.app.App`
-            An instance of the App viewer class.
-        visualize_printpoints: bool
-        """
-        all_pts = []
-        for layer_key in self.printpoints_dict:
-            for path_key in self.printpoints_dict[layer_key]:
-                for printpoint in self.printpoints_dict[layer_key][path_key]:
-                    all_pts.append(printpoint.pt)
-
-        polyline = Polyline(all_pts)
-        viewer.add(polyline, show_points=visualize_printpoints, pointcolor=(0, 0, 1), linecolor=(1, 0, 1), linewidth=1)
-
     def get_printpoint_up_vector(self, path, k, normal):
         """
         Returns the printpoint up-vector so that it is orthogonal to the path direction and the normal

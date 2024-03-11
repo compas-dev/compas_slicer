@@ -34,7 +34,7 @@ This loads the latest version of the according json file from the output folder.
 Components
 ============
 The components that exist correspond to the main classes of data types from compas_slicer that someone might want to
-visualize. The following components are currently available.
+visualize. The components that are currently available include the following:
 
 * csLoadSlicer
 
@@ -78,7 +78,4 @@ is displayed with its cross-sectional geometry.
     :class: figure-img img-fluid
 
     *Render paths visualization.*
-
-
-And many others that will be documented soon!...
 

@@ -12,7 +12,7 @@ The COMPAS SLICER package broadly contains four blocks of code:
 * **Geometry:** contains all geometrical entities
 * **Slicers:** provides the functionality that generates the sliced model
 * **Print organizers:** provides the functionality for embedding fabrication related information to the sliced model
-* **Visualization:** visualizes the results
+* **Visualization:** visualizes the results in the Rhino-Grasshopper environment
 
 Geometry
 --------
@@ -55,17 +55,17 @@ setting the velocity, setting the blend radius, or adding safety printpoints (z-
 Visualization
 -------------
 
-Both the Slicer output and the PrintOrganizer output can be visualized in different ways. These are described in Tutorial 2.
+Both the Slicer output and the PrintOrganizer output can be visualized in Grasshopper. More details on this can be found in Tutorial 2.
 
 Folder structure
 ================
 
 The functions of COMPAS SLICER are grouped into different folders:
 
-* **geometry:**
-* **parameters:** Contains functions for interacting with the parameters of the slicing and print organization process.
-* **post_processing:** Various functions that are used *after* a model is sliced, such as different methods of sorting, or adding a brim/raft.
-* **pre_processing:** Various functions that are used *before slicing a model*, such as repositioning, or various operations for curved slicing.
-* **print_organization:**
-* **slicers:** 
-* **utilities:**
+* **geometry:** Contains the main geometric classes of compas_slicer: ``Layer``, ``Path``, and ``PrintPoint``.
+* **parameters:** Contains parameter presets.
+* **pre_processing:** Contains various functions that are used *before slicing a model*, such as repositioning, or various operations for curved slicing.
+* **slicers:** Contains the slicer classes.
+* **print_organization:** Contains the print organization classes. These take a sliced model and embed on it all necessary fabrication-related information.
+* **post_processing:** Contains various functions that are used *after* a model is sliced, such as different methods of sorting, or adding a brim/raft.
+* **utilities:** Contains miscellaneous useful functions.

@@ -3,7 +3,7 @@ from compas.datastructures import Mesh
 import logging
 import compas_slicer.utilities as utils
 from compas_slicer.slicers import InterpolationSlicer
-from compas_slicer.post_processing import simplify_paths_rdp_igl
+from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.pre_processing import InterpolationSlicingPreprocessor
 from compas_slicer.print_organization import set_extruder_toggle, set_linear_velocity_by_range
 from compas_slicer.print_organization import add_safety_printpoints
@@ -11,13 +11,12 @@ from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import InterpolationPrintOrganizer
 from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import smooth_printpoints_up_vectors, smooth_printpoints_layer_heights
-from compas_slicer.post_processing import generate_brim
 import time
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_Y_shape')
+DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_vase')
 OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'mesh.obj')
 
@@ -50,7 +49,7 @@ def main():
     slicer = InterpolationSlicer(mesh, preprocessor, parameters)
     slicer.slice_model()  # compute_norm_of_gradient contours
 
-    simplify_paths_rdp_igl(slicer, threshold=0.25)
+    simplify_paths_rdp(slicer, threshold=0.25)
     seams_smooth(slicer, smooth_distance=3)
     slicer.printout_info()
     utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer.json')

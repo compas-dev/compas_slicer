@@ -181,31 +181,6 @@ class BaseSlicer(object):
         print("Number of sampling printpoints on layers: %d" % self.number_of_points)
         print("")
 
-    def visualize_on_viewer(self, viewer, visualize_mesh=False, visualize_paths=True):
-        """Visualizes slicing result using compas.viewers.
-
-        Parameters
-        ----------
-        viewer: :class:`compas_view2.app.App`
-            An instance of the App viewer class.
-        visualize_mesh: bool, optional
-            True to visualize mesh, False to not.
-        visualize_paths: bool, optional
-            True to visualize paths, False to not.
-        """
-
-        if visualize_mesh:
-            viewer.add(self.mesh, show_points=False, hide_coplanaredges=False)
-
-        if visualize_paths:
-            for i, layer in enumerate(self.layers):
-                for j, path in enumerate(layer.paths):
-                    pts = copy.deepcopy(path.points)
-                    if path.is_closed:
-                        pts.append(pts[0])
-                    polyline = Polyline(pts)
-                    viewer.add(polyline, show_points=True, pointcolor=(0, 0, 1), linecolor=(1, 0, 0), linewidth=2)
-
     ##############################
     #  --- To data, from data
 

@@ -22,21 +22,21 @@ For example, create an environment named ``my-project`` (or replace with your ow
 
     conda config --add channels conda-forge
     conda create -n my-project compas_slicer
+    conda activate my-project
 
 
-Step 2: Optional installation steps
------------------------------------
-
-* COMPAS Viewers
-
-Follow the instructions to install `compas_view2 <https://github.com/compas-dev/compas_view2>`_.
-
-
-* COMPAS CGAL
+* Install LIBIGL python bindings
 
 .. code-block:: bash
 
-    conda install -n my-project compas_cgal
+    conda install -c conda-forge igl
+
+
+* Install COMPAS CGAL
+
+.. code-block:: bash
+
+    conda install -c conda-forge compas_cgal
 
 
 * Grasshopper
@@ -46,7 +46,7 @@ The Grasshopper components are automatically installed with the `compas_rhino` i
 .. code-block:: bash
 
     conda activate my-project
-    python -m compas_rhino.install -v 6.0
+    python -m compas_rhino.install -v 7.0
 
 
 Step 4. Test if the library works
