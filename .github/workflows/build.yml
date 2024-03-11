@@ -23,7 +23,7 @@ jobs:
         with:
           activate-environment: compas_slicer
           environment-file: environment.yml
-          python-version: 3.7
+          python-version: 3.8
           auto-activate-base: false
           auto-update-conda: true
       - name: Conda info

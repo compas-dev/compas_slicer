@@ -8,8 +8,7 @@ Overview
 .. rst-class:: lead
 
    **COMPAS_SLICER is a slicing package for FDM 3D Printing using COMPAS.**
-    The package builds upon
-   `COMPAS <https://compas.dev/>`_, an open-source Python-based framework for 
+    The package builds upon `COMPAS <https://compas.dev/>`_, an open-source Python-based framework for
    collaboration and research in architecture, engineering and digital fabrication.
 
 .. note::

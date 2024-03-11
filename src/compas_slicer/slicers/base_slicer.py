@@ -2,12 +2,10 @@ import compas
 import numpy as np
 from compas.datastructures import Mesh
 from compas_slicer.utilities import utils
-from compas.geometry import Polyline
 from compas_slicer.geometry import Layer, VerticalLayer
 from compas_slicer.post_processing import seams_align
 from compas_slicer.post_processing import unify_paths_orientation
 import logging
-import copy
 from abc import abstractmethod
 from compas.datastructures import mesh_bounding_box
 from compas.geometry import distance_point_point_sqrd

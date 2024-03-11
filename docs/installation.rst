@@ -25,13 +25,6 @@ For example, create an environment named ``my-project`` (or replace with your ow
     conda activate my-project
 
 
-* Install LIBIGL python bindings
-
-.. code-block:: bash
-
-    conda install -c conda-forge igl
-
-
 * Install COMPAS CGAL
 
 .. code-block:: bash
