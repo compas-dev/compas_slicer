@@ -133,8 +133,8 @@
 <p class="lead">COMPAS_SLICER can be easily installed on multiple platforms.</p>
 <section id="basic-installation-steps">
 <h2>Basic installation steps</h2>
-<section id="step-1-install-compas-slicer">
-<h3>Step 1: Install compas slicer</h3>
+<section id="install-compas-slicer">
+<h3>Install compas slicer</h3>
 <p>The recommended way to install <cite>compas_slicer</cite> is with <a class="reference external" href="https://conda.io/docs/">conda</a>.
 For example, create an environment named <code class="docutils literal notranslate"><span class="pre">my-project</span></code> (or replace with your own environment name) and install as follows:</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
@@ -149,16 +149,16 @@ conda<span class="w"> </span>activate<span class="w"> </span>my-project
 </code></pre></div>
 </div>
 <ul class="simple">
-<li><p>Grasshopper</p></li>
+<li><p>Install Grasshopper components</p></li>
 </ul>
 <p>The Grasshopper components are automatically installed with the <cite>compas_rhino</cite> installation, e.g.:</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>activate<span class="w"> </span>my-project
 python<span class="w"> </span>-m<span class="w"> </span>compas_rhino.install<span class="w"> </span>-v<span class="w"> </span><span class="m">7</span>.0
 </code></pre></div>
 </div>
-</section>
-<section id="step-4-test-if-the-library-works">
-<h3>Step 4. Test if the library works</h3>
+<ul class="simple">
+<li><p>Test if the library works</p></li>
+</ul>
 <p>Activate your environment and run the following command:</p>
 <div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>conda<span class="w"> </span>activate<span class="w"> </span>my-project
 python<span class="w"> </span>-m<span class="w"> </span>compas_slicer
@@ -166,6 +166,26 @@ python<span class="w"> </span>-m<span class="w"> </span>compas_slicer
 </div>
 <p>Enjoy!</p>
 </section>
+</section>
+<section id="contributions">
+<h2>Contributions</h2>
+<p>Before contributing code:</p>
+<ul class="simple">
+<li><p>Install development dependencies:</p></li>
+</ul>
+<ul class="simple">
+<li><p>Make sure all tests pass:</p></li>
+</ul>
+<ul class="simple">
+<li><p>Make sure you pass flake8 tests. (hint: This is the most annoying part of the process)</p></li>
+</ul>
+<ul class="simple">
+<li><p>Add your code in the appropriate folder. If you are not sure where to put it, contact [&#64;ioannaMitropoulou](<a class="reference external" href="https://github.com/ioannaMitropoulou">https://github.com/ioannaMitropoulou</a>).</p></li>
+<li><p>Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly.</p></li>
+<li><p>Add your name to the authors in README.md.</p></li>
+<li><p>Create a pull request for the master branch, where you explain in detail what you fixed. When you create a pull request, there is an automatic action that runs the tests for your code again on the server.</p></li>
+</ul>
+<p>Make sure the pull request passes the automatic tests as well. If not, then inspect the result, find what went wrong, fix it, and push again the result on your branch. The action will run again automatically on the open pull request.</p>
 </section>
 <section id="troubleshooting">
 <h2>Troubleshooting</h2>
@@ -277,10 +297,10 @@ by typing the following command (make sure you are in the correct environment)</
         <ul class="nav flex-column" id="compas-toc">
 <li class="nav-item"><a class="nav-link reference internal" href="#">Installation</a><ul class="nav flex-column">
 <li class="nav-item"><a class="nav-link reference internal" href="#basic-installation-steps">Basic installation steps</a><ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="#step-1-install-compas-slicer">Step 1: Install compas slicer</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#step-4-test-if-the-library-works">Step 4. Test if the library works</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#install-compas-slicer">Install compas slicer</a></li>
 </ul>
 </li>
+<li class="nav-item"><a class="nav-link reference internal" href="#contributions">Contributions</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#troubleshooting">Troubleshooting</a><ul class="nav flex-column">
 <li class="nav-item"><a class="nav-link reference internal" href="#installing-planarity">Installing Planarity</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#microsoft-visual-c-build-tools">Microsoft Visual C++ Build Tools</a></li>
