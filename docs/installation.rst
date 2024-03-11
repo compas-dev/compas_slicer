@@ -50,6 +50,25 @@ Activate your environment and run the following command:
     conda activate my-project
     python -m compas_slicer
 
+
+* Install from local folder
+
+If you would like to install the latest code from github, or to make modifications on the code and have the updated version
+run in your environment, then you can install compas_slicer from a local folder in your computer. To do that, after following
+the steps described above clone the compas_slicer repository using the command
+
+.. code-block:: bash
+
+    git clone https://github.com/compas-dev/compas_slicer.git
+
+Navigate to the compas_slicer folder and after you activate the desired environment, install compas_slicer from the local copy
+with the following command:
+
+.. code-block:: bash
+    conda activate my-project
+    pip install -e .
+
+
 Enjoy!
 
 

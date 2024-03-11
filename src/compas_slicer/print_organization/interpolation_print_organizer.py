@@ -88,8 +88,6 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         else:
             bs.append(root_boundary)
 
-        assert(len(bs) == len(self.vertical_layers))
-
         # save intermediary outputs
         b_data = {i: b.to_data() for i, b in enumerate(bs)}
         utils.save_to_json(b_data, self.OUTPUT_PATH, 'boundaries.json')

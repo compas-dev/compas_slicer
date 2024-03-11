@@ -7,14 +7,6 @@
 
 Python slicing package for FDM 3D Printing based on the [COMPAS](https://block.arch.ethz.ch/brg/tools/compas-computational-framework-for-collaboration-and-research-in-architecture-structures-and-digital-fabrication) framework.
 
-## Main features
-
-* Planar slicing (default method, and method based on Cgal library)
-* Curved slicing (interpolation of boundaries, UV slicing, scalar field slicing)
-* Generation of fabrication-related information
-* Export print data to Json and gcode format
-* Visualization of results in grasshopper
-
 ## Getting started
 
 You can find tutorials and documentation of the project in the [compas_slicer page](https://compas.dev/compas_slicer/latest/)
@@ -22,6 +14,14 @@ You can find tutorials and documentation of the project in the [compas_slicer pa
 For installation instructions, see here: [installation](https://compas.dev/compas_slicer/latest/installation.html)
 
 For troubleshooting, see here: [troubleshooting](https://compas.dev/compas_slicer/installation.html#troubleshooting-1)
+
+## Main features
+
+* Planar slicing (default method, and method based on Cgal library)
+* Curved slicing (interpolation of boundaries, UV slicing, scalar field slicing)
+* Generation of fabrication-related information
+* Export print data to Json and gcode format
+* Visualization of results in grasshopper
 
 ## Authors
 
