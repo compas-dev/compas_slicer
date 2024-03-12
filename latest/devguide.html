@@ -132,7 +132,70 @@
         
         <section id="developer-guide">
 <h1>Developer Guide</h1>
-<p>To be added.</p>
+<section id="contributions">
+<h2>Contributions</h2>
+<p>Before contributing code:</p>
+<ul>
+<li><p>Fork [the repository](<a class="reference external" href="https://github.com/compas-dev/compas_slicer">https://github.com/compas-dev/compas_slicer</a>) and clone the fork.</p></li>
+<li><p>Install compas_slicer from your local forked copy:</p>
+<blockquote>
+<div><div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Install development dependencies:</p>
+<blockquote>
+<div><div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt
+</code></pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>BEFORE you start working on your updates, make sure all tests pass:</p>
+<blockquote>
+<div><div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>invoke<span class="w"> </span><span class="nb">test</span>
+</code></pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>BEFORE you start working on your updates, make sure you pass flake8 tests.</p>
+<blockquote>
+<div><div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>invoke<span class="w"> </span>lint
+</code></pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Now you can add your code in the appropriate folder. If you are not sure where to put it, contact <a class="reference external" href="https://github.com/ioannaMitropoulou">&#64;ioannaMitropoulou</a>.</p></li>
+<li><p>Add an example in the examples folder that uses the new functionality. Run the example and ensure it works smoothly.</p></li>
+<li><p>Add your name to the authors in README.md.</p></li>
+<li><p>Make sure again that all tests pass, and that flake8 is also happy!</p></li>
+<li><p>Create a [pull request](<a class="reference external" href="https://help.github.com/articles/about-pull-requests/">https://help.github.com/articles/about-pull-requests/</a>) for the master branch, where you explain in detail what you fixed. When you create a pull request, there is an automatic action that runs the tests for your code again on the server. Make sure the pull request passes the automatic tests as well. If not, inspect the result, find what went wrong, fix it, and push the result again to your branch. The action will run again automatically on the open pull request.</p></li>
+</ul>
+<p>During development, use [pyinvoke](<a class="reference external" href="http://docs.pyinvoke.org/">http://docs.pyinvoke.org/</a>) tasks on the
+command line to ease recurring operations:</p>
+<ul class="simple">
+<li><p><cite>invoke clean</cite>: Clean all generated artifacts.</p></li>
+<li><p><cite>invoke check</cite>: Run various code and documentation style checks.</p></li>
+<li><p><cite>invoke docs</cite>: Generate documentation.</p></li>
+<li><p><cite>invoke test</cite>: Run all tests and checks in one swift command.</p></li>
+<li><p><cite>invoke</cite>: Show available tasks.</p></li>
+</ul>
+</section>
+<section id="increase-version">
+<h2>Increase version</h2>
+<p>To increase the version of compas_slicer, do the following:</p>
+<ul>
+<li><p>Push all your changes to the main branch and make sure that your local copy is on the main branch and has no updates.</p></li>
+<li><p>Use the command ‘release’ with the options major / minor / patch</p>
+<blockquote>
+<div><div class="language-bash notranslate"><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code><span></span>invoke<span class="w"> </span>release<span class="w"> </span>patch
+</code></pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<p>This automatically pushes the new changes to pip. Conda forge will pick it up and in a few hours you will receive an email. Approve the PR request and then the updated version also goes to conda.</p>
+</section>
 </section>
 
         
@@ -193,7 +256,11 @@
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">Developer Guide</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">Developer Guide</a><ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="#contributions">Contributions</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#increase-version">Increase version</a></li>
+</ul>
+</li>
 </ul>
 
       </div>
