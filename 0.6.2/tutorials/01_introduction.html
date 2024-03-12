@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <title>compas_slicer - 1. Introduction</title>
+  
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <meta name="author" content="" />
+  <meta name="description" content="" />
+
+  <link rel="shortcut icon" href="../_static/images/compas.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/mono-blue.min.css">
+  <link rel="stylesheet" type="text/css" href="../_static/css/compas.css" />
+  <link rel="stylesheet" type="text/css" href="../_static/css/compas-reference.css" />
+
+  
+  <link rel="next" title="2. Visualization in grasshopper" href="02_grasshopper_visualization.html" />
+  
+
+  
+  <link rel="prev" title="Tutorials" href="../tutorials.html" />
+  
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+<body data-spy="scroll" data-target="#compas-toc">
+  <!-- header -->
+  <header id="header" class="compas-header d-flex align-items-center">
+    <nav class="navbar navbar-expand navbar-dark col flex-column flex-md-row text-center">
+      <!-- brand -->
+      <a class="navbar-brand" href="https://compas.dev/compas_slicer/">
+        <img src="../_static/images/compas_icon_white.png" alt="COMPAS SLICER" width="48px" height="48px" />
+      </a>
+      <!-- brand -->
+      <!-- primary -->
+      <ul class="navbar-nav">
+        <li class="nav-item active"><a class="nav-link" href="https://compas.dev/compas_slicer/">COMPAS SLICER</a></li>
+      </ul>
+      <!-- primary -->
+      <ul class="navbar-nav d-none d-md-flex ml-md-auto">
+        <!-- version -->
+        
+        <li class="nav-item nav-versions dropdown">
+          <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            0.6.2
+          </a>
+          <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/latest">latest</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/stable">stable</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.6.2">0.6.2</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.6.1">0.6.1</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.6.0">0.6.0</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.5.0">0.5.0</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.4.0">0.4.0</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.5">0.3.5</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.4">0.3.4</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.3">0.3.3</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.2">0.3.2</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.1">0.3.1</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.3.0">0.3.0</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.2">0.2.2</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.1">0.2.1</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.2.0">0.2.0</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.3">0.1.3</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.2">0.1.2</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.1">0.1.1</a>
+            
+            <a class="dropdown-item" href="https://compas.dev/compas_slicer/0.1.0">0.1.0</a>
+            
+          </div>
+        </li>
+        
+        <!-- version -->
+        <!-- social -->
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/compas-dev/compas_slicer" target="_blank">
+            <span class="fab fa-github fa-1x"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://forum.compas-framework.org" target="_blank">
+            <span class="fab fa-discourse fa-1x"></span>
+          </a>
+        </li>
+        <!-- social -->
+      </ul>
+    </nav>
+  </header>
+  <!-- header -->
+  <!-- main -->
+  <div class="container-fluid">
+    <div class="row">
+      <!-- main -->
+      <main class="col-12 col-md-9 col-xl-7 px-4 px-md-5 pt-2 pb-5 compas-content" role="main">
+        
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-3 bg-white px-0">
+            <li class="breadcrumb-item"><a href="../index.html">COMPAS SLICER</a></li>
+            
+            <li class="breadcrumb-item"><a href="../tutorials.html">Tutorials</a></li>
+            
+            <!-- <li class="breadcrumb-item active" aria-current="page"><span class="section-number">1. </span>Introduction</li> -->
+          </ol>
+        </nav>
+        
+
+        
+        
+        <section id="introduction">
+<span id="compas-slicer-tutorial-1-introduction"></span><h1><span class="section-number">1. </span>Introduction</h1>
+<section id="overview">
+<h2><span class="section-number">1.1. </span>Overview</h2>
+<p>The COMPAS SLICER package broadly contains four blocks of code:</p>
+<ul class="simple">
+<li><p><strong>Geometry:</strong> contains all geometrical entities</p></li>
+<li><p><strong>Slicers:</strong> provides the functionality that generates the sliced model</p></li>
+<li><p><strong>Print organizers:</strong> provides the functionality for embedding fabrication related information to the sliced model</p></li>
+<li><p><strong>Visualization:</strong> visualizes the results in the Rhino-Grasshopper environment</p></li>
+</ul>
+<section id="geometry">
+<h3><span class="section-number">1.1.1. </span>Geometry</h3>
+<p>The geometry part of COMPAS SLICER contains all of the geometrical entities that are specific to COMPAS SLICER:
+The <code class="docutils literal notranslate"><span class="pre">Layer</span></code>, <code class="docutils literal notranslate"><span class="pre">VerticalLayer</span></code>, <code class="docutils literal notranslate"><span class="pre">Path</span></code>, and <code class="docutils literal notranslate"><span class="pre">PrintPoint</span></code>. A <code class="docutils literal notranslate"><span class="pre">Layer</span></code> is essentially a single slice of the model.
+In case of planar slicing, all points on one <code class="docutils literal notranslate"><span class="pre">Layer</span></code> are at the same height, however, this is not the case for non-planar slicing.
+A <code class="docutils literal notranslate"><span class="pre">VerticalLayer</span></code> is a special method for organizing layers, in this case several <code class="docutils literal notranslate"><span class="pre">Layers</span></code> are grouped together to form a
+group of layers. The <code class="docutils literal notranslate"><span class="pre">VerticalLayer</span></code> is only relevant in case a model consists out of multiple <code class="docutils literal notranslate"><span class="pre">Paths</span></code>.
+A <code class="docutils literal notranslate"><span class="pre">Layer</span></code> contains a list of one or mulitple <code class="docutils literal notranslate"><span class="pre">Paths</span></code>. Multiple <code class="docutils literal notranslate"><span class="pre">Paths</span></code> occur when a model has multiple branches (see image).
+Each <code class="docutils literal notranslate"><span class="pre">Path</span></code> is a closed or open contour and contains a list of <code class="docutils literal notranslate"><span class="pre">compas.geometry.Point</span></code> objects.
+Lastly, the <code class="docutils literal notranslate"><span class="pre">PrintPoint</span></code> is essentially the same as the Points in the <code class="docutils literal notranslate"><span class="pre">Path</span></code>, however, it contains additional fabrication parameters.</p>
+<figure class="figure align-default">
+<img alt="../_images/01_layer.png" class="figure-img img-fluid" src="../_images/01_layer.png" />
+</figure>
+<figure class="figure align-default">
+<img alt="../_images/02_vert_layer.png" class="figure-img img-fluid" src="../_images/02_vert_layer.png" />
+</figure>
+</section>
+<section id="slicers">
+<h3><span class="section-number">1.1.2. </span>Slicers</h3>
+<p>Different slicers are integrated into COMPAS SLICER.</p>
+<ul class="simple">
+<li><p><strong>Planar slicer:</strong> Most basic slicer, slices the model through an intersection of a plane parallel to the XY plane.</p></li>
+<li><p><strong>Interpolation slicer:</strong> Creates non-planar slices by interpolating between boundary curves.</p></li>
+<li><p><strong>Scalar field slicer:</strong> Uses a scalar field to create non-planar slices.</p></li>
+<li><p><strong>UV slicer:</strong> TBA.</p></li>
+</ul>
+</section>
+<section id="print-organizers">
+<h3><span class="section-number">1.1.3. </span>Print organizers</h3>
+<p>After the model is sliced using one of the available slicers, the toolpath can be generated using the PrintOrganizers.
+The <code class="docutils literal notranslate"><span class="pre">PrintOrganizer</span></code> creates <code class="docutils literal notranslate"><span class="pre">PrintPoint</span></code> objects out of the <code class="docutils literal notranslate"><span class="pre">compas.geometry.Point</span></code> objects that are used throughout the slicing process.
+Using different functions, fabrication parameters can be added or modified to the <code class="docutils literal notranslate"><span class="pre">PrintPoints</span></code>. Examples of this include:
+setting the velocity, setting the blend radius, or adding safety printpoints (z-hop).</p>
+</section>
+<section id="visualization">
+<h3><span class="section-number">1.1.4. </span>Visualization</h3>
+<p>Both the Slicer output and the PrintOrganizer output can be visualized in Grasshopper. More details on this can be found in Tutorial 2.</p>
+</section>
+</section>
+<section id="folder-structure">
+<h2><span class="section-number">1.2. </span>Folder structure</h2>
+<p>The functions of COMPAS SLICER are grouped into different folders:</p>
+<ul class="simple">
+<li><p><strong>geometry:</strong> Contains the main geometric classes of compas_slicer: <code class="docutils literal notranslate"><span class="pre">Layer</span></code>, <code class="docutils literal notranslate"><span class="pre">Path</span></code>, and <code class="docutils literal notranslate"><span class="pre">PrintPoint</span></code>.</p></li>
+<li><p><strong>parameters:</strong> Contains parameter presets.</p></li>
+<li><p><strong>pre_processing:</strong> Contains various functions that are used <em>before slicing a model</em>, such as repositioning, or various operations for curved slicing.</p></li>
+<li><p><strong>slicers:</strong> Contains the slicer classes.</p></li>
+<li><p><strong>print_organization:</strong> Contains the print organization classes. These take a sliced model and embed on it all necessary fabrication-related information.</p></li>
+<li><p><strong>post_processing:</strong> Contains various functions that are used <em>after</em> a model is sliced, such as different methods of sorting, or adding a brim/raft.</p></li>
+<li><p><strong>utilities:</strong> Contains miscellaneous useful functions.</p></li>
+</ul>
+</section>
+</section>
+
+        
+      </main>
+      <!-- content -->
+      <!-- sidebar -->
+      <div class="col-12 col-md-3 compas-sidebar" role="navigation">
+        <form id="search" class="d-flex align-items-center compas-searchbox" action="../search.html" method="get">
+          <input class="form-control" type="text" name="q" placeholder="Search docs" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+          <button class="navbar-toggler d-md-none" type="button" data-toggle="collapse" data-target="#compas-navigation" aria-controls="compas-navigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </form>
+        
+        
+        <div id="compas-navigation" class="collapse compas-navigation">
+          <ul class="nav flex-column collapse show active">
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 nav-item active"><a class="nav-link reference internal" href="../tutorials.html">Tutorials</a><ul class="nav flex-column collapse show active">
+<li class="toctree-l2 nav-item active"><a class="nav-link active reference internal" href="#">1. Introduction</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="02_grasshopper_visualization.html">2. Visualization in grasshopper</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../examples.html">Examples</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../examples/01_planar_slicing_simple.html">1. Simple planar slicing</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../examples/02_curved_slicing_simple.html">2. Interpolation slicing</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../examples/03_planar_slicing_vertical_sorting.html">3. Planar slicing with vertical sorting</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../examples/04_gcode_generation.html">4. Gcode generation</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../examples/05_non_planar_slicing_on_custom_base.html">5. Non-planar slicing on custom base</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../examples/06_attributes_transfer.html">6. Transferring attributes to PrintPoints</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../api.html">API Reference</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../api/compas_slicer.html">compas_slicer</a><ul class="nav flex-column collapse">
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../api/geometry.html">geometry</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../api/slicers.html">slicers</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../api/print_organization.html">print_organization</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../api/pre_processing.html">pre_processing</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../api/post_processing.html">post_processing</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../api/utilities.html">utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../devguide.html">Developer Guide</a></li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../citing.html">Citing</a></li>
+</ul>
+
+        </div>
+        
+      </div>
+      <!-- sidebar -->
+      <!-- toc -->
+      <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
+        
+        <ul class="nav flex-column" id="compas-toc">
+<li class="nav-item"><a class="nav-link reference internal" href="#">1. Introduction</a><ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="#overview">1.1. Overview</a><ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="#geometry">1.1.1. Geometry</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#slicers">1.1.2. Slicers</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#print-organizers">1.1.3. Print organizers</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#visualization">1.1.4. Visualization</a></li>
+</ul>
+</li>
+<li class="nav-item"><a class="nav-link reference internal" href="#folder-structure">1.2. Folder structure</a></li>
+</ul>
+</li>
+</ul>
+
+      </div>
+      <!-- toc -->
+    </div>
+  </div>
+  <!-- main -->
+  <!-- footer -->
+  <footer class="compas-footer">
+    <nav class="nav p-2">
+      
+      <a href="../tutorials.html" title="Tutorials" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+        <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
+        <div class="nav-title flex-grow-1 align-self-center">
+          <div class="nav-direction small font-weight-light">Previous</div>
+          Tutorials
+        </div>
+      </a>
+      
+
+      
+      <a href="02_grasshopper_visualization.html" title="<span class="section-number">2. </span>Visualization in grasshopper" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+        <div class="nav-title footer-link flex-grow-1 align-self-center">
+          <div class="nav-direction small font-weight-light">Next</div>
+          <span class="section-number">2. </span>Visualization in grasshopper
+        </div>
+        <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
+      </a>
+      
+    </nav>
+  </footer>
+  <!-- footer -->
+  <!-- below -->
+  <div class="below py-5" style="background-color: #222;">
+    <div class="container">
+      <div class="row flex-column">
+        <div class="col-12 col-md-6 mx-md-auto text-center">
+          <h4 class="pb-3 below-text">COMPAS</h4>
+          <p class="below-text">
+            A computational framework for collaboration and research
+            in Architecture, Engineering, Fabrication, and Construction.
+          </p>
+          <nav class="nav justify-content-center pb-3">
+            <a class="nav-link mx-2 px-0 below-link" href="http://github.com/compas-dev" target="_blank">
+              <span class="fab fa-github fa-1x"></span>
+            </a>
+            <a class="nav-link mx-2 px-0 below-link" href="http://forum.compas-framework.org" target="_blank">
+              <span class="fab fa-discourse fa-1x"></span>
+            </a>
+            <a class="nav-link mx-2 px-0 below-link" href="https://pypi.org/project/COMPAS/" target="_blank">
+              <span class="fab fa-python fa-1x"></span>
+            </a>
+          </nav>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col text-center">
+          <p class="p-0 m-0 below-text">Copyright &copy; 2017-2021 compas-dev</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- below -->
+  <!-- scripts -->
+  <script id="documentation_options" data-url_root="" src="../_static/documentation_options.js"></script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.0.0/anchor.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+  <script src="../_static/underscore.js"></script>
+  <script src="../_static/doctools.js"></script>
+  <script src="../_static/searchtools.js"></script>
+  <script src="../_static/language_data.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $(".language-default code").addClass("python");
+      $(".language-python code").addClass("python");
+      $(".language-bash code").addClass("bash");
+      $(".language-cpp code").addClass("cpp");
+      $(".language-json code").addClass("json");
+      $(".language-none code").addClass("plaintext");
+
+      hljs.initHighlighting();
+      anchors.add();
+
+      new ClipboardJS(".btn.copy", {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+
+      $("#compas-navigation li.active > ul").each(function() {
+        var ul = $(this);
+        if (! ul.hasClass("show")) {
+          ul.addClass("show");
+        }
+      });
+
+      $("#compas-navigation li.toctree-l1").has("ul").each(function() {
+        var li = $(this);
+        li.addClass("has-children");
+        if (li.hasClass("active")) {
+          li.prepend('<span class="menu-toggle"><i class="fas fa-chevron-up"></i></span>');
+        }
+        else {
+          li.prepend('<span class="menu-toggle"><i class="fas fa-chevron-down"></i></span>');
+        }
+      });
+
+      $(".menu-toggle").click(function() {
+        var toggle = $(this);
+        toggle.siblings("ul").toggleClass("show");
+      });
+
+    });
+
+
+    var url = $("#doc_versions").data("url");
+    var docs_site = $("#doc_versions").data("docs");
+
+    if (url) {
+      $.get(url, res => {
+        var lines = res.match(/[^\r\n]+/g);
+        lines.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        lines.reverse();
+        lines.forEach(version => {
+          $("#doc_version_list").append("<a class=\"dropdown-item\" href=\"" + docs_site + version + "\">" + version + "</a>");
+        });
+
+        var selected_version = $('.nav-versions .dropdown-item').filter(function (i, ver) {
+          return window.location.href.startsWith(ver.href);
+        });
+        selected_version.addClass('active');
+        $("#bd-versions").text(selected_version.text());
+
+      })
+    }
+  </script>
+  <!-- scripts -->
+  
+  
+</body>
+
+</html>
