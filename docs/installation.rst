@@ -72,39 +72,6 @@ with the following command:
 Enjoy!
 
 
-
-Contributions
-===============
-
-Before contributing code:
-
-- Install development dependencies:
-
-.. code-block:: bash
-    pip install -r requirements-dev.txt
-
-- Make sure all tests pass:
-.. code-block:: bash
-    invoke test
-
-- Make sure you pass flake8 tests. (hint: This is the most annoying part of the process)
-.. code-block:: bash
-    invoke lint
-
-- Add your code in the appropriate folder. If you are not sure where to put it, contact [@ioannaMitropoulou](https://github.com/ioannaMitropoulou).
-
-
-- Add an example on the examples folder that uses the new functionality. Run the example and make sure it works smoothly.
-
-
-- Add your name to the authors in README.md.
-
-
-- Create a pull request for the master branch, where you explain in detail what you fixed. When you create a pull request, there is an automatic action that runs the tests for your code again on the server.
-Make sure the pull request passes the automatic tests as well. If not, then inspect the result, find what went wrong, fix it, and push again the result on your branch. The action will run again automatically on the open pull request.
-
-
-
 Troubleshooting
 ===============
 
@@ -170,3 +137,21 @@ by typing the following command (make sure you are in the correct environment)
 
     conda install -c conda-forge networkx=2.5
 
+
+
+Bug reports
+===========
+
+When `reporting a bug <https://github.com/compas-dev/compas_slicer/issues>`_, please include:
+
+- Operating system name and version.
+- Any details about your local setup that might be helpful in troubleshooting.
+- Detailed steps to reproduce the bug.
+
+Feature requests
+================
+
+When `proposing a new feature <https://github.com/compas-dev/compas_slicer/issues>`_, please include:
+
+- Explain in detail how it would work.
+- Keep the scope as narrow as possible, to make it easier to implement.
