@@ -1,6 +1,8 @@
-from compas.geometry import barycentric_coordinates
 import logging
+
 import progressbar
+from compas.geometry import barycentric_coordinates
+
 from compas_slicer.utilities.utils import pull_pts_to_mesh_faces
 
 logger = logging.getLogger('logger')
@@ -88,7 +90,7 @@ def transfer_mesh_attributes_to_point(mesh, fkey, proj_pt):
     checked_attrs = []
     for attr in mesh.vertex_attributes(vs[0]):
         if not is_reserved_attribute(attr):
-            if not (attr in checked_attrs):
+            if attr not in checked_attrs:
                 check_that_attribute_can_be_multiplied(attr, mesh.vertex_attributes(vs[0])[attr])
                 checked_attrs.append(attr)
             vertex_attrs[attr] = 0
@@ -104,6 +106,7 @@ def check_that_attribute_can_be_multiplied(attr_name, value):
     try:
         value * 1.0
         return True
-    except TypeError:
-        raise ValueError('Attention! The following vertex attribute cannot be multiplied with a scalar. %s : %s '
-                         % (attr_name, str(type(value))))
+    except TypeError as err:
+        raise ValueError(
+            f'Attention! The following vertex attribute cannot be multiplied with a scalar. {attr_name} : {type(value)!s} '
+        ) from err

@@ -1,9 +1,11 @@
 import logging
 import math
-from compas_slicer.parameters import get_param
-from compas.geometry import Point, Vector
-from compas_slicer.geometry import PrintPoint
 from datetime import datetime
+
+from compas.geometry import Point, Vector
+
+from compas_slicer.geometry import PrintPoint
+from compas_slicer.parameters import get_param
 
 logger = logging.getLogger('logger')
 
@@ -93,9 +95,9 @@ def create_gcode_text(print_organizer, parameters):
     gcode += "G1 Z0.2                         ;move nozzle up 0.2mm" + n_l
     gcode += "G1 X5 Y5                        ;move nozzle up 0.2mm" + n_l
     ex_val = 560 * 0.2 * path_width / (math.pi * (filament_diameter ** 2))
-    gcode += "G1 Y150 E" + '{:.3f}'.format(ex_val) + "                  ;extrude a line of filament" + n_l
-    gcode += "G1 X" + '{:.3f}'.format(5 + path_width) + "                       ;move nozzle away from the first line" + n_l
-    gcode += "G1 Y5 E" + '{:.3f}'.format(ex_val) + "                    ;extrude a second line of filament" + n_l
+    gcode += "G1 Y150 E" + f'{ex_val:.3f}' + "                  ;extrude a line of filament" + n_l
+    gcode += "G1 X" + f'{5 + path_width:.3f}' + "                       ;move nozzle away from the first line" + n_l
+    gcode += "G1 Y5 E" + f'{ex_val:.3f}' + "                    ;extrude a second line of filament" + n_l
     gcode += "G1 Z2                           ;move nozzle up 1.8mm" + n_l
     gcode += "G92 E0                          ;reset the extruded length" + n_l  # useless after M83, otherwise needed
     gcode += "G1 F" + str(feedrate_travel) + "                        ;set initial Feedrate" + n_l
@@ -115,7 +117,7 @@ def create_gcode_text(print_organizer, parameters):
     # ######################################################################
     # iterate all layers, paths
     print('')
-    for point_v, i, j, k in print_organizer.printpoints_indices_iterator():  # i: layer; j: path; k: point index
+    for point_v, i, _j, k in print_organizer.printpoints_indices_iterator():  # i: layer; j: path; k: point index
         layer_height = point_v.layer_height
         # Calculate relative length
         re_l = ((point_v.pt.x - prev_point.pt.x) ** 2 + (point_v.pt.y - prev_point.pt.y) ** 2 + (
@@ -126,24 +128,23 @@ def create_gcode_text(print_organizer, parameters):
                 gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
                 gcode += "G1" + " E-" + str(retraction_length) + "      ;retract" + n_l
                 # ZHOP
-                gcode += "G1" + " Z" + '{:.3f}'.format(prev_point.pt.z + z_hop) + "  ;z-hop" + n_l
+                gcode += "G1" + " Z" + f'{prev_point.pt.z + z_hop:.3f}' + "  ;z-hop" + n_l
                 # move to first point in path:
                 gcode += "G1" + " F" + str(feedrate_travel) + "    ;set travel feedrate" + n_l
                 if prev_point.pt.z != point_v.pt.z:
-                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
+                    gcode += "G1 X" + f'{point_v.pt.x:.3f}' + " Y" + f'{point_v.pt.y:.3f}' + " Z" + f'{point_v.pt.z:.3f}' + n_l
                 else:
-                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
+                    gcode += "G1 X" + f'{point_v.pt.x:.3f}' + " Y" + f'{point_v.pt.y:.3f}' + n_l
                 # reverse z-hop after reaching the first point
                 gcode += "G1 F" + str(feedrate_retraction) + "    ;set retraction feedrate" + n_l
-                gcode += "G1" + " Z" + '{:.3f}'.format(point_v.pt.z) + "  ;reverse z-hop" + n_l
+                gcode += "G1" + " Z" + f'{point_v.pt.z:.3f}' + "  ;reverse z-hop" + n_l
                 # reverse retract after reaching the first point
                 gcode += "G1" + " E" + str(retraction_length) + "       ;reverse retraction" + n_l
             else:
                 if prev_point.pt.z != point_v.pt.z:
-                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
-                        point_v.pt.y) + " Z" + '{:.3f}'.format(point_v.pt.z) + n_l
+                    gcode += "G1 X" + f'{point_v.pt.x:.3f}' + " Y" + f'{point_v.pt.y:.3f}' + " Z" + f'{point_v.pt.z:.3f}' + n_l
                 else:
-                    gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(point_v.pt.y) + n_l
+                    gcode += "G1 X" + f'{point_v.pt.x:.3f}' + " Y" + f'{point_v.pt.y:.3f}' + n_l
             # set extrusion feedrate: low for adhesion to bed and normal otherwise
             if point_v.pt.z < min_over_z:
                 gcode += "G1" + " F" + str(feedrate_low) + "    ;set low feedrate" + n_l
@@ -154,18 +155,16 @@ def create_gcode_text(print_organizer, parameters):
             e_val = flowrate * 4 * re_l * layer_height * path_width / (math.pi * (filament_diameter ** 2))
             if point_v.pt.z < min_over_z:
                 e_val *= flow_over
-            gcode += "G1 X" + '{:.3f}'.format(point_v.pt.x) + " Y" + '{:.3f}'.format(
-                point_v.pt.y) + " E" + '{:.3f}'.format(e_val) + n_l
+            gcode += "G1 X" + f'{point_v.pt.x:.3f}' + " Y" + f'{point_v.pt.y:.3f}' + " E" + f'{e_val:.3f}' + n_l
         prev_point = point_v
-        if fan_on is False:
-            if i * layer_height >= fan_start_z:  # 'Fan On:
-                gcode += "M106 S" + str(fan_speed) + "     ;set fan on to set speed" + n_l
-                fan_on = True
+        if fan_on is False and i * layer_height >= fan_start_z:  # 'Fan On:
+            gcode += "M106 S" + str(fan_speed) + "     ;set fan on to set speed" + n_l
+            fan_on = True
 
     # 'retract after last path
     gcode += "G1 F" + str(feedrate_retraction) + "     ;set ret spd" + n_l
     gcode += "G1" + " E-" + str(retraction_length) + "       ;ret fil" + n_l
-    gcode += "G1" + " Z" + '{:.3f}'.format(3 * (prev_point.pt.z + z_hop)) + "  ;ZHop" + n_l
+    gcode += "G1" + " Z" + f'{3 * (prev_point.pt.z + z_hop):.3f}' + "  ;ZHop" + n_l
     gcode += "G1 F" + str(feedrate_travel) + "    ;set ret spd" + n_l
 
     #######################################################################

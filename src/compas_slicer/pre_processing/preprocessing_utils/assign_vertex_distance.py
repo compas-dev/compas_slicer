@@ -1,7 +1,13 @@
 import logging
-from compas_slicer.pre_processing.preprocessing_utils import blend_union_list, stairs_union_list, chamfer_union_list
-from compas_slicer.utilities.utils import remap_unbound
+
 import numpy as np
+
+from compas_slicer.pre_processing.preprocessing_utils.compound_target import (
+    blend_union_list,
+    chamfer_union_list,
+    stairs_union_list,
+)
+from compas_slicer.utilities.utils import remap_unbound
 
 logger = logging.getLogger('logger')
 
@@ -23,7 +29,7 @@ def assign_interpolation_distance_to_mesh_vertices(mesh, weight, target_LOW, tar
     target_HIGH:  :class: 'compas_slicer.pre_processing.CompoundTarget'
         The upper compound target.
     """
-    for i, vkey in enumerate(mesh.vertices()):
+    for _i, vkey in enumerate(mesh.vertices()):
         d = assign_interpolation_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH)
         mesh.vertex[vkey]['scalar_field'] = d
 

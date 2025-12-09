@@ -1,7 +1,6 @@
 import logging
 
-from compas.geometry import Point
-from compas.geometry import distance_point_point
+from compas.geometry import Point, distance_point_point
 
 logger = logging.getLogger('logger')
 
@@ -28,7 +27,7 @@ def seams_align(slicer, align_with="next_path"):
     None
     """
     #  TODO: Implement random seams
-    logger.info("Aligning seams to: %s" % align_with)
+    logger.info(f"Aligning seams to: {align_with}")
 
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):

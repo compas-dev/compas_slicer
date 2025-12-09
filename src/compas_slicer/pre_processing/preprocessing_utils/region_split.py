@@ -1,16 +1,20 @@
-import os
-import logging
-import numpy as np
 import copy
-import compas
-import compas_slicer.utilities as utils
-from compas_slicer.pre_processing.preprocessing_utils import restore_mesh_attributes, save_vertex_attributes
+import logging
+import os
+
+import numpy as np
 from compas.datastructures import Mesh
-from compas_slicer.pre_processing.preprocessing_utils import assign_interpolation_distance_to_mesh_vertex
-from compas_slicer.slicers.slice_utilities import ScalarFieldContours
-from compas_slicer.pre_processing.preprocessing_utils import assign_interpolation_distance_to_mesh_vertices
-from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
 from compas.geometry import Line, distance_point_point_sqrd, project_point_line
+
+import compas_slicer.utilities as utils
+from compas_slicer.pre_processing.preprocessing_utils.assign_vertex_distance import (
+    assign_interpolation_distance_to_mesh_vertex,
+    assign_interpolation_distance_to_mesh_vertices,
+)
+from compas_slicer.pre_processing.preprocessing_utils.mesh_attributes_handling import (
+    restore_mesh_attributes,
+    save_vertex_attributes,
+)
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
@@ -58,6 +62,9 @@ class MeshSplitter:
 
         assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=0.5, target_LOW=self.target_LOW,
                                                        target_HIGH=self.target_HIGH)
+        # Late import to avoid circular dependency
+        from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
+
         g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH)
         g_evaluation.find_critical_points()  # First estimation of saddle points with weight = 0.5
         self.saddles = g_evaluation.saddles
@@ -85,7 +92,7 @@ class MeshSplitter:
         # (1) first rough estimation of split params
         split_params = self.identify_positions_to_split(self.saddles)
         # TODO: merge params that are too close together to avoid creation of very thin neighborhoods.
-        logger.info("%d Split params. First rough estimation :  " % len(split_params) + str(split_params))
+        logger.info(f"{len(split_params)} Split params. First rough estimation :  {split_params}")
 
         # split mesh at params
         logger.info('Splitting mesh at split params')
@@ -93,13 +100,16 @@ class MeshSplitter:
 
         for i, param_first_estimation in enumerate(split_params):
             print('')
-            logger.info('cut_index : %d, param_first_estimation : %.6f' % (current_cut_index, param_first_estimation))
+            logger.info(f'cut_index : {current_cut_index}, param_first_estimation : {param_first_estimation:.6f}')
 
             # --- (1) More exact estimation of intersecting weight. Recompute gradient evaluation.
             # Find exact saddle point and the weight that intersects it.
 
             assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=param_first_estimation,
                                                            target_LOW=self.target_LOW, target_HIGH=self.target_HIGH)
+            # Late import to avoid circular dependency
+            from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
+
             g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH)
             g_evaluation.find_critical_points()
             saddles_ds_tupples = [(vkey, abs(g_evaluation.mesh.vertex_attribute(vkey, 'scalar_field'))) for vkey in
@@ -107,10 +117,13 @@ class MeshSplitter:
             saddles_ds_tupples = sorted(saddles_ds_tupples, key=lambda saddle_tupple: saddle_tupple[1])
             vkey = saddles_ds_tupples[0][0]
             t = self.identify_positions_to_split([vkey])[0]
-            logger.info('vkey_exact : %d , t_exact : %.6f' % (vkey, t))
+            logger.info(f'vkey_exact : {vkey} , t_exact : {t:.6f}')
 
             # --- (2) find zero-crossing points
             assign_interpolation_distance_to_mesh_vertices(self.mesh, t, self.target_LOW, self.target_HIGH)
+            # Late import to avoid circular dependency
+            from compas_slicer.slicers.slice_utilities import ScalarFieldContours
+
             zero_contours = ScalarFieldContours(self.mesh)
             zero_contours.compute()
             keys_of_clusters_to_keep = merge_clusters_saddle_point(zero_contours, saddle_vkeys=[vkey])
@@ -124,7 +137,7 @@ class MeshSplitter:
 
                 # save to json intermediary results
                 zero_contours.save_point_clusters_as_polylines_to_json(self.OUTPUT_PATH,
-                                                                       'point_clusters_polylines_%d.json' % int(i))
+                                                                       f'point_clusters_polylines_{int(i)}.json')
 
                 #  --- (4) Create cut
                 logger.info("Creating cut on mesh")
@@ -247,7 +260,7 @@ class MeshSplitter:
             next_d = assign_interpolation_distance_to_mesh_vertex(vkey, weight_list[i + 1], self.target_LOW, self.target_HIGH)
             if abs(current_d) < abs(next_d) and current_d < threshold:
                 return weight
-        raise ValueError('Could NOT find param for saddle vkey %d!' % vkey)
+        raise ValueError(f'Could NOT find param for saddle vkey {vkey}!')
 
 
 ###############################################

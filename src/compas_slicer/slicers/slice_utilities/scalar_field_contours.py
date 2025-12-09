@@ -1,5 +1,6 @@
-from compas_slicer.slicers.slice_utilities import ContoursBase
 from compas.geometry import Vector, add_vectors, scale_vector
+
+from compas_slicer.slicers.slice_utilities import ContoursBase
 
 __all__ = ['ScalarFieldContours']
 
@@ -20,10 +21,7 @@ class ScalarFieldContours(ContoursBase):
         """ Returns True if the edge u,v has a zero-crossing, False otherwise. """
         d1 = self.mesh.vertex[u]['scalar_field']
         d2 = self.mesh.vertex[v]['scalar_field']
-        if (d1 > 0 and d2 > 0) or (d1 < 0 and d2 < 0):
-            return False
-        else:
-            return True
+        return not (d1 > 0 and d2 > 0 or d1 < 0 and d2 < 0)
 
     def find_zero_crossing_data(self, u, v):
         """ Finds the position of the zero-crossing on the edge u,v. """

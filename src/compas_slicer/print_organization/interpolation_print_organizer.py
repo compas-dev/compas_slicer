@@ -1,12 +1,23 @@
-from compas_slicer.print_organization import BasePrintOrganizer
-from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
-from compas_slicer.print_organization.curved_print_organization import BaseBoundary
-import compas_slicer
-from compas.geometry import closest_point_on_polyline, distance_point_point, Polyline, Vector, Point, subtract_vectors, dot_vectors, scale_vector
 import logging
-from compas_slicer.geometry import Path, PrintPoint
+
+from compas.geometry import (
+    Point,
+    Polyline,
+    Vector,
+    closest_point_on_polyline,
+    distance_point_point,
+    dot_vectors,
+    scale_vector,
+    subtract_vectors,
+)
+
+import compas_slicer
 import compas_slicer.utilities as utils
+from compas_slicer.geometry import Path, PrintPoint
 from compas_slicer.parameters import get_param
+from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
+from compas_slicer.print_organization import BasePrintOrganizer
+from compas_slicer.print_organization.curved_print_organization import BaseBoundary
 
 logger = logging.getLogger('logger')
 
@@ -57,7 +68,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         self.base_boundaries = self.create_base_boundaries()
 
     def __repr__(self):
-        return "<InterpolationPrintOrganizer with %i vertical_layers>" % len(self.vertical_layers)
+        return f"<InterpolationPrintOrganizer with {len(self.vertical_layers)} vertical_layers>"
 
     def topological_sorting(self):
         """ When the print consists of various paths, this function initializes a class that creates
@@ -74,7 +85,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
 
         if len(self.vertical_layers) > 1:
-            for i, vertical_layer in enumerate(self.vertical_layers):
+            for i, _vertical_layer in enumerate(self.vertical_layers):
                 parents_of_current_node = self.topo_sort_graph.get_parents_of_node(i)
                 if len(parents_of_current_node) == 0:
                     boundary = root_boundary
@@ -107,7 +118,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         if len(self.horizontal_layers) > 0:  # first add horizontal brim layers
             paths = self.horizontal_layers[0].paths
             for j, path in enumerate(paths):
-                self.printpoints_dict['layer_0']['path_%d' % j] = \
+                self.printpoints_dict['layer_0'][f'path_{j}'] = \
                     [PrintPoint(pt=point, layer_height=get_param(self.parameters, 'avg_layer_height', 'layers'),
                                 mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh))
                      for k, point in enumerate(path.points)]
@@ -126,9 +137,9 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             self.selected_order = [0]  # there is only one segment, only this option
 
         # (3) --- Then create the printpoints of all the vertical layers in the selected order
-        for index, i in enumerate(self.selected_order):
+        for _index, i in enumerate(self.selected_order):
             layer = self.vertical_layers[i]
-            self.printpoints_dict['layer_%d' % current_layer_index] = self.get_layer_ppts(layer, self.base_boundaries[i])
+            self.printpoints_dict[f'layer_{current_layer_index}'] = self.get_layer_ppts(layer, self.base_boundaries[i])
             current_layer_index += 1
 
     def get_layer_ppts(self, layer, base_boundary):
@@ -146,7 +157,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
 
         layer_ppts = {}
         for i, path in enumerate(layer.paths):
-            layer_ppts['path_%d' % i] = []
+            layer_ppts[f'path_{i}'] = []
 
             for k, p in enumerate(path.points):
                 cp = closest_point_on_polyline(p, Polyline(crv_to_check.points))
@@ -163,7 +174,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
                     ppt.up_vector = Vector(*scale_vector(ppt.up_vector, -1))
                 ppt.frame = ppt.get_frame()
 
-                layer_ppts['path_%d' % i].append(ppt)
+                layer_ppts[f'path_{i}'].append(ppt)
                 count += 1
 
             crv_to_check = path

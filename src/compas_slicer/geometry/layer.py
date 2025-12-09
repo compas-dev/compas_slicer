@@ -6,10 +6,11 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 import compas_slicer.utilities.utils as utils
-from compas_slicer.geometry import Path
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
+
+    from compas_slicer.geometry import Path
 
 logger = logging.getLogger("logger")
 

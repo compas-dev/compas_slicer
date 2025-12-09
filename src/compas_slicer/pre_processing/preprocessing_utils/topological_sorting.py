@@ -1,11 +1,12 @@
+import copy
+import logging
+from abc import abstractmethod
+
 import networkx as nx
 from compas.geometry import distance_point_point, distance_point_point_sqrd
+
 import compas_slicer.utilities as utils
-import logging
-import copy
-from compas_slicer.pre_processing.preprocessing_utils import get_existing_cut_indices, \
-    get_existing_boundary_indices
-from abc import abstractmethod
+from compas_slicer.pre_processing.preprocessing_utils import get_existing_boundary_indices, get_existing_cut_indices
 
 logger = logging.getLogger('logger')
 
@@ -50,7 +51,7 @@ class DirectedGraph:
         self.all_orders = []
 
     def __repr__(self):
-        return "<DirectedGraph with %i nodes>" % len(list(self.G.nodes()))
+        return f"<DirectedGraph with {len(list(self.G.nodes()))} nodes>"
 
     # ------------------------------------ Methods to be implemented by inheriting classes
     @abstractmethod
@@ -93,7 +94,7 @@ class DirectedGraph:
 
     def check_that_all_nodes_found_their_connectivity(self):
         """ Assert that there is no island, i.e. no node or groups of nodes that are not connected to the base. """
-        good_nodes = [r for r in self.root_indices]
+        good_nodes = list(self.root_indices)
         for children_list in self.adj_list:
             [good_nodes.append(child) for child in children_list if child not in good_nodes]
         assert len(good_nodes) == self.N, 'There are floating vertical_layers_print_data on directed graph. Investigate the process of \
@@ -136,7 +137,7 @@ class DirectedGraph:
         discovered = [False] * self.N
         path = []  # list to store the topological order
         self.get_orders(path, discovered)
-        logger.info('Found %d possible orders' % len(self.all_orders))
+        logger.info(f'Found {len(self.all_orders)} possible orders')
         return self.all_orders
 
     def get_orders(self, path, discovered):
@@ -194,20 +195,18 @@ class MeshDirectedGraph(DirectedGraph):
         """ Roots are vertical_layers_print_data that lie on the build platform. Like that they can be print first. """
         roots = []
         for i, mesh in enumerate(self.all_meshes):
-            for vkey, data in mesh.vertices(data=True):
-                if i not in roots:
-                    if data['boundary'] == 1:
-                        roots.append(i)
+            for _vkey, data in mesh.vertices(data=True):
+                if i not in roots and data['boundary'] == 1:
+                    roots.append(i)
         return roots
 
     def find_ends(self):
         """ Ends are vertical_layers_print_data that belong to exclusively one segment. Like that they can be print last. """
         ends = []
         for i, mesh in enumerate(self.all_meshes):
-            for vkey, data in mesh.vertices(data=True):
-                if i not in ends:
-                    if data['boundary'] == 2:
-                        ends.append(i)
+            for _vkey, data in mesh.vertices(data=True):
+                if i not in ends and data['boundary'] == 2:
+                    ends.append(i)
         return ends
 
     def create_graph_nodes(self):
@@ -237,15 +236,15 @@ class MeshDirectedGraph(DirectedGraph):
 
             if key != root and len(common_cuts) > 0 \
                     and (key, root) not in self.G.edges() \
-                    and (root, key) not in self.G.edges():
-
-                if is_true_mesh_adjacency(self.all_meshes, key, root):
-                    if not len(common_cuts) == 1:  # if all cuts worked, this should be 1. But life is not perfect.
-                        logger.error('More than one common cuts between two pieces in the following split \
-                        meshes. ' 'Root : %d, child : %d' % (root, key) + ' . Common cuts : ' + str(common_cuts) +
-                                     'Probably some cut did not separate components')
-                    children.append(key)
-                    cut_ids.append(common_cuts)
+                    and (root, key) not in self.G.edges() and is_true_mesh_adjacency(self.all_meshes, key, root):
+                if len(common_cuts) != 1:  # if all cuts worked, this should be 1. But life is not perfect.
+                    logger.error(
+                        f'More than one common cuts between two pieces in the following split meshes. '
+                        f'Root : {root}, child : {key} . Common cuts : {common_cuts}'
+                        'Probably some cut did not separate components'
+                    )
+                children.append(key)
+                cut_ids.append(common_cuts)
 
         # --- debugging output
         # self.all_meshes[root].to_obj(self.OUTPUT_PATH + '/root.obj')
@@ -299,7 +298,7 @@ class SegmentsDirectedGraph(DirectedGraph):
 
     def create_graph_nodes(self):
         """ Add each segment to to the graph as a node. """
-        for i, segment in enumerate(self.segments):
+        for i, _segment in enumerate(self.segments):
             self.G.add_node(i)
 
     def get_children_of_node(self, root):

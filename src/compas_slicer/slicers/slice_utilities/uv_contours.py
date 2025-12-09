@@ -1,5 +1,6 @@
+from compas.geometry import add_vectors, distance_point_point_xy, intersection_line_line_xy, scale_vector
+
 from compas_slicer.slicers.slice_utilities import ContoursBase
-from compas.geometry import intersection_line_line_xy, distance_point_point_xy, scale_vector, add_vectors
 
 
 class UVContours(ContoursBase):
@@ -14,11 +15,7 @@ class UVContours(ContoursBase):
     def edge_is_intersected(self, v1, v2):
         """ Returns True if the edge v1,v2 intersects the line in the uv domain, False otherwise. """
         p = intersection_line_line_xy((self.p1, self.p2), (self.uv(v1), self.uv(v2)))
-        if p:
-            if is_point_on_line_xy(p, (self.uv(v1), self.uv(v2))):
-                if is_point_on_line_xy(p, (self.p1, self.p2)):
-                    return True
-        return False
+        return bool(p and is_point_on_line_xy(p, (self.uv(v1), self.uv(v2))) and is_point_on_line_xy(p, (self.p1, self.p2)))
 
     def find_zero_crossing_data(self, v1, v2):
         """ Finds the position of the zero-crossing on the edge u,v. """
@@ -51,10 +48,7 @@ def is_point_on_line_xy(c, line, epsilon=1e-6):
         return False
 
     squared_length_ba = (b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1])
-    if dot_product > squared_length_ba:
-        return False
-
-    return True
+    return not dot_product > squared_length_ba
 
 
 if __name__ == "__main__":

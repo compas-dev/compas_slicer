@@ -1,12 +1,12 @@
-import os
 import json
+import os
+
+import Rhino.Geometry as rg
 import rhinoscriptsyntax as rs
 from compas.datastructures import Mesh
-import Rhino.Geometry as rg
-from compas_ghpython.artists import MeshArtist
 from compas.geometry import Frame
+from compas_ghpython.artists import MeshArtist
 from compas_ghpython.utilities import list_to_ghtree
-
 
 #######################################
 # --- Slicer
@@ -59,7 +59,7 @@ def load_slicer(path, folder_name, json_name):
         else:
             print('No layers have been saved in the json file. Is this the correct json?')
 
-    print('The slicer contains %d layers. ' % len(paths_nested_list))
+    print(f'The slicer contains {len(paths_nested_list)} layers. ')
     paths_nested_list = list_to_ghtree(paths_nested_list)
     return mesh, paths_nested_list, are_closed, all_points
 
@@ -459,7 +459,7 @@ def load_json_file(path, folder_name, json_name, in_output_folder=True):
     data = None
 
     if os.path.isfile(filename):
-        with open(filename, 'r') as f:
+        with open(filename) as f:
             data = json.load(f)
         print("Loaded Json: '" + filename + "'")
     else:
@@ -496,7 +496,7 @@ def get_files_with_name(startswith, endswith, DATA_PATH):
     for file in os.listdir(DATA_PATH):
         if file.startswith(startswith) and file.endswith(endswith):
             files.append(file)
-    print('Found %d files with the given criteria : ' % len(files) + str(files))
+    print(f'Found {len(files)} files with the given criteria : {files}')
     return files
 
 

@@ -1,11 +1,15 @@
-import numpy as np
-from compas_slicer.slicers import BaseSlicer
 import logging
+
+import numpy as np
 import progressbar
-from compas_slicer.parameters import get_param
-from compas_slicer.pre_processing import assign_interpolation_distance_to_mesh_vertices
-from compas_slicer.slicers.slice_utilities import ScalarFieldContours
+
 from compas_slicer.geometry import VerticalLayersManager
+from compas_slicer.parameters import get_param
+from compas_slicer.pre_processing.preprocessing_utils.assign_vertex_distance import (
+    assign_interpolation_distance_to_mesh_vertices,
+)
+from compas_slicer.slicers import BaseSlicer
+from compas_slicer.slicers.slice_utilities import ScalarFieldContours
 
 logger = logging.getLogger('logger')
 
@@ -44,7 +48,7 @@ class InterpolationSlicer(BaseSlicer):
         avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='layers')
         n = find_no_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH, avg_layer_height)
         params_list = get_interpolation_parameters_list(n)
-        logger.info('%d paths will be generated' % n)
+        logger.info(f'{n} paths will be generated')
 
         vertical_layers_manager = VerticalLayersManager(avg_layer_height)
 

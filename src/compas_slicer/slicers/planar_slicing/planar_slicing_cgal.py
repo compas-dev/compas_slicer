@@ -1,11 +1,12 @@
 import itertools
-from compas.geometry import Point
-from compas_slicer.geometry import Layer
-from compas_slicer.geometry import Path
-import progressbar
 import logging
-import compas_slicer.utilities as utils
+
+import progressbar
+from compas.geometry import Point
 from compas.plugins import PluginNotInstalledError
+
+import compas_slicer.utilities as utils
+from compas_slicer.geometry import Layer, Path
 
 logger = logging.getLogger('logger')
 

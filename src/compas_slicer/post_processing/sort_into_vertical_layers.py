@@ -1,5 +1,6 @@
-from compas_slicer.geometry import VerticalLayersManager
 import logging
+
+from compas_slicer.geometry import VerticalLayersManager
 
 logger = logging.getLogger('logger')
 
@@ -33,7 +34,7 @@ def sort_into_vertical_layers(slicer, dist_threshold=25.0, max_paths_per_layer=N
             vertical_layers_manager.add(path)
 
     slicer.layers = vertical_layers_manager.layers
-    logger.info("Number of vertical_layers: %d" % len(slicer.layers))
+    logger.info(f"Number of vertical_layers: {len(slicer.layers)}")
 
 
 if __name__ == "__main__":

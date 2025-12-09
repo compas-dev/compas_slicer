@@ -1,15 +1,20 @@
-from compas_slicer.pre_processing import CompoundTarget
-from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
 import logging
 import os
+
 from compas.datastructures import Mesh
-from compas_slicer.pre_processing.preprocessing_utils import region_split as rs, \
-    topological_sorting as topo_sort
-from compas_slicer.pre_processing import get_existing_cut_indices, get_vertices_that_belong_to_cuts, \
-    replace_mesh_vertex_attribute
+
 import compas_slicer.utilities as utils
 from compas_slicer.parameters import get_param
+from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
 from compas_slicer.pre_processing.preprocessing_utils import assign_interpolation_distance_to_mesh_vertices
+from compas_slicer.pre_processing.preprocessing_utils import region_split as rs
+from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
+from compas_slicer.pre_processing.preprocessing_utils.compound_target import CompoundTarget
+from compas_slicer.pre_processing.preprocessing_utils.mesh_attributes_handling import (
+    get_existing_cut_indices,
+    get_vertices_that_belong_to_cuts,
+    replace_mesh_vertex_attribute,
+)
 
 logger = logging.getLogger('logger')
 
@@ -168,7 +173,7 @@ class InterpolationSlicingPreprocessor:
             self.split_meshes = rs.separate_disconnected_components(self.mesh, attr='cut',
                                                                     values=region_split_cut_indices,
                                                                     OUTPUT_PATH=self.OUTPUT_PATH)
-            logger.info('Created %d split meshes.' % len(self.split_meshes))
+            logger.info(f'Created {len(self.split_meshes)} split meshes.')
 
         if topological_sorting:  # (3)
             print("")
@@ -189,8 +194,8 @@ class InterpolationSlicingPreprocessor:
             for i, m in enumerate(self.split_meshes):
                 m.to_obj(os.path.join(self.OUTPUT_PATH, 'split_mesh_' + str(i) + '.obj'))
                 m.to_json(os.path.join(self.OUTPUT_PATH, 'split_mesh_' + str(i) + '.json'))
-            logger.info('Saving to Obj and Json: ' + os.path.join(self.OUTPUT_PATH, 'split_mesh_%.obj'))
-            logger.info("Saved %d split_meshes" % len(self.split_meshes))
+            logger.info(f'Saving to Obj and Json: {os.path.join(self.OUTPUT_PATH, "split_mesh_%.obj")}')
+            logger.info(f"Saved {len(self.split_meshes)} split_meshes")
             print('')
 
     def cleanup_mesh_attributes_based_on_selected_order(self, selected_order, graph):
@@ -220,9 +225,9 @@ class InterpolationSlicingPreprocessor:
             pts_boundary_LOW = utils.get_mesh_vertex_coords_with_attribute(mesh, 'boundary', 1)
             pts_boundary_HIGH = utils.get_mesh_vertex_coords_with_attribute(mesh, 'boundary', 2)
             utils.save_to_json(utils.point_list_to_dict(pts_boundary_LOW), self.OUTPUT_PATH,
-                               'pts_boundary_LOW_%d.json' % index)
+                               f'pts_boundary_LOW_{index}.json')
             utils.save_to_json(utils.point_list_to_dict(pts_boundary_HIGH), self.OUTPUT_PATH,
-                               'pts_boundary_HIGH_%d.json' % index)
+                               f'pts_boundary_HIGH_{index}.json')
 
 
 # ---- utils

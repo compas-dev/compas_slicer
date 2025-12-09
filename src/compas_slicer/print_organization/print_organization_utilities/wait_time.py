@@ -1,7 +1,9 @@
 import logging
-from compas_slicer.utilities import find_next_printpoint
 import math
+
 from compas.geometry import Vector, normalize_vector
+
+from compas_slicer.utilities import find_next_printpoint
 
 logger = logging.getLogger('logger')
 
@@ -24,7 +26,7 @@ def set_wait_time_on_sharp_corners(print_organizer, threshold=0.5 * math.pi, wai
     """
     number_of_wait_points = 0
     for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
-        neighbors = print_organizer.get_printpoint_neighboring_items('layer_%d' % i, 'path_%d' % j, k)
+        neighbors = print_organizer.get_printpoint_neighboring_items(f'layer_{i}', f'path_{j}', k)
         prev_ppt = neighbors[0]
         next_ppt = neighbors[1]
 
@@ -37,7 +39,7 @@ def set_wait_time_on_sharp_corners(print_organizer, threshold=0.5 * math.pi, wai
                 printpoint.wait_time = wait_time
                 printpoint.blend_radius = 0.0  # 0.0 blend radius for points where the robot will wait
                 number_of_wait_points += 1
-    logger.info('Added wait times for %d points' % number_of_wait_points)
+    logger.info(f'Added wait times for {number_of_wait_points} points')
 
 
 def set_wait_time_based_on_extruder_toggle(print_organizer, wait_type, wait_time=0.3):
@@ -91,7 +93,7 @@ def set_wait_time_based_on_extruder_toggle(print_organizer, wait_type, wait_time
             else:
                 logger.error('Unknown wait type : ' + str(wait_type))
 
-        logger.info('Added wait times for %d points' % number_of_wait_points)
+        logger.info(f'Added wait times for {number_of_wait_points} points')
 
 
 def override_wait_time(print_organizer, override_value):

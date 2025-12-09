@@ -1,10 +1,12 @@
-import rdp as rdp
-import numpy as np
 import logging
+
+import numpy as np
 import progressbar
+import rdp as rdp
 from compas.geometry import Point
-import compas_slicer.utilities as utils
 from compas.plugins import PluginNotInstalledError
+
+import compas_slicer.utilities as utils
 
 packages = utils.TerminalCommand('conda list').get_split_output_strings()
 if 'igl' in packages:
@@ -40,7 +42,7 @@ def simplify_paths_rdp(slicer, threshold):
                     path.points = [Point(pt[0], pt[1], pt[2]) for pt in pts_rdp]
                     remaining_pts_num += len(path.points)
                     bar.update(i)
-        logger.info('%d Points remaining after rdp simplification' % remaining_pts_num)
+        logger.info(f'{remaining_pts_num} Points remaining after rdp simplification')
 
 
 def simplify_paths_rdp_igl(slicer, threshold):
@@ -59,14 +61,14 @@ def simplify_paths_rdp_igl(slicer, threshold):
         logger.info("Paths simplification rdp - igl")
         remaining_pts_num = 0
 
-        for i, layer in enumerate(slicer.layers):
+        for _i, layer in enumerate(slicer.layers):
             if not layer.is_raft:  # no simplification necessary for raft layer
                 for path in layer.paths:
                     pts = np.array([[pt[0], pt[1], pt[2]] for pt in path.points])
                     S, J, Q = igl.ramer_douglas_peucker(pts, threshold)
                     path.points = [Point(pt[0], pt[1], pt[2]) for pt in S]
                     remaining_pts_num += len(path.points)
-        logger.info('%d Points remaining after rdp simplification' % remaining_pts_num)
+        logger.info(f'{remaining_pts_num} Points remaining after rdp simplification')
 
     except PluginNotInstalledError:
         logger.info("Libigl is not installed. Falling back to python rdp function")

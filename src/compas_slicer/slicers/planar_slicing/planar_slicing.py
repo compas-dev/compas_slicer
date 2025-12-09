@@ -1,8 +1,9 @@
-from compas_slicer.geometry import Path
-from compas_slicer.geometry import Layer
 import logging
+
 import progressbar
 from compas.geometry import intersection_segment_plane
+
+from compas_slicer.geometry import Layer, Path
 from compas_slicer.slicers.slice_utilities import ContoursBase
 
 logger = logging.getLogger('logger')

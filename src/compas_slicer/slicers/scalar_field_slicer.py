@@ -1,10 +1,12 @@
-import numpy as np
-from compas_slicer.slicers import BaseSlicer
 import logging
-from compas_slicer.slicers.slice_utilities import ScalarFieldContours
+
+import numpy as np
 import progressbar
+
 from compas_slicer.geometry import VerticalLayersManager
 from compas_slicer.parameters import get_param
+from compas_slicer.slicers import BaseSlicer
+from compas_slicer.slicers.slice_utilities import ScalarFieldContours
 
 logger = logging.getLogger('logger')
 

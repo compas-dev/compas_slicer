@@ -1,5 +1,5 @@
-import logging
 import itertools
+import logging
 
 from compas.geometry import Point, distance_point_point
 
@@ -30,7 +30,7 @@ def reorder_vertical_layers(slicer, align_with):
     else:
         raise NameError("Unknown align_with : " + str(align_with))
 
-    logger.info("Re-ordering vertical layers to start with the vertical layer closest to: %s" % align_with)
+    logger.info(f"Re-ordering vertical layers to start with the vertical layer closest to: {align_with}")
 
     for layer in slicer.layers:
         assert layer.min_max_z_height[0] is not None and layer.min_max_z_height[1] is not None, \

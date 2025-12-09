@@ -1,8 +1,10 @@
-from compas.geometry import Vector
-from compas_slicer.print_organization.print_organization_utilities.extruder_toggle import check_assigned_extruder_toggle
-from compas_slicer.utilities import find_next_printpoint
 import copy
 import logging
+
+from compas.geometry import Vector
+
+from compas_slicer.print_organization.print_organization_utilities.extruder_toggle import check_assigned_extruder_toggle
+from compas_slicer.utilities import find_next_printpoint
 
 logger = logging.getLogger('logger')
 
@@ -44,9 +46,8 @@ def add_safety_printpoints(print_organizer, z_hop=10.0):
 
                     #  safety ppt before next printpoint (if there exists one)
                     next_ppt = find_next_printpoint(pp_dict, i, j, k)
-                    if next_ppt:
-                        if next_ppt.extruder_toggle is True:  # if it is a printing ppt
-                            pp_copy_dict[layer_key][path_key].append(create_safety_printpoint(next_ppt, z_hop, False))
+                    if next_ppt and next_ppt.extruder_toggle is True:  # if it is a printing ppt
+                        pp_copy_dict[layer_key][path_key].append(create_safety_printpoint(next_ppt, z_hop, False))
 
     #  finally, insert a safety print point at the beginning of the entire print
     try:

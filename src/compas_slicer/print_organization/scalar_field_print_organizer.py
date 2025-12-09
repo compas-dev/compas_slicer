@@ -1,13 +1,15 @@
+import logging
+
+import progressbar
 from compas.geometry import Vector, normalize_vector
-from compas_slicer.print_organization import BasePrintOrganizer
+
+import compas_slicer
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintPoint
-import progressbar
-import logging
-from compas_slicer.pre_processing import GradientEvaluation
-from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
 from compas_slicer.parameters import get_param
-import compas_slicer
+from compas_slicer.pre_processing import GradientEvaluation
+from compas_slicer.print_organization import BasePrintOrganizer
+from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
 
 logger = logging.getLogger('logger')
 
@@ -43,7 +45,7 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
         self.g_evaluation = self.add_gradient_to_vertices()
 
     def __repr__(self):
-        return "<ScalarFieldPrintOrganizer with %i layers>" % len(self.slicer.layers)
+        return f"<ScalarFieldPrintOrganizer with {len(self.slicer.layers)} layers>"
 
     def create_printpoints(self):
         """ Create the print points of the fabrication process """
@@ -52,10 +54,10 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
         with progressbar.ProgressBar(max_value=self.slicer.number_of_points) as bar:
 
             for i, layer in enumerate(self.slicer.layers):
-                self.printpoints_dict['layer_%d' % i] = {}
+                self.printpoints_dict[f'layer_{i}'] = {}
 
                 for j, path in enumerate(layer.paths):
-                    self.printpoints_dict['layer_%d' % i]['path_%d' % j] = []
+                    self.printpoints_dict[f'layer_{i}'][f'path_{j}'] = []
 
                     for k, point in enumerate(path.points):
                         normal = utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh)
@@ -63,7 +65,7 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
                         h = get_param(self.parameters, 'avg_layer_height', defaults_type='layers')
                         printpoint = PrintPoint(pt=point, layer_height=h, mesh_normal=normal)
 
-                        self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
+                        self.printpoints_dict[f'layer_{i}'][f'path_{j}'].append(printpoint)
                         bar.update(count)
                         count += 1
 
@@ -72,9 +74,9 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
 
         # add non-planar print data to printpoints
         for i, layer in enumerate(self.slicer.layers):
-            layer_key = 'layer_%d' % i
-            for j, path in enumerate(layer.paths):
-                path_key = 'path_%d' % j
+            layer_key = f'layer_{i}'
+            for j, _path in enumerate(layer.paths):
+                path_key = f'path_{j}'
                 for pp in self.printpoints_dict[layer_key][path_key]:
                     grad_norm = pp.attributes['gradient_norm']
                     grad = pp.attributes['gradient']
@@ -93,7 +95,7 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
 
         self.slicer.mesh.update_default_vertex_attributes({'gradient': 0.0})
         self.slicer.mesh.update_default_vertex_attributes({'gradient_norm': 0.0})
-        for i, (v_key, data) in enumerate(self.slicer.mesh.vertices(data=True)):
+        for i, (_v_key, data) in enumerate(self.slicer.mesh.vertices(data=True)):
             data['gradient'] = g_evaluation.vertex_gradient[i]
             data['gradient_norm'] = g_evaluation.vertex_gradient_norm[i]
         return g_evaluation

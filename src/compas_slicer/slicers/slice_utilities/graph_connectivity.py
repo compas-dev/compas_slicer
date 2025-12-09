@@ -103,7 +103,7 @@ def sort_graph_connected_components(G):
 
     current_index = 0
 
-    for j, cp in enumerate(nx.connected_components(G)):
+    for _j, cp in enumerate(nx.connected_components(G)):
 
         if len(cp) > 1:  # we need at least 2 elements to have an edge
             sorted_node_indices = []

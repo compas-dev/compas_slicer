@@ -1,16 +1,30 @@
-import numpy as np
-import math
-from compas.datastructures import Mesh
-import compas_slicer.utilities as utils
 import logging
-import networkx as nx
-from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_vkeys
-from compas_slicer.pre_processing.preprocessing_utils.geodesics import get_igl_EXACT_geodesic_distances, \
-    get_custom_HEAT_geodesic_distances
-
+import math
 import statistics
 
+import networkx as nx
+import numpy as np
+from compas.datastructures import Mesh
+
+import compas_slicer.utilities as utils
+from compas_slicer.pre_processing.preprocessing_utils.geodesics import (
+    get_custom_HEAT_geodesic_distances,
+    get_igl_EXACT_geodesic_distances,
+)
+
 logger = logging.getLogger('logger')
+
+
+def _create_graph_from_mesh_vkeys(mesh, v_keys):
+    """Creates a graph with one node for every vertex, and edges between neighboring vertices."""
+    G = nx.Graph()
+    [G.add_node(v) for v in v_keys]
+    for v in v_keys:
+        v_neighbors = mesh.vertex_neighbors(v)
+        for other_v in v_neighbors:
+            if other_v != v and other_v in v_keys:
+                G.add_edge(v, other_v)
+    return G
 
 __all__ = ['CompoundTarget',
            'blend_union_list',
@@ -43,10 +57,12 @@ class CompoundTarget:
         This is not yet implemented
     """
 
-    def __init__(self, mesh, v_attr, value, DATA_PATH, union_method='min', union_params=[],
+    def __init__(self, mesh, v_attr, value, DATA_PATH, union_method='min', union_params=None,
                  geodesics_method='exact_igl', anisotropic_scaling=False):
 
-        logger.info('Creating target with attribute : ' + v_attr + '=%d' % value)
+        if union_params is None:
+            union_params = []
+        logger.info(f'Creating target with attribute : {v_attr}={value}')
         logger.info('union_method : ' + union_method + ', union_params =  ' + str(union_params))
         self.mesh = mesh
         self.v_attr = v_attr
@@ -90,17 +106,20 @@ class CompoundTarget:
         """
         self.all_target_vkeys = [vkey for vkey, data in self.mesh.vertices(data=True) if
                                  data[self.v_attr] == self.value]
-        assert len(self.all_target_vkeys) > 0, "There are no vertices in the mesh with the attribute : " \
-                                               + self.v_attr + ", value : %d" % self.value + " .Probably you made a " \
-                                                                                             "mistake while creating the targets. "
-        G = create_graph_from_mesh_vkeys(self.mesh, self.all_target_vkeys)
+        assert len(self.all_target_vkeys) > 0, (
+            f"There are no vertices in the mesh with the attribute : {self.v_attr}, value : {self.value} ."
+            "Probably you made a mistake while creating the targets. "
+        )
+        G = _create_graph_from_mesh_vkeys(self.mesh, self.all_target_vkeys)
         assert len(list(G.nodes())) == len(self.all_target_vkeys)
         self.number_of_boundaries = len(list(nx.connected_components(G)))
 
-        for i, cp in enumerate(nx.connected_components(G)):
+        for _i, cp in enumerate(nx.connected_components(G)):
             self.clustered_vkeys.append(list(cp))
-        logger.info("Compound target with 'boundary'=%d. Number of connected_components : %d" % (
-            self.value, len(list(nx.connected_components(G)))))
+        logger.info(
+            f"Compound target with 'boundary'={self.value}. Number of connected_components : "
+            f"{len(list(nx.connected_components(G)))}"
+        )
 
     #  --- Geodesic distances
     def compute_geodesic_distances(self):
@@ -229,7 +248,7 @@ class CompoundTarget:
         new_distances_lists = []
 
         logger.info('Laplacian smoothing of all distances')
-        for i, a in enumerate(self._distances_lists):
+        for _i, a in enumerate(self._distances_lists):
             a = np.array(a)  # a: numpy array containing the attribute to be smoothed
             for _ in range(iterations):  # iterative smoothing
                 a_prime = a + strength * L * a
@@ -273,14 +292,14 @@ def blend_union_list(values, r):
 def stairs_union_list(values, r, n):
     """ Returns a stairs union of all the elements in the list, with blend radius r and number of peaks n-1."""
     d_result = 9999999  # very big number
-    for i, d in enumerate(values):
+    for _i, d in enumerate(values):
         d_result = stairs_union(d_result, d, r, n)
     return d_result
 
 
 def chamfer_union_list(values, r):
     d_result = 9999999  # very big number
-    for i, d in enumerate(values):
+    for _i, d in enumerate(values):
         d_result = chamfer_union(d_result, d, r)
     return d_result
 

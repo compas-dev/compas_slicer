@@ -5,8 +5,8 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
-from compas.datastructures import Mesh, mesh_bounding_box
-from compas.geometry import distance_point_point_sqrd
+from compas.datastructures import Mesh
+from compas.geometry import bounding_box, distance_point_point_sqrd
 
 from compas_slicer.geometry import Layer, VerticalLayer
 from compas_slicer.post_processing import seams_align, unify_paths_orientation
@@ -106,9 +106,8 @@ class BaseSlicer:
         """For closed paths, ensures first and last point are identical."""
         for layer in self.layers:
             for path in layer.paths:
-                if path.is_closed:
-                    if distance_point_point_sqrd(path.points[0], path.points[-1]) > 0.00001:
-                        path.points.append(path.points[0])
+                if path.is_closed and distance_point_point_sqrd(path.points[0], path.points[-1]) > 0.00001:
+                    path.points.append(path.points[0])
 
     def remove_invalid_paths_and_layers(self) -> None:
         """Removes invalid layers and paths from the slicer."""
@@ -143,7 +142,8 @@ class BaseSlicer:
             Paths on base and their vertical layer indices.
 
         """
-        bbox = mesh_bounding_box(self.mesh)
+        vertices = list(self.mesh.vertices_attributes('xyz'))
+        bbox = bounding_box(vertices)
         z_min = min(p[2] for p in bbox)
         paths_on_base = []
         vertical_layer_indices = []

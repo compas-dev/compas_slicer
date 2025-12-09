@@ -1,5 +1,4 @@
 import argparse
-import glob
 import os
 import shutil
 from pathlib import Path
@@ -8,7 +7,7 @@ import compas.plugins
 
 try:
     import compas_ghpython
-    import compas_rhino
+    import compas_rhino  # noqa: F401
 
     HAS_RHINO_DEPS = True
 except ImportError:
@@ -43,8 +42,8 @@ def after_rhino_install(installed_packages):
         results.append(
             ("compas_slicer_ghpython", f"Installed {len(userobjects)} GH User Objects on {dstdir}", True)
         )
-    except PermissionError:
-        raise Exception("Please close all instances of Rhino first and then rerun the command")
+    except PermissionError as err:
+        raise Exception("Please close all instances of Rhino first and then rerun the command") from err
 
     return results
 
@@ -71,8 +70,8 @@ def after_rhino_uninstall(installed_packages):
                 os.remove(dst)
 
         results.append(("compas_slicer_ghpython", f"Uninstalled {len(userobjects)} GH User Objects", True))
-    except PermissionError:
-        raise Exception("Please close all instances of Rhino first and then rerun the command")
+    except PermissionError as err:
+        raise Exception("Please close all instances of Rhino first and then rerun the command") from err
 
     return results
 

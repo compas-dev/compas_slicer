@@ -29,8 +29,8 @@ Classes
     PrintPoint
 """
 
-from .path import *  # noqa: F401 F403
 from .layer import *  # noqa: F401 E402 F403
+from .path import *  # noqa: F401 F403
 from .print_point import *  # noqa: F401 E402 F403
 
 __all__ = [name for name in dir() if not name.startswith('_')]

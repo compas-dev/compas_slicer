@@ -1,6 +1,7 @@
 import logging
-from compas.geometry import normalize_vector, subtract_vectors, dot_vectors
 from collections import deque
+
+from compas.geometry import dot_vectors, normalize_vector, subtract_vectors
 
 logger = logging.getLogger('logger')
 

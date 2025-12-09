@@ -1,17 +1,10 @@
 import logging
 import math
 
-import compas_slicer
-from compas_slicer.geometry import Layer
-from compas_slicer.geometry import Path
+from compas.geometry import Line, Point, Vector, bounding_box_xy, intersection_line_line, offset_line, offset_polygon
 
-from compas.geometry import Point
-from compas.geometry import Line
-from compas.geometry import Vector
-from compas.geometry import bounding_box_xy
-from compas.geometry import offset_polygon
-from compas.geometry import intersection_line_line
-from compas.geometry import offset_line
+import compas_slicer
+from compas_slicer.geometry import Layer, Path
 
 logger = logging.getLogger('logger')
 

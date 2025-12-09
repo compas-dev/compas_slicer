@@ -1,10 +1,12 @@
 import logging
-from compas_slicer.print_organization import BasePrintOrganizer
+
+import progressbar
+from compas.geometry import Vector
+
+import compas_slicer
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintPoint
-from compas.geometry import Vector
-import progressbar
-import compas_slicer
+from compas_slicer.print_organization import BasePrintOrganizer
 
 logger = logging.getLogger('logger')
 
@@ -26,7 +28,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
         BasePrintOrganizer.__init__(self, slicer)
 
     def __repr__(self):
-        return "<PlanarPrintOrganizer with %i layers>" % len(self.slicer.layers)
+        return f"<PlanarPrintOrganizer with {len(self.slicer.layers)} layers>"
 
     def create_printpoints(self, generate_mesh_normals=True):
         """Create the print points of the fabrication process
@@ -50,10 +52,10 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                 normals = [Vector(*self.slicer.mesh.face_normal(fkey)) for fkey in closest_fks]
 
             for i, layer in enumerate(self.slicer.layers):
-                self.printpoints_dict['layer_%d' % i] = {}
+                self.printpoints_dict[f'layer_{i}'] = {}
 
                 for j, path in enumerate(layer.paths):
-                    self.printpoints_dict['layer_%d' % i]['path_%d' % j] = []
+                    self.printpoints_dict[f'layer_{i}'][f'path_{j}'] = []
 
                     for k, point in enumerate(path.points):
 
@@ -65,7 +67,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                         else:
                             printpoint.up_vector = self.get_printpoint_up_vector(path, k, n)
 
-                        self.printpoints_dict['layer_%d' % i]['path_%d' % j].append(printpoint)
+                        self.printpoints_dict[f'layer_{i}'][f'path_{j}'].append(printpoint)
                         bar.update(count)
                         count += 1
 

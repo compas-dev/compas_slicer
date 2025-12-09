@@ -1,7 +1,9 @@
 import logging
+
 from compas.geometry import Vector, normalize_vector
-from compas_slicer.geometry import PrintPoint
+
 import compas_slicer.utilities as utils
+from compas_slicer.geometry import PrintPoint
 
 logger = logging.getLogger('logger')
 
@@ -25,7 +27,7 @@ class BaseBoundary:
         self.mesh = mesh
         self.points = points
         self.override_vector = override_vector
-        closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.mesh, [pt for pt in self.points])
+        closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.mesh, list(self.points))
         self.normals = [Vector(*self.mesh.face_normal(fkey)) for fkey in closest_fks]
 
         if self.override_vector:
@@ -41,7 +43,7 @@ class BaseBoundary:
             pp.up_vector = self.up_vectors[i]
 
     def __repr__(self):
-        return "<BaseBoundary object with %i points>" % len(self.points)
+        return f"<BaseBoundary object with {len(self.points)} points>"
 
     def get_up_vectors(self):
         """ Finds the up_vectors of each point of the boundary. A smoothing step is also included. """

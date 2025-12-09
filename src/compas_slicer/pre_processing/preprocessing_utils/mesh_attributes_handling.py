@@ -1,5 +1,6 @@
-import compas_slicer.utilities as utils
 from compas.geometry import Point, distance_point_point_sqrd
+
+import compas_slicer.utilities as utils
 
 __all__ = ['create_mesh_boundary_attributes',
            'get_existing_cut_indices',
@@ -34,10 +35,9 @@ def get_existing_cut_indices(mesh):
         The cut indices (data['cut']>0) that exist on the mesh vertices.
     """
     cut_indices = []
-    for vkey, data in mesh.vertices(data=True):
-        if data['cut'] > 0:
-            if data['cut'] not in cut_indices:
-                cut_indices.append(data['cut'])
+    for _vkey, data in mesh.vertices(data=True):
+        if data['cut'] > 0 and data['cut'] not in cut_indices:
+            cut_indices.append(data['cut'])
     cut_indices = sorted(cut_indices)
     return cut_indices
 
@@ -50,10 +50,9 @@ def get_existing_boundary_indices(mesh):
         The boundary indices (data['boundary']>0) that exist on the mesh vertices.
     """
     indices = []
-    for vkey, data in mesh.vertices(data=True):
-        if data['boundary'] > 0:
-            if data['boundary'] not in indices:
-                indices.append(data['boundary'])
+    for _vkey, data in mesh.vertices(data=True):
+        if data['boundary'] > 0 and data['boundary'] not in indices:
+            indices.append(data['boundary'])
     boundary_indices = sorted(indices)
     return boundary_indices
 
@@ -88,7 +87,7 @@ def save_vertex_attributes(mesh):
     v_attributes_dict = {'boundary_1': [], 'boundary_2': [], 'cut': {}}
 
     cut_indices = []
-    for vkey, data in mesh.vertices(data=True):
+    for _vkey, data in mesh.vertices(data=True):
         cut_index = data['cut']
         if cut_index not in cut_indices:
             cut_indices.append(cut_index)

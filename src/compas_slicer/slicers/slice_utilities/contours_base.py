@@ -1,11 +1,12 @@
 import logging
 from abc import abstractmethod
 
-import compas_slicer.utilities as utils
 from compas.geometry import Point, distance_point_point_sqrd
 from compas.itertools import pairwise
+
+import compas_slicer.utilities as utils
 from compas_slicer.geometry import Path
-from compas_slicer.slicers.slice_utilities import (
+from compas_slicer.slicers.slice_utilities.graph_connectivity import (
     create_graph_from_mesh_edges,
     sort_graph_connected_components,
 )
@@ -76,8 +77,7 @@ class ContoursBase:
         for edge in list(self.mesh.edges()):
             if self.edge_is_intersected(edge[0], edge[1]):
                 point = self.find_zero_crossing_data(edge[0], edge[1])
-                if point:  # Sometimes the result can be None
-                    if edge not in self.intersection_data and tuple(reversed(edge)) not in self.intersection_data:
+                if point and edge not in self.intersection_data and tuple(reversed(edge)) not in self.intersection_data:
                         # create [edge - point] dictionary
                         self.intersection_data[edge] = {}
                         self.intersection_data[edge] = Point(point[0], point[1], point[2])

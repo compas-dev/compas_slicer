@@ -1,7 +1,9 @@
+import logging
+
+from compas.geometry import Plane, Point, Vector
+
 import compas_slicer
 from compas_slicer.slicers import BaseSlicer
-from compas.geometry import Vector, Plane, Point
-import logging
 
 logger = logging.getLogger('logger')
 
@@ -38,8 +40,7 @@ class PlanarSlicer(BaseSlicer):
         self.slice_height_range = slice_height_range
 
     def __repr__(self):
-        return "<PlanarSlicer with %d layers and layer_height : %.2f mm>" % \
-               (len(self.layers), self.layer_height)
+        return f"<PlanarSlicer with {len(self.layers)} layers and layer_height : {self.layer_height:.2f} mm>"
 
     def generate_paths(self):
         """Generates the planar slicing paths."""
@@ -48,7 +49,7 @@ class PlanarSlicer(BaseSlicer):
 
         if self.slice_height_range:
             if min_z <= self.slice_height_range[0] <= max_z and min_z <= self.slice_height_range[1] <= max_z:
-                logger.info("Slicing mesh in range from Z = %d to Z = %d." % (self.slice_height_range[0], self.slice_height_range[1]))
+                logger.info(f"Slicing mesh in range from Z = {self.slice_height_range[0]} to Z = {self.slice_height_range[1]}.")
                 max_z = min_z + self.slice_height_range[1]
                 min_z = min_z + self.slice_height_range[0]
             else:

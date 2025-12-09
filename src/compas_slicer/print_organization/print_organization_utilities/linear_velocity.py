@@ -1,6 +1,8 @@
-from compas.geometry import Vector, dot_vectors
-from compas_slicer.utilities import remap, remap_unbound
 import logging
+
+from compas.geometry import Vector, dot_vectors
+
+from compas_slicer.utilities import remap, remap_unbound
 
 logger = logging.getLogger('logger')
 
@@ -37,7 +39,7 @@ def set_linear_velocity_per_layer(print_organizer, per_layer_velocities):
     logger.info("Setting per-layer linear velocity")
     assert len(per_layer_velocities) == print_organizer.number_of_layers, 'Wrong number of velocity values. You need \
         to provide one velocity value per layer, on the "per_layer_velocities" list.'
-    for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
+    for printpoint, i, _j, _k in print_organizer.printpoints_indices_iterator():
         printpoint.velocity = per_layer_velocities[i]
 
 

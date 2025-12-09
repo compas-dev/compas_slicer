@@ -1,6 +1,8 @@
 import logging
-import compas_slicer
+
 from compas.geometry import Point
+
+import compas_slicer
 from compas_slicer.utilities.utils import pull_pts_to_mesh_faces
 
 logger = logging.getLogger('logger')
@@ -27,7 +29,7 @@ def spiralize_contours(slicer):
         if len(layer.paths) == 1:
             for path in layer.paths:
                 d = slicer.layer_height / (len(path.points) - 1)
-                for i, point in enumerate(path.points):
+                for i, _point in enumerate(path.points):
                     # add the distance to move to the z value and create new points
                     path.points[i][2] += d * i
 
@@ -39,8 +41,10 @@ def spiralize_contours(slicer):
                 path.points.pop(len(path.points) - 1)
 
         else:
-            logger.warning("Spiralize contours only works for layers consisting out of a single path, contours were "
-                           "not changed, spiralize contour skipped for layer %d" % j)
+            logger.warning(
+                "Spiralize contours only works for layers consisting out of a single path, contours were "
+                f"not changed, spiralize contour skipped for layer {j}"
+            )
 
 
 if __name__ == "__main__":

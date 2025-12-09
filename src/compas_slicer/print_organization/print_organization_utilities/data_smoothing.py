@@ -39,7 +39,7 @@ def smooth_printpoint_attribute(print_organizer, iterations, strength, get_attr_
     new_values = deepcopy(attrs)
 
     for iteration in range(iterations):
-        for i, ppt in enumerate(print_organizer.printpoints_iterator()):
+        for i, _ppt in enumerate(print_organizer.printpoints_iterator()):
             if 0 < i < len(attrs) - 1:  # ignore first and last element
                 mid = (attrs[i - 1] + attrs[i + 1]) * 0.5
                 new_values[i] = mid * strength + attrs[i] * (1 - strength)

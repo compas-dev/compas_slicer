@@ -1,7 +1,7 @@
 # from compas_slicer.geometry import VerticalLayersManager
 import logging
-from compas.geometry import Point
-from compas.geometry import distance_point_point
+
+from compas.geometry import Point, distance_point_point
 
 logger = logging.getLogger('logger')
 

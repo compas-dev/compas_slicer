@@ -1,5 +1,6 @@
-from compas.geometry import norm_vector, Vector
 import logging
+
+from compas.geometry import Vector, norm_vector
 
 logger = logging.getLogger('logger')
 
@@ -24,8 +25,8 @@ def set_blend_radius(print_organizer, d_fillet=10, buffer=0.3):
     extruder_state = 0
 
     for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
-        layer_key = 'layer_%d' % i
-        path_key = 'path_%d' % j
+        layer_key = f'layer_{i}'
+        path_key = f'path_{j}'
         neighboring_items = print_organizer.get_printpoint_neighboring_items(layer_key, path_key, k)
 
         if not printpoint.wait_time:

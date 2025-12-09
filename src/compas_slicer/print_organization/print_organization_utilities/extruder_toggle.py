@@ -1,5 +1,6 @@
-import compas_slicer
 import logging
+
+import compas_slicer
 
 logger = logging.getLogger('logger')
 
@@ -22,12 +23,12 @@ def set_extruder_toggle(print_organizer, slicer):
     pp_dict = print_organizer.printpoints_dict
 
     for i, layer in enumerate(slicer.layers):
-        layer_key = 'layer_%d' % i
+        layer_key = f'layer_{i}'
         is_vertical_layer = isinstance(layer, compas_slicer.geometry.VerticalLayer)
         is_brim_layer = layer.is_brim
 
         for j, path in enumerate(layer.paths):
-            path_key = 'path_%d' % j
+            path_key = f'path_{j}'
             is_closed_path = path.is_closed
 
             # --- decide if the path should be interrupted at the end
@@ -48,15 +49,14 @@ def set_extruder_toggle(print_organizer, slicer):
                 interrupt_path = True
                 # the last path of a vertical layer should be interrupted
 
-            if i < len(slicer.layers)-1:
-                if not slicer.layers[i+1].paths[0].is_closed:
-                    interrupt_path = True
+            if i < len(slicer.layers)-1 and not slicer.layers[i+1].paths[0].is_closed:
+                interrupt_path = True
 
             # --- create extruder toggles
             try:
                 path_printpoints = pp_dict[layer_key][path_key]
             except KeyError:
-                logger.exception("no path found for layer %s" % layer_key)
+                logger.exception(f"no path found for layer {layer_key}")
             else:
                 for k, printpoint in enumerate(path_printpoints):
 
@@ -69,8 +69,8 @@ def set_extruder_toggle(print_organizer, slicer):
                         printpoint.extruder_toggle = True
 
         # set extruder toggle of last print point to false
-        last_layer_key = 'layer_%d' % (len(pp_dict) - 1)
-        last_path_key = 'path_%d' % (len(pp_dict[last_layer_key]) - 1)
+        last_layer_key = f'layer_{len(pp_dict) - 1}'
+        last_path_key = f'path_{len(pp_dict[last_layer_key]) - 1}'
         try:
             pp_dict[last_layer_key][last_path_key][-1].extruder_toggle = False
         except KeyError as e:

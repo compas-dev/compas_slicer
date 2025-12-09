@@ -1,10 +1,15 @@
-import numpy as np
 import logging
-import compas_slicer.utilities as utils
-from compas_slicer.pre_processing.preprocessing_utils.gradient import get_scalar_field_from_gradient, \
-    get_face_gradient_from_scalar_field, normalize_gradient
-import scipy
 import math
+
+import numpy as np
+import scipy
+
+import compas_slicer.utilities as utils
+from compas_slicer.pre_processing.preprocessing_utils.gradient import (
+    get_face_gradient_from_scalar_field,
+    get_scalar_field_from_gradient,
+    normalize_gradient,
+)
 
 logger = logging.getLogger('logger')
 
@@ -106,7 +111,7 @@ class GeodesicsSolver:
         elif method == 'simulation':
             u = u0
 
-            for i in range(HEAT_DIFFUSION_ITERATIONS):
+            for _i in range(HEAT_DIFFUSION_ITERATIONS):
                 if USE_FORWARDS_EULER:  # Forwards Euler (doesn't work so well)
                     u_prime = u + DELTA * self.L * u
                 else:  # Backwards Euler

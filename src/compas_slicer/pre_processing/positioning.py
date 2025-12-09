@@ -1,8 +1,6 @@
-from compas.geometry import Frame, Point
-from compas.geometry import Transformation
-from compas.datastructures import mesh_bounding_box
-
 import logging
+
+from compas.geometry import Frame, Point, Transformation, bounding_box
 
 logger = logging.getLogger('logger')
 
@@ -49,7 +47,8 @@ def get_mid_pt_base(mesh):
 
     """
     # get center bottom point of mesh model
-    bbox = mesh_bounding_box(mesh)
+    vertices = list(mesh.vertices_attributes('xyz'))
+    bbox = bounding_box(vertices)
     corner_pts = [bbox[0], bbox[2]]
 
     x = [p[0] for p in corner_pts]

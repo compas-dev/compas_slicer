@@ -1,14 +1,23 @@
-import os
 import json
 import logging
-from compas.geometry import Point, distance_point_point_sqrd, normalize_vector
-from compas.geometry import Vector, length_vector, closest_point_in_cloud, closest_point_on_plane
+import os
+
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import scipy
+from compas.geometry import (
+    Point,
+    Vector,
+    closest_point_in_cloud,
+    closest_point_on_plane,
+    distance_point_point_sqrd,
+    length_vector,
+    normalize_vector,
+)
 from compas.plugins import PluginNotInstalledError
-from compas_slicer.utilities import TerminalCommand
+
+from compas_slicer.utilities.terminal_command import TerminalCommand
 
 logger = logging.getLogger('logger')
 
@@ -139,7 +148,7 @@ def pull_pts_to_mesh_faces(mesh, points):
     projected_pts: a list of the projected points on the mesh
     """
     points = np.array(points, dtype=np.float64).reshape((-1, 3))
-    fi_fk = {index: fkey for index, fkey in enumerate(mesh.faces())}
+    fi_fk = dict(enumerate(mesh.faces()))
     f_centroids = np.array([mesh.face_centroid(fkey) for fkey in mesh.faces()], dtype=np.float64)
     closest_fis = np.argmin(scipy.spatial.distance_matrix(points, f_centroids), axis=1)
     closest_fks = [fi_fk[fi] for fi in closest_fis]
@@ -204,7 +213,7 @@ def load_from_json(filepath, name):
     """
 
     filename = os.path.join(filepath, name)
-    with open(filename, 'r') as f:
+    with open(filename) as f:
         data = json.load(f)
     logger.info("Loaded json: " + filename)
     return data
@@ -410,7 +419,7 @@ def get_mesh_cotmatrix_igl(mesh, fix_boundaries=True):
     if fix_boundaries:
         # fix boundaries by putting the corresponding columns of the sparse matrix to 0
         C_dense = C.toarray()
-        for i, (vkey, data) in enumerate(mesh.vertices(data=True)):
+        for i, (_vkey, data) in enumerate(mesh.vertices(data=True)):
             if data['boundary'] > 0:
                 C_dense[i][:] = np.zeros(len(v))
         C = scipy.sparse.csr_matrix(C_dense)
@@ -532,15 +541,15 @@ def find_next_printpoint(pp_dict, i, j, k):
     Returns the next printpoint from the current printpoint if it exists, otherwise returns None.
     """
     next_ppt = None
-    layer_key, path_key = 'layer_%d' % i, 'path_%d' % j
+    layer_key, path_key = f'layer_{i}', f'path_{j}'
     if k < len(pp_dict[layer_key][path_key]) - 1:  # If there are more ppts in the current path, then take the next ppt
         next_ppt = pp_dict[layer_key][path_key][k + 1]
     else:
         if j < len(pp_dict[layer_key]) - 1:  # Otherwise take the next path if there are more paths in the current layer
-            next_ppt = pp_dict[layer_key]['path_%d' % (j + 1)][0]
+            next_ppt = pp_dict[layer_key][f'path_{j + 1}'][0]
         else:
             if i < len(pp_dict) - 1:  # Otherwise take the next layer if there are more layers in the current slicer
-                next_ppt = pp_dict['layer_%d' % (i + 1)]['path_0'][0]
+                next_ppt = pp_dict[f'layer_{i + 1}']['path_0'][0]
     return next_ppt
 
 
@@ -553,11 +562,11 @@ def find_previous_printpoint(pp_dict, layer_key, path_key, i, j, k):
         prev_ppt = pp_dict[layer_key][path_key][k - 1]
     else:
         if j > 0:  # Otherwise take the last point of the previous path, if there are more paths in the current layer
-            prev_ppt = pp_dict[layer_key]['path_%d' % (j - 1)][-1]
+            prev_ppt = pp_dict[layer_key][f'path_{j - 1}'][-1]
         else:
             if i > 0:  # Otherwise take the last path of the previous layer if there are more layers in the current slicer
                 last_path_key = len(pp_dict[layer_key]) - 1
-                prev_ppt = pp_dict['layer_%d' % (i - 1)]['path_%d' % (last_path_key)][-1]
+                prev_ppt = pp_dict[f'layer_{i - 1}'][f'path_{last_path_key}'][-1]
     return prev_ppt
 
 
@@ -572,9 +581,8 @@ def interrupt():
 
     value = input("Press enter to continue, Press 1 to abort ")
     print("")
-    if isinstance(value, str):
-        if value == '1':
-            raise ValueError("Aborted")
+    if isinstance(value, str) and value == '1':
+        raise ValueError("Aborted")
 
 
 #######################################
