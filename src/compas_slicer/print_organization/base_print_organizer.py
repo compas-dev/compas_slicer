@@ -1,17 +1,26 @@
-import compas_slicer
 import logging
-from compas.geometry import Vector, distance_point_point, norm_vector, normalize_vector, subtract_vectors, \
-    cross_vectors, scale_vector
-from compas.utilities import pairwise
-import numpy as np
 from abc import abstractmethod
 
-logger = logging.getLogger('logger')
+import numpy as np
 
-__all__ = ['BasePrintOrganizer']
+import compas_slicer
+from compas.geometry import (
+    Vector,
+    cross_vectors,
+    distance_point_point,
+    norm_vector,
+    normalize_vector,
+    scale_vector,
+    subtract_vectors,
+)
+from compas.itertools import pairwise
+
+logger = logging.getLogger("logger")
+
+__all__ = ["BasePrintOrganizer"]
 
 
-class BasePrintOrganizer(object):
+class BasePrintOrganizer:
     """
     Base class for organizing the printing process.
     This class is meant to be extended for the implementation of the various print organizers.

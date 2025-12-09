@@ -47,12 +47,7 @@ Functions
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-
-from .base_print_organizer import *  # noqa: F401 E402 F403
+from .base_print_organizer import *  # noqa: F401 F403
 from .planar_print_organizer import *  # noqa: F401 E402 F403
 from .interpolation_print_organizer import *  # noqa: F401 E402 F403
 from .scalar_field_print_organizer import *  # noqa: F401 E402 F403

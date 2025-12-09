@@ -12,12 +12,7 @@ parameters
     defaults_gcode
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-#  Polyline simplification
-from .get_param import *  # noqa: F401 E402 F403
+from .get_param import *  # noqa: F401 F403
 from .defaults_interpolation_slicing import *  # noqa: F401 E402 F403
 from .defaults_gcode import *  # noqa: F401 E402 F403
 from .defaults_layers import *  # noqa: F401 E402 F403

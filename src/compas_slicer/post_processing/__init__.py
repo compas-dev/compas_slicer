@@ -39,12 +39,8 @@ Additional
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 #  Polyline simplification
-from .simplify_paths_rdp import *  # noqa: F401 E402 F403
+from .simplify_paths_rdp import *  # noqa: F401 F403
 
 #  Sorting
 from .seams_align import *  # noqa: F401 E402 F403

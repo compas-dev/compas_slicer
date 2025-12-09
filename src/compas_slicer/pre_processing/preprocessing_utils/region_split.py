@@ -418,7 +418,7 @@ def weld_mesh(mesh, OUTPUT_PATH, precision='2f'):
         if len(mesh.face_vertices(f_key)) < 3:
             mesh.delete_face(f_key)
 
-    welded_mesh = compas.datastructures.mesh_weld(mesh, precision=precision)
+    welded_mesh = mesh.weld(precision=precision)
 
     welded_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # make sure there's no empty f_keys
     welded_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # TODO: find a better way to do this

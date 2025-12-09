@@ -9,7 +9,7 @@ logger = logging.getLogger('logger')
 __all__ = ['GradientEvaluation']
 
 
-class GradientEvaluation(object):
+class GradientEvaluation:
     """
     Evaluation of the gradient of the scalar function of the mesh.
     The scalar function should be stored as a vertex attribute on every vertex, with key='scalar_field'

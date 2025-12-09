@@ -15,7 +15,7 @@ logger = logging.getLogger('logger')
 __all__ = ['BaseSlicer']
 
 
-class BaseSlicer(object):
+class BaseSlicer:
     """
     This is an organizational class that holds all the information for the slice process.
     Do not use this class directly in your python code. Instead use PlanarSlicer or InterpolationSlicer.

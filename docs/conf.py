@@ -1,35 +1,33 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import os
-import sphinx_compas_theme
 
+import sphinx_compas_theme
 from sphinx.ext.napoleon.docstring import NumpyDocstring
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.coverage',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.extlinks',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.coverage",
+    "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
 ]
-if os.getenv('SPELLCHECK'):
-    extensions += 'sphinxcontrib.spelling',
+if os.getenv("SPELLCHECK"):
+    extensions += ("sphinxcontrib.spelling",)
     spelling_show_suggestions = True
-    spelling_lang = 'en_US'
+    spelling_lang = "en_US"
 
-source_suffix = '.rst'
-master_doc = 'index'
-project = 'COMPAS SLICER'
-year = '2020'
-author = 'Digital Building Technologies, Gramazio Kohler Research'
-copyright = '{0}, {1}'.format(year, author)
-version = release = '0.7.0'
+source_suffix = ".rst"
+master_doc = "index"
+project = "COMPAS SLICER"
+year = "2020-2025"
+author = "Digital Building Technologies, Gramazio Kohler Research"
+copyright = f"{year}, {author}"
+version = release = "0.8.0"
 
 pygments_style = 'sphinx'
 show_authors = True

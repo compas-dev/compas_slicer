@@ -5,7 +5,7 @@ import compas
 __all__ = ['PrintPoint']
 
 
-class PrintPoint(object):
+class PrintPoint:
     """
     A PrintPoint consists of a compas.geometry.Point,
     and additional attributes related to the printing process.

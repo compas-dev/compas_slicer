@@ -2,11 +2,14 @@ name: compas_slicer
 channels:
   - conda-forge
 dependencies:
-  - python
+  - python>=3.9
   - pip
-  - compas=1.16.0
-  - networkx
-  - numpy
-  - progressbar2=3.53
-  - pyclipper=1.2.0
-  - rdp=0.8
+  - compas>=2.0
+  - networkx>=3.0
+  - numpy>=1.24
+  - progressbar2>=4.0
+  - pyclipper>=1.3
+  - rdp>=0.8
+  - libigl>=2.5
+  - pip:
+    - -e .

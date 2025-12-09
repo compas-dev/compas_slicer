@@ -11,7 +11,7 @@ __all__ = ['Layer',
            'VerticalLayersManager']
 
 
-class Layer(object):
+class Layer:
     """
     A Layer stores a group of ordered paths that are generated when a geometry is sliced.
     Layers are typically organized horizontally, but can also be organized vertically (see VerticalLayer).

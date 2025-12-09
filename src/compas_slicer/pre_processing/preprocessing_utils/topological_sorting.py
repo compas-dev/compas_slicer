@@ -16,7 +16,7 @@ __all__ = ['MeshDirectedGraph',
 #################################
 #  DirectedGraph
 
-class DirectedGraph(object):
+class DirectedGraph:
     """
     Base class for topological sorting of prints that consist of several parts that lie on each other.
     For example the graph A->B->C would represent a print that consists of three parts; A, B, C

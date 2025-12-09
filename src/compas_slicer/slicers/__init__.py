@@ -28,11 +28,7 @@ BaseSlicer
 """
 
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-from .base_slicer import *  # noqa: F401 E402 F403
+from .base_slicer import *  # noqa: F401 F403
 from .planar_slicer import *  # noqa: F401 E402 F403
 from .interpolation_slicer import *  # noqa: F401 E402 F403
 from .planar_slicing import *  # noqa: F401 E402 F403

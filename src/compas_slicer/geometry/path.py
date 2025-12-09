@@ -7,7 +7,7 @@ logger = logging.getLogger('logger')
 __all__ = ['Path']
 
 
-class Path(object):
+class Path:
     """
     A Path is a connected contour within a Layer. A Path consists of a list of
     compas.geometry.Points.

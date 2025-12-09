@@ -1,17 +1,21 @@
-from compas.geometry import Point, distance_point_point_sqrd
-from compas.utilities.itertools import pairwise
-from compas_slicer.slicers.slice_utilities import create_graph_from_mesh_edges, sort_graph_connected_components
-import compas_slicer.utilities as utils
 import logging
 from abc import abstractmethod
+
+import compas_slicer.utilities as utils
+from compas.geometry import Point, distance_point_point_sqrd
+from compas.itertools import pairwise
 from compas_slicer.geometry import Path
+from compas_slicer.slicers.slice_utilities import (
+    create_graph_from_mesh_edges,
+    sort_graph_connected_components,
+)
 
-logger = logging.getLogger('logger')
+logger = logging.getLogger("logger")
 
-__all__ = ['ContoursBase']
+__all__ = ["ContoursBase"]
 
 
-class ContoursBase(object):
+class ContoursBase:
     """
     This is meant to be extended by all classes that generate isocontours of a scalar function on a mesh.
     This class handles the two steps of iso-contouring of a triangular mesh consists of two steps;
