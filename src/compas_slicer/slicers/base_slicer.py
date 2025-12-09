@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from abc import abstractmethod
+from pathlib import Path as FilePath
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -194,7 +195,7 @@ class BaseSlicer:
         slicer.layer_height = data["layer_height"]
         return slicer
 
-    def to_json(self, filepath: str, name: str) -> None:
+    def to_json(self, filepath: str | FilePath, name: str) -> None:
         """Writes the slicer to a JSON file."""
         utils.save_to_json(self.to_data(), filepath, name)
 
