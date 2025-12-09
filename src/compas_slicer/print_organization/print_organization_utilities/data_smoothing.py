@@ -4,6 +4,7 @@ import logging
 from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
+from compas.geometry import Vector
 
 if TYPE_CHECKING:
     from compas_slicer.geometry import PrintPoint
@@ -88,7 +89,8 @@ def smooth_printpoints_up_vectors(
         return printpoint.up_vector  # get value
 
     def set_ppt_up_vec(printpoint, v):
-        printpoint.up_vector = v  # set value
+        # Convert list back to Vector for proper serialization
+        printpoint.up_vector = Vector(*v) if isinstance(v, list) else v
 
     smooth_printpoint_attribute(print_organizer, iterations, strength, get_ppt_up_vec, set_ppt_up_vec)
     # finally update any values in the printpoints that are affected by the changed attribute
