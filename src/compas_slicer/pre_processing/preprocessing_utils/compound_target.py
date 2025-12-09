@@ -234,6 +234,35 @@ class CompoundTarget:
         return self._max_dist
 
     #############################
+    #  --- vectorized distances (all vertices at once)
+
+    def get_all_distances(self) -> np.ndarray:
+        """Return distances for all vertices as 1D array, applying union method."""
+        if self.union_method == 'min':
+            return np.min(self._np_distances_lists_flipped, axis=1)
+        elif self.union_method == 'smooth':
+            return np.array([
+                blend_union_list(row.tolist(), self.union_params[0])
+                for row in self._np_distances_lists_flipped
+            ])
+        elif self.union_method == 'chamfer':
+            return np.array([
+                chamfer_union_list(row.tolist(), self.union_params[0])
+                for row in self._np_distances_lists_flipped
+            ])
+        elif self.union_method == 'stairs':
+            return np.array([
+                stairs_union_list(row.tolist(), self.union_params[0], self.union_params[1])
+                for row in self._np_distances_lists_flipped
+            ])
+        else:
+            raise ValueError(f"Unknown union method: {self.union_method}")
+
+    def get_all_distances_array(self) -> np.ndarray:
+        """Return raw distances as (n_boundaries, n_vertices) array."""
+        return np.array(self._distances_lists)
+
+    #############################
     #  --- per vkey distances
 
     def get_all_distances_for_vkey(self, i: int) -> list[float]:
@@ -286,7 +315,7 @@ class CompoundTarget:
         ----------
         name: str, name of json to be saved
         """
-        utils.save_to_json(self.get_all_distances(), self.OUTPUT_PATH, name)
+        utils.save_to_json(self.get_all_distances().tolist(), self.OUTPUT_PATH, name)
 
     #  ------ assign new Mesh
     def assign_new_mesh(self, mesh: Mesh) -> None:

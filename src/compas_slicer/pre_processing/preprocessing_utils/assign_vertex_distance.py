@@ -38,9 +38,66 @@ def assign_interpolation_distance_to_mesh_vertices(
     target_HIGH:  :class: 'compas_slicer.pre_processing.CompoundTarget'
         The upper compound target.
     """
-    for _i, vkey in enumerate(mesh.vertices()):
-        d = assign_interpolation_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH)
-        mesh.vertex[vkey]['scalar_field'] = d
+    # Vectorized computation for all vertices at once
+    distances = _compute_all_distances_vectorized(weight, target_LOW, target_HIGH)
+    for vkey, d in zip(mesh.vertices(), distances):
+        mesh.vertex[vkey]['scalar_field'] = float(d)
+
+
+def _compute_all_distances_vectorized(
+    weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget | None
+) -> np.ndarray:
+    """Compute weighted distances for all vertices at once."""
+    if target_LOW and target_HIGH:
+        return _get_weighted_distances_vectorized(weight, target_LOW, target_HIGH)
+    elif target_LOW:
+        offset = weight * target_LOW.get_max_dist()
+        return target_LOW.get_all_distances() - offset
+    else:
+        raise ValueError('You need to provide at least one target')
+
+
+def _get_weighted_distances_vectorized(
+    weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget
+) -> np.ndarray:
+    """Vectorized weighted distance computation for all vertices."""
+    d_low = target_LOW.get_all_distances()  # (n_vertices,)
+
+    if target_HIGH.has_uneven_weights:
+        # (n_boundaries, n_vertices)
+        ds_high = target_HIGH.get_all_distances_array()
+
+        if target_HIGH.number_of_boundaries > 1:
+            weights = np.array([
+                remap_unbound(weight, 0, wmax, 0, 1)
+                for wmax in target_HIGH.weight_max_per_cluster
+            ])  # (n_boundaries,)
+        else:
+            weights = np.array([weight])
+
+        # Broadcast: (n_boundaries, n_vertices)
+        distances = (weights[:, None] - 1) * d_low + weights[:, None] * ds_high
+
+        if target_HIGH.union_method == 'min':
+            return np.min(distances, axis=0)
+        elif target_HIGH.union_method == 'smooth':
+            return np.array([
+                blend_union_list(distances[:, i].tolist(), target_HIGH.union_params[0])
+                for i in range(distances.shape[1])
+            ])
+        elif target_HIGH.union_method == 'chamfer':
+            return np.array([
+                chamfer_union_list(distances[:, i].tolist(), target_HIGH.union_params[0])
+                for i in range(distances.shape[1])
+            ])
+        elif target_HIGH.union_method == 'stairs':
+            return np.array([
+                stairs_union_list(distances[:, i].tolist(), target_HIGH.union_params[0], target_HIGH.union_params[1])
+                for i in range(distances.shape[1])
+            ])
+    else:
+        d_high = target_HIGH.get_all_distances()
+        return d_low * (1 - weight) - d_high * weight
 
 
 def assign_interpolation_distance_to_mesh_vertex(
