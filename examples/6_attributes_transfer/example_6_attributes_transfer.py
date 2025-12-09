@@ -11,6 +11,7 @@ from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
+from compas_slicer.utilities import should_visualize, visualize_slicer
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
@@ -20,7 +21,7 @@ OUTPUT_PATH = slicer_utils.get_output_directory(DATA_PATH)
 MODEL = 'distorted_v_closed_low_res.obj'
 
 
-def main():
+def main(visualize: bool = False):
     # load mesh
     mesh = Mesh.from_obj(DATA_PATH / MODEL)
 
@@ -86,6 +87,9 @@ def main():
     utils.save_to_json(dist_from_plane_list, OUTPUT_PATH, 'dist_from_plane_list.json')
     utils.save_to_json(utils.point_list_to_dict(direction_to_pt_list), OUTPUT_PATH, 'direction_to_pt_list.json')
 
+    if visualize:
+        visualize_slicer(slicer, mesh)
+
 
 if __name__ == '__main__':
-    main()
+    main(visualize=should_visualize())
