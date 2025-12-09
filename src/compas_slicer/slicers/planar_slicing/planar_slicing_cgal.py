@@ -28,16 +28,14 @@ def create_planar_paths_cgal(mesh: Mesh, planes: list[Plane]) -> list[Layer]:
         A compas mesh.
     planes: list, :class: 'compas.geometry.Plane'
     """
-    packages = utils.TerminalCommand('conda list').get_split_output_strings()
-
-    if 'compas-cgal' in packages or 'compas_cgal' in packages:
+    try:
         from compas_cgal.slicer import slice_mesh
-    else:
-        raise PluginNotInstalledError("--------ATTENTION! ----------- \
-                        Compas_cgal library is missing! \
-                        You can't use this planar slicing method without it. \
-                        Check the README instructions for how to install it, \
-                        or use another planar slicing method.")
+    except ImportError as e:
+        raise PluginNotInstalledError(
+            "Compas_cgal library is missing! "
+            "You can't use this planar slicing method without it. "
+            "Install it with: pip install compas_cgal"
+        ) from e
 
     # prepare mesh for slicing
     M = mesh.to_vertices_and_faces()

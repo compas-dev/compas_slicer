@@ -1,25 +1,28 @@
 import logging
-import os
-from compas.geometry import Point, Vector, distance_point_plane, normalize_vector
-from compas.datastructures import Mesh
-import compas_slicer.utilities as slicer_utils
-from compas_slicer.post_processing import simplify_paths_rdp_igl
-from compas_slicer.slicers import PlanarSlicer
-import compas_slicer.utilities.utils as utils
-from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
-from compas_slicer.print_organization import PlanarPrintOrganizer
+from pathlib import Path
+
 import numpy as np
+from compas.datastructures import Mesh
+from compas.geometry import Point, Vector, distance_point_plane, normalize_vector
+
+import compas_slicer.utilities as slicer_utils
+import compas_slicer.utilities.utils as utils
+from compas_slicer.post_processing import simplify_paths_rdp_igl
+from compas_slicer.print_organization import PlanarPrintOrganizer
+from compas_slicer.slicers import PlanarSlicer
+from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
+DATA_PATH = Path(__file__).parent / 'data'
 OUTPUT_PATH = slicer_utils.get_output_directory(DATA_PATH)
 MODEL = 'distorted_v_closed_low_res.obj'
 
-if __name__ == '__main__':
+
+def main():
     # load mesh
-    mesh = Mesh.from_obj(os.path.join(DATA_PATH, MODEL))
+    mesh = Mesh.from_obj(DATA_PATH / MODEL)
 
     # --------------- Add attributes to mesh
     # Face attributes can be anything (ex. float, bool, array, text ...)
@@ -63,7 +66,7 @@ if __name__ == '__main__':
     print_organizer.create_printpoints()
 
     # --------------- Transfer mesh attributes to printpoints
-    transfer_mesh_attributes_to_printpoints(mesh, print_organizer.printpoints_dict)
+    transfer_mesh_attributes_to_printpoints(mesh, print_organizer.printpoints)
 
     # --------------- Save printpoints to json (only json-serializable attributes are saved)
     printpoints_data = print_organizer.output_printpoints_dict()
@@ -82,3 +85,7 @@ if __name__ == '__main__':
     utils.save_to_json(positive_y_axis_list, OUTPUT_PATH, 'positive_y_axis_list.json')
     utils.save_to_json(dist_from_plane_list, OUTPUT_PATH, 'dist_from_plane_list.json')
     utils.save_to_json(utils.point_list_to_dict(direction_to_pt_list), OUTPUT_PATH, 'direction_to_pt_list.json')
+
+
+if __name__ == '__main__':
+    main()

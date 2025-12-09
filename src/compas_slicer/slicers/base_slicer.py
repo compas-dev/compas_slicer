@@ -209,7 +209,7 @@ class BaseSlicer:
 
         """
         mesh = self.mesh.copy()
-        v_key = mesh.get_any_vertex()
+        v_key = next(iter(mesh.vertices()))
         v_attrs = mesh.vertex_attributes(v_key)
         for attr_key in v_attrs:
             if not utils.is_jsonable(v_attrs[attr_key]):
@@ -217,7 +217,7 @@ class BaseSlicer:
                 for v in mesh.vertices():
                     mesh.unset_vertex_attribute(v, attr_key)
 
-        f_key = mesh.get_any_face()
+        f_key = next(iter(mesh.faces()))
         f_attrs = mesh.face_attributes(f_key)
         for attr_key in f_attrs:
             if not utils.is_jsonable(f_attrs[attr_key]):

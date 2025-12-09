@@ -1,26 +1,28 @@
 import logging
-from compas.geometry import distance_point_point
+from pathlib import Path
+
 from compas.datastructures import Mesh
-import os
+from compas.geometry import distance_point_point
+
 import compas_slicer.utilities as slicer_utils
-from compas_slicer.post_processing import simplify_paths_rdp_igl
-from compas_slicer.slicers import ScalarFieldSlicer
 import compas_slicer.utilities as utils
+from compas_slicer.post_processing import simplify_paths_rdp_igl
 from compas_slicer.print_organization import ScalarFieldPrintOrganizer
+from compas_slicer.slicers import ScalarFieldSlicer
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
+DATA_PATH = Path(__file__).parent / 'data'
 OUTPUT_PATH = slicer_utils.get_output_directory(DATA_PATH)
 MODEL = 'geom_to_slice.obj'
 BASE = 'custom_base.obj'
 
-if __name__ == '__main__':
 
+def main():
     # --- load meshes
-    mesh = Mesh.from_obj(os.path.join(DATA_PATH, MODEL))
-    base = Mesh.from_obj(os.path.join(DATA_PATH, BASE))
+    mesh = Mesh.from_obj(DATA_PATH / MODEL)
+    base = Mesh.from_obj(DATA_PATH / BASE)
 
     # --- Create per-vertex scalar field (distance of every vertex from the custom base)
     pts = [mesh.vertex_coordinates(v_key, axes='xyz') for v_key in
@@ -49,3 +51,7 @@ if __name__ == '__main__':
     print_organizer.printout_info()
     printpoints_data = print_organizer.output_printpoints_dict()
     utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')  # save results to json
+
+
+if __name__ == '__main__':
+    main()
