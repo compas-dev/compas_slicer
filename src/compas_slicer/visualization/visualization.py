@@ -64,7 +64,10 @@ def visualize_slicer(
 
         for path in layer.paths:
             if len(path.points) > 1:
-                polyline = Polyline(path.points)
+                pts = list(path.points)
+                if path.is_closed and pts[0] != pts[-1]:
+                    pts.append(pts[0])
+                polyline = Polyline(pts)
                 viewer.scene.add(polyline, linecolor=color, linewidth=1)
 
     viewer.show()
