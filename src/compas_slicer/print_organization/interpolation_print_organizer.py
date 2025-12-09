@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 import logging
+from pathlib import Path as FilePath
+from typing import TYPE_CHECKING, Any
 
 from compas.geometry import (
     Point,
@@ -11,13 +15,15 @@ from compas.geometry import (
     subtract_vectors,
 )
 
-import compas_slicer
 import compas_slicer.utilities as utils
-from compas_slicer.geometry import Path, PrintLayer, PrintPath, PrintPoint
+from compas_slicer.geometry import Path, PrintLayer, PrintPath, PrintPoint, VerticalLayer
 from compas_slicer.parameters import get_param
 from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
-from compas_slicer.print_organization import BasePrintOrganizer
+from compas_slicer.print_organization.base_print_organizer import BasePrintOrganizer
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
+
+if TYPE_CHECKING:
+    from compas_slicer.slicers import InterpolationSlicer
 
 logger = logging.getLogger('logger')
 
@@ -25,19 +31,37 @@ __all__ = ['InterpolationPrintOrganizer']
 
 
 class InterpolationPrintOrganizer(BasePrintOrganizer):
-    """
-    Organizing the printing process for the realization of non-planar contours.
+    """Organize the printing process for non-planar contours.
 
     Attributes
     ----------
-    slicer: :class:`compas_slicer.slicers.PlanarSlicer`
-        An instance of the compas_slicer.slicers.PlanarSlicer.
-    parameters: dict
-    DATA_PATH: str
+    slicer : InterpolationSlicer
+        An instance of InterpolationSlicer.
+    parameters : dict[str, Any]
+        Parameters dictionary.
+    DATA_PATH : str | Path
+        Data directory path.
+    vertical_layers : list[VerticalLayer]
+        Vertical layers from slicer.
+    horizontal_layers : list[Layer]
+        Horizontal layers from slicer.
+    base_boundaries : list[BaseBoundary]
+        Base boundaries for each vertical layer.
+
     """
 
-    def __init__(self, slicer, parameters, DATA_PATH):
-        assert isinstance(slicer, compas_slicer.slicers.InterpolationSlicer), 'Please provide an InterpolationSlicer'
+    slicer: InterpolationSlicer
+
+    def __init__(
+        self,
+        slicer: InterpolationSlicer,
+        parameters: dict[str, Any],
+        DATA_PATH: str | FilePath,
+    ) -> None:
+        from compas_slicer.slicers import InterpolationSlicer
+
+        if not isinstance(slicer, InterpolationSlicer):
+            raise TypeError('Please provide an InterpolationSlicer')
         BasePrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
@@ -53,7 +77,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             logger.info('Slicer has one horizontal brim layer.')
 
         # topological sorting of vertical layers depending on their connectivity
-        self.topo_sort_graph = None
+        self.topo_sort_graph: topo_sort.SegmentsDirectedGraph | None = None
         if len(self.vertical_layers) > 1:
             try:
                 self.topological_sorting()
@@ -62,29 +86,32 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
                 logger.critical("integrity of the output data ")
                 # TODO: perhaps its better to be even more explicit and add a
                 #  FAILED-timestamp.txt file?
-        self.selected_order = None
+        self.selected_order: list[int] | None = None
 
         # creation of one base boundary per vertical_layer
-        self.base_boundaries = self.create_base_boundaries()
+        self.base_boundaries: list[BaseBoundary] = self.create_base_boundaries()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<InterpolationPrintOrganizer with {len(self.vertical_layers)} vertical_layers>"
 
-    def topological_sorting(self):
-        """ When the print consists of various paths, this function initializes a class that creates
-        a directed graph with all these parts, with the connectivity of each part reflecting which
-        other parts it lies on, and which other parts lie on it."""
+    def topological_sorting(self) -> None:
+        """Create directed graph of parts with connectivity.
+
+        Creates a directed graph where each part's connectivity reflects which
+        other parts it lies on and which other parts lie on it.
+
+        """
         avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='layers')
         self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.vertical_layers,
                                                                4 * avg_layer_height, DATA_PATH=self.DATA_PATH)
 
-    def create_base_boundaries(self):
-        """ Creates one BaseBoundary per vertical_layer."""
-        bs = []
+    def create_base_boundaries(self) -> list[BaseBoundary]:
+        """Create one BaseBoundary per vertical_layer."""
+        bs: list[BaseBoundary] = []
         root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
 
-        if len(self.vertical_layers) > 1:
+        if len(self.vertical_layers) > 1 and self.topo_sort_graph is not None:
             for i, _vertical_layer in enumerate(self.vertical_layers):
                 parents_of_current_node = self.topo_sort_graph.get_parents_of_node(i)
                 if len(parents_of_current_node) == 0:
@@ -105,11 +132,12 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
 
         return bs
 
-    def create_printpoints(self):
-        """
-        Create the print points of the fabrication process
+    def create_printpoints(self) -> None:
+        """Create the print points of the fabrication process.
+
         Based on the directed graph, select one topological order.
-        From each path collection in that order copy PrintPoints dictionary in the correct order.
+        From each path collection in that order, copy PrintPoints in the correct order.
+
         """
         current_layer_index = 0
 
@@ -143,14 +171,15 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             self.selected_order = [0]  # there is only one segment, only this option
 
         # (3) --- Then create the printpoints of all the vertical layers in the selected order
+        assert self.selected_order is not None, "selected_order must be set before creating printpoints"
         for _index, i in enumerate(self.selected_order):
             layer = self.vertical_layers[i]
             print_layer = self.get_layer_ppts(layer, self.base_boundaries[i])
             self.printpoints.layers.append(print_layer)
             current_layer_index += 1
 
-    def get_layer_ppts(self, layer, base_boundary) -> PrintLayer:
-        """ Creates the PrintPoints of a single layer."""
+    def get_layer_ppts(self, layer: VerticalLayer, base_boundary: BaseBoundary) -> PrintLayer:
+        """Create the PrintPoints of a single layer."""
         max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='layers')
         min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='layers')
         avg_layer_height = get_param(self.parameters, 'avg_layer_height', 'layers')

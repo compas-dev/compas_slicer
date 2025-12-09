@@ -1,9 +1,13 @@
-import logging
+from __future__ import annotations
 
+import logging
+from typing import Literal
+
+from compas.datastructures import Mesh
 from compas.geometry import Plane, Point, Vector
 
-import compas_slicer
-from compas_slicer.slicers import BaseSlicer
+from compas_slicer.slicers.base_slicer import BaseSlicer
+from compas_slicer.slicers.planar_slicing import create_planar_paths, create_planar_paths_cgal
 
 logger = logging.getLogger('logger')
 
@@ -11,27 +15,29 @@ __all__ = ['PlanarSlicer']
 
 
 class PlanarSlicer(BaseSlicer):
-    """
-    Generates planar contours on a mesh that are parallel to the xy plane.
+    """Generates planar contours on a mesh that are parallel to the xy plane.
 
     Attributes
     ----------
-    mesh: :class:`compas.datastructures.Mesh`
-        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed).
-    slicer_type: str
-        String representing which slicing method to use.
-        options: 'default', 'cgal'
-    layer_height: float
-        Distance between layers (slices).
-    slice_height_range: tuple (optional)
-        Optional tuple that lets the user slice only a part of the model.
-        Defaults to None which slices the entire model.
-        First value is the Z height to start slicing from, second value is the Z height to end.
-        The range values are not absolute height values, but relative to the current minimum height value of the mesh.
-        I.e. if you want to only slice the first 100 mm of the mesh, you use (0,100) regardless of the position of the mesh.
+    mesh : Mesh
+        Input mesh, must be triangular (no quads or n-gons allowed).
+    slicer_type : Literal["default", "cgal"]
+        Slicing method to use.
+    layer_height : float
+        Distance between layers (slices) in mm.
+    slice_height_range : tuple[float, float] | None
+        Optional tuple (z_start, z_end) to slice only part of the model.
+        Values are relative to mesh minimum height.
+
     """
 
-    def __init__(self, mesh, slicer_type="default", layer_height=2.0, slice_height_range=None):
+    def __init__(
+        self,
+        mesh: Mesh,
+        slicer_type: Literal["default", "cgal"] = "default",
+        layer_height: float = 2.0,
+        slice_height_range: tuple[float, float] | None = None,
+    ) -> None:
         logger.info('PlanarSlicer')
         BaseSlicer.__init__(self, mesh)
 
@@ -39,11 +45,11 @@ class PlanarSlicer(BaseSlicer):
         self.slicer_type = slicer_type
         self.slice_height_range = slice_height_range
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<PlanarSlicer with {len(self.layers)} layers and layer_height : {self.layer_height:.2f} mm>"
 
-    def generate_paths(self):
-        """Generates the planar slicing paths."""
+    def generate_paths(self) -> None:
+        """Generate the planar slicing paths."""
         z = [self.mesh.vertex_attribute(key, 'z') for key in self.mesh.vertices()]
         min_z, max_z = min(z), max(z)
 
@@ -63,12 +69,12 @@ class PlanarSlicer(BaseSlicer):
         if self.slicer_type == "default":
             logger.info('')
             logger.info("Planar slicing using default function ...")
-            self.layers = compas_slicer.slicers.create_planar_paths(self.mesh, planes)
+            self.layers = create_planar_paths(self.mesh, planes)
 
         elif self.slicer_type == "cgal":
             logger.info('')
             logger.info("Planar slicing using CGAL ...")
-            self.layers = compas_slicer.slicers.create_planar_paths_cgal(self.mesh, planes)
+            self.layers = create_planar_paths_cgal(self.mesh, planes)
 
         else:
             raise NameError("Invalid slicing type : " + self.slicer_type)

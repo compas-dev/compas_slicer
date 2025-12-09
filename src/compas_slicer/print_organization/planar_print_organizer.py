@@ -1,12 +1,17 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 import progressbar
 from compas.geometry import Vector
 
-import compas_slicer
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintLayer, PrintPath, PrintPoint
-from compas_slicer.print_organization import BasePrintOrganizer
+from compas_slicer.print_organization.base_print_organizer import BasePrintOrganizer
+
+if TYPE_CHECKING:
+    from compas_slicer.slicers import PlanarSlicer
 
 logger = logging.getLogger('logger')
 
@@ -14,30 +19,35 @@ __all__ = ['PlanarPrintOrganizer']
 
 
 class PlanarPrintOrganizer(BasePrintOrganizer):
-    """
-    Organizing the printing process for the realization of planar contours.
+    """Organize the printing process for planar contours.
 
     Attributes
     ----------
-    slicer: :class:`compas_slicer.slicers.PlanarSlicer`
-        An instance of the compas_slicer.slicers.PlanarSlicer.
+    slicer : PlanarSlicer
+        An instance of PlanarSlicer.
+
     """
 
-    def __init__(self, slicer):
-        assert isinstance(slicer, compas_slicer.slicers.PlanarSlicer), 'Please provide a PlanarSlicer'
+    slicer: PlanarSlicer
+
+    def __init__(self, slicer: PlanarSlicer) -> None:
+        from compas_slicer.slicers import PlanarSlicer
+
+        if not isinstance(slicer, PlanarSlicer):
+            raise TypeError('Please provide a PlanarSlicer')
         BasePrintOrganizer.__init__(self, slicer)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<PlanarPrintOrganizer with {len(self.slicer.layers)} layers>"
 
-    def create_printpoints(self, generate_mesh_normals=True):
-        """Create the print points of the fabrication process
+    def create_printpoints(self, generate_mesh_normals: bool = True) -> None:
+        """Create the print points of the fabrication process.
 
         Parameters
         ----------
-        generate_mesh_normals: bool
-            Boolean toggle that controls whether to generate mesh normals or not.
-            If False, mesh normals will be set to Vector(0, 0, 1)
+        generate_mesh_normals : bool
+            If True, compute mesh normals. If False, use Vector(0, 1, 0).
+
         """
 
         count = 0
@@ -60,7 +70,8 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                     for k, point in enumerate(path.points):
 
                         n = normals[count] if generate_mesh_normals else Vector(0, 1, 0)
-                        printpoint = PrintPoint(pt=point, layer_height=self.slicer.layer_height, mesh_normal=n)
+                        layer_h = self.slicer.layer_height if self.slicer.layer_height else 2.0
+                        printpoint = PrintPoint(pt=point, layer_height=layer_h, mesh_normal=n)
 
                         if layer.is_brim or layer.is_raft:
                             printpoint.up_vector = Vector(0, 0, 1)

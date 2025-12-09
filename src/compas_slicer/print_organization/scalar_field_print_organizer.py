@@ -1,15 +1,21 @@
+from __future__ import annotations
+
 import logging
+from pathlib import Path as FilePath
+from typing import TYPE_CHECKING, Any
 
 import progressbar
 from compas.geometry import Vector, normalize_vector
 
-import compas_slicer
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintLayer, PrintPath, PrintPoint
 from compas_slicer.parameters import get_param
 from compas_slicer.pre_processing import GradientEvaluation
-from compas_slicer.print_organization import BasePrintOrganizer
+from compas_slicer.print_organization.base_print_organizer import BasePrintOrganizer
 from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
+
+if TYPE_CHECKING:
+    from compas_slicer.slicers import ScalarFieldSlicer
 
 logger = logging.getLogger('logger')
 
@@ -17,17 +23,37 @@ __all__ = ['ScalarFieldPrintOrganizer']
 
 
 class ScalarFieldPrintOrganizer(BasePrintOrganizer):
-    """
-    Organizing the printing process for the realization of planar contours.
+    """Organize the printing process for scalar field contours.
 
     Attributes
     ----------
-    slicer: :class:`compas_slicer.slicers.PlanarSlicer`
-        An instance of the compas_slicer.slicers.PlanarSlicer.
+    slicer : ScalarFieldSlicer
+        An instance of ScalarFieldSlicer.
+    parameters : dict[str, Any]
+        Parameters dictionary.
+    DATA_PATH : str | Path
+        Data directory path.
+    vertical_layers : list[VerticalLayer]
+        Vertical layers from slicer.
+    horizontal_layers : list[Layer]
+        Horizontal layers from slicer.
+    g_evaluation : GradientEvaluation
+        Gradient evaluation object.
+
     """
 
-    def __init__(self, slicer, parameters, DATA_PATH):
-        assert isinstance(slicer, compas_slicer.slicers.ScalarFieldSlicer), 'Please provide a ScalarFieldSlicer'
+    slicer: ScalarFieldSlicer
+
+    def __init__(
+        self,
+        slicer: ScalarFieldSlicer,
+        parameters: dict[str, Any],
+        DATA_PATH: str | FilePath,
+    ) -> None:
+        from compas_slicer.slicers import ScalarFieldSlicer
+
+        if not isinstance(slicer, ScalarFieldSlicer):
+            raise TypeError('Please provide a ScalarFieldSlicer')
         BasePrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
@@ -42,13 +68,13 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
             assert self.horizontal_layers[0].is_brim, "Only one brim horizontal layer is currently supported."
             logger.info('Slicer has one horizontal brim layer.')
 
-        self.g_evaluation = self.add_gradient_to_vertices()
+        self.g_evaluation: GradientEvaluation = self.add_gradient_to_vertices()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ScalarFieldPrintOrganizer with {len(self.slicer.layers)} layers>"
 
-    def create_printpoints(self):
-        """ Create the print points of the fabrication process """
+    def create_printpoints(self) -> None:
+        """Create the print points of the fabrication process."""
         count = 0
         logger.info('Creating print points ...')
         with progressbar.ProgressBar(max_value=self.slicer.number_of_points) as bar:
@@ -87,7 +113,7 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
                     pp.up_vector = Vector(*normalize_vector(grad))
                     pp.frame = pp.get_frame()
 
-    def add_gradient_to_vertices(self):
+    def add_gradient_to_vertices(self) -> GradientEvaluation:
         g_evaluation = GradientEvaluation(self.slicer.mesh, self.DATA_PATH)
         g_evaluation.compute_gradient()
         g_evaluation.compute_gradient_norm()
