@@ -1,49 +1,66 @@
+from __future__ import annotations
+
+from typing import Any
+
 __all__ = ['gcode_default_param']
 
+DEFAULT_PARAMETERS: dict[str, Any] = {
+    # Physical parameters
+    'nozzle_diameter': 0.4,  # mm
+    'filament_diameter': 1.75,  # mm, for calculating E
+    'filament diameter': 1.75,  # legacy key with space
+    'delta': False,  # boolean for delta printers
+    'print_volume_x': 300,  # mm
+    'print_volume_y': 300,  # mm
+    'print_volume_z': 600,  # mm
+    # Dimensional parameters
+    'layer_width': 0.6,  # mm
+    # Temperature parameters
+    'extruder_temperature': 200,  # °C
+    'bed_temperature': 60,  # °C
+    'fan_speed': 255,  # 0-255
+    'fan_start_z': 0,  # mm; height at which fan starts
+    # Movement parameters
+    'flowrate': 1,  # fraction; global flow multiplier
+    'feedrate': 3600,  # mm/min
+    'feedrate_travel': 4800,  # mm/min
+    'feedrate_low': 1800,  # mm/min
+    'feedrate_retraction': 2400,  # mm/min
+    'acceleration': 0,  # mm/s²; 0 = driver default
+    'jerk': 0,  # mm/s; 0 = driver default
+    # Retraction
+    'z_hop': 0.5,  # mm
+    'retraction_length': 1,  # mm
+    'retraction_min_travel': 6,  # mm; below this, no retraction
+    # Adhesion parameters
+    'flow_over': 1,  # fraction; overextrusion for z < min_over_z
+    'min_over_z': 0,  # mm; height below which overextrusion applies
+}
 
-def gcode_default_param(key):
-    """ Returns the default parameter with the specified key. """
-    if key in default_parameters:
-        return default_parameters[key]
-    else:
-        raise ValueError('The parameter with key : ' + str(key) +
-                         ' does not exist in the defaults of gcode parameters. ')
+
+def gcode_default_param(key: str) -> Any:
+    """Return the default parameter with the specified key.
+
+    Parameters
+    ----------
+    key : str
+        Parameter key.
+
+    Returns
+    -------
+    Any
+        Default parameter value.
+
+    Raises
+    ------
+    ValueError
+        If key not found in defaults.
+
+    """
+    if key in DEFAULT_PARAMETERS:
+        return DEFAULT_PARAMETERS[key]
+    raise ValueError(f'Parameter key "{key}" not in gcode defaults.')
 
 
-default_parameters = \
-    {
-        # Physical parameters
-        'nozzle_diameter': 0.4,  # in mm
-        'filament diameter': 1.75,  # in mm, for calculating E
-        'delta': False,  # boolean for delta printers
-        'print_volume_x': 300,  # in mm
-        'print_volume_y': 300,  # in mm
-        'print_volume_z': 600,  # in mm
-
-        # Dimensional parameters
-        'layer_width': 0.6,  # in mm
-
-        # Temperature parameters
-        'extruder_temperature': 200,  # in °C
-        'bed_temperature': 60,  # in °C
-        'fan_speed': 255,  # 0-255
-        'fan_start_z': 0,  # in mm; height at which the fan starts
-
-        # Movement parameters
-        'flowrate': 1,  # as fraction; this is a global flow multiplier
-        'feedrate': 3600,  # in mm/s
-        'feedrate_travel': 4800,  # in mm/s
-        'feedrate_low': 1800,  # in mm/s
-        'feedrate_retraction': 2400,  # in mm/s
-        'acceleration': 0,  # in mm/s²; if set to 0, the default driver value will be used
-        'jerk': 0,  # in mm/s; if set to 0, the default driver value will be used
-
-        # Retraction
-        'z_hop': 0.5,  # in mm
-        'retraction_length': 1,  # in mm
-        'retraction_min_travel': 6,  # in mm; below this value, retraction does not happen
-
-        # Adhesion parameters
-        'flow_over': 1,  # as fraction, usually > 1; overextrusion value for z < min_over_z, for better adhesion
-        'min_over_z': 0,  # in mm; for z < min_over_z, the overextrusion factor applies
-    }
+# Backwards compatibility alias
+default_parameters = DEFAULT_PARAMETERS

@@ -12,6 +12,10 @@ __all__ = ["GcodeParameters"]
 class GcodeParameters(Data):
     """Parameters for G-code generation.
 
+    .. deprecated::
+        Use :class:`compas_slicer.config.GcodeConfig` instead, which has
+        a cleaner print_volume tuple design.
+
     Attributes
     ----------
     nozzle_diameter : float
