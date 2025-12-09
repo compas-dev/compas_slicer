@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger('logger')
 
 __all__ = ['get_igl_EXACT_geodesic_distances',
+           'get_igl_HEAT_geodesic_distances',
            'get_custom_HEAT_geodesic_distances',
            'GeodesicsCache']
 
@@ -89,7 +90,7 @@ def get_igl_EXACT_geodesic_distances(
     mesh: Mesh, vertices_start: list[int]
 ) -> NDArray[np.floating]:
     """
-    Calculate geodesic distances using compas_libigl.
+    Calculate geodesic distances using compas_libigl exact method.
 
     Uses caching to avoid redundant computations when the same
     source vertices are queried multiple times.
@@ -100,6 +101,23 @@ def get_igl_EXACT_geodesic_distances(
     vertices_start: list, int
     """
     return _geodesics_cache.get_distances(mesh, vertices_start, method='exact')
+
+
+def get_igl_HEAT_geodesic_distances(
+    mesh: Mesh, vertices_start: list[int]
+) -> NDArray[np.floating]:
+    """
+    Calculate geodesic distances using compas_libigl heat method.
+
+    Faster than exact but approximate. Good for curved slicing where
+    slight approximation errors are acceptable.
+
+    Parameters
+    ----------
+    mesh: :class: 'compas.datastructures.Mesh'
+    vertices_start: list, int
+    """
+    return _geodesics_cache.get_distances(mesh, vertices_start, method='heat')
 
 
 def get_custom_HEAT_geodesic_distances(

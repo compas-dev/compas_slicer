@@ -6,8 +6,8 @@ __all__ = ['interpolation_slicing_default_param']
 
 DEFAULT_PARAMETERS: dict[str, Any] = {
     # geodesics method
-    'target_LOW_geodesics_method': 'exact_igl',
-    'target_HIGH_geodesics_method': 'exact_igl',
+    'target_LOW_geodesics_method': 'heat_igl',
+    'target_HIGH_geodesics_method': 'heat_igl',
     # union method for HIGH target
     # if all are false, then default 'min' method is used
     'target_HIGH_smooth_union': [False, [10.0]],  # blend radius

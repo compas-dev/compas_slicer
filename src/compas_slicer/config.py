@@ -29,6 +29,7 @@ class GeodesicsMethod(str, Enum):
     """Method for computing geodesic distances."""
 
     EXACT_IGL = "exact_igl"
+    HEAT_IGL = "heat_igl"
     HEAT = "heat"
 
 
@@ -133,8 +134,8 @@ class InterpolationConfig(Data):
 
     avg_layer_height: float = 5.0
     vertical_layers_max_centroid_dist: float = 25.0
-    target_low_geodesics_method: GeodesicsMethod = GeodesicsMethod.EXACT_IGL
-    target_high_geodesics_method: GeodesicsMethod = GeodesicsMethod.EXACT_IGL
+    target_low_geodesics_method: GeodesicsMethod = GeodesicsMethod.HEAT_IGL
+    target_high_geodesics_method: GeodesicsMethod = GeodesicsMethod.HEAT_IGL
     target_high_union_method: UnionMethod = UnionMethod.MIN
     target_high_union_params: list[float] = field(default_factory=list)
     uneven_upper_targets_offset: float = 0.0
@@ -166,8 +167,8 @@ class InterpolationConfig(Data):
         return cls(
             avg_layer_height=data.get("avg_layer_height", 5.0),
             vertical_layers_max_centroid_dist=data.get("vertical_layers_max_centroid_dist", 25.0),
-            target_low_geodesics_method=data.get("target_low_geodesics_method", "exact_igl"),
-            target_high_geodesics_method=data.get("target_high_geodesics_method", "exact_igl"),
+            target_low_geodesics_method=data.get("target_low_geodesics_method", "heat_igl"),
+            target_high_geodesics_method=data.get("target_high_geodesics_method", "heat_igl"),
             target_high_union_method=data.get("target_high_union_method", "min"),
             target_high_union_params=data.get("target_high_union_params", []),
             uneven_upper_targets_offset=data.get("uneven_upper_targets_offset", 0.0),
@@ -193,8 +194,8 @@ class InterpolationConfig(Data):
         return cls(
             avg_layer_height=params.get("avg_layer_height", 5.0),
             vertical_layers_max_centroid_dist=params.get("vertical_layers_max_centroid_dist", 25.0),
-            target_low_geodesics_method=params.get("target_LOW_geodesics_method", "exact_igl"),
-            target_high_geodesics_method=params.get("target_HIGH_geodesics_method", "exact_igl"),
+            target_low_geodesics_method=params.get("target_LOW_geodesics_method", "heat_igl"),
+            target_high_geodesics_method=params.get("target_HIGH_geodesics_method", "heat_igl"),
             target_high_union_method=union_method,
             target_high_union_params=union_params,
             uneven_upper_targets_offset=params.get("uneven_upper_targets_offset", 0.0),
