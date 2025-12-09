@@ -13,6 +13,7 @@ from numpy.typing import NDArray
 
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.preprocessing_utils.geodesics import (
+    get_cgal_HEAT_geodesic_distances,
     get_custom_HEAT_geodesic_distances,
     get_igl_EXACT_geodesic_distances,
     get_igl_HEAT_geodesic_distances,
@@ -20,7 +21,7 @@ from compas_slicer.pre_processing.preprocessing_utils.geodesics import (
 
 logger = logging.getLogger('logger')
 
-GeodesicsMethod = Literal['exact_igl', 'heat_igl', 'heat']
+GeodesicsMethod = Literal['exact_igl', 'heat_igl', 'heat_cgal', 'heat']
 UnionMethod = Literal['min', 'smooth', 'chamfer', 'stairs']
 
 
@@ -150,6 +151,9 @@ class CompoundTarget:
                                self.clustered_vkeys]
         elif self.geodesics_method == 'heat_igl':
             distances_lists = [get_igl_HEAT_geodesic_distances(self.mesh, vstarts) for vstarts in
+                               self.clustered_vkeys]
+        elif self.geodesics_method == 'heat_cgal':
+            distances_lists = [get_cgal_HEAT_geodesic_distances(self.mesh, vstarts) for vstarts in
                                self.clustered_vkeys]
         elif self.geodesics_method == 'heat':
             distances_lists = [get_custom_HEAT_geodesic_distances(self.mesh, vstarts, str(self.OUTPUT_PATH)) for vstarts in

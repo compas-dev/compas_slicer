@@ -22,6 +22,7 @@ logger = logging.getLogger('logger')
 
 __all__ = ['get_igl_EXACT_geodesic_distances',
            'get_igl_HEAT_geodesic_distances',
+           'get_cgal_HEAT_geodesic_distances',
            'get_custom_HEAT_geodesic_distances',
            'GeodesicsCache']
 
@@ -118,6 +119,50 @@ def get_igl_HEAT_geodesic_distances(
     vertices_start: list, int
     """
     return _geodesics_cache.get_distances(mesh, vertices_start, method='heat')
+
+
+# CGAL heat method solver cache (for precomputation reuse)
+_cgal_solver_cache: dict[int, object] = {}
+
+
+def get_cgal_HEAT_geodesic_distances(
+    mesh: Mesh, vertices_start: list[int]
+) -> NDArray[np.floating]:
+    """
+    Calculate geodesic distances using CGAL heat method.
+
+    Uses compas_cgal's HeatGeodesicSolver which provides CGAL's Heat_method_3
+    implementation with intrinsic Delaunay triangulation.
+
+    Parameters
+    ----------
+    mesh : Mesh
+        A compas mesh (must be triangulated).
+    vertices_start : list[int]
+        Source vertex indices.
+
+    Returns
+    -------
+    NDArray
+        Minimum distance from any source to each vertex.
+    """
+    from compas_cgal.geodesics import HeatGeodesicSolver
+
+    # Check if we have a cached solver for this mesh
+    mesh_hash = hash((len(list(mesh.vertices())), len(list(mesh.faces()))))
+    if mesh_hash not in _cgal_solver_cache:
+        _cgal_solver_cache.clear()  # Clear old solvers
+        _cgal_solver_cache[mesh_hash] = HeatGeodesicSolver(mesh)
+
+    solver = _cgal_solver_cache[mesh_hash]
+
+    # Compute distances for each source and take minimum
+    all_distances = []
+    for source in vertices_start:
+        distances = solver.solve([source])
+        all_distances.append(distances)
+
+    return np.min(np.array(all_distances), axis=0)
 
 
 def get_custom_HEAT_geodesic_distances(

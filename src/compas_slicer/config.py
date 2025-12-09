@@ -30,6 +30,7 @@ class GeodesicsMethod(str, Enum):
 
     EXACT_IGL = "exact_igl"
     HEAT_IGL = "heat_igl"
+    HEAT_CGAL = "heat_cgal"
     HEAT = "heat"
 
 
