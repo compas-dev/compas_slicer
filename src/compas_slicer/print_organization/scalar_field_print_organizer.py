@@ -5,7 +5,7 @@ from compas.geometry import Vector, normalize_vector
 
 import compas_slicer
 import compas_slicer.utilities as utils
-from compas_slicer.geometry import PrintPoint
+from compas_slicer.geometry import PrintLayer, PrintPath, PrintPoint
 from compas_slicer.parameters import get_param
 from compas_slicer.pre_processing import GradientEvaluation
 from compas_slicer.print_organization import BasePrintOrganizer
@@ -53,11 +53,11 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
         logger.info('Creating print points ...')
         with progressbar.ProgressBar(max_value=self.slicer.number_of_points) as bar:
 
-            for i, layer in enumerate(self.slicer.layers):
-                self.printpoints_dict[f'layer_{i}'] = {}
+            for _i, layer in enumerate(self.slicer.layers):
+                print_layer = PrintLayer()
 
-                for j, path in enumerate(layer.paths):
-                    self.printpoints_dict[f'layer_{i}'][f'path_{j}'] = []
+                for _j, path in enumerate(layer.paths):
+                    print_path = PrintPath()
 
                     for k, point in enumerate(path.points):
                         normal = utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh)
@@ -65,19 +65,21 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
                         h = get_param(self.parameters, 'avg_layer_height', defaults_type='layers')
                         printpoint = PrintPoint(pt=point, layer_height=h, mesh_normal=normal)
 
-                        self.printpoints_dict[f'layer_{i}'][f'path_{j}'].append(printpoint)
+                        print_path.printpoints.append(printpoint)
                         bar.update(count)
                         count += 1
 
+                    print_layer.paths.append(print_path)
+
+                self.printpoints.layers.append(print_layer)
+
         # transfer gradient information to printpoints
-        transfer_mesh_attributes_to_printpoints(self.slicer.mesh, self.printpoints_dict)
+        transfer_mesh_attributes_to_printpoints(self.slicer.mesh, self.printpoints)
 
         # add non-planar print data to printpoints
-        for i, layer in enumerate(self.slicer.layers):
-            layer_key = f'layer_{i}'
-            for j, _path in enumerate(layer.paths):
-                path_key = f'path_{j}'
-                for pp in self.printpoints_dict[layer_key][path_key]:
+        for layer in self.printpoints:
+            for path in layer:
+                for pp in path:
                     grad_norm = pp.attributes['gradient_norm']
                     grad = pp.attributes['gradient']
                     pp.distance_to_support = grad_norm

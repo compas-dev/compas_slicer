@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from typing import Any
 
+from compas.data import Data
 from compas.geometry import Frame, Point, Vector, cross_vectors, dot_vectors, norm_vector
 
 import compas_slicer.utilities.utils as utils
@@ -9,7 +11,8 @@ import compas_slicer.utilities.utils as utils
 __all__ = ["PrintPoint"]
 
 
-class PrintPoint:
+@dataclass
+class PrintPoint(Data):
     """A PrintPoint consists of a compas.geometry.Point and printing attributes.
 
     Attributes
@@ -43,50 +46,95 @@ class PrintPoint:
 
     """
 
-    def __init__(self, pt: Point, layer_height: float, mesh_normal: Vector) -> None:
-        if not isinstance(pt, Point):
+    pt: Point
+    layer_height: float
+    mesh_normal: Vector
+    up_vector: Vector = field(default_factory=lambda: Vector(0, 0, 1))
+    frame: Frame | None = field(default=None)
+    extruder_toggle: bool | None = None
+    velocity: float | None = None
+    wait_time: float | None = None
+    blend_radius: float | None = None
+    closest_support_pt: Point | None = None
+    distance_to_support: float | None = None
+    is_feasible: bool = True
+    attributes: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        super().__init__()  # Initialize Data base class
+        if not isinstance(self.pt, Point):
             raise TypeError("pt must be a compas.geometry.Point")
-        if not isinstance(mesh_normal, Vector):
+        if not isinstance(self.mesh_normal, Vector):
             raise TypeError("mesh_normal must be a compas.geometry.Vector")
-        if not layer_height:
+        if not self.layer_height:
             raise ValueError("layer_height must be provided")
-
-        self.pt = pt
-        self.layer_height = layer_height
-        self.mesh_normal = mesh_normal
-        self.up_vector = Vector(0, 0, 1)
-        self.frame = self.get_frame()
-
-        # Attributes transferred from mesh
-        self.attributes: dict[str, Any] = {}
-
-        # Print organization attributes
-        self.extruder_toggle: bool | None = None
-        self.velocity: float | None = None
-        self.wait_time: float | None = None
-        self.blend_radius: float | None = None
-
-        # Support relation
-        self.closest_support_pt: Point | None = None
-        self.distance_to_support: float | None = None
-
-        self.is_feasible = True
+        if self.frame is None:
+            self.frame = self._compute_frame()
 
     def __repr__(self) -> str:
         x, y, z = self.pt[0], self.pt[1], self.pt[2]
-        return f"<PrintPoint object at ({x:.2f}, {y:.2f}, {z:.2f})>"
+        return f"<PrintPoint at ({x:.2f}, {y:.2f}, {z:.2f})>"
 
-    def get_frame(self) -> Frame:
-        """Returns a Frame with x-axis pointing up, y-axis towards mesh normal."""
+    def _compute_frame(self) -> Frame:
+        """Compute frame with x-axis pointing up, y-axis towards mesh normal."""
         if abs(dot_vectors(self.up_vector, self.mesh_normal)) < 1.0:
             c = cross_vectors(self.up_vector, self.mesh_normal)
             if norm_vector(c) == 0:
                 c = Vector(1, 0, 0)
-            if norm_vector(self.mesh_normal) == 0:
-                self.mesh_normal = Vector(0, 1, 0)
-            return Frame(self.pt, c, self.mesh_normal)
+            mesh_normal = self.mesh_normal
+            if norm_vector(mesh_normal) == 0:
+                mesh_normal = Vector(0, 1, 0)
+            return Frame(self.pt, c, mesh_normal)
         else:
             return Frame(self.pt, Vector(1, 0, 0), Vector(0, 1, 0))
+
+    def get_frame(self) -> Frame:
+        """Returns a Frame with x-axis pointing up, y-axis towards mesh normal."""
+        return self._compute_frame()
+
+    @property
+    def __data__(self) -> dict[str, Any]:
+        return {
+            "pt": self.pt.__data__,
+            "layer_height": self.layer_height,
+            "mesh_normal": self.mesh_normal.__data__,
+            "up_vector": self.up_vector.__data__,
+            "frame": self.frame.__data__ if self.frame else None,
+            "extruder_toggle": self.extruder_toggle,
+            "velocity": self.velocity,
+            "wait_time": self.wait_time,
+            "blend_radius": self.blend_radius,
+            "closest_support_pt": self.closest_support_pt.__data__ if self.closest_support_pt else None,
+            "distance_to_support": self.distance_to_support,
+            "is_feasible": self.is_feasible,
+            "attributes": utils.get_jsonable_attributes(self.attributes),
+        }
+
+    @classmethod
+    def __from_data__(cls, data: dict[str, Any]) -> PrintPoint:
+        closest_support_pt = None
+        if data.get("closest_support_pt"):
+            closest_support_pt = Point.__from_data__(data["closest_support_pt"])
+
+        frame: Frame | None = None
+        if data.get("frame"):
+            frame = Frame.__from_data__(data["frame"])  # type: ignore[assignment]
+
+        return cls(
+            pt=Point.__from_data__(data["pt"]),
+            layer_height=data["layer_height"],
+            mesh_normal=Vector.__from_data__(data["mesh_normal"]),
+            up_vector=Vector.__from_data__(data["up_vector"]),
+            frame=frame,
+            extruder_toggle=data.get("extruder_toggle"),
+            velocity=data.get("velocity"),
+            wait_time=data.get("wait_time"),
+            blend_radius=data.get("blend_radius"),
+            closest_support_pt=closest_support_pt,
+            distance_to_support=data.get("distance_to_support"),
+            is_feasible=data.get("is_feasible", True),
+            attributes=data.get("attributes", {}),
+        )
 
     def to_data(self) -> dict[str, Any]:
         """Returns a dictionary of structured data representing the PrintPoint.
@@ -97,21 +145,7 @@ class PrintPoint:
             The PrintPoint's data.
 
         """
-        return {
-            "point": [self.pt[0], self.pt[1], self.pt[2]],
-            "layer_height": self.layer_height,
-            "mesh_normal": self.mesh_normal.__data__,
-            "up_vector": self.up_vector.__data__,
-            "frame": self.frame.__data__,
-            "extruder_toggle": self.extruder_toggle,
-            "velocity": self.velocity,
-            "wait_time": self.wait_time,
-            "blend_radius": self.blend_radius,
-            "closest_support_pt": self.closest_support_pt.__data__ if self.closest_support_pt else None,
-            "distance_to_support": self.distance_to_support,
-            "is_feasible": self.is_feasible,
-            "attributes": utils.get_jsonable_attributes(self.attributes),
-        }
+        return self.__data__
 
     @classmethod
     def from_data(cls, data: dict[str, Any]) -> PrintPoint:
@@ -128,25 +162,7 @@ class PrintPoint:
             The constructed PrintPoint.
 
         """
-        pp = cls(
-            pt=Point.__from_data__(data["point"]),
-            layer_height=data["layer_height"],
-            mesh_normal=Vector.__from_data__(data["mesh_normal"]),
-        )
-
-        pp.up_vector = Vector.__from_data__(data["up_vector"])
-        pp.frame = Frame.__from_data__(data["frame"])
-
-        pp.extruder_toggle = data["extruder_toggle"]
-        pp.velocity = data["velocity"]
-        pp.wait_time = data["wait_time"]
-        pp.blend_radius = data["blend_radius"]
-
-        if data["closest_support_pt"]:
-            pp.closest_support_pt = Point.__from_data__(data["closest_support_pt"])
-        pp.distance_to_support = data["distance_to_support"]
-
-        pp.is_feasible = data["is_feasible"]
-        pp.attributes = data["attributes"]
-
-        return pp
+        # Handle legacy format with "point" key instead of "pt"
+        if "point" in data and "pt" not in data:
+            data["pt"] = data.pop("point")
+        return cls.__from_data__(data)

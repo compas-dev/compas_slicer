@@ -20,15 +20,11 @@ def set_extruder_toggle(print_organizer, slicer):
 
     logger.info("Setting extruder toggle")
 
-    pp_dict = print_organizer.printpoints_dict
-
     for i, layer in enumerate(slicer.layers):
-        layer_key = f'layer_{i}'
         is_vertical_layer = isinstance(layer, compas_slicer.geometry.VerticalLayer)
         is_brim_layer = layer.is_brim
 
         for j, path in enumerate(layer.paths):
-            path_key = f'path_{j}'
             is_closed_path = path.is_closed
 
             # --- decide if the path should be interrupted at the end
@@ -54,9 +50,9 @@ def set_extruder_toggle(print_organizer, slicer):
 
             # --- create extruder toggles
             try:
-                path_printpoints = pp_dict[layer_key][path_key]
-            except KeyError:
-                logger.exception(f"no path found for layer {layer_key}")
+                path_printpoints = print_organizer.printpoints[i][j]
+            except (KeyError, IndexError):
+                logger.exception(f"no path found for layer {i}")
             else:
                 for k, printpoint in enumerate(path_printpoints):
 
@@ -68,13 +64,11 @@ def set_extruder_toggle(print_organizer, slicer):
                     else:
                         printpoint.extruder_toggle = True
 
-        # set extruder toggle of last print point to false
-        last_layer_key = f'layer_{len(pp_dict) - 1}'
-        last_path_key = f'path_{len(pp_dict[last_layer_key]) - 1}'
-        try:
-            pp_dict[last_layer_key][last_path_key][-1].extruder_toggle = False
-        except KeyError as e:
-            logger.exception(e)
+    # set extruder toggle of last print point to false
+    try:
+        print_organizer.printpoints[-1][-1][-1].extruder_toggle = False
+    except (KeyError, IndexError) as e:
+        logger.exception(e)
 
 
 def override_extruder_toggle(print_organizer, override_value):

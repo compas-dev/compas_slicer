@@ -26,7 +26,7 @@ def set_wait_time_on_sharp_corners(print_organizer, threshold=0.5 * math.pi, wai
     """
     number_of_wait_points = 0
     for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
-        neighbors = print_organizer.get_printpoint_neighboring_items(f'layer_{i}', f'path_{j}', k)
+        neighbors = print_organizer.get_printpoint_neighboring_items(i, j, k)
         prev_ppt = neighbors[0]
         next_ppt = neighbors[1]
 
@@ -67,7 +67,7 @@ def set_wait_time_based_on_extruder_toggle(print_organizer, wait_type, wait_time
 
     for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
         number_of_wait_points = 0
-        next_ppt = find_next_printpoint(print_organizer.printpoints_dict, i, j, k)
+        next_ppt = find_next_printpoint(print_organizer.printpoints, i, j, k)
 
         # for the brim layer don't add any wait times
         if not print_organizer.slicer.layers[i].is_brim and next_ppt:

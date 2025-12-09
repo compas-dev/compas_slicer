@@ -5,7 +5,7 @@ from compas.geometry import Vector
 
 import compas_slicer
 import compas_slicer.utilities as utils
-from compas_slicer.geometry import PrintPoint
+from compas_slicer.geometry import PrintLayer, PrintPath, PrintPoint
 from compas_slicer.print_organization import BasePrintOrganizer
 
 logger = logging.getLogger('logger')
@@ -51,11 +51,11 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                 closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.slicer.mesh, all_pts)
                 normals = [Vector(*self.slicer.mesh.face_normal(fkey)) for fkey in closest_fks]
 
-            for i, layer in enumerate(self.slicer.layers):
-                self.printpoints_dict[f'layer_{i}'] = {}
+            for _i, layer in enumerate(self.slicer.layers):
+                print_layer = PrintLayer()
 
-                for j, path in enumerate(layer.paths):
-                    self.printpoints_dict[f'layer_{i}'][f'path_{j}'] = []
+                for _j, path in enumerate(layer.paths):
+                    print_path = PrintPath()
 
                     for k, point in enumerate(path.points):
 
@@ -67,9 +67,13 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                         else:
                             printpoint.up_vector = self.get_printpoint_up_vector(path, k, n)
 
-                        self.printpoints_dict[f'layer_{i}'][f'path_{j}'].append(printpoint)
+                        print_path.printpoints.append(printpoint)
                         bar.update(count)
                         count += 1
+
+                    print_layer.paths.append(print_path)
+
+                self.printpoints.layers.append(print_layer)
 
 
 if __name__ == "__main__":

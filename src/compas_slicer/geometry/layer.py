@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
+from compas.data import Data
 
 import compas_slicer.utilities.utils as utils
 from compas_slicer.geometry.path import Path
@@ -16,7 +18,17 @@ logger = logging.getLogger("logger")
 __all__ = ["Layer", "VerticalLayer", "VerticalLayersManager"]
 
 
-class Layer:
+def _parse_min_max(value: Any) -> tuple[float | None, float | None]:
+    """Parse min_max_z_height from data."""
+    if value is None:
+        return (None, None)
+    if isinstance(value, (list, tuple)) and len(value) == 2:
+        return (value[0], value[1])
+    return (None, None)
+
+
+@dataclass
+class Layer(Data):
     """A Layer stores a group of ordered paths generated when a geometry is sliced.
 
     Layers are typically organized horizontally, but can also be organized
@@ -37,25 +49,23 @@ class Layer:
 
     """
 
-    def __init__(self, paths: list[Path] | None = None) -> None:
-        if paths is None:
-            paths = []
-        if len(paths) > 0 and not isinstance(paths[0], Path):
-            raise TypeError("paths must contain Path objects")
+    paths: list[Path] = field(default_factory=list)
+    is_brim: bool = False
+    number_of_brim_offsets: int | None = None
+    is_raft: bool = False
+    min_max_z_height: tuple[float | None, float | None] = (None, None)
 
-        self.paths = paths
-        self.min_max_z_height: tuple[float | None, float | None] = (None, None)
-
-        if paths:
-            self.calculate_z_bounds()
-
-        self.is_brim = False
-        self.number_of_brim_offsets: int | None = None
-        self.is_raft = False
+    def __post_init__(self) -> None:
+        super().__init__()  # Initialize Data base class
+        if len(self.paths) > 0:
+            if not isinstance(self.paths[0], Path):
+                raise TypeError("paths must contain Path objects")
+            if self.min_max_z_height == (None, None):
+                self.calculate_z_bounds()
 
     def __repr__(self) -> str:
         no_of_paths = len(self.paths) if self.paths else 0
-        return f"<Layer object with {no_of_paths} paths>"
+        return f"<Layer with {no_of_paths} paths>"
 
     @property
     def total_number_of_points(self) -> int:
@@ -73,7 +83,33 @@ class Layer:
             for pt in path.points:
                 z_min = min(z_min, pt[2])
                 z_max = max(z_max, pt[2])
-        self.min_max_z_height = (z_min, z_max)
+        self.min_max_z_height = (float(z_min), float(z_max))
+
+    @property
+    def __data__(self) -> dict[str, Any]:
+        return {
+            "paths": [path.__data__ for path in self.paths],
+            "layer_type": "horizontal_layer",
+            "is_brim": self.is_brim,
+            "number_of_brim_offsets": self.number_of_brim_offsets,
+            "min_max_z_height": list(self.min_max_z_height),
+        }
+
+    @classmethod
+    def __from_data__(cls, data: dict[str, Any]) -> Layer:
+        paths_data = data["paths"]
+        # Handle both list format and legacy dict format
+        if isinstance(paths_data, dict):
+            paths = [Path.from_data(paths_data[key]) for key in sorted(paths_data.keys(), key=lambda x: int(x))]
+        else:
+            paths = [Path.from_data(p) for p in paths_data]
+
+        return cls(
+            paths=paths,
+            is_brim=data.get("is_brim", False),
+            number_of_brim_offsets=data.get("number_of_brim_offsets"),
+            min_max_z_height=_parse_min_max(data.get("min_max_z_height")),
+        )
 
     @classmethod
     def from_data(cls, data: dict[str, Any]) -> Layer:
@@ -90,13 +126,7 @@ class Layer:
             The constructed layer.
 
         """
-        paths_data = data["paths"]
-        paths = [Path.from_data(paths_data[key]) for key in paths_data]
-        layer = cls(paths=paths)
-        layer.is_brim = data["is_brim"]
-        layer.number_of_brim_offsets = data["number_of_brim_offsets"]
-        layer.min_max_z_height = tuple(data["min_max_z_height"])
-        return layer
+        return cls.__from_data__(data)
 
     def to_data(self) -> dict[str, Any]:
         """Returns a dictionary of structured data representing the layer.
@@ -107,15 +137,10 @@ class Layer:
             The layer's data.
 
         """
-        return {
-            "paths": {i: path.to_data() for i, path in enumerate(self.paths)},
-            "layer_type": "horizontal_layer",
-            "is_brim": self.is_brim,
-            "number_of_brim_offsets": self.number_of_brim_offsets,
-            "min_max_z_height": self.min_max_z_height,
-        }
+        return self.__data__
 
 
+@dataclass
 class VerticalLayer(Layer):
     """Vertical ordering layer that stores print paths sorted in vertical groups.
 
@@ -130,14 +155,12 @@ class VerticalLayer(Layer):
 
     """
 
-    def __init__(self, id: int = 0, paths: list[Path] | None = None) -> None:
-        super().__init__(paths=paths)
-        self.id = id
-        self.head_centroid: NDArray | None = None
+    id: int = 0
+    head_centroid: NDArray | None = field(default=None, repr=False)
 
     def __repr__(self) -> str:
         no_of_paths = len(self.paths) if self.paths else 0
-        return f"<Vertical Layer object with id: {self.id} and {no_of_paths} paths>"
+        return f"<VerticalLayer id={self.id} with {no_of_paths} paths>"
 
     def append_(self, path: Path) -> None:
         """Add path to self.paths list."""
@@ -155,20 +178,30 @@ class VerticalLayer(Layer):
         logger.info(f"VerticalLayer id: {self.id}")
         logger.info(f"Total number of paths: {len(self.paths)}")
 
-    def to_data(self) -> dict[str, Any]:
-        """Returns a dictionary of structured data representing the vertical layer.
-
-        Returns
-        -------
-        dict
-            The vertical layer's data.
-
-        """
+    @property
+    def __data__(self) -> dict[str, Any]:
         return {
-            "paths": {i: path.to_data() for i, path in enumerate(self.paths)},
-            "min_max_z_height": self.min_max_z_height,
+            "paths": [path.__data__ for path in self.paths],
+            "min_max_z_height": list(self.min_max_z_height),
             "layer_type": "vertical_layer",
+            "id": self.id,
         }
+
+    @classmethod
+    def __from_data__(cls, data: dict[str, Any]) -> VerticalLayer:
+        paths_data = data["paths"]
+        # Handle both list format and legacy dict format
+        if isinstance(paths_data, dict):
+            paths = [Path.from_data(paths_data[key]) for key in sorted(paths_data.keys(), key=lambda x: int(x))]
+        else:
+            paths = [Path.from_data(p) for p in paths_data]
+
+        layer = cls(
+            paths=paths,
+            id=data.get("id", 0),
+            min_max_z_height=_parse_min_max(data.get("min_max_z_height")),
+        )
+        return layer
 
     @classmethod
     def from_data(cls, data: dict[str, Any]) -> VerticalLayer:
@@ -185,12 +218,18 @@ class VerticalLayer(Layer):
             The constructed vertical layer.
 
         """
-        paths_data = data["paths"]
-        paths = [Path.from_data(paths_data[key]) for key in paths_data]
-        layer = cls(id=0)
-        layer.paths = paths
-        layer.min_max_z_height = tuple(data["min_max_z_height"])
-        return layer
+        return cls.__from_data__(data)
+
+    def to_data(self) -> dict[str, Any]:
+        """Returns a dictionary of structured data representing the vertical layer.
+
+        Returns
+        -------
+        dict
+            The vertical layer's data.
+
+        """
+        return self.__data__
 
 
 class VerticalLayersManager:

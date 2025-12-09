@@ -536,37 +536,69 @@ def get_dict_key_from_value(dictionary, val):
     return "key doesn't exist"
 
 
-def find_next_printpoint(pp_dict, i, j, k):
+def find_next_printpoint(printpoints, i, j, k):
     """
     Returns the next printpoint from the current printpoint if it exists, otherwise returns None.
+
+    Parameters
+    ----------
+    printpoints : PrintPointsCollection
+        The collection of printpoints.
+    i : int
+        Layer index.
+    j : int
+        Path index.
+    k : int
+        Printpoint index within the path.
+
+    Returns
+    -------
+    PrintPoint | None
+        The next printpoint or None if at the end.
+
     """
     next_ppt = None
-    layer_key, path_key = f'layer_{i}', f'path_{j}'
-    if k < len(pp_dict[layer_key][path_key]) - 1:  # If there are more ppts in the current path, then take the next ppt
-        next_ppt = pp_dict[layer_key][path_key][k + 1]
+    if k < len(printpoints[i][j]) - 1:  # If there are more ppts in the current path
+        next_ppt = printpoints[i][j][k + 1]
     else:
-        if j < len(pp_dict[layer_key]) - 1:  # Otherwise take the next path if there are more paths in the current layer
-            next_ppt = pp_dict[layer_key][f'path_{j + 1}'][0]
+        if j < len(printpoints[i]) - 1:  # Otherwise take the next path
+            next_ppt = printpoints[i][j + 1][0]
         else:
-            if i < len(pp_dict) - 1:  # Otherwise take the next layer if there are more layers in the current slicer
-                next_ppt = pp_dict[f'layer_{i + 1}']['path_0'][0]
+            if i < len(printpoints) - 1:  # Otherwise take the next layer
+                next_ppt = printpoints[i + 1][0][0]
     return next_ppt
 
 
-def find_previous_printpoint(pp_dict, layer_key, path_key, i, j, k):
+def find_previous_printpoint(printpoints, i, j, k):
     """
     Returns the previous printpoint from the current printpoint if it exists, otherwise returns None.
+
+    Parameters
+    ----------
+    printpoints : PrintPointsCollection
+        The collection of printpoints.
+    i : int
+        Layer index.
+    j : int
+        Path index.
+    k : int
+        Printpoint index within the path.
+
+    Returns
+    -------
+    PrintPoint | None
+        The previous printpoint or None if at the start.
+
     """
     prev_ppt = None
-    if k > 0:  # If not the first point in a path, take the previous point in the path
-        prev_ppt = pp_dict[layer_key][path_key][k - 1]
+    if k > 0:  # If not the first point in a path
+        prev_ppt = printpoints[i][j][k - 1]
     else:
-        if j > 0:  # Otherwise take the last point of the previous path, if there are more paths in the current layer
-            prev_ppt = pp_dict[layer_key][f'path_{j - 1}'][-1]
+        if j > 0:  # Otherwise take the last point of the previous path
+            prev_ppt = printpoints[i][j - 1][-1]
         else:
-            if i > 0:  # Otherwise take the last path of the previous layer if there are more layers in the current slicer
-                last_path_key = len(pp_dict[layer_key]) - 1
-                prev_ppt = pp_dict[f'layer_{i - 1}'][f'path_{last_path_key}'][-1]
+            if i > 0:  # Otherwise take the last path of the previous layer
+                prev_ppt = printpoints[i - 1][-1][-1]
     return prev_ppt
 
 

@@ -1,9 +1,17 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING, Any
 
 import progressbar
 from compas.geometry import barycentric_coordinates
 
 from compas_slicer.utilities.utils import pull_pts_to_mesh_faces
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
+
+    from compas_slicer.geometry import PrintPointsCollection
 
 logger = logging.getLogger('logger')
 
@@ -15,7 +23,10 @@ __all__ = ['transfer_mesh_attributes_to_printpoints']
 # PrintPoints Attributes
 ######################
 
-def transfer_mesh_attributes_to_printpoints(mesh, printpoints_dict):
+def transfer_mesh_attributes_to_printpoints(
+    mesh: Mesh,
+    printpoints: PrintPointsCollection,
+) -> None:
     """
     Transfers face and vertex attributes from the mesh to the printpoints.
     Each printpoint is projected to the closest mesh face. It takes directly all the face attributes.
@@ -26,37 +37,39 @@ def transfer_mesh_attributes_to_printpoints(mesh, printpoints_dict):
     with scalars and np.arrays.
 
     The reserved attribute names (see 'is_reserved_attribute(attr)') are not passed on to the printpoints.
+
+    Parameters
+    ----------
+    mesh : Mesh
+        The mesh to transfer attributes from.
+    printpoints : PrintPointsCollection
+        The collection of printpoints to transfer attributes to.
+
     """
     logger.info('Transferring mesh attributes to the printpoints.')
 
-    all_pts = []
-    for layer_key in printpoints_dict:
-        for path_key in printpoints_dict[layer_key]:
-            for ppt in printpoints_dict[layer_key][path_key]:
-                all_pts.append(ppt.pt)
+    all_pts = [ppt.pt for ppt in printpoints.iter_printpoints()]
 
     closest_fks, projected_pts = pull_pts_to_mesh_faces(mesh, all_pts)
 
     i = 0
     with progressbar.ProgressBar(max_value=len(all_pts)) as bar:
-        for layer_key in printpoints_dict:
-            for path_key in printpoints_dict[layer_key]:
-                for ppt in printpoints_dict[layer_key][path_key]:
-                    fkey = closest_fks[i]
-                    proj_pt = projected_pts[i]
-                    ppt.attributes = transfer_mesh_attributes_to_point(mesh, fkey, proj_pt)
-                    i += 1
-                    bar.update(i)
+        for pp in printpoints.iter_printpoints():
+            fkey = closest_fks[i]
+            proj_pt = projected_pts[i]
+            pp.attributes = transfer_mesh_attributes_to_point(mesh, fkey, proj_pt)
+            i += 1
+            bar.update(i)
 
 
-def is_reserved_attribute(attr):
+def is_reserved_attribute(attr: str) -> bool:
     """ Returns True if the attribute name is a reserved, false otherwise. """
     taken_attributes = ['x', 'y', 'z', 'uv',
                         'scalar_field']
     return attr in taken_attributes
 
 
-def transfer_mesh_attributes_to_point(mesh, fkey, proj_pt):
+def transfer_mesh_attributes_to_point(mesh: Mesh, fkey: int, proj_pt: list[float]) -> dict[str, Any]:
     """
     It projects the point on the closest face of the mesh. Then if finds
     all the vertex and face attributes of the face and its attributes and transfers them to the point.
@@ -86,8 +99,8 @@ def transfer_mesh_attributes_to_point(mesh, fkey, proj_pt):
 
     # get vertex attributes using barycentric coordinates
     vs = mesh.face_vertices(fkey)
-    vertex_attrs = {}
-    checked_attrs = []
+    vertex_attrs: dict[str, Any] = {}
+    checked_attrs: list[str] = []
     for attr in mesh.vertex_attributes(vs[0]):
         if not is_reserved_attribute(attr):
             if attr not in checked_attrs:
@@ -102,7 +115,7 @@ def transfer_mesh_attributes_to_point(mesh, fkey, proj_pt):
     return vertex_attrs
 
 
-def check_that_attribute_can_be_multiplied(attr_name, value):
+def check_that_attribute_can_be_multiplied(attr_name: str, value: Any) -> bool:
     try:
         value * 1.0
         return True
