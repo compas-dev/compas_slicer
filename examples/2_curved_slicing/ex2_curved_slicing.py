@@ -11,7 +11,7 @@ from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import InterpolationPrintOrganizer
 from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import smooth_printpoints_up_vectors, smooth_printpoints_layer_heights
-from compas_slicer.utilities import should_visualize, visualize_slicer
+from compas_slicer.visualization import should_visualize, visualize_slicer
 import time
 
 logger = logging.getLogger('logger')

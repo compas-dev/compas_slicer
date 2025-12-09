@@ -9,7 +9,7 @@ import compas_slicer.utilities as utils
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.print_organization import ScalarFieldPrintOrganizer
 from compas_slicer.slicers import ScalarFieldSlicer
-from compas_slicer.utilities import should_visualize, visualize_slicer
+from compas_slicer.visualization import should_visualize, visualize_slicer
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)

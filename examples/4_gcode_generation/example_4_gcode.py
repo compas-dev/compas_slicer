@@ -9,7 +9,7 @@ from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.utilities import save_to_json
-from compas_slicer.utilities import should_visualize, visualize_slicer
+from compas_slicer.visualization import should_visualize, visualize_slicer
 from compas_slicer.parameters import get_param
 
 from compas.datastructures import Mesh

@@ -16,7 +16,7 @@ from compas_slicer.post_processing import generate_medial_axis_infill
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.utilities import save_to_json
-from compas_slicer.utilities import should_visualize, visualize_slicer
+from compas_slicer.visualization import should_visualize, visualize_slicer
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)

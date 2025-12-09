@@ -16,8 +16,7 @@ from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.print_organization import set_linear_velocity_constant
 from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.utilities import save_to_json
-from compas_slicer.utilities import should_visualize
-from compas_slicer.utilities import visualize_slicer
+from compas_slicer.visualization import should_visualize, visualize_slicer
 
 from compas.datastructures import Mesh
 from compas.geometry import Point
