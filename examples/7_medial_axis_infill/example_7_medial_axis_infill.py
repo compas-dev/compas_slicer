@@ -16,13 +16,14 @@ from compas_slicer.post_processing import generate_medial_axis_infill
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.utilities import save_to_json
+from compas_slicer.utilities import should_visualize, visualize_slicer
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("logger")
 
 
-def main():
+def main(visualize: bool = False):
     start_time = time.time()
 
     # Paths
@@ -72,6 +73,9 @@ def main():
     end_time = time.time()
     logger.info(f"Total time: {end_time - start_time:.2f} seconds")
 
+    if visualize:
+        visualize_slicer(slicer, mesh)
+
 
 if __name__ == "__main__":
-    main()
+    main(visualize=should_visualize())

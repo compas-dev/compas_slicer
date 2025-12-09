@@ -9,6 +9,7 @@ from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.utilities import save_to_json
+from compas_slicer.utilities import should_visualize, visualize_slicer
 from compas_slicer.parameters import get_param
 
 from compas.datastructures import Mesh
@@ -22,8 +23,7 @@ OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it d
 MODEL = 'simple_vase_open_low_res.obj'
 
 
-def main():
-
+def main(visualize: bool = False):
     compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
     delta = get_param({}, key='delta', defaults_type='gcode')  # boolean for delta printers
     print_volume_x = get_param({}, key='print_volume_x', defaults_type='gcode')  # in mm
@@ -54,6 +54,9 @@ def main():
     gcode_text = print_organizer.output_gcode(gcode_parameters)
     utils.save_to_text_file(gcode_text, OUTPUT_DIR, 'my_gcode.gcode')
 
+    if visualize:
+        visualize_slicer(slicer, compas_mesh)
+
 
 if __name__ == "__main__":
-    main()
+    main(visualize=should_visualize())

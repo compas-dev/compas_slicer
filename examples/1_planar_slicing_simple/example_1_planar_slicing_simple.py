@@ -16,6 +16,8 @@ from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.print_organization import set_linear_velocity_constant
 from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.utilities import save_to_json
+from compas_slicer.utilities import should_visualize
+from compas_slicer.utilities import visualize_slicer
 
 from compas.datastructures import Mesh
 from compas.geometry import Point
@@ -34,7 +36,7 @@ OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it d
 MODEL = 'simple_vase_open_low_res.obj'
 
 
-def main():
+def main(visualize: bool = False):
     start_time = time.time()
 
     # ==========================================================================
@@ -122,6 +124,9 @@ def main():
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
 
+    if visualize:
+        visualize_slicer(slicer, compas_mesh)
+
 
 if __name__ == "__main__":
-    main()
+    main(visualize=should_visualize())

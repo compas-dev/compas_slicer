@@ -46,6 +46,9 @@ Documentation = "https://compas.dev/compas_slicer"
 Repository = "https://github.com/compas-dev/compas_slicer"
 
 [project.optional-dependencies]
+viz = [
+    "compas_viewer>=1.2",
+]
 dev = [
     "invoke>=2.0",
     "pytest>=7.0",

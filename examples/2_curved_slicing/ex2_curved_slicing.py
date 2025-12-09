@@ -11,6 +11,7 @@ from compas_slicer.pre_processing import create_mesh_boundary_attributes
 from compas_slicer.print_organization import InterpolationPrintOrganizer
 from compas_slicer.post_processing import seams_smooth
 from compas_slicer.print_organization import smooth_printpoints_up_vectors, smooth_printpoints_layer_heights
+from compas_slicer.utilities import should_visualize, visualize_slicer
 import time
 
 logger = logging.getLogger('logger')
@@ -21,7 +22,7 @@ OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'mesh.obj')
 
 
-def main():
+def main(visualize: bool = False):
     start_time = time.time()
 
     # --- Load initial_mesh
@@ -74,6 +75,9 @@ def main():
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
 
+    if visualize:
+        visualize_slicer(slicer, mesh)
+
 
 if __name__ == "__main__":
-    main()
+    main(visualize=should_visualize())
