@@ -77,13 +77,13 @@ class Layer(Data):
         if not self.paths:
             raise ValueError("Cannot calculate z_bounds because the list of paths is empty.")
 
-        z_min = float("inf")
-        z_max = float("-inf")
+        # Vectorized z extraction
+        all_z = []
         for path in self.paths:
             for pt in path.points:
-                z_min = min(z_min, pt[2])
-                z_max = max(z_max, pt[2])
-        self.min_max_z_height = (float(z_min), float(z_max))
+                all_z.append(pt[2])
+
+        self.min_max_z_height = (min(all_z), max(all_z))
 
     @property
     def __data__(self) -> dict[str, Any]:
