@@ -19,22 +19,25 @@ __all__ = ['get_igl_EXACT_geodesic_distances',
 
 def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
     """
-    Calculate geodesic distances using libigl.
+    Calculate geodesic distances using compas_libigl.
 
     Parameters
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
     vertices_start: list, int
     """
-    # utils.check_package_is_installed('igl')
-    import igl
+    from compas_libigl.geodistance import trimesh_geodistance
 
-    v, f = mesh.to_vertices_and_faces()
-    v = np.array(v)
-    f = np.array(f)
-    vertices_target = np.arange(len(v))  # all vertices are targets
-    vstart = np.array(vertices_start)
-    distances = igl.exact_geodesic(v, f, vstart, vertices_target)
+    M = mesh.to_vertices_and_faces()
+
+    # compas_libigl expects single source, so compute for each and take min
+    all_distances = []
+    for source in vertices_start:
+        distances = trimesh_geodistance(M, source, method='exact')
+        all_distances.append(distances)
+
+    # Take minimum distance from any source
+    distances = np.min(np.array(all_distances), axis=0)
     return distances
 
 
@@ -66,8 +69,8 @@ class GeodesicsSolver:
     """
 
     def __init__(self, mesh, OUTPUT_PATH):
-        # utils.check_package_is_installed('igl')
         import igl
+        from compas_libigl.massmatrix import trimesh_massmatrix
 
         logger.info('GeodesicsSolver')
         self.mesh = mesh
@@ -80,9 +83,10 @@ class GeodesicsSolver:
         f = np.array(f)
 
         # compute necessary data
-        self.cotans = igl.cotmatrix_entries(v, f)  # compute_cotan_field(self.mesh)
-        self.L = igl.cotmatrix(v, f)  # assemble_laplacian_matrix(self.mesh, self.cotans)
-        self.M = igl.massmatrix(v, f)  # create_mass_matrix(mesh)
+        # cotmatrix_entries and cotmatrix not in compas_libigl, use igl directly
+        self.cotans = igl.cotmatrix_entries(v, f)
+        self.L = igl.cotmatrix(v, f)
+        self.M = trimesh_massmatrix((v.tolist(), f.tolist()))
 
     def diffuse_heat(self, vi_sources, v_equalize=None, method='simulation'):
         """

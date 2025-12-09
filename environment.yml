@@ -7,12 +7,13 @@ dependencies:
   # core
   - attrs>=21.0
   - compas>=2.0
+  - compas_libigl>=0.7
+  - libigl>=2.5
   - networkx>=3.0
   - numpy>=1.24
   - progressbar2>=4.0
   - pyclipper>=1.3
   - rdp>=0.8
-  - libigl>=2.5
   # dev
   - invoke>=2.0
   - pytest>=7.0
