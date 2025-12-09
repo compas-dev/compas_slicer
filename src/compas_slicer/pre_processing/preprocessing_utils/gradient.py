@@ -77,15 +77,16 @@ def get_face_gradient_from_scalar_field(mesh, u, use_igl=True):
     logger.info('Computing per face gradient')
     if use_igl:
         try:
-            import igl
-            v, f = mesh.to_vertices_and_faces()
-            G = igl.grad(np.array(v), np.array(f))
+            from compas_libigl.grad import trimesh_grad
+
+            M = mesh.to_vertices_and_faces()
+            G = trimesh_grad(M)
             X = G * u
             nf = len(list(mesh.faces()))
             X = np.array([[X[i], X[i + nf], X[i + 2 * nf]] for i in range(nf)])
             return X
         except ModuleNotFoundError:
-            print("Could not calculate gradient with IGL because it is not installed. Falling back to default function")
+            print("Could not calculate gradient with compas_libigl because it is not installed. Falling back to default function")
 
         grad = []
         for fkey in mesh.faces():

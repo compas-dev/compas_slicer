@@ -69,7 +69,7 @@ class GeodesicsSolver:
     """
 
     def __init__(self, mesh, OUTPUT_PATH):
-        import igl
+        from compas_libigl.cotmatrix import trimesh_cotmatrix, trimesh_cotmatrix_entries
         from compas_libigl.massmatrix import trimesh_massmatrix
 
         logger.info('GeodesicsSolver')
@@ -78,15 +78,12 @@ class GeodesicsSolver:
 
         self.use_forwards_euler = True
 
-        v, f = mesh.to_vertices_and_faces()
-        v = np.array(v)
-        f = np.array(f)
+        M = mesh.to_vertices_and_faces()
 
-        # compute necessary data
-        # cotmatrix_entries and cotmatrix not in compas_libigl, use igl directly
-        self.cotans = igl.cotmatrix_entries(v, f)
-        self.L = igl.cotmatrix(v, f)
-        self.M = trimesh_massmatrix((v.tolist(), f.tolist()))
+        # compute necessary data using compas_libigl
+        self.cotans = trimesh_cotmatrix_entries(M)
+        self.L = trimesh_cotmatrix(M)
+        self.M = trimesh_massmatrix(M)
 
     def diffuse_heat(self, vi_sources, v_equalize=None, method='simulation'):
         """

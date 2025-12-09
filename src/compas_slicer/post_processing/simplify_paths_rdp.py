@@ -6,12 +6,6 @@ import rdp as rdp
 from compas.geometry import Point
 from compas.plugins import PluginNotInstalledError
 
-import compas_slicer.utilities as utils
-
-packages = utils.TerminalCommand('conda list').get_split_output_strings()
-if 'igl' in packages:
-    import igl
-
 logger = logging.getLogger('logger')
 
 __all__ = ['simplify_paths_rdp',
@@ -46,8 +40,8 @@ def simplify_paths_rdp(slicer, threshold):
 
 
 def simplify_paths_rdp_igl(slicer, threshold):
-    """
-    https://libigl.github.io/libigl-python-bindings/igl_docs/#ramer_douglas_peucker
+    """Simplify paths using Ramer-Douglas-Peucker from compas_libigl.
+
     Parameters
     ----------
     slicer: :class:`compas_slicer.slicers.BaseSlicer`
@@ -57,21 +51,22 @@ def simplify_paths_rdp_igl(slicer, threshold):
         Low threshold removes few points, high threshold removes many points.
     """
     try:
-        # utils.check_package_is_installed('igl')
-        logger.info("Paths simplification rdp - igl")
+        from compas_libigl.simplify import ramer_douglas_peucker
+
+        logger.info("Paths simplification rdp - compas_libigl")
         remaining_pts_num = 0
 
         for _i, layer in enumerate(slicer.layers):
             if not layer.is_raft:  # no simplification necessary for raft layer
                 for path in layer.paths:
-                    pts = np.array([[pt[0], pt[1], pt[2]] for pt in path.points])
-                    S, J, Q = igl.ramer_douglas_peucker(pts, threshold)
+                    pts = [[pt[0], pt[1], pt[2]] for pt in path.points]
+                    S, _J, _Q = ramer_douglas_peucker(pts, threshold)
                     path.points = [Point(pt[0], pt[1], pt[2]) for pt in S]
                     remaining_pts_num += len(path.points)
         logger.info(f'{remaining_pts_num} Points remaining after rdp simplification')
 
-    except PluginNotInstalledError:
-        logger.info("Libigl is not installed. Falling back to python rdp function")
+    except (PluginNotInstalledError, ModuleNotFoundError):
+        logger.info("compas_libigl is not installed. Falling back to python rdp function")
         simplify_paths_rdp(slicer, threshold)
 
 

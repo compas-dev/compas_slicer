@@ -7,8 +7,7 @@ dependencies:
   # core
   - attrs>=21.0
   - compas>=2.0
-  - compas_libigl>=0.7
-  - libigl>=2.5
+  - compas_libigl>=0.8
   - networkx>=3.0
   - numpy>=1.24
   - progressbar2>=4.0

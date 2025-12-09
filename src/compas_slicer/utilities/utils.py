@@ -411,10 +411,11 @@ def get_mesh_cotmatrix_igl(mesh, fix_boundaries=True):
     :class: 'scipy.sparse.csr_matrix'
         sparse matrix (dimensions: #V x #V), laplace operator, each row i corresponding to v(i, :)
     """
-    # check_package_is_installed('igl')
-    import igl
-    v, f = mesh.to_vertices_and_faces()
-    C = igl.cotmatrix(np.array(v), np.array(f))
+    from compas_libigl.cotmatrix import trimesh_cotmatrix
+
+    M = mesh.to_vertices_and_faces()
+    v, _f = M
+    C = trimesh_cotmatrix(M)
 
     if fix_boundaries:
         # fix boundaries by putting the corresponding columns of the sparse matrix to 0
@@ -440,10 +441,10 @@ def get_mesh_cotans_igl(mesh):
     :class: 'np.array'
         Dimensions: F by 3 list of 1/2*cotangents corresponding angles
     """
-    # check_package_is_installed('igl')
-    import igl
-    v, f = mesh.to_vertices_and_faces()
-    return igl.cotmatrix_entries(np.array(v), np.array(f))
+    from compas_libigl.cotmatrix import trimesh_cotmatrix_entries
+
+    M = mesh.to_vertices_and_faces()
+    return trimesh_cotmatrix_entries(M)
 
 
 #######################################

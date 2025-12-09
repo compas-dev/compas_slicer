@@ -5,6 +5,7 @@ import os
 import numpy as np
 from compas.datastructures import Mesh
 from compas.geometry import Line, distance_point_point_sqrd, project_point_line
+from compas_libigl.meshing import trimesh_cut_mesh, trimesh_face_components
 
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.preprocessing_utils.assign_vertex_distance import (
@@ -15,10 +16,6 @@ from compas_slicer.pre_processing.preprocessing_utils.mesh_attributes_handling i
     restore_mesh_attributes,
     save_vertex_attributes,
 )
-
-packages = utils.TerminalCommand('conda list').get_split_output_strings()
-if 'igl' in packages:
-    import igl
 
 logger = logging.getLogger('logger')
 
@@ -312,9 +309,10 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
     cut_flags = np.array(cut_flags)
     assert cut_flags.shape == f.shape
 
-    # --- cut mesh
-    v_cut, f_cut = igl.cut_mesh(v, f, cut_flags)
-    connected_components = igl.face_components(f_cut)
+    # --- cut mesh using compas_libigl
+    M = (v.tolist(), f.tolist())
+    v_cut, f_cut = trimesh_cut_mesh(M, cut_flags.tolist())
+    connected_components = trimesh_face_components((v_cut, f_cut))
 
     f_dict = {}
     for i in range(max(connected_components) + 1):
