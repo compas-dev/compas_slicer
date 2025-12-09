@@ -37,6 +37,15 @@ Additional
     generate_raft
     spiralize_contours
 
+Infill
+======
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    generate_medial_axis_infill
+
 """
 
 #  Polyline simplification
@@ -56,5 +65,8 @@ from .spiralize_contours import *  # noqa: F401 E402 F403
 #  Orienting
 from .unify_paths_orientation import *  # noqa: F401 E402 F403
 from .zig_zag_open_paths import *  # noqa: F401 E402 F403
+
+#  Infill
+from .infill import *  # noqa: F401 E402 F403
 
 __all__ = [name for name in dir() if not name.startswith('_')]
