@@ -4,6 +4,7 @@ import logging
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING, Any
 
+import numpy as np
 from compas.geometry import (
     Point,
     Polyline,
@@ -14,6 +15,44 @@ from compas.geometry import (
     scale_vector,
     subtract_vectors,
 )
+from numpy.typing import NDArray
+
+# Check for CGAL availability at module load
+_USE_CGAL = False
+try:
+    from compas_cgal.polylines import closest_points_on_polyline as _cgal_closest
+    _USE_CGAL = True
+except ImportError:
+    _cgal_closest = None
+
+
+def _batch_closest_points_on_polyline(
+    query_points: list[Point], polyline_points: list[Point]
+) -> tuple[NDArray[np.floating], NDArray[np.floating]]:
+    """Find closest points on polyline for batch of query points.
+
+    Returns closest points and distances.
+    Uses CGAL if available, otherwise falls back to compas.
+    """
+    if _USE_CGAL and len(query_points) > 10:
+        # Use CGAL batch query for larger sets
+        queries = [[p[0], p[1], p[2]] for p in query_points]
+        polyline = [[p[0], p[1], p[2]] for p in polyline_points]
+        closest = _cgal_closest(queries, polyline)
+        # Compute distances
+        queries_np = np.array(queries)
+        distances = np.linalg.norm(closest[:, :2] - queries_np[:, :2], axis=1)
+        return closest, distances
+    else:
+        # Fall back to per-point compas queries
+        polyline = Polyline(polyline_points)
+        closest = []
+        distances = []
+        for p in query_points:
+            cp = closest_point_on_polyline(p, polyline)
+            closest.append([cp[0], cp[1], cp[2]])
+            distances.append(distance_point_point(cp, p))
+        return np.array(closest), np.array(distances)
 
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import Path, PrintLayer, PrintPath, PrintPoint, VerticalLayer
@@ -189,20 +228,24 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         normals = [Vector(*self.slicer.mesh.face_normal(fkey)) for fkey in closest_fks]
 
         count = 0
-        crv_to_check = Path(base_boundary.points, True)  # creation of fake path for the lower boundary
+        support_polyline_pts = base_boundary.points  # Start with base boundary
 
         print_layer = PrintLayer()
         for _i, path in enumerate(layer.paths):
-            print_path = PrintPath()
+            # Batch query: find closest points for all points in this path at once
+            closest_pts, distances = _batch_closest_points_on_polyline(
+                path.points, support_polyline_pts
+            )
 
+            print_path = PrintPath()
             for k, p in enumerate(path.points):
-                cp = closest_point_on_polyline(p, Polyline(crv_to_check.points))
-                d = distance_point_point(cp, p)
+                cp = closest_pts[k]
+                d = distances[k]
 
                 normal = normals[count]
                 ppt = PrintPoint(pt=p, layer_height=avg_layer_height, mesh_normal=normal)
 
-                ppt.closest_support_pt = Point(*cp)
+                ppt.closest_support_pt = Point(cp[0], cp[1], cp[2])
                 ppt.distance_to_support = d
                 ppt.layer_height = max(min(d, max_layer_height), min_layer_height)
                 ppt.up_vector = self.get_printpoint_up_vector(path, k, normal)
@@ -214,7 +257,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
                 count += 1
 
             print_layer.paths.append(print_path)
-            crv_to_check = path
+            support_polyline_pts = path.points  # Next path checks against this one
 
         return print_layer
 
