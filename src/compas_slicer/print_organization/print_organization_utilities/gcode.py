@@ -1,18 +1,24 @@
+from __future__ import annotations
+
 import logging
 import math
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from compas.geometry import Point, Vector
 
 from compas_slicer.geometry import PrintPoint
 from compas_slicer.parameters import get_param
 
+if TYPE_CHECKING:
+    from compas_slicer.print_organization import BasePrintOrganizer
+
 logger = logging.getLogger('logger')
 
 __all__ = ['create_gcode_text']
 
 
-def create_gcode_text(print_organizer, parameters) -> str:
+def create_gcode_text(print_organizer: BasePrintOrganizer, parameters: dict[str, Any]) -> str:
     """ Creates a gcode text file
     Parameters
     ----------

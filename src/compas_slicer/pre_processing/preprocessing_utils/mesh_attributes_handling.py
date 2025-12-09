@@ -1,6 +1,13 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
 from compas.geometry import Point, distance_point_point_sqrd
 
 import compas_slicer.utilities as utils
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
 
 __all__ = ['create_mesh_boundary_attributes',
            'get_existing_cut_indices',
@@ -11,7 +18,9 @@ __all__ = ['create_mesh_boundary_attributes',
            'replace_mesh_vertex_attribute']
 
 
-def create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs):
+def create_mesh_boundary_attributes(
+    mesh: Mesh, low_boundary_vs: list[int], high_boundary_vs: list[int]
+) -> None:
     """
     Creates a default vertex attribute data['boundary']=0. Then it gives the value 1 to the vertices that belong
     to the lower boundary, and the value 2 to the vertices that belong to the higher boundary.
@@ -27,7 +36,7 @@ def create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs):
 ###############################################
 # --- Mesh existing attributes on vertices
 
-def get_existing_cut_indices(mesh):
+def get_existing_cut_indices(mesh: Mesh) -> list[int]:
     """
     Returns
     ----------
@@ -42,7 +51,7 @@ def get_existing_cut_indices(mesh):
     return cut_indices
 
 
-def get_existing_boundary_indices(mesh):
+def get_existing_boundary_indices(mesh: Mesh) -> list[int]:
     """
     Returns
     ----------
@@ -57,34 +66,37 @@ def get_existing_boundary_indices(mesh):
     return boundary_indices
 
 
-def get_vertices_that_belong_to_cuts(mesh, cut_indices):
+def get_vertices_that_belong_to_cuts(
+    mesh: Mesh, cut_indices: list[int]
+) -> dict[int, dict[int, list[float]]]:
     """
     Returns
     ----------
         dict, key: int, the index of each cut
-              value: list, the points that belong to this cut
+              value: dict, the points that belong to this cut (point_list_to_dict format)
     """
-    cuts_dict = {i: [] for i in cut_indices}
+    cuts_dict: dict[int, list[list[float]]] = {i: [] for i in cut_indices}
 
     for vkey, data in mesh.vertices(data=True):
         if data['cut'] > 0:
             cut_index = data['cut']
             cuts_dict[cut_index].append(mesh.vertex_coordinates(vkey))
 
+    result: dict[int, dict[int, list[float]]] = {}
     for cut_index in cuts_dict:
-        cuts_dict[cut_index] = utils.point_list_to_dict(cuts_dict[cut_index])
+        result[cut_index] = utils.point_list_to_dict(cuts_dict[cut_index])
 
-    return cuts_dict
+    return result
 
 
 ###############################################
 # --- Save and restore attributes
 
-def save_vertex_attributes(mesh):
+def save_vertex_attributes(mesh: Mesh) -> dict[str, Any]:
     """
     Saves the boundary and cut attributes that are on the mesh on a dictionary.
     """
-    v_attributes_dict = {'boundary_1': [], 'boundary_2': [], 'cut': {}}
+    v_attributes_dict: dict[str, Any] = {'boundary_1': [], 'boundary_2': [], 'cut': {}}
 
     cut_indices = []
     for _vkey, data in mesh.vertices(data=True):
@@ -113,7 +125,7 @@ def save_vertex_attributes(mesh):
     return v_attributes_dict
 
 
-def restore_mesh_attributes(mesh, v_attributes_dict):
+def restore_mesh_attributes(mesh: Mesh, v_attributes_dict: dict[str, Any]) -> None:
     """
     Restores the cut and boundary attributes on the mesh vertices from the dictionary of the previously saved attributes
     """
@@ -150,7 +162,9 @@ def restore_mesh_attributes(mesh, v_attributes_dict):
                 mesh.vertex_attribute(c_vkey, 'cut', value=int(cut_index))
 
 
-def replace_mesh_vertex_attribute(mesh, old_attr, old_val, new_attr, new_val):
+def replace_mesh_vertex_attribute(
+    mesh: Mesh, old_attr: str, old_val: int, new_attr: str, new_val: int
+) -> None:
     """
     Replaces one vertex attribute with a new one. For all the vertices where data[old_attr]=old_val, then the
     old_val is replaced with 0, and data[new_attr]=new_val.

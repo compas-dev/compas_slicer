@@ -1,9 +1,15 @@
+from __future__ import annotations
+
 import logging
 import math
+from typing import TYPE_CHECKING, Literal
 
 from compas.geometry import Vector, normalize_vector
 
 from compas_slicer.utilities import find_next_printpoint
+
+if TYPE_CHECKING:
+    from compas_slicer.print_organization import BasePrintOrganizer
 
 logger = logging.getLogger('logger')
 
@@ -11,8 +17,17 @@ __all__ = ['set_wait_time_on_sharp_corners',
            'set_wait_time_based_on_extruder_toggle',
            'override_wait_time']
 
+WaitType = Literal[
+    'wait_before_extrusion',
+    'wait_after_extrusion',
+    'wait_before_and_after_extrusion',
+    'wait_at_sharp_corners',
+]
 
-def set_wait_time_on_sharp_corners(print_organizer, threshold=0.5 * math.pi, wait_time=0.3):
+
+def set_wait_time_on_sharp_corners(
+    print_organizer: BasePrintOrganizer, threshold: float = 0.5 * math.pi, wait_time: float = 0.3
+) -> None:
     """
     Sets a wait time at the sharp corners of the path, based on the angle threshold.
 
@@ -42,7 +57,9 @@ def set_wait_time_on_sharp_corners(print_organizer, threshold=0.5 * math.pi, wai
     logger.info(f'Added wait times for {number_of_wait_points} points')
 
 
-def set_wait_time_based_on_extruder_toggle(print_organizer, wait_type, wait_time=0.3):
+def set_wait_time_based_on_extruder_toggle(
+    print_organizer: BasePrintOrganizer, wait_type: WaitType, wait_time: float = 0.3
+) -> None:
     """
     Sets a wait time for the printpoints, either before extrusion starts,
     after extrusion finishes, or in both cases.
@@ -96,7 +113,7 @@ def set_wait_time_based_on_extruder_toggle(print_organizer, wait_type, wait_time
         logger.info(f'Added wait times for {number_of_wait_points} points')
 
 
-def override_wait_time(print_organizer, override_value):
+def override_wait_time(print_organizer: BasePrintOrganizer, override_value: float) -> None:
     """
     Overrides the wait_time value for the printpoints with a user-defined value.
 

@@ -1,5 +1,12 @@
+from __future__ import annotations
+
 import logging
 from copy import deepcopy
+from typing import TYPE_CHECKING, Any, Callable
+
+if TYPE_CHECKING:
+    from compas_slicer.geometry import PrintPoint
+    from compas_slicer.print_organization import BasePrintOrganizer
 
 logger = logging.getLogger('logger')
 
@@ -8,7 +15,13 @@ __all__ = ['smooth_printpoint_attribute',
            'smooth_printpoints_layer_heights']
 
 
-def smooth_printpoint_attribute(print_organizer, iterations, strength, get_attr_value, set_attr_value):
+def smooth_printpoint_attribute(
+    print_organizer: BasePrintOrganizer,
+    iterations: int,
+    strength: float,
+    get_attr_value: Callable[[PrintPoint], Any],
+    set_attr_value: Callable[[PrintPoint, Any], None],
+) -> None:
     """
     Iterative smoothing of the printpoints attribute.
     The attribute is accessed using the function 'get_attr_value(ppt)', and is set using the function
@@ -51,7 +64,9 @@ def smooth_printpoint_attribute(print_organizer, iterations, strength, get_attr_
                 set_attr_value(ppt, attrs[i])
 
 
-def smooth_printpoints_layer_heights(print_organizer, iterations, strength):
+def smooth_printpoints_layer_heights(
+    print_organizer: BasePrintOrganizer, iterations: int, strength: float
+) -> None:
     """ This function is an example for how the 'smooth_printpoint_attribute' function can be used. """
 
     def get_ppt_layer_height(printpoint):
@@ -63,7 +78,9 @@ def smooth_printpoints_layer_heights(print_organizer, iterations, strength):
     smooth_printpoint_attribute(print_organizer, iterations, strength, get_ppt_layer_height, set_ppt_layer_height)
 
 
-def smooth_printpoints_up_vectors(print_organizer, iterations, strength):
+def smooth_printpoints_up_vectors(
+    print_organizer: BasePrintOrganizer, iterations: int, strength: float
+) -> None:
     """ This function is an example for how the 'smooth_printpoint_attribute' function can be used. """
 
     def get_ppt_up_vec(printpoint):

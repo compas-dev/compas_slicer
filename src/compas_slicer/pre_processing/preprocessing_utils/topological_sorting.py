@@ -1,12 +1,19 @@
+from __future__ import annotations
+
 import copy
 import logging
 from abc import abstractmethod
+from typing import TYPE_CHECKING, Any
 
 import networkx as nx
-from compas.geometry import distance_point_point, distance_point_point_sqrd
+from compas.datastructures import Mesh
+from compas.geometry import Point, distance_point_point, distance_point_point_sqrd
 
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.preprocessing_utils import get_existing_boundary_indices, get_existing_cut_indices
+
+if TYPE_CHECKING:
+    from compas_slicer.geometry import VerticalLayer
 
 logger = logging.getLogger('logger')
 
@@ -25,10 +32,10 @@ class DirectedGraph:
     This graph cannot have cycles; cycles would represent an unfeasible print.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         logger.info('Topological sorting')
 
-        self.G = nx.DiGraph()
+        self.G: nx.DiGraph = nx.DiGraph()
         self.create_graph_nodes()
         self.root_indices = self.find_roots()
         logger.info('Graph roots : ' + str(self.root_indices))
@@ -41,41 +48,41 @@ class DirectedGraph:
         logger.info('Nodes : ' + str(self.G.nodes(data=True)))
         logger.info('Edges : ' + str(self.G.edges(data=True)))
 
-        self.N = len(list(self.G.nodes()))
-        self.adj_list = self.get_adjacency_list()  # Nested list where adj_list[i] is a list of all the neighbors
+        self.N: int = len(list(self.G.nodes()))
+        self.adj_list: list[list[int]] = self.get_adjacency_list()  # Nested list where adj_list[i] is a list of all the neighbors
         # of the i-th component
         self.check_that_all_nodes_found_their_connectivity()
         logger.info('Adjacency list : ' + str(self.adj_list))
-        self.in_degree = self.get_in_degree()  # Nested list where adj_list[i] is a list of all the edges pointing
+        self.in_degree: list[int] = self.get_in_degree()  # Nested list where adj_list[i] is a list of all the edges pointing
         # to the i-th node.
-        self.all_orders = []
+        self.all_orders: list[list[int]] = []
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<DirectedGraph with {len(list(self.G.nodes()))} nodes>"
 
     # ------------------------------------ Methods to be implemented by inheriting classes
     @abstractmethod
-    def find_roots(self):
+    def find_roots(self) -> list[int]:
         """ Roots are vertical_layers_print_data that lie on the build platform. Like that they can be print first. """
         pass
 
     @abstractmethod
-    def find_ends(self):
+    def find_ends(self) -> list[int]:
         """ Ends are vertical_layers_print_data that belong to exclusively one segment. Like that they can be print last. """
         pass
 
     @abstractmethod
-    def create_graph_nodes(self):
+    def create_graph_nodes(self) -> None:
         """ Add the nodes to the graph with their attributes. """
         pass
 
     @abstractmethod
-    def get_children_of_node(self, root):
+    def get_children_of_node(self, root: int) -> tuple[list[int], list[Any]]:
         """ Find all the vertical_layers_print_data that lie on the current root segment. """
         pass
 
     # ------------------------------------ Creation of graph connectivity between different nodes
-    def create_directed_graph_edges(self, root_indices):
+    def create_directed_graph_edges(self, root_indices: list[int]) -> None:
         """ Create the connectivity of the directed graph using breadth-first search graph traversal. """
         passed_nodes = []
         queue = root_indices
@@ -86,21 +93,25 @@ class DirectedGraph:
             queue.remove(current_node)
             passed_nodes.append(current_node)
             children, cut_ids = self.get_children_of_node(current_node)
-            [self.G.add_edge(current_node, child_key, cut=common_cuts) for child_key, common_cuts in
-             zip(children, cut_ids)]
+            for child_key, common_cuts in zip(children, cut_ids):
+                self.G.add_edge(current_node, child_key, cut=common_cuts)
             for child_key in children:
                 assert child_key not in passed_nodes, 'Error, cyclic directed graph.'
-            [queue.append(child_key) for child_key in children if child_key not in queue]
+            for child_key in children:
+                if child_key not in queue:
+                    queue.append(child_key)
 
-    def check_that_all_nodes_found_their_connectivity(self):
+    def check_that_all_nodes_found_their_connectivity(self) -> None:
         """ Assert that there is no island, i.e. no node or groups of nodes that are not connected to the base. """
         good_nodes = list(self.root_indices)
         for children_list in self.adj_list:
-            [good_nodes.append(child) for child in children_list if child not in good_nodes]
+            for child in children_list:
+                if child not in good_nodes:
+                    good_nodes.append(child)
         assert len(good_nodes) == self.N, 'There are floating vertical_layers_print_data on directed graph. Investigate the process of \
                                           the creation of the graph. '
 
-    def sort_queue_with_end_targets_last(self, queue):
+    def sort_queue_with_end_targets_last(self, queue: list[int]) -> list[int]:
         """ Sorts the queue so that the vertical_layers_print_data that have an end target are always at the end. """
         queue_copy = copy.deepcopy(queue)
         for index in queue:
@@ -110,14 +121,15 @@ class DirectedGraph:
         return queue_copy
 
     # ------------------------------------ Find all topological orders
-    def get_adjacency_list(self):
+    def get_adjacency_list(self) -> list[list[int]]:
         """ Returns adjacency list. Nested list where adj_list[i] is a list of all the neighbors of the ith component"""
-        adj_list = [[] for _ in range(self.N)]  # adjacency list , size = len(Nodes), stores nodes' neighbors
+        adj_list: list[list[int]] = [[] for _ in range(self.N)]  # adjacency list , size = len(Nodes), stores nodes' neighbors
         for i, adjacent_to_node in self.G.adjacency():
-            [adj_list[i].append(key) for key in adjacent_to_node]
+            for key in adjacent_to_node:
+                adj_list[i].append(key)
         return adj_list
 
-    def get_in_degree(self):
+    def get_in_degree(self) -> list[int]:
         """ Returns in_degree list. Nested list where adj_list[i] is a list of all the edges pointing to the node."""
         in_degree = [0] * self.N  # in_degree,  size = len(Nodes) , stores in-degree of a node
         for key_degree_tuple in self.G.in_degree:
@@ -126,7 +138,7 @@ class DirectedGraph:
             in_degree[key] = degree
         return in_degree
 
-    def get_all_topological_orders(self):
+    def get_all_topological_orders(self) -> list[list[int]]:
         """
         Finds  all topological orders from source to sink.
         Returns
@@ -135,12 +147,12 @@ class DirectedGraph:
         """
         self.all_orders = []  # make sure list is empty
         discovered = [False] * self.N
-        path = []  # list to store the topological order
+        path: list[int] = []  # list to store the topological order
         self.get_orders(path, discovered)
         logger.info(f'Found {len(self.all_orders)} possible orders')
         return self.all_orders
 
-    def get_orders(self, path, discovered):
+    def get_orders(self, path: list[int], discovered: list[bool]) -> None:
         """
         Finds all topological orders from source to sink.
         Sorting algorithm taken from https://www.techiedelight.com/find-all-possible-topological-orderings-of-dag/
@@ -172,7 +184,7 @@ class DirectedGraph:
         if len(path) == self.N:
             self.all_orders.append(copy.deepcopy(path))
 
-    def get_parents_of_node(self, node_index):
+    def get_parents_of_node(self, node_index: int) -> list[int]:
         """ Returns the parents of node with i = node_index. """
         return [j for j, adj in enumerate(self.adj_list) if node_index in adj]
 
@@ -185,37 +197,37 @@ class MeshDirectedGraph(DirectedGraph):
     """ The MeshDirectedGraph is used for topological sorting of multiple meshes that have been
     generated as a result of region split over the saddle points of the mesh scalar function """
 
-    def __init__(self, all_meshes, DATA_PATH):
+    def __init__(self, all_meshes: list[Mesh], DATA_PATH: str) -> None:
         self.all_meshes = all_meshes
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         DirectedGraph.__init__(self)
 
-    def find_roots(self):
+    def find_roots(self) -> list[int]:
         """ Roots are vertical_layers_print_data that lie on the build platform. Like that they can be print first. """
-        roots = []
+        roots: list[int] = []
         for i, mesh in enumerate(self.all_meshes):
             for _vkey, data in mesh.vertices(data=True):
                 if i not in roots and data['boundary'] == 1:
                     roots.append(i)
         return roots
 
-    def find_ends(self):
+    def find_ends(self) -> list[int]:
         """ Ends are vertical_layers_print_data that belong to exclusively one segment. Like that they can be print last. """
-        ends = []
+        ends: list[int] = []
         for i, mesh in enumerate(self.all_meshes):
             for _vkey, data in mesh.vertices(data=True):
                 if i not in ends and data['boundary'] == 2:
                     ends.append(i)
         return ends
 
-    def create_graph_nodes(self):
+    def create_graph_nodes(self) -> None:
         """ Add each of the split meshes to the graph as nodes. Cuts and boundaries are stored as attributes. """
         for i, m in enumerate(self.all_meshes):
             self.G.add_node(i, cuts=get_existing_cut_indices(m),
                             boundaries=get_existing_boundary_indices(m))
 
-    def get_children_of_node(self, root):
+    def get_children_of_node(self, root: int) -> tuple[list[int], list[list[int]]]:
         """
         Find all the nodes that lie on the current root.
 
@@ -227,8 +239,8 @@ class MeshDirectedGraph(DirectedGraph):
         ----------
         2 lists [child1, child2, ...], [[common cuts 1], [common cuts 2] ...]
         """
-        children = []
-        cut_ids = []
+        children: list[int] = []
+        cut_ids: list[list[int]] = []
         parent_data = self.G.nodes(data=True)[root]
 
         for key, data in self.G.nodes(data=True):
@@ -268,7 +280,9 @@ class MeshDirectedGraph(DirectedGraph):
 class SegmentsDirectedGraph(DirectedGraph):
     """ The SegmentsDirectedGraph is used for topological sorting of multiple vertical_layers_print_data in one mesh"""
 
-    def __init__(self, mesh, segments, max_d_threshold, DATA_PATH):
+    def __init__(
+        self, mesh: Mesh, segments: list[VerticalLayer], max_d_threshold: float, DATA_PATH: str
+    ) -> None:
         self.mesh = mesh
         self.segments = segments
         self.max_d_threshold = max_d_threshold
@@ -276,34 +290,34 @@ class SegmentsDirectedGraph(DirectedGraph):
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         DirectedGraph.__init__(self)
 
-    def find_roots(self):
+    def find_roots(self) -> list[int]:
         """ Roots are vertical_layers_print_data that lie on the build platform. Like that they can be print first. """
         boundary_pts = utils.get_mesh_vertex_coords_with_attribute(self.mesh, 'boundary', 1)
-        root_segments = []
+        root_segments: list[int] = []
         for i, segment in enumerate(self.segments):
             first_curve_pts = segment.paths[0].points
             if are_neighboring_point_clouds(boundary_pts, first_curve_pts, 2 * self.max_d_threshold):
                 root_segments.append(i)
         return root_segments
 
-    def find_ends(self):
+    def find_ends(self) -> list[int]:
         """ Ends are vertical_layers_print_data that belong to exclusively one segment. Like that they can be print last. """
         boundary_pts = utils.get_mesh_vertex_coords_with_attribute(self.mesh, 'boundary', 2)
-        end_segments = []
+        end_segments: list[int] = []
         for i, segment in enumerate(self.segments):
             last_curve_pts = segment.paths[-1].points
             if are_neighboring_point_clouds(boundary_pts, last_curve_pts, self.max_d_threshold):
                 end_segments.append(i)
         return end_segments
 
-    def create_graph_nodes(self):
+    def create_graph_nodes(self) -> None:
         """ Add each segment to to the graph as a node. """
         for i, _segment in enumerate(self.segments):
             self.G.add_node(i)
 
-    def get_children_of_node(self, root):
+    def get_children_of_node(self, root: int) -> tuple[list[int], list[None]]:
         """ Find all the nodes that lie on the current root. """
-        children = []
+        children: list[int] = []
         root_segment = self.segments[root]
         root_last_crv_pts = root_segment.paths[-1].points
         # utils.save_to_json(utils.point_list_to_dict(root_last_crv_pts), self.OUTPUT_PATH, "root_last_crv_pts.json")
@@ -321,7 +335,7 @@ class SegmentsDirectedGraph(DirectedGraph):
 #################################
 # --- helpers
 
-def are_neighboring_point_clouds(pts1, pts2, threshold):
+def are_neighboring_point_clouds(pts1: list[Point], pts2: list[Point], threshold: float) -> bool:
     """
     Returns True if 3 or more points of the point clouds are closer than the threshold. False otherwise.
 
@@ -341,7 +355,7 @@ def are_neighboring_point_clouds(pts1, pts2, threshold):
     return False
 
 
-def is_true_mesh_adjacency(all_meshes, key1, key2):
+def is_true_mesh_adjacency(all_meshes: list[Mesh], key1: int, key2: int) -> bool:
     """
     Returns True if the two meshes share 3 or more vertices. False otherwise.
 

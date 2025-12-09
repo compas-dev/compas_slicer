@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -9,13 +12,19 @@ from compas_slicer.pre_processing.preprocessing_utils.compound_target import (
 )
 from compas_slicer.utilities.utils import remap_unbound
 
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
+    from compas_slicer.pre_processing.preprocessing_utils.compound_target import CompoundTarget
+
 logger = logging.getLogger('logger')
 
 __all__ = ['assign_interpolation_distance_to_mesh_vertices',
            'assign_interpolation_distance_to_mesh_vertex']
 
 
-def assign_interpolation_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
+def assign_interpolation_distance_to_mesh_vertices(
+    mesh: Mesh, weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget | None
+) -> None:
     """
     Fills in the 'get_distance' attribute of every vertex of the mesh.
 
@@ -34,7 +43,9 @@ def assign_interpolation_distance_to_mesh_vertices(mesh, weight, target_LOW, tar
         mesh.vertex[vkey]['scalar_field'] = d
 
 
-def assign_interpolation_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH):
+def assign_interpolation_distance_to_mesh_vertex(
+    vkey: int, weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget | None
+) -> float:
     """
     Fills in the 'get_distance' attribute for a single vertex with vkey.
 
@@ -59,7 +70,9 @@ def assign_interpolation_distance_to_mesh_vertex(vkey, weight, target_LOW, targe
     return d
 
 
-def get_weighted_distance(vkey, weight, target_LOW, target_HIGH):
+def get_weighted_distance(
+    vkey: int, weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget
+) -> float:
     """
     Computes the weighted get_distance for a single vertex with vkey.
 

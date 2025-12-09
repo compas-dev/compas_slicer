@@ -1,7 +1,14 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 import scipy
+from numpy.typing import NDArray
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
 
 logger = logging.getLogger('logger')
 
@@ -13,7 +20,9 @@ __all__ = ['get_vertex_gradient_from_face_gradient',
            'get_scalar_field_from_gradient']
 
 
-def get_vertex_gradient_from_face_gradient(mesh, face_gradient):
+def get_vertex_gradient_from_face_gradient(
+    mesh: Mesh, face_gradient: NDArray[np.floating]
+) -> NDArray[np.floating]:
     """
     Finds vertex gradient given an already calculated per face gradient.
 
@@ -40,7 +49,9 @@ def get_vertex_gradient_from_face_gradient(mesh, face_gradient):
     return np.array(vertex_gradient)
 
 
-def get_edge_gradient_from_vertex_gradient(mesh, vertex_gradient):
+def get_edge_gradient_from_vertex_gradient(
+    mesh: Mesh, vertex_gradient: NDArray[np.floating]
+) -> NDArray[np.floating]:
     """
     Finds edge gradient given an already calculated per vertex gradient.
 
@@ -60,7 +71,9 @@ def get_edge_gradient_from_vertex_gradient(mesh, vertex_gradient):
     return np.array(edge_gradient)
 
 
-def get_face_gradient_from_scalar_field(mesh, u, use_igl=True):
+def get_face_gradient_from_scalar_field(
+    mesh: Mesh, u: NDArray[np.floating], use_igl: bool = True
+) -> NDArray[np.floating]:
     """
     Finds face gradient from scalar field u.
     Scalar field u is given per vertex.
@@ -109,7 +122,9 @@ def get_face_gradient_from_scalar_field(mesh, u, use_igl=True):
         return np.array(grad)
 
 
-def get_face_edge_vectors(mesh, fkey):
+def get_face_edge_vectors(
+    mesh: Mesh, fkey: int
+) -> tuple[NDArray[np.floating], NDArray[np.floating], NDArray[np.floating]]:
     """ Returns the edge vectors of the face with fkey. """
     e0, e1, e2 = mesh.face_halfedges(fkey)
     edge_0 = np.array(mesh.vertex_coordinates(e0[0])) - np.array(mesh.vertex_coordinates(e0[1]))
@@ -118,7 +133,9 @@ def get_face_edge_vectors(mesh, fkey):
     return edge_0, edge_1, edge_2
 
 
-def get_per_vertex_divergence(mesh, X, cotans):
+def get_per_vertex_divergence(
+    mesh: Mesh, X: NDArray[np.floating], cotans: NDArray[np.floating]
+) -> NDArray[np.floating]:
     """
     Computes the divergence of the gradient X for the mesh, using cotangent weights.
 
@@ -145,13 +162,18 @@ def get_per_vertex_divergence(mesh, X, cotans):
     return div_X
 
 
-def normalize_gradient(X):
+def normalize_gradient(X: NDArray[np.floating]) -> NDArray[np.floating]:
     """ Returns normalized gradient X. """
     norm = np.linalg.norm(X, axis=1)[..., np.newaxis]
     return X / norm  # normalize
 
 
-def get_scalar_field_from_gradient(mesh, X, C, cotans):
+def get_scalar_field_from_gradient(
+    mesh: Mesh,
+    X: NDArray[np.floating],
+    C: scipy.sparse.csr_matrix,
+    cotans: NDArray[np.floating],
+) -> NDArray[np.floating]:
     """
     Find scalar field u that best explains gradient X.
     Laplacian(u) = Divergence(X).

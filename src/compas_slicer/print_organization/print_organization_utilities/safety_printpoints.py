@@ -1,18 +1,24 @@
+from __future__ import annotations
+
 import copy
 import logging
+from typing import TYPE_CHECKING
 
 from compas.geometry import Vector
 
-from compas_slicer.geometry import PrintLayer, PrintPath
+from compas_slicer.geometry import PrintLayer, PrintPath, PrintPoint
 from compas_slicer.print_organization.print_organization_utilities.extruder_toggle import check_assigned_extruder_toggle
 from compas_slicer.utilities import find_next_printpoint
+
+if TYPE_CHECKING:
+    from compas_slicer.print_organization import BasePrintOrganizer
 
 logger = logging.getLogger('logger')
 
 __all__ = ['add_safety_printpoints']
 
 
-def add_safety_printpoints(print_organizer, z_hop=10.0):
+def add_safety_printpoints(print_organizer: BasePrintOrganizer, z_hop: float = 10.0) -> None:
     """Generates a safety print point at the interruptions of the print paths.
 
     Parameters
@@ -66,7 +72,7 @@ def add_safety_printpoints(print_organizer, z_hop=10.0):
     print_organizer.printpoints = new_collection
 
 
-def create_safety_printpoint(printpoint, z_hop, extruder_toggle):
+def create_safety_printpoint(printpoint: PrintPoint, z_hop: float, extruder_toggle: bool) -> PrintPoint:
     """
 
     Parameters
@@ -83,7 +89,8 @@ def create_safety_printpoint(printpoint, z_hop, extruder_toggle):
     pt0 = printpoint.pt
     safety_printpoint = copy.deepcopy(printpoint)
     safety_printpoint.pt = pt0 + Vector(0, 0, z_hop)
-    safety_printpoint.frame.point = safety_printpoint.pt
+    if safety_printpoint.frame is not None:
+        safety_printpoint.frame.point = safety_printpoint.pt
     safety_printpoint.extruder_toggle = extruder_toggle
     return safety_printpoint
 

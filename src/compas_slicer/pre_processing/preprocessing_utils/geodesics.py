@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 import logging
 import math
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 import scipy
+from numpy.typing import NDArray
 
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.preprocessing_utils.gradient import (
@@ -11,13 +15,18 @@ from compas_slicer.pre_processing.preprocessing_utils.gradient import (
     normalize_gradient,
 )
 
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
+
 logger = logging.getLogger('logger')
 
 __all__ = ['get_igl_EXACT_geodesic_distances',
            'get_custom_HEAT_geodesic_distances']
 
 
-def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
+def get_igl_EXACT_geodesic_distances(
+    mesh: Mesh, vertices_start: list[int]
+) -> NDArray[np.floating]:
     """
     Calculate geodesic distances using compas_libigl.
 
@@ -41,7 +50,13 @@ def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
     return distances
 
 
-def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH, v_equalize=None, anisotropic_scaling=False):
+def get_custom_HEAT_geodesic_distances(
+    mesh: Mesh,
+    vi_sources: list[int],
+    OUTPUT_PATH: str,
+    v_equalize: list[int] | None = None,
+    anisotropic_scaling: bool = False,
+) -> NDArray[np.floating]:
     """ Calculate geodesic distances using the heat method. """
     geodesics_solver = GeodesicsSolver(mesh, OUTPUT_PATH)
     u = geodesics_solver.diffuse_heat(vi_sources, v_equalize, method='simulation')
@@ -68,7 +83,7 @@ class GeodesicsSolver:
     OUTPUT_PATH: str
     """
 
-    def __init__(self, mesh, OUTPUT_PATH):
+    def __init__(self, mesh: Mesh, OUTPUT_PATH: str) -> None:
         from compas_libigl.cotmatrix import trimesh_cotmatrix, trimesh_cotmatrix_entries
         from compas_libigl.massmatrix import trimesh_massmatrix
 
@@ -85,7 +100,12 @@ class GeodesicsSolver:
         self.L = trimesh_cotmatrix(M)
         self.M = trimesh_massmatrix(M)
 
-    def diffuse_heat(self, vi_sources, v_equalize=None, method='simulation'):
+    def diffuse_heat(
+        self,
+        vi_sources: list[int],
+        v_equalize: list[int] | None = None,
+        method: Literal['default', 'simulation'] = 'simulation',
+    ) -> NDArray[np.floating]:
         """
         Heat diffusion.
 
@@ -133,7 +153,9 @@ class GeodesicsSolver:
         utils.save_to_json([float(value) for value in u], self.OUTPUT_PATH, 'diffused_heat.json')
         return u
 
-    def get_geodesic_distances(self, u, vi_sources, v_equalize=None):
+    def get_geodesic_distances(
+        self, u: NDArray[np.floating], vi_sources: list[int], v_equalize: list[int] | None = None
+    ) -> NDArray[np.floating]:
         """
         Finds geodesic distances from heat distribution u. I
 

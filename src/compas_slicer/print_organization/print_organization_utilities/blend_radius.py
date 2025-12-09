@@ -1,13 +1,21 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 from compas.geometry import Vector, norm_vector
+
+if TYPE_CHECKING:
+    from compas_slicer.print_organization import BasePrintOrganizer
 
 logger = logging.getLogger('logger')
 
 __all__ = ['set_blend_radius']
 
 
-def set_blend_radius(print_organizer, d_fillet=10, buffer=0.3):
+def set_blend_radius(
+    print_organizer: BasePrintOrganizer, d_fillet: float = 10.0, buffer: float = 0.3
+) -> None:
     """Sets the blend radius (filleting) for the robotic motion.
 
     Parameters
@@ -22,12 +30,10 @@ def set_blend_radius(print_organizer, d_fillet=10, buffer=0.3):
 
     logger.info("Setting blend radius")
 
-    extruder_state = 0
+    extruder_state: bool | None = None
 
     for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
-        layer_key = f'layer_{i}'
-        path_key = f'path_{j}'
-        neighboring_items = print_organizer.get_printpoint_neighboring_items(layer_key, path_key, k)
+        neighboring_items = print_organizer.get_printpoint_neighboring_items(i, j, k)
 
         if not printpoint.wait_time:
 

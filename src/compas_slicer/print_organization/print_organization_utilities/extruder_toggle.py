@@ -1,6 +1,13 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 import compas_slicer
+
+if TYPE_CHECKING:
+    from compas_slicer.print_organization import BasePrintOrganizer
+    from compas_slicer.slicers import BaseSlicer
 
 logger = logging.getLogger('logger')
 
@@ -9,7 +16,7 @@ __all__ = ['set_extruder_toggle',
            'check_assigned_extruder_toggle']
 
 
-def set_extruder_toggle(print_organizer, slicer):
+def set_extruder_toggle(print_organizer: BasePrintOrganizer, slicer: BaseSlicer) -> None:
     """Sets the extruder_toggle value for the printpoints.
 
     Parameters
@@ -71,7 +78,7 @@ def set_extruder_toggle(print_organizer, slicer):
         logger.exception(e)
 
 
-def override_extruder_toggle(print_organizer, override_value):
+def override_extruder_toggle(print_organizer: BasePrintOrganizer, override_value: bool) -> None:
     """Overrides the extruder_toggle value for the printpoints with a user-defined value.
 
     Parameters
@@ -86,7 +93,7 @@ def override_extruder_toggle(print_organizer, override_value):
         printpoint.extruder_toggle = override_value
 
 
-def check_assigned_extruder_toggle(print_organizer):
+def check_assigned_extruder_toggle(print_organizer: BasePrintOrganizer) -> bool:
     """ Checks that all the printpoints have an assigned extruder toggle. """
     all_toggles_assigned = True
     for printpoint in print_organizer.printpoints_iterator():
