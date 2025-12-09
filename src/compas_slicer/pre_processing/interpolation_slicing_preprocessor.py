@@ -1,5 +1,5 @@
 import logging
-import os
+from pathlib import Path
 
 from compas.datastructures import Mesh
 
@@ -156,14 +156,15 @@ class InterpolationSlicingPreprocessor:
             logger.info('Completed Region splitting')
             logger.info("Region split cut indices: " + str(mesh_splitter.cut_indices))
             # save results to json
-            self.mesh.to_obj(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.obj'))
-            self.mesh.to_json(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
-            logger.info("Saving to Obj and Json: " + os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
+            output_path = Path(self.OUTPUT_PATH)
+            self.mesh.to_obj(str(output_path / 'mesh_with_cuts.obj'))
+            self.mesh.to_json(str(output_path / 'mesh_with_cuts.json'))
+            logger.info(f"Saving to Obj and Json: {output_path / 'mesh_with_cuts.json'}")
 
         if separate_neighborhoods:  # (2)
             print("")
             logger.info("--- Separating mesh disconnected components")
-            self.mesh = Mesh.from_json(os.path.join(self.OUTPUT_PATH, 'mesh_with_cuts.json'))
+            self.mesh = Mesh.from_json(str(Path(self.OUTPUT_PATH) / 'mesh_with_cuts.json'))
             region_split_cut_indices = get_existing_cut_indices(self.mesh)
 
             # save results to json
@@ -191,10 +192,11 @@ class InterpolationSlicingPreprocessor:
         if save_split_meshes:  # (4)
             print("")
             logger.info("--- Saving resulting split meshes")
+            output_path = Path(self.OUTPUT_PATH)
             for i, m in enumerate(self.split_meshes):
-                m.to_obj(os.path.join(self.OUTPUT_PATH, 'split_mesh_' + str(i) + '.obj'))
-                m.to_json(os.path.join(self.OUTPUT_PATH, 'split_mesh_' + str(i) + '.json'))
-            logger.info(f'Saving to Obj and Json: {os.path.join(self.OUTPUT_PATH, "split_mesh_%.obj")}')
+                m.to_obj(str(output_path / f'split_mesh_{i}.obj'))
+                m.to_json(str(output_path / f'split_mesh_{i}.json'))
+            logger.info(f'Saving to Obj and Json: {output_path / "split_mesh_%.obj"}')
             logger.info(f"Saved {len(self.split_meshes)} split_meshes")
             print('')
 

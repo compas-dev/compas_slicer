@@ -1,6 +1,6 @@
 import copy
 import logging
-import os
+from pathlib import Path
 
 import numpy as np
 from compas.datastructures import Mesh
@@ -153,7 +153,7 @@ class MeshSplitter:
                     logger.info('Updating targets, recomputing geodesic distances')
                     self.update_targets()
 
-            self.mesh.to_obj(os.path.join(self.OUTPUT_PATH, 'most_recent_cut_mesh.obj'))
+            self.mesh.to_obj(str(Path(self.OUTPUT_PATH) / 'most_recent_cut_mesh.obj'))
 
     def update_targets(self):
         """
@@ -326,8 +326,9 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
         cut_mesh = Mesh.from_vertices_and_faces(v_cut, f_dict[component])
         cut_mesh.cull_vertices()
         if len(list(cut_mesh.faces())) > 2:
-            cut_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))
-            cut_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # get rid of too many empty keys
+            temp_path = Path(OUTPUT_PATH) / 'temp.obj'
+            cut_mesh.to_obj(str(temp_path))
+            cut_mesh = Mesh.from_obj(str(temp_path))  # get rid of too many empty keys
             cut_meshes.append(cut_mesh)
 
     for mesh in cut_meshes:
@@ -431,8 +432,9 @@ def weld_mesh(mesh, OUTPUT_PATH, precision='2f'):
 
     welded_mesh = mesh.weld(precision=precision)
 
-    welded_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # make sure there's no empty f_keys
-    welded_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # TODO: find a better way to do this
+    temp_path = Path(OUTPUT_PATH) / 'temp.obj'
+    welded_mesh.to_obj(str(temp_path))  # make sure there's no empty f_keys
+    welded_mesh = Mesh.from_obj(str(temp_path))  # TODO: find a better way to do this
 
     try:
         welded_mesh.unify_cycles()

@@ -1,6 +1,6 @@
 import json
 import logging
-import os
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -89,10 +89,9 @@ def get_output_directory(path):
     str
         The path to the new (or already existing) 'output' directory
     """
-    output_dir = os.path.join(path, 'output')
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
-    return output_dir
+    output_dir = Path(path) / 'output'
+    output_dir.mkdir(exist_ok=True)
+    return str(output_dir)
 
 
 def get_closest_pt_index(pt, pts):
@@ -196,10 +195,9 @@ def save_to_json(data, filepath, name):
     name: str
     """
 
-    filename = os.path.join(filepath, name)
-    logger.info("Saving to json: " + filename)
-    with open(filename, 'w') as f:
-        f.write(json.dumps(data, indent=3, sort_keys=True))
+    filename = Path(filepath) / name
+    logger.info(f"Saving to json: {filename}")
+    filename.write_text(json.dumps(data, indent=3, sort_keys=True))
 
 
 def load_from_json(filepath, name):
@@ -212,10 +210,9 @@ def load_from_json(filepath, name):
     name: str
     """
 
-    filename = os.path.join(filepath, name)
-    with open(filename) as f:
-        data = json.load(f)
-    logger.info("Loaded json: " + filename)
+    filename = Path(filepath) / name
+    data = json.loads(filename.read_text())
+    logger.info(f"Loaded json: {filename}")
     return data
 
 
@@ -257,10 +254,9 @@ def save_to_text_file(data, filepath, name):
     name: str
     """
 
-    filename = os.path.join(filepath, name)
-    logger.info("Saving to text file: " + filename)
-    with open(filename, 'w') as f:
-        f.write(data)
+    filename = Path(filepath) / name
+    logger.info(f"Saving to text file: {filename}")
+    filename.write_text(data)
 
 
 #######################################
@@ -637,12 +633,9 @@ def get_all_files_with_name(startswith, endswith, DATA_PATH):
         All the filenames
     """
 
-    files = []
-    for file in os.listdir(DATA_PATH):
-        if file.startswith(startswith) and file.endswith(endswith):
-            files.append(file)
-    print('')
-    logger.info('Reloading : ' + str(files))
+    files = [f.name for f in Path(DATA_PATH).iterdir()
+             if f.name.startswith(startswith) and f.name.endswith(endswith)]
+    logger.info(f'Reloading: {files}')
     return files
 
 

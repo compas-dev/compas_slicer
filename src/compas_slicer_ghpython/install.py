@@ -1,5 +1,4 @@
 import argparse
-import os
 import shutil
 from pathlib import Path
 
@@ -67,7 +66,7 @@ def after_rhino_uninstall(installed_packages):
         for src in userobjects:
             dst = Path(dstdir) / src.name
             if dst.exists():
-                os.remove(dst)
+                dst.unlink()
 
         results.append(("compas_slicer_ghpython", f"Uninstalled {len(userobjects)} GH User Objects", True))
     except PermissionError as err:

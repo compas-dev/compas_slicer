@@ -1,5 +1,5 @@
 import json
-import os
+from pathlib import Path
 
 import Rhino.Geometry as rg
 import rhinoscriptsyntax as rs
@@ -322,8 +322,9 @@ def tool_visualization(origin_coords, mesh, planes, i):
 
 def load_multiple_meshes(starts_with, ends_with, path, folder_name):
     """ Load all the meshes that have the specified name, and print them in different colors. """
-    filenames = get_files_with_name(starts_with, ends_with, os.path.join(path, folder_name, 'output'))
-    meshes = [Mesh.from_obj(os.path.join(path, folder_name, 'output', filename)) for filename in filenames]
+    output_dir = Path(path) / folder_name / 'output'
+    filenames = get_files_with_name(starts_with, ends_with, str(output_dir))
+    meshes = [Mesh.from_obj(str(output_dir / filename)) for filename in filenames]
 
     loaded_meshes = []
     for i, m in enumerate(meshes):
@@ -451,29 +452,27 @@ def missing_input():
 
 def load_json_file(path, folder_name, json_name, in_output_folder=True):
     """ Loads data from json. """
-
+    base = Path(path) / folder_name
     if in_output_folder:
-        filename = os.path.join(os.path.join(path), folder_name, 'output', json_name)
+        filename = base / 'output' / json_name
     else:
-        filename = os.path.join(os.path.join(path), folder_name, json_name)
+        filename = base / json_name
     data = None
 
-    if os.path.isfile(filename):
-        with open(filename) as f:
-            data = json.load(f)
-        print("Loaded Json: '" + filename + "'")
+    if filename.is_file():
+        data = json.loads(filename.read_text())
+        print(f"Loaded Json: '{filename}'")
     else:
-        print("Attention! Filename: '" + filename + "' does not exist. ")
+        print(f"Attention! Filename: '{filename}' does not exist. ")
 
     return data
 
 
 def save_json_file(data, path, folder_name, json_name):
     """ Saves data to json. """
-    filename = os.path.join(path, folder_name, json_name)
-    with open(filename, 'w') as f:
-        f.write(json.dumps(data, indent=3, sort_keys=True))
-    print("Saved to Json: '" + filename + "'")
+    filename = Path(path) / folder_name / json_name
+    filename.write_text(json.dumps(data, indent=3, sort_keys=True))
+    print(f"Saved to Json: '{filename}'")
 
 
 def get_closest_point_index(pt, pts):
@@ -492,10 +491,8 @@ def distance_of_pt_from_crv(pt, crv):
 
 def get_files_with_name(startswith, endswith, DATA_PATH):
     """ Find all files with the specified start and end in the data path. """
-    files = []
-    for file in os.listdir(DATA_PATH):
-        if file.startswith(startswith) and file.endswith(endswith):
-            files.append(file)
+    files = [f.name for f in Path(DATA_PATH).iterdir()
+             if f.name.startswith(startswith) and f.name.endswith(endswith)]
     print(f'Found {len(files)} files with the given criteria : {files}')
     return files
 
