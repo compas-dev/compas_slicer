@@ -23,7 +23,7 @@ def load_slicer(path, folder_name, json_name):
     if data:
 
         if 'mesh' in data:
-            compas_mesh = Mesh.from_data(data['mesh'])
+            compas_mesh = Mesh.__from_data__(data['mesh'])
             artist = MeshArtist(compas_mesh)
             artist.show_mesh = True
             artist.show_vertices = False
@@ -112,7 +112,7 @@ def load_nested_printpoints(path, folder_name, json_name, load_frames, load_laye
                     ppt = PrintPointGH(rg.Point3d(ppt_data["point"][0], ppt_data["point"][1], ppt_data["point"][2]))
 
                     if load_frames:
-                        compas_frame = Frame.from_data(ppt_data["frame"])
+                        compas_frame = Frame.__from_data__(ppt_data["frame"])
                         pt, x_axis, y_axis = compas_frame.point, compas_frame.xaxis, compas_frame.yaxis
                         ppt.frame = rs.PlaneFromFrame(pt, x_axis, y_axis)
 
@@ -173,7 +173,7 @@ def load_printpoints(path, folder_name, json_name):
             point = rg.Point3d(data_point["point"][0], data_point["point"][1], data_point["point"][2])
             points.append(point)
 
-            compas_frame = Frame.from_data(data_point["frame"])
+            compas_frame = Frame.__from_data__(data_point["frame"])
             pt, x_axis, y_axis = compas_frame.point, compas_frame.xaxis, compas_frame.yaxis
             frame = rs.PlaneFromFrame(pt, x_axis, y_axis)
             frames.append(frame)

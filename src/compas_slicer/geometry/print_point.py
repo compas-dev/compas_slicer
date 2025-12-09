@@ -100,14 +100,14 @@ class PrintPoint:
         return {
             "point": [self.pt[0], self.pt[1], self.pt[2]],
             "layer_height": self.layer_height,
-            "mesh_normal": self.mesh_normal.to_data(),
-            "up_vector": self.up_vector.to_data(),
-            "frame": self.frame.to_data(),
+            "mesh_normal": self.mesh_normal.__data__,
+            "up_vector": self.up_vector.__data__,
+            "frame": self.frame.__data__,
             "extruder_toggle": self.extruder_toggle,
             "velocity": self.velocity,
             "wait_time": self.wait_time,
             "blend_radius": self.blend_radius,
-            "closest_support_pt": self.closest_support_pt.to_data() if self.closest_support_pt else None,
+            "closest_support_pt": self.closest_support_pt.__data__ if self.closest_support_pt else None,
             "distance_to_support": self.distance_to_support,
             "is_feasible": self.is_feasible,
             "attributes": utils.get_jsonable_attributes(self.attributes),
@@ -129,13 +129,13 @@ class PrintPoint:
 
         """
         pp = cls(
-            pt=Point.from_data(data["point"]),
+            pt=Point.__from_data__(data["point"]),
             layer_height=data["layer_height"],
-            mesh_normal=Vector.from_data(data["mesh_normal"]),
+            mesh_normal=Vector.__from_data__(data["mesh_normal"]),
         )
 
-        pp.up_vector = Vector.from_data(data["up_vector"])
-        pp.frame = Frame.from_data(data["frame"])
+        pp.up_vector = Vector.__from_data__(data["up_vector"])
+        pp.frame = Frame.__from_data__(data["frame"])
 
         pp.extruder_toggle = data["extruder_toggle"]
         pp.velocity = data["velocity"]
@@ -143,7 +143,7 @@ class PrintPoint:
         pp.blend_radius = data["blend_radius"]
 
         if data["closest_support_pt"]:
-            pp.closest_support_pt = Point.from_data(data["closest_support_pt"])
+            pp.closest_support_pt = Point.__from_data__(data["closest_support_pt"])
         pp.distance_to_support = data["distance_to_support"]
 
         pp.is_feasible = data["is_feasible"]

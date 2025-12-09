@@ -68,6 +68,6 @@ class Path:
 
         """
         return {
-            "points": {i: point.to_data() for i, point in enumerate(self.points)},
+            "points": {i: point.__data__ for i, point in enumerate(self.points)},
             "is_closed": self.is_closed,
         }

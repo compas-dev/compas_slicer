@@ -182,7 +182,7 @@ class BaseSlicer:
             The constructed slicer.
 
         """
-        mesh = Mesh.from_data(data["mesh"])
+        mesh = Mesh.__from_data__(data["mesh"])
         slicer = cls(mesh)
         layers_data = data["layers"]
         for layer_key in layers_data:
@@ -224,7 +224,7 @@ class BaseSlicer:
 
         return {
             "layers": self.get_layers_dict(),
-            "mesh": mesh.to_data(),
+            "mesh": mesh.__data__,
             "layer_height": self.layer_height,
         }
 
