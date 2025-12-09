@@ -35,7 +35,7 @@ def create_graph_from_mesh_edges(mesh, intersection_data, edge_to_index):
 
         # find current neighboring edges that are also intersected
         current_edge_connections = []
-        for f in mesh.edge_faces(u=mesh_edge[0], v=mesh_edge[1]):
+        for f in mesh.edge_faces(mesh_edge):
             if f is not None:
                 face_edges = mesh.face_halfedges(f)
                 for e in face_edges:

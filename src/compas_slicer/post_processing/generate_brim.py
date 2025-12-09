@@ -6,7 +6,7 @@ from pyclipper import scale_from_clipper, scale_to_clipper
 
 import compas_slicer
 from compas_slicer.geometry import Layer, Path
-from compas_slicer.post_processing import seams_align
+from compas_slicer.post_processing.seams_align import seams_align
 
 logger = logging.getLogger('logger')
 
