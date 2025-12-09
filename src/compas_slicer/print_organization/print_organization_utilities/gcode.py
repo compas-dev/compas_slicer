@@ -12,7 +12,7 @@ logger = logging.getLogger('logger')
 __all__ = ['create_gcode_text']
 
 
-def create_gcode_text(print_organizer, parameters):
+def create_gcode_text(print_organizer, parameters) -> str:
     """ Creates a gcode text file
     Parameters
     ----------

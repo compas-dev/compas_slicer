@@ -10,6 +10,4 @@ def print_organization_default_param(key):
                          ' does not exist in the defaults of curved_slicing parameters. ')
 
 
-default_parameters = \
-    {
-    }
+default_parameters: dict[str, object] = {}

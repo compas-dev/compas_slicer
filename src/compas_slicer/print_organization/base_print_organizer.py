@@ -17,11 +17,11 @@ from compas.geometry import (
 )
 from compas.itertools import pairwise
 
-import compas_slicer
+from compas_slicer.print_organization.print_organization_utilities.gcode import create_gcode_text
+from compas_slicer.slicers.base_slicer import BaseSlicer
 
 if TYPE_CHECKING:
     from compas_slicer.geometry import Path, PrintPoint
-    from compas_slicer.slicers import BaseSlicer
 
 logger = logging.getLogger("logger")
 
@@ -47,7 +47,7 @@ class BasePrintOrganizer:
     """
 
     def __init__(self, slicer: BaseSlicer) -> None:
-        if not isinstance(slicer, compas_slicer.slicers.BaseSlicer):
+        if not isinstance(slicer, BaseSlicer):
             raise TypeError(f"slicer must be BaseSlicer, not {type(slicer)}")
         logger.info("Print Organizer")
         self.slicer = slicer
@@ -318,7 +318,7 @@ class BasePrintOrganizer:
             G-code text.
 
         """
-        return compas_slicer.print_organization.create_gcode_text(self, parameters)
+        return create_gcode_text(self, parameters)
 
     def get_printpoints_attribute(self, attr_name: str) -> list[Any]:
         """Get a list of attribute values from all printpoints.

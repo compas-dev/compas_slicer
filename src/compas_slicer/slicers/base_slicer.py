@@ -9,7 +9,8 @@ from compas.datastructures import Mesh
 from compas.geometry import bounding_box, distance_point_point_sqrd
 
 from compas_slicer.geometry import Layer, VerticalLayer
-from compas_slicer.post_processing import seams_align, unify_paths_orientation
+from compas_slicer.post_processing.seams_align import seams_align
+from compas_slicer.post_processing.unify_paths_orientation import unify_paths_orientation
 from compas_slicer.utilities import utils
 
 if TYPE_CHECKING:
