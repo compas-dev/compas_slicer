@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 import progressbar
@@ -6,13 +9,16 @@ import rdp as rdp
 from compas.geometry import Point
 from compas.plugins import PluginNotInstalledError
 
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
+
 logger = logging.getLogger('logger')
 
 __all__ = ['simplify_paths_rdp',
            'simplify_paths_rdp_igl']
 
 
-def simplify_paths_rdp(slicer, threshold):
+def simplify_paths_rdp(slicer: BaseSlicer, threshold: float) -> None:
     """Simplifies a path using the Ramer–Douglas–Peucker algorithm, implemented in the rdp python library.
     https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm
 
@@ -39,7 +45,7 @@ def simplify_paths_rdp(slicer, threshold):
         logger.info(f'{remaining_pts_num} Points remaining after rdp simplification')
 
 
-def simplify_paths_rdp_igl(slicer, threshold):
+def simplify_paths_rdp_igl(slicer: BaseSlicer, threshold: float) -> None:
     """Simplify paths using Ramer-Douglas-Peucker from compas_libigl.
 
     Parameters

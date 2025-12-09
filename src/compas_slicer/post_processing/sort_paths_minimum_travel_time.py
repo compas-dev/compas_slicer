@@ -1,14 +1,20 @@
-# from compas_slicer.geometry import VerticalLayersManager
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 from compas.geometry import Point, distance_point_point
+
+if TYPE_CHECKING:
+    from compas_slicer.geometry import Path as SlicerPath
+    from compas_slicer.slicers import BaseSlicer
 
 logger = logging.getLogger('logger')
 
 __all__ = ['sort_paths_minimum_travel_time']
 
 
-def sort_paths_minimum_travel_time(slicer):
+def sort_paths_minimum_travel_time(slicer: BaseSlicer) -> None:
     """Sorts the paths within a horizontal layer to reduce total travel time.
 
     Parameters
@@ -31,7 +37,7 @@ def sort_paths_minimum_travel_time(slicer):
         slicer.layers[i].paths = sorted_paths
 
 
-def adjust_seam_to_closest_pos(ref_point, path):
+def adjust_seam_to_closest_pos(ref_point: Point, path: SlicerPath) -> None:
     """Aligns the seam (start- and endpoint) of a contour so that it is closest to a given point.
     for open paths, check if the end point closest to the reference point is the start point
 
@@ -61,7 +67,7 @@ def adjust_seam_to_closest_pos(ref_point, path):
             path.points.reverse()
 
 
-def closest_path(ref_point, somepaths):
+def closest_path(ref_point: Point, somepaths: list[SlicerPath]) -> int:
     """Finds the closest path to a reference point in a list of paths.
 
     Parameters

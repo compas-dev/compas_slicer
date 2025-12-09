@@ -1,16 +1,22 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 from compas.geometry import Point
 
 import compas_slicer
 from compas_slicer.utilities.utils import pull_pts_to_mesh_faces
 
+if TYPE_CHECKING:
+    from compas_slicer.slicers import PlanarSlicer
+
 logger = logging.getLogger('logger')
 
 __all__ = ['spiralize_contours']
 
 
-def spiralize_contours(slicer):
+def spiralize_contours(slicer: PlanarSlicer) -> None:
     """Spiralizes contours. Only works for Planar Slicer.
     Can only be used for geometries consisting out of a single closed contour (i.e. vases).
 
@@ -24,6 +30,9 @@ def spiralize_contours(slicer):
     if not isinstance(slicer, compas_slicer.slicers.PlanarSlicer):
         logger.warning("spiralize_contours() contours only works for PlanarSlicer. Skipping function.")
         return
+
+    if slicer.layer_height is None:
+        raise ValueError("layer_height must be set before spiralizing contours")
 
     for j, layer in enumerate(slicer.layers):
         if len(layer.paths) == 1:

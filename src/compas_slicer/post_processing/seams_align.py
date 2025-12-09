@@ -1,13 +1,21 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING, Literal
 
 from compas.geometry import Point, distance_point_point
+
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
 
 logger = logging.getLogger('logger')
 
 __all__ = ['seams_align']
 
+AlignWith = Literal["next_path", "origin", "x_axis", "y_axis"]
 
-def seams_align(slicer, align_with="next_path"):
+
+def seams_align(slicer: BaseSlicer, align_with: AlignWith | Point = "next_path") -> None:
     """Aligns the seams (start- and endpoint) of a print.
 
     Parameters
@@ -22,9 +30,6 @@ def seams_align(slicer, align_with="next_path"):
         y_axis       = orients the seam to the y_axis
         Point(x,y,z) = orients the seam according to the given point
 
-    Returns
-    -------
-    None
     """
     #  TODO: Implement random seams
     logger.info(f"Aligning seams to: {align_with}")

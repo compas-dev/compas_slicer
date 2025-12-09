@@ -1,19 +1,25 @@
+from __future__ import annotations
+
 import itertools
 import logging
+from typing import TYPE_CHECKING, Any, Callable
 
 import progressbar
-from compas.geometry import Point
+from compas.geometry import Plane, Point
 from compas.plugins import PluginNotInstalledError
 
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import Layer, Path
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
 
 logger = logging.getLogger('logger')
 
 __all__ = ['create_planar_paths_cgal']
 
 
-def create_planar_paths_cgal(mesh, planes):
+def create_planar_paths_cgal(mesh: Mesh, planes: list[Plane]) -> list[Layer]:
     """Creates planar contours very efficiently using CGAL.
 
     Parameters
@@ -69,7 +75,9 @@ def create_planar_paths_cgal(mesh, planes):
     return layers
 
 
-def get_grouped_list(item_list, key_function):
+def get_grouped_list(
+    item_list: list[Any], key_function: Callable[[Any], Any]
+) -> list[list[Any]]:
     """ Groups layers horizontally. """
     # first sort, because grouping only groups consecutively matching items
     sorted_list = sorted(item_list, key=key_function)
@@ -79,7 +87,7 @@ def get_grouped_list(item_list, key_function):
     return [list(group) for _key, group in grouped_iter]
 
 
-def key_function(item):
+def key_function(item: list[list[float]]) -> float:
     return item[0][2]
 
 

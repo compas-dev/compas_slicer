@@ -1,17 +1,23 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 import progressbar
-from compas.geometry import intersection_segment_plane
+from compas.geometry import Plane, intersection_segment_plane
 
 from compas_slicer.geometry import Layer, Path
 from compas_slicer.slicers.slice_utilities import ContoursBase
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
 
 logger = logging.getLogger('logger')
 
 __all__ = ['create_planar_paths']
 
 
-def create_planar_paths(mesh, planes):
+def create_planar_paths(mesh: Mesh, planes: list[Plane]) -> list[Layer]:
     """
     Creates planar contours. Does not rely on external libraries.
     It is currently the only method that can return identify OPEN versus CLOSED paths.
@@ -55,22 +61,24 @@ class PlanarContours(ContoursBase):
     mesh: :class: 'compas.datastructures.Mesh'
     plane: list, :class: 'compas.geometry.Plane'
     """
-    def __init__(self, mesh, plane):
+    def __init__(self, mesh: Mesh, plane: Plane) -> None:
         self.plane = plane
         ContoursBase.__init__(self, mesh)  # initialize from parent class
 
-    def edge_is_intersected(self, u, v):
+    def edge_is_intersected(self, u: int, v: int) -> bool:
         """ Returns True if the edge u,v has a zero-crossing, False otherwise. """
         a = self.mesh.vertex_attributes(u, 'xyz')
         b = self.mesh.vertex_attributes(v, 'xyz')
         z = [a[2], b[2]]  # check if the plane.z is withing the range of [a.z, b.z]
-        return min(z) <= self.plane.point[2] < max(z)
+        result: bool = min(z) <= self.plane.point[2] < max(z)
+        return result
 
-    def find_zero_crossing_data(self, u, v):
+    def find_zero_crossing_data(self, u: int, v: int) -> list[float] | None:
         """ Finds the position of the zero-crossing on the edge u,v. """
         a = self.mesh.vertex_attributes(u, 'xyz')
         b = self.mesh.vertex_attributes(v, 'xyz')
-        return intersection_segment_plane((a, b), self.plane)
+        result: list[float] | None = intersection_segment_plane((a, b), self.plane)
+        return result
 
 
 if __name__ == "__main__":

@@ -1,14 +1,22 @@
+from __future__ import annotations
+
 import itertools
 import logging
+from typing import TYPE_CHECKING, Literal
 
 from compas.geometry import Point, distance_point_point
+
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
 
 logger = logging.getLogger('logger')
 
 __all__ = ['reorder_vertical_layers']
 
+AlignWith = Literal["x_axis", "y_axis"]
 
-def reorder_vertical_layers(slicer, align_with):
+
+def reorder_vertical_layers(slicer: BaseSlicer, align_with: AlignWith | Point) -> None:
     """Re-orders the vertical layers in a specific way
 
     Parameters

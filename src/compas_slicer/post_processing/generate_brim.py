@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 import pyclipper
 from compas.geometry import Point
@@ -8,12 +11,15 @@ import compas_slicer
 from compas_slicer.geometry import Layer, Path
 from compas_slicer.post_processing.seams_align import seams_align
 
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
+
 logger = logging.getLogger('logger')
 
 __all__ = ['generate_brim']
 
 
-def generate_brim(slicer, layer_width, number_of_brim_offsets):
+def generate_brim(slicer: BaseSlicer, layer_width: float, number_of_brim_offsets: int) -> None:
     """Creates a brim around the bottom contours of the print.
 
     Parameters

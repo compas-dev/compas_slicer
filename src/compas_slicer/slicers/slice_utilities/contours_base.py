@@ -1,15 +1,22 @@
+from __future__ import annotations
+
 import logging
 from abc import abstractmethod
+from pathlib import Path as FilePath
+from typing import TYPE_CHECKING, Any
 
 from compas.geometry import Point, distance_point_point_sqrd
 from compas.itertools import pairwise
 
 import compas_slicer.utilities as utils
-from compas_slicer.geometry import Path
+from compas_slicer.geometry import Path, VerticalLayersManager
 from compas_slicer.slicers.slice_utilities.graph_connectivity import (
     create_graph_from_mesh_edges,
     sort_graph_connected_components,
 )
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
 
 logger = logging.getLogger("logger")
 
@@ -31,25 +38,25 @@ class ContoursBase:
 
     """
 
-    def __init__(self, mesh):
+    def __init__(self, mesh: Mesh) -> None:
         self.mesh = mesh
-        self.intersection_data = {}  # dict: (ui,vi) : {compas.Point}
+        self.intersection_data: dict[tuple[int, int], Point] = {}
         # key: tuple (int, int), The edge from which the intersection point originates.
         # value: :class: 'compas.geometry.Point', The zero-crossing point.
-        self.edge_to_index = {}  # dict that stores node_index and edge relationship
+        self.edge_to_index: dict[tuple[int, int], int] = {}
         # key: tuple (int, int) edge
         # value: int, index of the intersection point
-        self.sorted_point_clusters = {}  # dict
+        self.sorted_point_clusters: dict[int, list[Point]] = {}
         # key: int, The index of the connected component
         # value: list, :class: 'compas.geometry.Point', The sorted zero-crossing points.
-        self.sorted_edge_clusters = {}  # dict
+        self.sorted_edge_clusters: dict[int, list[tuple[int, int]]] = {}
         # key: int, The index of the connected component.
         # value: list, tuple (int, int), The sorted intersected edges.
-        self.closed_paths_booleans = {}  # dict
+        self.closed_paths_booleans: dict[int, bool] = {}
         # key: int, The index of the connected component.
         # value: bool, True if path is closed, False otherwise.
 
-    def compute(self):
+    def compute(self) -> None:
         self.find_intersections()
         G = create_graph_from_mesh_edges(self.mesh, self.intersection_data, self.edge_to_index)
         sorted_indices_dict = sort_graph_connected_components(G)
@@ -62,14 +69,14 @@ class ContoursBase:
 
         self.label_closed_paths()
 
-    def label_closed_paths(self):
+    def label_closed_paths(self) -> None:
         for key in self.sorted_edge_clusters:
             first_edge = self.sorted_edge_clusters[key][0]
             last_edge = self.sorted_edge_clusters[key][-1]
             u, v = first_edge
             self.closed_paths_booleans[key] = u in last_edge or v in last_edge
 
-    def find_intersections(self):
+    def find_intersections(self) -> None:
         """
         Fills in the
         dict self.intersection_data: key=(ui,vi) : [xi,yi,zi],
@@ -86,26 +93,30 @@ class ContoursBase:
             for i, e in enumerate(self.intersection_data):
                 self.edge_to_index[e] = i
 
-    def save_point_clusters_as_polylines_to_json(self, DATA_PATH, name):
-        all_points = {}
+    def save_point_clusters_as_polylines_to_json(
+        self, DATA_PATH: str | FilePath, name: str
+    ) -> None:
+        all_points: dict[str, Any] = {}
         for i, key in enumerate(self.sorted_point_clusters):
-            all_points[i] = utils.point_list_to_dict(self.sorted_point_clusters[key])
+            all_points[str(i)] = utils.point_list_to_dict(self.sorted_point_clusters[key])
         utils.save_to_json(all_points, DATA_PATH, name)
 
     # --- Abstract methods
     @abstractmethod
-    def edge_is_intersected(self, u, v):
+    def edge_is_intersected(self, u: int, v: int) -> bool:
         """ Returns True if the edge u,v has a zero-crossing, False otherwise. """
         # to be implemented by the inheriting classes
         pass
 
     @abstractmethod
-    def find_zero_crossing_data(self, u, v):
+    def find_zero_crossing_data(self, u: int, v: int) -> list[float] | None:
         """ Finds the position of the zero-crossing on the edge u,v. """
         # to be implemented by the inheriting classes
         pass
 
-    def add_to_vertical_layers_manager(self, vertical_layers_manager):
+    def add_to_vertical_layers_manager(
+        self, vertical_layers_manager: VerticalLayersManager
+    ) -> None:
         for key in self.sorted_point_clusters:
             pts = self.sorted_point_clusters[key]
             if len(pts) > 3:  # discard curves that are too small

@@ -1,14 +1,20 @@
+from __future__ import annotations
+
 import logging
 from collections import deque
+from typing import TYPE_CHECKING
 
-from compas.geometry import dot_vectors, normalize_vector, subtract_vectors
+from compas.geometry import Point, dot_vectors, normalize_vector, subtract_vectors
+
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
 
 logger = logging.getLogger('logger')
 
 __all__ = ['unify_paths_orientation']
 
 
-def unify_paths_orientation(slicer):
+def unify_paths_orientation(slicer: BaseSlicer) -> None:
     """
     Unifies the orientation of paths that are closed.
 
@@ -30,7 +36,9 @@ def unify_paths_orientation(slicer):
                 path.points = match_paths_orientations(path.points, reference_points, path.is_closed)
 
 
-def match_paths_orientations(pts, reference_points, is_closed):
+def match_paths_orientations(
+    pts: list[Point], reference_points: list[Point], is_closed: bool
+) -> list[Point]:
     """Check if new curve has same direction as prev curve, otherwise reverse.
 
     Parameters

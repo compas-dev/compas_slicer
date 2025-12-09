@@ -1,15 +1,21 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 from compas.geometry import Vector, distance_point_point
 
 import compas_slicer
+
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
 
 logger = logging.getLogger('logger')
 
 __all__ = ['seams_smooth']
 
 
-def seams_smooth(slicer, smooth_distance):
+def seams_smooth(slicer: BaseSlicer, smooth_distance: float) -> None:
     """Smooths the seams (transition between layers)
     by removing points within a certain distance.
 

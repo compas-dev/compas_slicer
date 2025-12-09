@@ -1,13 +1,21 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 from compas_slicer.geometry import VerticalLayersManager
+
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
 
 logger = logging.getLogger('logger')
 
 __all__ = ['sort_into_vertical_layers']
 
 
-def sort_into_vertical_layers(slicer, dist_threshold=25.0, max_paths_per_layer=None):
+def sort_into_vertical_layers(
+    slicer: BaseSlicer, dist_threshold: float = 25.0, max_paths_per_layer: int | None = None
+) -> None:
     """Sorts the paths from horizontal layers into Vertical Layers.
 
     Vertical Layers are layers at different heights that are grouped together by proximity
