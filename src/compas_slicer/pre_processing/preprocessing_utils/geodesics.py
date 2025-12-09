@@ -132,14 +132,17 @@ class GeodesicsSolver:
         elif method == 'simulation':
             u = u0
 
+            # Pre-factor the matrix ONCE outside the loop (major speedup)
+            if not USE_FORWARDS_EULER:
+                S = self.M - DELTA * self.L
+                solver = scipy.sparse.linalg.factorized(S)
+
             for _i in range(HEAT_DIFFUSION_ITERATIONS):
                 if USE_FORWARDS_EULER:  # Forwards Euler (doesn't work so well)
                     u_prime = u + DELTA * self.L * u
-                else:  # Backwards Euler
-                    #  (M-delta*L) * u_prime = M*U
-                    S = (self.M - DELTA * self.L)
+                else:  # Backwards Euler - use pre-factored solver
                     b = self.M * u
-                    u_prime = scipy.sparse.linalg.spsolve(S, b)
+                    u_prime = solver(b)
 
                 if len(v_equalize) > 0:
                     u_prime[v_equalize] = np.min(u_prime[v_equalize])

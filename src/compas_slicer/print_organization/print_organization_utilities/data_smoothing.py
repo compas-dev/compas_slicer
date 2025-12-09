@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import logging
-from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Callable
+
+import numpy as np
 
 if TYPE_CHECKING:
     from compas_slicer.geometry import PrintPoint
@@ -48,20 +49,20 @@ def smooth_printpoint_attribute(
     for ppt in print_organizer.printpoints_iterator():
         assert get_attr_value(ppt), 'The attribute you are trying to smooth has not been assigned a value'
 
-    attrs = [get_attr_value(ppt) for ppt in print_organizer.printpoints_iterator()]
-    new_values = deepcopy(attrs)
+    attrs = np.array([get_attr_value(ppt) for ppt in print_organizer.printpoints_iterator()])
 
-    for iteration in range(iterations):
-        for i, _ppt in enumerate(print_organizer.printpoints_iterator()):
-            if 0 < i < len(attrs) - 1:  # ignore first and last element
-                mid = (attrs[i - 1] + attrs[i + 1]) * 0.5
-                new_values[i] = mid * strength + attrs[i] * (1 - strength)
-        attrs = new_values
+    # Vectorized smoothing: use numpy slicing instead of per-element loop
+    for _ in range(iterations):
+        # mid = 0.5 * (attrs[i-1] + attrs[i+1]) for interior points
+        mid = 0.5 * (attrs[:-2] + attrs[2:])  # shape: (n-2,)
+        # new_val = mid * strength + attrs[1:-1] * (1 - strength)
+        attrs[1:-1] = mid * strength + attrs[1:-1] * (1 - strength)
 
-        # in the end assign the new (smoothened) values to the printpoints
-        if iteration == iterations - 1:
-            for i, ppt in enumerate(print_organizer.printpoints_iterator()):
-                set_attr_value(ppt, attrs[i])
+    # Assign the smoothened values back to the printpoints
+    for i, ppt in enumerate(print_organizer.printpoints_iterator()):
+        val = attrs[i]
+        # Convert back from numpy type if needed
+        set_attr_value(ppt, val.tolist() if hasattr(val, 'tolist') else float(val))
 
 
 def smooth_printpoints_layer_heights(

@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from compas.geometry import Point, distance_point_point_sqrd
+import numpy as np
+from compas.geometry import Point
+from scipy.spatial import cKDTree
 
 import compas_slicer.utilities as utils
 
@@ -134,32 +136,28 @@ def restore_mesh_attributes(mesh: Mesh, v_attributes_dict: dict[str, Any]) -> No
 
     D_THRESHOLD = 0.01
 
-    welded_mesh_vertices = []
-    indices_to_vkeys = {}
-    for i, vkey in enumerate(mesh.vertices()):
-        v_coords = mesh.vertex_coordinates(vkey)
-        pt = Point(x=v_coords[0], y=v_coords[1], z=v_coords[2])
-        welded_mesh_vertices.append(pt)
-        indices_to_vkeys[i] = vkey
+    # Build KDTree once for all queries
+    vkeys = list(mesh.vertices())
+    welded_mesh_vertices = np.array([mesh.vertex_coordinates(vkey) for vkey in vkeys], dtype=np.float64)
+    indices_to_vkeys = dict(enumerate(vkeys))
+    tree = cKDTree(welded_mesh_vertices)
 
-    for v_coords in v_attributes_dict['boundary_1']:
-        closest_index = utils.get_closest_pt_index(pt=v_coords, pts=welded_mesh_vertices)
-        c_vkey = indices_to_vkeys[closest_index]
-        if distance_point_point_sqrd(v_coords, mesh.vertex_coordinates(c_vkey)) < D_THRESHOLD:
-            mesh.vertex_attribute(c_vkey, 'boundary', value=1)
+    def _restore_attribute_batch(pts_list, attr_name, attr_value):
+        """Restore attribute for a batch of points using KDTree."""
+        if not pts_list:
+            return
+        query_pts = np.array([[p.x, p.y, p.z] if hasattr(p, 'x') else p for p in pts_list], dtype=np.float64)
+        distances, indices = tree.query(query_pts)
+        for dist, idx in zip(distances, indices):
+            if dist ** 2 < D_THRESHOLD:
+                c_vkey = indices_to_vkeys[idx]
+                mesh.vertex_attribute(c_vkey, attr_name, value=attr_value)
 
-    for v_coords in v_attributes_dict['boundary_2']:
-        closest_index = utils.get_closest_pt_index(pt=v_coords, pts=welded_mesh_vertices)
-        c_vkey = indices_to_vkeys[closest_index]
-        if distance_point_point_sqrd(v_coords, mesh.vertex_coordinates(c_vkey)) < D_THRESHOLD:
-            mesh.vertex_attribute(c_vkey, 'boundary', value=2)
+    _restore_attribute_batch(v_attributes_dict['boundary_1'], 'boundary', 1)
+    _restore_attribute_batch(v_attributes_dict['boundary_2'], 'boundary', 2)
 
     for cut_index in v_attributes_dict['cut']:
-        for v_coords in v_attributes_dict['cut'][cut_index]:
-            closest_index = utils.get_closest_pt_index(pt=v_coords, pts=welded_mesh_vertices)
-            c_vkey = indices_to_vkeys[closest_index]
-            if distance_point_point_sqrd(v_coords, mesh.vertex_coordinates(c_vkey)) < D_THRESHOLD:
-                mesh.vertex_attribute(c_vkey, 'cut', value=int(cut_index))
+        _restore_attribute_batch(v_attributes_dict['cut'][cut_index], 'cut', int(cut_index))
 
 
 def replace_mesh_vertex_attribute(

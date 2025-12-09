@@ -6,10 +6,12 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 import networkx as nx
+import numpy as np
 from compas.datastructures import Mesh
-from compas.geometry import Point, distance_point_point, distance_point_point_sqrd
+from compas.geometry import Point
 
 import compas_slicer.utilities as utils
+from compas_slicer._numpy_ops import min_distances_to_set
 from compas_slicer.pre_processing.preprocessing_utils import get_existing_boundary_indices, get_existing_cut_indices
 
 if TYPE_CHECKING:
@@ -345,14 +347,13 @@ def are_neighboring_point_clouds(pts1: list[Point], pts2: list[Point], threshold
     pts2: list, :class: 'compas.geometry.Point'
     threshold: float
     """
-    count = 0
-    for pt in pts1:
-        d = distance_point_point(pt, utils.get_closest_pt(pt, pts2))
-        if d < threshold:
-            count += 1
-            if count > 5:
-                return True
-    return False
+    if len(pts1) == 0 or len(pts2) == 0:
+        return False
+    # Vectorized: compute min distance from each pt in pts1 to pts2
+    arr1 = np.asarray(pts1, dtype=np.float64)
+    arr2 = np.asarray(pts2, dtype=np.float64)
+    distances = min_distances_to_set(arr1, arr2)
+    return np.sum(distances < threshold) > 5
 
 
 def is_true_mesh_adjacency(all_meshes: list[Mesh], key1: int, key2: int) -> bool:
@@ -365,20 +366,20 @@ def is_true_mesh_adjacency(all_meshes: list[Mesh], key1: int, key2: int) -> bool
     key1: int, index of mesh1
     key2: int, index of mesh2
     """
-    count = 0
     mesh1 = all_meshes[key1]
     mesh2 = all_meshes[key2]
     pts_mesh2 = [mesh2.vertex_coordinates(vkey) for vkey, data in mesh2.vertices(data=True)
                  if (data['cut'] > 0 or data['boundary'] > 0)]
-    for vkey, data in mesh1.vertices(data=True):
-        if data['cut'] > 0 or data['boundary'] > 0:
-            pt = mesh1.vertex_coordinates(vkey)
-            ci = utils.get_closest_pt_index(pt, pts_mesh2)
-            if distance_point_point_sqrd(pt, pts_mesh2[ci]) < 0.00001:
-                count += 1
-                if count == 3:
-                    return True
-    return False
+    pts_mesh1 = [mesh1.vertex_coordinates(vkey) for vkey, data in mesh1.vertices(data=True)
+                 if (data['cut'] > 0 or data['boundary'] > 0)]
+    if len(pts_mesh1) == 0 or len(pts_mesh2) == 0:
+        return False
+    # Vectorized: compute min distance from each pt in mesh1 to pts_mesh2
+    arr1 = np.asarray(pts_mesh1, dtype=np.float64)
+    arr2 = np.asarray(pts_mesh2, dtype=np.float64)
+    distances = min_distances_to_set(arr1, arr2)
+    # Count points with essentially zero distance (shared vertices)
+    return np.sum(distances ** 2 < 0.00001) >= 3
 
 
 if __name__ == '__main__':

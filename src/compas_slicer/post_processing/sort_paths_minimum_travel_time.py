@@ -3,7 +3,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from compas.geometry import Point, distance_point_point
+import numpy as np
+from compas.geometry import Point
 
 if TYPE_CHECKING:
     from compas_slicer.geometry import Path as SlicerPath
@@ -54,16 +55,20 @@ def adjust_seam_to_closest_pos(ref_point: Point, path: SlicerPath) -> None:
     if path.is_closed:  # if path is closed
         # remove first point
         path.points.pop(-1)
-        #  calculate distances from ref_point to vertices of path
-        distances = [distance_point_point(ref_point, points) for points in path.points]
-        #  find  index of closest point
-        closest_point = distances.index(min(distances))
+        #  calculate distances from ref_point to vertices of path (vectorized)
+        ref = np.asarray(ref_point, dtype=np.float64)
+        pts = np.asarray(path.points, dtype=np.float64)
+        distances = np.linalg.norm(pts - ref, axis=1)
+        closest_point = int(np.argmin(distances))
         #  adjust seam
         adjusted_seam = path.points[closest_point:] + path.points[:closest_point] + [path.points[closest_point]]
         path.points = adjusted_seam
     else:  # if path is open
-        #  if end point is closer than start point >> flip
-        if distance_point_point(ref_point, path.points[0]) > distance_point_point(ref_point, path.points[-1]):
+        #  if end point is closer than start point >> flip (vectorized)
+        ref = np.asarray(ref_point, dtype=np.float64)
+        d_start = np.linalg.norm(np.asarray(path.points[0]) - ref)
+        d_end = np.linalg.norm(np.asarray(path.points[-1]) - ref)
+        if d_start > d_end:
             path.points.reverse()
 
 
@@ -75,18 +80,16 @@ def closest_path(ref_point: Point, somepaths: list[SlicerPath]) -> int:
     ref_point: the reference point
     somepaths: list of paths to look into for finding the closest
     """
-    min_dist = distance_point_point(ref_point, somepaths[0].points[0])
-    closest_index = 0
+    ref = np.asarray(ref_point, dtype=np.float64)
 
-    for i, path in enumerate(somepaths):
-        #  for each path, adjust the seam to be in the closest vertex to ref_point
+    # First adjust all seams
+    for path in somepaths:
         adjust_seam_to_closest_pos(ref_point, path)
-        #  calculate the minimum distance to the nearest seam of each path
-        min_dist_temp = distance_point_point(ref_point, path.points[0])
-        if min_dist_temp < min_dist:
-            min_dist = min_dist_temp
-            closest_index = i
-    return closest_index
+
+    # Then find closest path (vectorized)
+    start_pts = np.array([path.points[0] for path in somepaths], dtype=np.float64)
+    distances = np.linalg.norm(start_pts - ref, axis=1)
+    return int(np.argmin(distances))
 
 
 if __name__ == "__main__":
