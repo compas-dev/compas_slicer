@@ -21,7 +21,68 @@ if TYPE_CHECKING:
 logger = logging.getLogger('logger')
 
 __all__ = ['get_igl_EXACT_geodesic_distances',
-           'get_custom_HEAT_geodesic_distances']
+           'get_custom_HEAT_geodesic_distances',
+           'GeodesicsCache']
+
+
+class GeodesicsCache:
+    """Cache for geodesic distances to avoid redundant computations.
+
+    The libigl exact geodesic method is expensive (~80ms per call).
+    This cache stores per-source distances and reuses them.
+    """
+
+    def __init__(self) -> None:
+        self._cache: dict[int, NDArray[np.floating]] = {}
+        self._mesh_hash: int | None = None
+
+    def clear(self) -> None:
+        """Clear the cache."""
+        self._cache.clear()
+        self._mesh_hash = None
+
+    def get_distances(
+        self, mesh: Mesh, sources: list[int], method: str = 'exact'
+    ) -> NDArray[np.floating]:
+        """Get geodesic distances from sources, using cache when possible.
+
+        Parameters
+        ----------
+        mesh : Mesh
+            The mesh to compute distances on.
+        sources : list[int]
+            Source vertex indices.
+        method : str
+            Geodesic method ('exact' or 'heat').
+
+        Returns
+        -------
+        NDArray
+            Minimum distance from any source to each vertex.
+        """
+        from compas_libigl.geodistance import trimesh_geodistance
+
+        # Check if mesh changed (simple hash based on vertex count)
+        mesh_hash = hash((len(list(mesh.vertices())), len(list(mesh.faces()))))
+        if mesh_hash != self._mesh_hash:
+            self.clear()
+            self._mesh_hash = mesh_hash
+
+        M = mesh.to_vertices_and_faces()
+        all_distances = []
+
+        for source in sources:
+            cache_key = (source, method)
+            if cache_key not in self._cache:
+                distances = trimesh_geodistance(M, source, method=method)
+                self._cache[cache_key] = np.array(distances)
+            all_distances.append(self._cache[cache_key])
+
+        return np.min(np.array(all_distances), axis=0)
+
+
+# Global cache instance
+_geodesics_cache = GeodesicsCache()
 
 
 def get_igl_EXACT_geodesic_distances(
@@ -30,24 +91,15 @@ def get_igl_EXACT_geodesic_distances(
     """
     Calculate geodesic distances using compas_libigl.
 
+    Uses caching to avoid redundant computations when the same
+    source vertices are queried multiple times.
+
     Parameters
     ----------
     mesh: :class: 'compas.datastructures.Mesh'
     vertices_start: list, int
     """
-    from compas_libigl.geodistance import trimesh_geodistance
-
-    M = mesh.to_vertices_and_faces()
-
-    # compas_libigl expects single source, so compute for each and take min
-    all_distances = []
-    for source in vertices_start:
-        distances = trimesh_geodistance(M, source, method='exact')
-        all_distances.append(distances)
-
-    # Take minimum distance from any source
-    distances = np.min(np.array(all_distances), axis=0)
-    return distances
+    return _geodesics_cache.get_distances(mesh, vertices_start, method='exact')
 
 
 def get_custom_HEAT_geodesic_distances(
