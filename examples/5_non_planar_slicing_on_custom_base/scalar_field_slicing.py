@@ -9,6 +9,7 @@ import compas_slicer.utilities as utils
 from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.print_organization import ScalarFieldPrintOrganizer
 from compas_slicer.slicers import ScalarFieldSlicer
+from compas_slicer.utilities import should_visualize, visualize_slicer
 
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
@@ -19,7 +20,7 @@ MODEL = 'geom_to_slice.obj'
 BASE = 'custom_base.obj'
 
 
-def main():
+def main(visualize: bool = False):
     # --- load meshes
     mesh = Mesh.from_obj(DATA_PATH / MODEL)
     base = Mesh.from_obj(DATA_PATH / BASE)
@@ -52,6 +53,9 @@ def main():
     printpoints_data = print_organizer.output_printpoints_dict()
     utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')  # save results to json
 
+    if visualize:
+        visualize_slicer(slicer, mesh)
+
 
 if __name__ == '__main__':
-    main()
+    main(visualize=should_visualize())
