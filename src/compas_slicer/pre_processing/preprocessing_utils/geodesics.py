@@ -20,112 +20,16 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger('logger')
 
-__all__ = ['get_igl_EXACT_geodesic_distances',
-           'get_igl_HEAT_geodesic_distances',
-           'get_cgal_HEAT_geodesic_distances',
+__all__ = ['get_heat_geodesic_distances',
            'get_custom_HEAT_geodesic_distances',
            'GeodesicsCache']
-
-
-class GeodesicsCache:
-    """Cache for geodesic distances to avoid redundant computations.
-
-    The libigl exact geodesic method is expensive (~80ms per call).
-    This cache stores per-source distances and reuses them.
-    """
-
-    def __init__(self) -> None:
-        self._cache: dict[int, NDArray[np.floating]] = {}
-        self._mesh_hash: int | None = None
-
-    def clear(self) -> None:
-        """Clear the cache."""
-        self._cache.clear()
-        self._mesh_hash = None
-
-    def get_distances(
-        self, mesh: Mesh, sources: list[int], method: str = 'exact'
-    ) -> NDArray[np.floating]:
-        """Get geodesic distances from sources, using cache when possible.
-
-        Parameters
-        ----------
-        mesh : Mesh
-            The mesh to compute distances on.
-        sources : list[int]
-            Source vertex indices.
-        method : str
-            Geodesic method ('exact' or 'heat').
-
-        Returns
-        -------
-        NDArray
-            Minimum distance from any source to each vertex.
-        """
-        from compas_libigl.geodistance import trimesh_geodistance
-
-        # Check if mesh changed (simple hash based on vertex count)
-        mesh_hash = hash((len(list(mesh.vertices())), len(list(mesh.faces()))))
-        if mesh_hash != self._mesh_hash:
-            self.clear()
-            self._mesh_hash = mesh_hash
-
-        M = mesh.to_vertices_and_faces()
-        all_distances = []
-
-        for source in sources:
-            cache_key = (source, method)
-            if cache_key not in self._cache:
-                distances = trimesh_geodistance(M, source, method=method)
-                self._cache[cache_key] = np.array(distances)
-            all_distances.append(self._cache[cache_key])
-
-        return np.min(np.array(all_distances), axis=0)
-
-
-# Global cache instance
-_geodesics_cache = GeodesicsCache()
-
-
-def get_igl_EXACT_geodesic_distances(
-    mesh: Mesh, vertices_start: list[int]
-) -> NDArray[np.floating]:
-    """
-    Calculate geodesic distances using compas_libigl exact method.
-
-    Uses caching to avoid redundant computations when the same
-    source vertices are queried multiple times.
-
-    Parameters
-    ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-    vertices_start: list, int
-    """
-    return _geodesics_cache.get_distances(mesh, vertices_start, method='exact')
-
-
-def get_igl_HEAT_geodesic_distances(
-    mesh: Mesh, vertices_start: list[int]
-) -> NDArray[np.floating]:
-    """
-    Calculate geodesic distances using compas_libigl heat method.
-
-    Faster than exact but approximate. Good for curved slicing where
-    slight approximation errors are acceptable.
-
-    Parameters
-    ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-    vertices_start: list, int
-    """
-    return _geodesics_cache.get_distances(mesh, vertices_start, method='heat')
 
 
 # CGAL heat method solver cache (for precomputation reuse)
 _cgal_solver_cache: dict[int, object] = {}
 
 
-def get_cgal_HEAT_geodesic_distances(
+def get_heat_geodesic_distances(
     mesh: Mesh, vertices_start: list[int]
 ) -> NDArray[np.floating]:
     """
@@ -165,6 +69,50 @@ def get_cgal_HEAT_geodesic_distances(
     return np.min(np.array(all_distances), axis=0)
 
 
+# Backwards compatibility aliases
+get_cgal_HEAT_geodesic_distances = get_heat_geodesic_distances
+get_igl_HEAT_geodesic_distances = get_heat_geodesic_distances
+get_igl_EXACT_geodesic_distances = get_heat_geodesic_distances
+
+
+class GeodesicsCache:
+    """Cache for geodesic distances to avoid redundant computations.
+
+    Note: This class is kept for backwards compatibility but now uses CGAL.
+    The CGAL solver has its own internal caching via _cgal_solver_cache.
+    """
+
+    def __init__(self) -> None:
+        self._cache: dict[tuple[int, str], NDArray[np.floating]] = {}
+        self._mesh_hash: int | None = None
+
+    def clear(self) -> None:
+        """Clear the cache."""
+        self._cache.clear()
+        self._mesh_hash = None
+
+    def get_distances(
+        self, mesh: Mesh, sources: list[int], method: str = 'heat'
+    ) -> NDArray[np.floating]:
+        """Get geodesic distances from sources, using cache when possible.
+
+        Parameters
+        ----------
+        mesh : Mesh
+            The mesh to compute distances on.
+        sources : list[int]
+            Source vertex indices.
+        method : str
+            Geodesic method (ignored, always uses CGAL heat method).
+
+        Returns
+        -------
+        NDArray
+            Minimum distance from any source to each vertex.
+        """
+        return get_heat_geodesic_distances(mesh, sources)
+
+
 def get_custom_HEAT_geodesic_distances(
     mesh: Mesh,
     vi_sources: list[int],
@@ -172,7 +120,7 @@ def get_custom_HEAT_geodesic_distances(
     v_equalize: list[int] | None = None,
     anisotropic_scaling: bool = False,
 ) -> NDArray[np.floating]:
-    """ Calculate geodesic distances using the heat method. """
+    """ Calculate geodesic distances using the custom heat method. """
     geodesics_solver = GeodesicsSolver(mesh, OUTPUT_PATH)
     u = geodesics_solver.diffuse_heat(vi_sources, v_equalize, method='simulation')
     geodesic_dist = geodesics_solver.get_geodesic_distances(u, vi_sources, v_equalize)
@@ -199,21 +147,16 @@ class GeodesicsSolver:
     """
 
     def __init__(self, mesh: Mesh, OUTPUT_PATH: str) -> None:
-        from compas_libigl.cotmatrix import trimesh_cotmatrix, trimesh_cotmatrix_entries
-        from compas_libigl.massmatrix import trimesh_massmatrix
-
         logger.info('GeodesicsSolver')
         self.mesh = mesh
         self.OUTPUT_PATH = OUTPUT_PATH
 
         self.use_forwards_euler = True
 
-        M = mesh.to_vertices_and_faces()
-
-        # compute necessary data using compas_libigl
-        self.cotans = trimesh_cotmatrix_entries(M)
-        self.L = trimesh_cotmatrix(M)
-        self.M = trimesh_massmatrix(M)
+        # Compute matrices using NumPy implementations
+        self.cotans = utils.get_mesh_cotans(mesh)
+        self.L = utils.get_mesh_cotmatrix(mesh, fix_boundaries=False)
+        self.M = utils.get_mesh_massmatrix(mesh)
 
     def diffuse_heat(
         self,

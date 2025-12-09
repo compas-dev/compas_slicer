@@ -45,6 +45,9 @@ __all__ = ['remap',
            'point_list_to_dict',
            'point_list_from_dict',
            'get_closest_mesh_vkey_to_pt',
+           'get_mesh_cotmatrix',
+           'get_mesh_cotans',
+           'get_mesh_massmatrix',
            'get_mesh_cotmatrix_igl',
            'get_mesh_cotans_igl',
            'get_closest_pt_index',
@@ -427,58 +430,165 @@ def get_normal_of_path_on_xy_plane(k: int, point: Point, path: SlicerPath, mesh:
 
 
 #######################################
-# igl utils
+# mesh matrix utils (NumPy implementations)
 
-def get_mesh_cotmatrix_igl(mesh: Mesh, fix_boundaries: bool = True) -> csr_matrix:
-    """Get the Laplace operator of the mesh.
+def get_mesh_cotmatrix(mesh: Mesh, fix_boundaries: bool = True) -> csr_matrix:
+    """Get the cotangent Laplacian matrix of the mesh.
+
+    Computes L_ij = (cot α_ij + cot β_ij) / 2 for adjacent vertices,
+    with L_ii = -sum_j L_ij (row sum = 0).
 
     Parameters
     ----------
     mesh : Mesh
-        The mesh.
+        The mesh (must be triangulated).
     fix_boundaries : bool
-        If True, fix boundary vertices.
+        If True, zero out rows for boundary vertices.
 
     Returns
     -------
     csr_matrix
-        Sparse matrix (V x V), Laplace operator.
+        Sparse matrix (V x V), cotangent Laplacian.
 
     """
-    from compas_libigl.cotmatrix import trimesh_cotmatrix
+    V, F = mesh.to_vertices_and_faces()
+    vertices = np.array(V, dtype=np.float64)
+    faces = np.array(F, dtype=np.int32)
 
-    M = mesh.to_vertices_and_faces()
-    v, _f = M
-    C = trimesh_cotmatrix(M)
+    n_vertices = len(vertices)
+
+    # Get cotangent weights for each half-edge
+    # For each face, compute cotangents of all three angles
+    i0, i1, i2 = faces[:, 0], faces[:, 1], faces[:, 2]
+    v0, v1, v2 = vertices[i0], vertices[i1], vertices[i2]
+
+    # Edge vectors
+    e0 = v2 - v1  # opposite to vertex 0
+    e1 = v0 - v2  # opposite to vertex 1
+    e2 = v1 - v0  # opposite to vertex 2
+
+    # Cotangent of angle at vertex i = dot(e_j, e_k) / |cross(e_j, e_k)|
+    # where e_j and e_k are edges adjacent to vertex i
+    def cotangent(a: NDArray, b: NDArray) -> NDArray:
+        cross = np.cross(a, b)
+        cross_norm = np.linalg.norm(cross, axis=1)
+        dot = np.sum(a * b, axis=1)
+        # Avoid division by zero
+        cross_norm = np.maximum(cross_norm, 1e-10)
+        return dot / cross_norm
+
+    # Cotangent at each vertex of each face
+    cot0 = cotangent(-e2, e1)  # angle at vertex 0
+    cot1 = cotangent(-e0, e2)  # angle at vertex 1
+    cot2 = cotangent(-e1, e0)  # angle at vertex 2
+
+    # Build sparse matrix
+    # L_ij += 0.5 * cot(angle opposite to edge ij)
+    row = np.concatenate([i0, i1, i1, i2, i2, i0])
+    col = np.concatenate([i1, i0, i2, i1, i0, i2])
+    data = np.concatenate([cot2, cot2, cot0, cot0, cot1, cot1]) * 0.5
+
+    L = csr_matrix((data, (row, col)), shape=(n_vertices, n_vertices))
+
+    # Make symmetric and set diagonal to negative row sum
+    L = L + L.T
+    L = L - scipy.sparse.diags(np.array(L.sum(axis=1)).flatten())
 
     if fix_boundaries:
-        # fix boundaries by putting the corresponding columns of the sparse matrix to 0
-        C_dense = C.toarray()
-        for i, (_vkey, data) in enumerate(mesh.vertices(data=True)):
-            if data['boundary'] > 0:
-                C_dense[i][:] = np.zeros(len(v))
-        C = scipy.sparse.csr_matrix(C_dense)
-    return C
+        # Zero out rows for boundary vertices
+        boundary_mask = np.zeros(n_vertices, dtype=bool)
+        for i, (_vkey, vdata) in enumerate(mesh.vertices(data=True)):
+            if vdata.get('boundary', 0) > 0:
+                boundary_mask[i] = True
+
+        if np.any(boundary_mask):
+            L = L.tolil()
+            for i in np.where(boundary_mask)[0]:
+                L[i, :] = 0
+            L = L.tocsr()
+
+    return L
 
 
-def get_mesh_cotans_igl(mesh: Mesh) -> NDArray:
+def get_mesh_cotans(mesh: Mesh) -> NDArray:
     """Get the cotangent entries of the mesh.
 
     Parameters
     ----------
     mesh : Mesh
-        The mesh.
+        The mesh (must be triangulated).
 
     Returns
     -------
     NDArray
         F x 3 array of 1/2*cotangents for corresponding angles.
+        Column i contains cotangent of angle at vertex i of each face.
 
     """
-    from compas_libigl.cotmatrix import trimesh_cotmatrix_entries
+    V, F = mesh.to_vertices_and_faces()
+    vertices = np.array(V, dtype=np.float64)
+    faces = np.array(F, dtype=np.int32)
 
-    M = mesh.to_vertices_and_faces()
-    return trimesh_cotmatrix_entries(M)
+    i0, i1, i2 = faces[:, 0], faces[:, 1], faces[:, 2]
+    v0, v1, v2 = vertices[i0], vertices[i1], vertices[i2]
+
+    e0 = v2 - v1
+    e1 = v0 - v2
+    e2 = v1 - v0
+
+    def cotangent(a: NDArray, b: NDArray) -> NDArray:
+        cross = np.cross(a, b)
+        cross_norm = np.linalg.norm(cross, axis=1)
+        dot = np.sum(a * b, axis=1)
+        cross_norm = np.maximum(cross_norm, 1e-10)
+        return dot / cross_norm
+
+    cot0 = cotangent(-e2, e1)
+    cot1 = cotangent(-e0, e2)
+    cot2 = cotangent(-e1, e0)
+
+    return np.column_stack([cot0, cot1, cot2]) * 0.5
+
+
+def get_mesh_massmatrix(mesh: Mesh) -> csr_matrix:
+    """Get the mass matrix of the mesh (Voronoi area weights).
+
+    Parameters
+    ----------
+    mesh : Mesh
+        The mesh (must be triangulated).
+
+    Returns
+    -------
+    csr_matrix
+        Sparse diagonal matrix (V x V), vertex areas.
+
+    """
+    V, F = mesh.to_vertices_and_faces()
+    vertices = np.array(V, dtype=np.float64)
+    faces = np.array(F, dtype=np.int32)
+
+    n_vertices = len(vertices)
+
+    # Compute face areas
+    i0, i1, i2 = faces[:, 0], faces[:, 1], faces[:, 2]
+    v0, v1, v2 = vertices[i0], vertices[i1], vertices[i2]
+
+    cross = np.cross(v1 - v0, v2 - v0)
+    face_areas = 0.5 * np.linalg.norm(cross, axis=1)
+
+    # Distribute 1/3 of each face area to each vertex
+    vertex_areas = np.zeros(n_vertices)
+    np.add.at(vertex_areas, i0, face_areas / 3)
+    np.add.at(vertex_areas, i1, face_areas / 3)
+    np.add.at(vertex_areas, i2, face_areas / 3)
+
+    return scipy.sparse.diags(vertex_areas)
+
+
+# Backwards compatibility aliases
+get_mesh_cotmatrix_igl = get_mesh_cotmatrix
+get_mesh_cotans_igl = get_mesh_cotans
 
 
 #######################################

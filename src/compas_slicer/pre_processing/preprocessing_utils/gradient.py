@@ -73,7 +73,7 @@ def get_edge_gradient_from_vertex_gradient(
 
 
 def get_face_gradient_from_scalar_field(
-    mesh: Mesh, u: NDArray[np.floating], use_igl: bool = True
+    mesh: Mesh, u: NDArray[np.floating]
 ) -> NDArray[np.floating]:
     """
     Finds face gradient from scalar field u.
@@ -89,20 +89,6 @@ def get_face_gradient_from_scalar_field(
     np.array (dimensions : #F x 3) one gradient vector per face.
     """
     logger.info('Computing per face gradient')
-    if use_igl:
-        try:
-            from compas_libigl.grad import trimesh_grad
-
-            M = mesh.to_vertices_and_faces()
-            G = trimesh_grad(M)
-            X = G * u
-            nf = len(list(mesh.faces()))
-            X = np.array([[X[i], X[i + nf], X[i + 2 * nf]] for i in range(nf)])
-            return X
-        except ModuleNotFoundError:
-            print("Could not calculate gradient with compas_libigl because it is not installed. Falling back to default function")
-
-    # Vectorized fallback
     V, F = _mesh_to_arrays(mesh)
     scalar_field = np.asarray(u, dtype=np.float64)
     face_normals = np.array([mesh.face_normal(f) for f in mesh.faces()], dtype=np.float64)

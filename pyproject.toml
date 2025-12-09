@@ -31,7 +31,6 @@ dependencies = [
     "attrs>=21.0",
     "compas>=2.0",
     "compas_cgal>=0.8",
-    "compas-libigl>=0.8",
     "networkx>=3.0",
     "numba>=0.58",
     "numpy>=1.24",

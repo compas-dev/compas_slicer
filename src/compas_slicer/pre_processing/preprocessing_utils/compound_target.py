@@ -61,8 +61,8 @@ class CompoundTarget:
     has_blend_union: bool
     blend_radius : float
     geodesics_method: str
-        'exact_igl'  exact igl geodesic distances
-        'heat'   custom heat geodesic distances
+        'heat_cgal'  CGAL heat geodesic distances (recommended)
+        'heat'       custom heat geodesic distances
     anisotropic_scaling: bool
         This is not yet implemented
     """
@@ -75,7 +75,7 @@ class CompoundTarget:
         DATA_PATH: str,
         union_method: UnionMethod = 'min',
         union_params: list[Any] | None = None,
-        geodesics_method: GeodesicsMethod = 'exact_igl',
+        geodesics_method: GeodesicsMethod = 'heat_cgal',
         anisotropic_scaling: bool = False,
     ) -> None:
 

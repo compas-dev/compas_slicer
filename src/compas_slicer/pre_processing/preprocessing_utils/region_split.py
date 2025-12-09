@@ -3,9 +3,9 @@ import logging
 from pathlib import Path
 
 import numpy as np
+import scipy.sparse
 from compas.datastructures import Mesh
 from compas.geometry import Line, distance_point_point_sqrd, project_point_line
-from compas_libigl.meshing import trimesh_cut_mesh, trimesh_face_components
 
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.preprocessing_utils.assign_vertex_distance import (
@@ -270,12 +270,147 @@ def get_weights_list(n, start=0.03, end=1.0):
 
 
 ###############################################
+# --- Mesh cutting utilities (pure Python replacements for libigl)
+
+
+def _trimesh_cut_mesh(
+    vertices: np.ndarray,
+    faces: np.ndarray,
+    cut_flags: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Cut a mesh along flagged edges by duplicating vertices.
+
+    This is a pure Python replacement for compas_libigl.trimesh_cut_mesh.
+
+    Parameters
+    ----------
+    vertices : np.ndarray
+        Vertex coordinates (V x 3).
+    faces : np.ndarray
+        Face indices (F x 3).
+    cut_flags : np.ndarray
+        Per-face edge flags (F x 3). 1 = cut this edge, 0 = don't cut.
+        Edge i of face f is the edge from vertex f[i] to f[(i+1)%3].
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        New vertices and faces with duplicated vertices along cut edges.
+    """
+    n_vertices = len(vertices)
+    n_faces = len(faces)
+
+    # Build a map from (vertex, face) -> new vertex index
+    # Vertices that are on cut edges need to be duplicated per face
+    vertex_face_to_new_index: dict[tuple[int, int], int] = {}
+    new_vertices = list(vertices)
+
+    # For each face, determine which vertices need to be duplicated
+    for fi in range(n_faces):
+        face = faces[fi]
+        for ei in range(3):
+            v0, v1 = face[ei], face[(ei + 1) % 3]
+
+            # Check if this edge is cut
+            if cut_flags[fi, ei] == 1:
+                # Both endpoints of cut edges need their own copy for this face
+                for v in [v0, v1]:
+                    key = (v, fi)
+                    if key not in vertex_face_to_new_index:
+                        # Create a new vertex (duplicate)
+                        new_idx = len(new_vertices)
+                        new_vertices.append(vertices[v])
+                        vertex_face_to_new_index[key] = new_idx
+
+    # Build new faces with updated vertex indices
+    new_faces = []
+    for fi in range(n_faces):
+        face = faces[fi]
+        new_face = []
+        for vi in range(3):
+            v = face[vi]
+            key = (v, fi)
+            if key in vertex_face_to_new_index:
+                # Use the duplicated vertex
+                new_face.append(vertex_face_to_new_index[key])
+            else:
+                # Use original vertex, but need to check if any adjacent face
+                # on a cut edge shares this vertex
+                new_face.append(v)
+        new_faces.append(new_face)
+
+    return np.array(new_vertices), np.array(new_faces)
+
+
+def _trimesh_face_components(
+    vertices: np.ndarray,
+    faces: np.ndarray,
+) -> np.ndarray:
+    """Find connected components of faces based on shared vertices.
+
+    This is a pure Python replacement for compas_libigl.trimesh_face_components.
+
+    Parameters
+    ----------
+    vertices : np.ndarray
+        Vertex coordinates (V x 3).
+    faces : np.ndarray
+        Face indices (F x 3).
+
+    Returns
+    -------
+    np.ndarray
+        Component label for each face.
+    """
+    n_faces = len(faces)
+
+    if n_faces == 0:
+        return np.array([], dtype=np.int32)
+
+    # Build face adjacency based on shared edges
+    # Two faces are adjacent if they share an edge (two vertices)
+    edge_to_faces: dict[tuple[int, int], list[int]] = {}
+
+    for fi, face in enumerate(faces):
+        for ei in range(3):
+            v0, v1 = int(face[ei]), int(face[(ei + 1) % 3])
+            edge = (min(v0, v1), max(v0, v1))
+            if edge not in edge_to_faces:
+                edge_to_faces[edge] = []
+            edge_to_faces[edge].append(fi)
+
+    # Build sparse adjacency matrix for faces
+    row, col = [], []
+    for edge, face_list in edge_to_faces.items():
+        if len(face_list) == 2:
+            f0, f1 = face_list
+            row.extend([f0, f1])
+            col.extend([f1, f0])
+
+    if len(row) == 0:
+        # No adjacencies - each face is its own component
+        return np.arange(n_faces, dtype=np.int32)
+
+    data = np.ones(len(row), dtype=np.int32)
+    adjacency = scipy.sparse.csr_matrix(
+        (data, (row, col)), shape=(n_faces, n_faces)
+    )
+
+    # Find connected components
+    n_components, labels = scipy.sparse.csgraph.connected_components(
+        adjacency, directed=False
+    )
+
+    return labels
+
+
+###############################################
 # --- Separate disconnected components
 
 def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
     """
     Given a mesh with cuts that have already been created, it separates the disconnected
-    components using the igl function. Then it welds them and restores their attributes.
+    components by cutting along marked edges. Then it welds them and restores their attributes.
 
     Parameters
     ----------
@@ -294,7 +429,7 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
     v, f = mesh.to_vertices_and_faces()
     v, f = np.array(v), np.array(f)
 
-    # --- create cut flags for igl
+    # --- create cut flags for edges
     cut_flags = []
     for fkey in mesh.faces():
         edges = mesh.face_halfedges(fkey)
@@ -309,21 +444,20 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
     cut_flags = np.array(cut_flags)
     assert cut_flags.shape == f.shape
 
-    # --- cut mesh using compas_libigl
-    M = (v.tolist(), f.tolist())
-    v_cut, f_cut = trimesh_cut_mesh(M, cut_flags.tolist())
-    connected_components = trimesh_face_components((v_cut, f_cut))
+    # --- cut mesh by duplicating vertices along cut edges
+    v_cut, f_cut = _trimesh_cut_mesh(v, f, cut_flags)
+    connected_components = _trimesh_face_components(v_cut, f_cut)
 
-    f_dict = {}
+    f_dict: dict[int, list[list[int]]] = {}
     for i in range(max(connected_components) + 1):
         f_dict[i] = []
-    for f_index, f in enumerate(f_cut):
+    for f_index, face in enumerate(f_cut):
         component = connected_components[f_index]
-        f_dict[component].append(f)
+        f_dict[component].append(face.tolist() if hasattr(face, 'tolist') else list(face))
 
     cut_meshes = []
     for component in f_dict:
-        cut_mesh = Mesh.from_vertices_and_faces(v_cut, f_dict[component])
+        cut_mesh = Mesh.from_vertices_and_faces(v_cut.tolist(), f_dict[component])
         cut_mesh.cull_vertices()
         if len(list(cut_mesh.faces())) > 2:
             temp_path = Path(OUTPUT_PATH) / 'temp.obj'
