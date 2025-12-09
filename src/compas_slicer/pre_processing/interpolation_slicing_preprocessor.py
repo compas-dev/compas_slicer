@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 from compas.datastructures import Mesh
 
@@ -15,6 +18,9 @@ from compas_slicer.pre_processing.preprocessing_utils.mesh_attributes_handling i
     get_vertices_that_belong_to_cuts,
     replace_mesh_vertex_attribute,
 )
+
+if TYPE_CHECKING:
+    from compas_slicer.pre_processing.preprocessing_utils.topological_sorting import MeshDirectedGraph
 
 logger = logging.getLogger('logger')
 
@@ -33,16 +39,16 @@ class InterpolationSlicingPreprocessor:
     DATA_PATH: str, path to the data folder
     """
 
-    def __init__(self, mesh, parameters, DATA_PATH):
+    def __init__(self, mesh: Mesh, parameters: dict[str, Any], DATA_PATH: str | Path) -> None:
         self.mesh = mesh
         self.parameters = parameters
         self.DATA_PATH = DATA_PATH
 
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
-        self.target_LOW = None  # :class: 'compas_slicer.pre_processing.CompoundTarget'
-        self.target_HIGH = None  # :class: 'compas_slicer.pre_processing.CompoundTarget'
+        self.target_LOW: CompoundTarget | None = None
+        self.target_HIGH: CompoundTarget | None = None
 
-        self.split_meshes = []  # list , :class: 'compas.datastructures.Mesh'
+        self.split_meshes: list[Mesh] = []
         # The meshes that result from the region splitting process.
 
         utils.utils.check_triangular_mesh(mesh)
@@ -50,12 +56,14 @@ class InterpolationSlicingPreprocessor:
     ###########################
     # --- compound targets
 
-    def create_compound_targets(self):
+    def create_compound_targets(self) -> None:
         """ Creates the target_LOW and the target_HIGH and computes the geodesic distances. """
 
         # --- low target
         geodesics_method = get_param(self.parameters, key='target_LOW_geodesics_method',
                                      defaults_type='interpolation_slicing')
+        method: str
+        params: list[Any]
         method, params = 'min', []  # no other union methods currently supported for lower target
         self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH,
                                          union_method=method,
@@ -81,7 +89,7 @@ class InterpolationSlicingPreprocessor:
         self.target_LOW.save_distances("distances_LOW.json")
         self.target_HIGH.save_distances("distances_HIGH.json")
 
-    def targets_laplacian_smoothing(self, iterations, strength):
+    def targets_laplacian_smoothing(self, iterations: int, strength: float) -> None:
         """
         Smooth geodesic distances of targets. Saves again the distances to json.
 
@@ -90,6 +98,7 @@ class InterpolationSlicingPreprocessor:
         iterations: int
         strength: float
         """
+        assert self.target_LOW is not None and self.target_HIGH is not None
         self.target_LOW.laplacian_smoothing(iterations=iterations, strength=strength)
         self.target_HIGH.laplacian_smoothing(iterations=iterations, strength=strength)
         self.target_LOW.save_distances("distances_LOW.json")
@@ -98,12 +107,19 @@ class InterpolationSlicingPreprocessor:
     ###########################
     # --- scalar field evaluation
 
-    def create_gradient_evaluation(self, target_1, target_2=None, save_output=True,
-                                   norm_filename='gradient_norm.json', g_filename='gradient.json'):
+    def create_gradient_evaluation(
+        self,
+        target_1: CompoundTarget,
+        target_2: CompoundTarget | None = None,
+        save_output: bool = True,
+        norm_filename: str = 'gradient_norm.json',
+        g_filename: str = 'gradient.json',
+    ) -> GradientEvaluation:
         """
         Creates a compas_slicer.pre_processing.GradientEvaluation that is stored in self.g_evaluation
         Also, computes the gradient and gradient_norm and saves them to Json .
         """
+        assert self.target_LOW is not None and self.target_HIGH is not None
         assert self.target_LOW.VN == target_1.VN, "Attention! Preprocessor does not match targets. "
         assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=0.5,
                                                        target_LOW=self.target_LOW, target_HIGH=self.target_HIGH)
@@ -118,7 +134,9 @@ class InterpolationSlicingPreprocessor:
 
         return g_evaluation
 
-    def find_critical_points(self, g_evaluation, output_filenames):
+    def find_critical_points(
+        self, g_evaluation: GradientEvaluation, output_filenames: tuple[str, str, str]
+    ) -> None:
         """ Computes and saves to json the critical points of the df on the mesh (minima, maxima, saddles)"""
         g_evaluation.find_critical_points()
         # save results to json
@@ -129,8 +147,13 @@ class InterpolationSlicingPreprocessor:
     ###########################
     # --- Region Split
 
-    def region_split(self, cut_mesh=True, separate_neighborhoods=True, topological_sorting=True,
-                     save_split_meshes=True):
+    def region_split(
+        self,
+        cut_mesh: bool = True,
+        separate_neighborhoods: bool = True,
+        topological_sorting: bool = True,
+        save_split_meshes: bool = True,
+    ) -> None:
         """
         Splits the mesh on the saddle points. This process can take a long time.
         It consists of four parts:
@@ -200,7 +223,9 @@ class InterpolationSlicingPreprocessor:
             logger.info(f"Saved {len(self.split_meshes)} split_meshes")
             print('')
 
-    def cleanup_mesh_attributes_based_on_selected_order(self, selected_order, graph):
+    def cleanup_mesh_attributes_based_on_selected_order(
+        self, selected_order: list[int], graph: MeshDirectedGraph
+    ) -> None:
         """
         Based on the selected order of split meshes, it rearranges their attributes, so that they can then be used
         with an interpolation slicer that requires data['boundary'] to be filled for every vertex.
@@ -234,7 +259,7 @@ class InterpolationSlicingPreprocessor:
 
 # ---- utils
 
-def get_union_method(params_dict):
+def get_union_method(params_dict: dict[str, Any]) -> tuple[str, list[Any]]:
     """
     Read input params_dict and return union method id and its parameters.
     target_type: LOW/HIGH

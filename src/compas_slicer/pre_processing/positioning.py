@@ -1,6 +1,12 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 from compas.geometry import Frame, Point, Transformation, bounding_box
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
 
 logger = logging.getLogger('logger')
 
@@ -8,7 +14,7 @@ __all__ = ['move_mesh_to_point',
            'get_mid_pt_base']
 
 
-def move_mesh_to_point(mesh, target_point):
+def move_mesh_to_point(mesh: Mesh, target_point: Point) -> Mesh:
     """Moves (translates) a mesh to a target point.
 
     Parameters
@@ -32,7 +38,7 @@ def move_mesh_to_point(mesh, target_point):
     return mesh
 
 
-def get_mid_pt_base(mesh):
+def get_mid_pt_base(mesh: Mesh) -> Point:
     """Gets the middle point of the base (bottom) of the mesh.
 
     Parameters

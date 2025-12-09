@@ -197,7 +197,9 @@ def smooth_vectors(vectors: list[Vector], strength: float, iterations: int) -> l
 #######################################
 #  json
 
-def save_to_json(data: dict[str, Any] | list[Any], filepath: str | Path, name: str) -> None:
+def save_to_json(
+    data: dict[str, Any] | dict[int, Any] | list[Any], filepath: str | Path, name: str
+) -> None:
     """Save data to JSON file.
 
     Parameters
