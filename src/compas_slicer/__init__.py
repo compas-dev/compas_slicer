@@ -1,22 +1,4 @@
-"""
-********************************************************************************
-compas_slicer
-********************************************************************************
-
-.. currentmodule:: compas_slicer
-
-
-.. toctree::
-    :maxdepth: 1
-
-    geometry
-    slicers
-    print_organization
-    pre_processing
-    post_processing
-    utilities
-
-"""
+"""COMPAS Slicer - Slicing package for FDM 3D Printing with COMPAS."""
 
 from pathlib import Path
 

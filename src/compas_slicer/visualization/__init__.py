@@ -1,18 +1,4 @@
-"""
-********************************************************************************
-visualization
-********************************************************************************
-
-.. currentmodule:: compas_slicer.visualization
-
-.. autosummary::
-    :toctree: generated/
-    :nosignatures:
-
-    should_visualize
-    visualize_slicer
-
-"""
+"""Visualization utilities for slicing results."""
 
 from .visualization import plot_networkx_graph, should_visualize, visualize_slicer
 

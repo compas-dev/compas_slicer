@@ -1,31 +1,4 @@
-"""
-********************************************************************************
-slicers
-********************************************************************************
-
-.. currentmodule:: compas_slicer.slicers
-
-
-Classes
-=======
-
-.. autosummary::
-    :toctree: generated/
-    :nosignatures:
-
-    BaseSlicer
-
-
-BaseSlicer
-----------
-
-.. autosummary::
-    :toctree: generated/
-    :nosignatures:
-
-    PlanarSlicer
-    InterpolationSlicer
-"""
+"""Mesh slicing algorithms."""
 
 
 from .base_slicer import *  # noqa: F401 F403

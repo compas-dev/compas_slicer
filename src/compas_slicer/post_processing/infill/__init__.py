@@ -1,12 +1,4 @@
-"""
-Infill generation for sliced paths.
-
-.. autosummary::
-    :toctree: generated/
-    :nosignatures:
-
-    generate_medial_axis_infill
-"""
+"""Infill generation for sliced paths."""
 
 from .medial_axis_infill import generate_medial_axis_infill
 
