@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas.geometry import Point
+from loguru import logger
 
 import compas_slicer
 from compas_slicer.geometry import Layer, Path

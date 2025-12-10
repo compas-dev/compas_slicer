@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from loguru import logger
 import math
 import statistics
-from pathlib import Path
 from typing import Any, Literal
 
 import networkx as nx
 import numpy as np
 from compas.datastructures import Mesh
+from loguru import logger
 from numpy.typing import NDArray
 
 import compas_slicer.utilities as utils
@@ -18,7 +17,6 @@ from compas_slicer.pre_processing.preprocessing_utils.geodesics import (
     get_igl_EXACT_geodesic_distances,
     get_igl_HEAT_geodesic_distances,
 )
-
 
 GeodesicsMethod = Literal['exact_igl', 'heat_igl', 'heat_cgal', 'heat']
 UnionMethod = Literal['min', 'smooth', 'chamfer', 'stairs']
@@ -226,11 +224,6 @@ class CompoundTarget:
 
     #############################
     #  --- get all distances
-
-    # All distances
-    def get_all_distances(self) -> list[float]:
-        """ Returns the resulting distances per every vertex. """
-        return [self.get_distance(i) for i in range(self.VN)]
 
     def get_all_clusters_distances_dict(self) -> dict[int, list[float]]:
         """ Returns dict. keys: index of connected target neighborhood, value: list, distances (one per vertex). """

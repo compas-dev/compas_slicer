@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING, Any
 
 import progressbar
 from compas.geometry import barycentric_coordinates
+from loguru import logger
 
 from compas_slicer.utilities.utils import pull_pts_to_mesh_faces
 

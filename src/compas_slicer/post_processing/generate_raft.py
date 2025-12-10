@@ -1,11 +1,10 @@
-from loguru import logger
 import math
 
 from compas.geometry import Line, Point, Vector, bounding_box_xy, intersection_line_line, offset_line, offset_polygon
+from loguru import logger
 
 import compas_slicer
 from compas_slicer.geometry import Layer, Path
-
 
 __all__ = ['generate_raft']
 

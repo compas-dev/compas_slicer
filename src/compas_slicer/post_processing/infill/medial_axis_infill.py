@@ -1,10 +1,10 @@
 """Medial axis based infill generation using CGAL straight skeleton."""
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas.geometry import Point, distance_point_point
+from loguru import logger
 
 from compas_slicer.geometry import Path
 

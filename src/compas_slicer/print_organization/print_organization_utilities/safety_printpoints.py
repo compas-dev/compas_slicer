@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import copy
-from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas.geometry import Vector
+from loguru import logger
 
 from compas_slicer.geometry import PrintLayer, PrintPath, PrintPoint
 from compas_slicer.print_organization.print_organization_utilities.extruder_toggle import check_assigned_extruder_toggle

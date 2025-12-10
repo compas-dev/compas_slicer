@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import progressbar
+from loguru import logger
 
 from compas_slicer.geometry import VerticalLayersManager
 from compas_slicer.parameters import get_param

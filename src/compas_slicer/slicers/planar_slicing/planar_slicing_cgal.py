@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import itertools
-from loguru import logger
 from typing import TYPE_CHECKING, Any, Callable
 
 import progressbar
 from compas.geometry import Plane, Point
 from compas.plugins import PluginNotInstalledError
 
-import compas_slicer.utilities as utils
 from compas_slicer.geometry import Layer, Path
 
 if TYPE_CHECKING:

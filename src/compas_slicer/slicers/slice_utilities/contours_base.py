@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from loguru import logger
 from abc import abstractmethod
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING, Any

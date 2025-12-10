@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import Literal
 
 from compas.datastructures import Mesh
 from compas.geometry import Plane, Point, Vector
+from loguru import logger
 
 from compas_slicer.slicers.base_slicer import BaseSlicer
 from compas_slicer.slicers.planar_slicing import create_planar_paths, create_planar_paths_cgal
-
 
 __all__ = ['PlanarSlicer']
 

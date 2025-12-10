@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from loguru import logger
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING
 
 import numpy as np
+from loguru import logger
 from numpy.typing import NDArray
 
 import compas_slicer.utilities as utils

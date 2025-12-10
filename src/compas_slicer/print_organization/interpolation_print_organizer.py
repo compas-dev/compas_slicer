@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from loguru import logger
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING, Any
 
@@ -15,7 +14,18 @@ from compas.geometry import (
     scale_vector,
     subtract_vectors,
 )
+from loguru import logger
 from numpy.typing import NDArray
+
+import compas_slicer.utilities as utils
+from compas_slicer.geometry import PrintLayer, PrintPath, PrintPoint, VerticalLayer
+from compas_slicer.parameters import get_param
+from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
+from compas_slicer.print_organization.base_print_organizer import BasePrintOrganizer
+from compas_slicer.print_organization.curved_print_organization import BaseBoundary
+
+if TYPE_CHECKING:
+    from compas_slicer.slicers import InterpolationSlicer
 
 # Check for CGAL availability at module load
 _USE_CGAL = False
@@ -53,16 +63,6 @@ def _batch_closest_points_on_polyline(
             closest.append([cp[0], cp[1], cp[2]])
             distances.append(distance_point_point(cp, p))
         return np.array(closest), np.array(distances)
-
-import compas_slicer.utilities as utils
-from compas_slicer.geometry import Path, PrintLayer, PrintPath, PrintPoint, VerticalLayer
-from compas_slicer.parameters import get_param
-from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
-from compas_slicer.print_organization.base_print_organizer import BasePrintOrganizer
-from compas_slicer.print_organization.curved_print_organization import BaseBoundary
-
-if TYPE_CHECKING:
-    from compas_slicer.slicers import InterpolationSlicer
 
 
 __all__ = ['InterpolationPrintOrganizer']

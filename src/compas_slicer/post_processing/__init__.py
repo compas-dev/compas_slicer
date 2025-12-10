@@ -52,6 +52,9 @@ Infill
 #  Additional
 from .generate_brim import *  # noqa: F401 E402 F403
 from .generate_raft import *  # noqa: F401 E402 F403
+
+#  Infill
+from .infill import *  # noqa: F401 E402 F403
 from .reorder_vertical_layers import *  # noqa: F401 E402 F403
 
 #  Sorting
@@ -65,8 +68,5 @@ from .spiralize_contours import *  # noqa: F401 E402 F403
 #  Orienting
 from .unify_paths_orientation import *  # noqa: F401 E402 F403
 from .zig_zag_open_paths import *  # noqa: F401 E402 F403
-
-#  Infill
-from .infill import *  # noqa: F401 E402 F403
 
 __all__ = [name for name in dir() if not name.startswith('_')]

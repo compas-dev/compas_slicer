@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from loguru import logger
 import math
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 import scipy
+from loguru import logger
 from numpy.typing import NDArray
 
 import compas_slicer.utilities as utils

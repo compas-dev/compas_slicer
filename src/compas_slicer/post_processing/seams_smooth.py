@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas.geometry import Vector, distance_point_point
+from loguru import logger
 
 import compas_slicer
 

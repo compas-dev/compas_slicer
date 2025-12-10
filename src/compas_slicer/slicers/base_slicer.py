@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from loguru import logger
 from abc import abstractmethod
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING, Any
@@ -8,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 from compas.datastructures import Mesh
 from compas.geometry import bounding_box, distance_point_point_sqrd
+from loguru import logger
 
 from compas_slicer.geometry import Layer, VerticalLayer
 from compas_slicer.post_processing.seams_align import seams_align

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from loguru import logger
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from compas.datastructures import Mesh
+from loguru import logger
 
 import compas_slicer.utilities as utils
 from compas_slicer.parameters import get_param

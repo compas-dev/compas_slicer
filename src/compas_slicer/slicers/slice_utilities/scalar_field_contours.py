@@ -74,7 +74,7 @@ class ScalarFieldContours(ContoursBase):
         pts = v1 + t[:, np.newaxis] * (v2 - v1)
 
         # Store results
-        for i, (edge, pt, is_valid) in enumerate(zip(intersected_edges, pts, valid)):
+        for edge, pt, is_valid in zip(intersected_edges, pts, valid):
             if is_valid:
                 edge_tuple = (int(edge[0]), int(edge[1]))
                 rev_edge = (int(edge[1]), int(edge[0]))

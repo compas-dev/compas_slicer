@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import itertools
-from loguru import logger
 from typing import TYPE_CHECKING, Literal
 
 from compas.geometry import Point, distance_point_point
+from loguru import logger
 
 if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer

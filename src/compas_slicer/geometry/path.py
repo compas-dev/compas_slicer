@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from loguru import logger
 from dataclasses import dataclass, field
 from typing import Any
 
 from compas.data import Data
 from compas.geometry import Point
-
 
 __all__ = ["Path"]
 

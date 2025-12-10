@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING, Callable
 
 from compas.geometry import Vector, dot_vectors
+from loguru import logger
 
 from compas_slicer.utilities import remap, remap_unbound
 

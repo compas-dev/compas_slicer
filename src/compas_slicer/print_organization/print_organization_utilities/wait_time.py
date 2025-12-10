@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from loguru import logger
 import math
 from typing import TYPE_CHECKING, Literal
 
 from compas.geometry import Vector, normalize_vector
+from loguru import logger
 
 from compas_slicer.utilities import find_next_printpoint
 

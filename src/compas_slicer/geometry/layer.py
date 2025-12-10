@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from loguru import logger
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from compas.data import Data
+from loguru import logger
 
 import compas_slicer.utilities.utils as utils
 from compas_slicer.geometry.path import Path

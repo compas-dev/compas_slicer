@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING
 
 import progressbar
 from compas.geometry import Vector
+from loguru import logger
 
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintLayer, PrintPath, PrintPoint

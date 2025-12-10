@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas.geometry import Vector, norm_vector
+from loguru import logger
 
 if TYPE_CHECKING:
     from compas_slicer.print_organization import BasePrintOrganizer

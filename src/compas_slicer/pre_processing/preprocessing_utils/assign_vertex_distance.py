@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -14,6 +13,7 @@ from compas_slicer.utilities.utils import remap_unbound
 
 if TYPE_CHECKING:
     from compas.datastructures import Mesh
+
     from compas_slicer.pre_processing.preprocessing_utils.compound_target import CompoundTarget
 
 

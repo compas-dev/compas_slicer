@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from loguru import logger
 from abc import abstractmethod
 from collections.abc import Generator, Iterator
 from typing import TYPE_CHECKING, Any
@@ -16,6 +15,7 @@ from compas.geometry import (
     subtract_vectors,
 )
 from compas.itertools import pairwise
+from loguru import logger
 
 from compas_slicer.geometry import PrintPointsCollection
 from compas_slicer.parameters import GcodeParameters

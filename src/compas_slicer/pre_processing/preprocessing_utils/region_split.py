@@ -1,11 +1,11 @@
 import copy
-from loguru import logger
 from pathlib import Path
 
 import numpy as np
 import scipy.sparse
 from compas.datastructures import Mesh
 from compas.geometry import Line, distance_point_point_sqrd, project_point_line
+from loguru import logger
 
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing.preprocessing_utils.assign_vertex_distance import (
@@ -16,7 +16,6 @@ from compas_slicer.pre_processing.preprocessing_utils.mesh_attributes_handling i
     restore_mesh_attributes,
     save_vertex_attributes,
 )
-
 
 __all__ = ['MeshSplitter']
 
@@ -296,7 +295,6 @@ def _trimesh_cut_mesh(
     tuple[np.ndarray, np.ndarray]
         New vertices and faces with duplicated vertices along cut edges.
     """
-    n_vertices = len(vertices)
     n_faces = len(faces)
 
     # Build a map from (vertex, face) -> new vertex index
@@ -380,7 +378,7 @@ def _trimesh_face_components(
 
     # Build sparse adjacency matrix for faces
     row, col = [], []
-    for edge, face_list in edge_to_faces.items():
+    for _edge, face_list in edge_to_faces.items():
         if len(face_list) == 2:
             f0, f1 = face_list
             row.extend([f0, f1])

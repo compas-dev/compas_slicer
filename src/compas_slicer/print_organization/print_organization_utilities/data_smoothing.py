@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np

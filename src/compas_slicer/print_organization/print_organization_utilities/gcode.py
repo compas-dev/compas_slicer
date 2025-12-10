@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from loguru import logger
 import math
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from compas.geometry import Point, Vector
+from loguru import logger
 
 from compas_slicer.geometry import PrintPoint
 from compas_slicer.parameters import get_param

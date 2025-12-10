@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-from loguru import logger
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
@@ -9,6 +8,7 @@ import networkx as nx
 import numpy as np
 from compas.datastructures import Mesh
 from compas.geometry import Point
+from loguru import logger
 
 import compas_slicer.utilities as utils
 from compas_slicer._numpy_ops import min_distances_to_set

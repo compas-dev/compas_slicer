@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING
+
+from loguru import logger
 
 import compas_slicer
 

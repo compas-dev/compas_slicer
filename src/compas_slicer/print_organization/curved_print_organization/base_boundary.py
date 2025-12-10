@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import Any
 
 from compas.datastructures import Mesh
@@ -8,7 +7,6 @@ from compas.geometry import Point, Vector, normalize_vector
 
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintPoint
-
 
 __all__ = ['BaseBoundary']
 

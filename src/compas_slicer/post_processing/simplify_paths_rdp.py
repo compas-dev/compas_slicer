@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from loguru import logger
 from typing import TYPE_CHECKING
 
 import numpy as np
 import rdp as rdp_py
 from compas.geometry import Point
+from loguru import logger
 
 if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer

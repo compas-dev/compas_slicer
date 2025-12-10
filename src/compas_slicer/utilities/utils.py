@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from loguru import logger
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -17,6 +16,7 @@ from compas.geometry import (
     normalize_vector,
 )
 from compas.plugins import PluginNotInstalledError
+from loguru import logger
 
 from compas_slicer.utilities.terminal_command import TerminalCommand
 
