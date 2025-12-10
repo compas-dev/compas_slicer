@@ -41,7 +41,6 @@ jobs:
       - name: Type check with mypy
         run: |
           mypy src/compas_slicer --ignore-missing-imports
-        continue-on-error: true
 
       - name: Test with pytest
         run: |
