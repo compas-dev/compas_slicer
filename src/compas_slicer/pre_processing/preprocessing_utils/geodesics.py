@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 import numpy as np
 import scipy
@@ -117,11 +117,31 @@ def get_custom_HEAT_geodesic_distances(
     vi_sources: list[int],
     OUTPUT_PATH: str,
     v_equalize: list[int] | None = None,
-    anisotropic_scaling: bool = False,
 ) -> NDArray[np.floating]:
-    """ Calculate geodesic distances using the custom heat method. """
+    """Calculate geodesic distances using the custom heat method.
+
+    This is a pure Python implementation of the heat method (Crane et al., 2013).
+    For production use, prefer CGAL's implementation via get_heat_geodesic_distances()
+    which uses intrinsic Delaunay triangulation for better accuracy.
+
+    Parameters
+    ----------
+    mesh : Mesh
+        A compas mesh (must be triangulated).
+    vi_sources : list[int]
+        Source vertex indices.
+    OUTPUT_PATH : str
+        Path to save intermediate results.
+    v_equalize : list[int] | None
+        Vertices to equalize (for saddle point handling).
+
+    Returns
+    -------
+    NDArray
+        Geodesic distance from sources to each vertex.
+    """
     geodesics_solver = GeodesicsSolver(mesh, OUTPUT_PATH)
-    u = geodesics_solver.diffuse_heat(vi_sources, v_equalize, method='simulation')
+    u = geodesics_solver.diffuse_heat(vi_sources, v_equalize)
     geodesic_dist = geodesics_solver.get_geodesic_distances(u, vi_sources, v_equalize)
     return geodesic_dist
 
@@ -129,9 +149,9 @@ def get_custom_HEAT_geodesic_distances(
 ######################################
 # --- GeodesicsSolver
 
-USE_FORWARDS_EULER = False
+# Heat diffusion parameters for custom solver
 HEAT_DIFFUSION_ITERATIONS = 250
-DELTA = 0.1
+DELTA = 0.1  # Time step for backward Euler
 
 
 class GeodesicsSolver:
@@ -161,16 +181,25 @@ class GeodesicsSolver:
         self,
         vi_sources: list[int],
         v_equalize: list[int] | None = None,
-        method: Literal['default', 'simulation'] = 'simulation',
     ) -> NDArray[np.floating]:
         """
-        Heat diffusion.
+        Heat diffusion using iterative backward Euler.
 
-        Attributes
+        This is a custom Python implementation of the heat method. For production use,
+        prefer CGAL's heat method (geodesics_method='heat_cgal') which uses intrinsic
+        Delaunay triangulation for better accuracy.
+
+        Parameters
         ----------
-        vi_sources: list, int, the vertex indices of the sources
-        v_equalize: list, int, the vertex indices whose value should be equalized
-        method: str (Currently only 'simulation' works.)
+        vi_sources : list[int]
+            The vertex indices of the heat sources.
+        v_equalize : list[int] | None
+            Vertex indices whose values should be equalized (for handling saddle points).
+
+        Returns
+        -------
+        NDArray
+            Heat distribution u, with sources at 0 and increasing away from them.
         """
         if not v_equalize:
             v_equalize = []
@@ -180,34 +209,22 @@ class GeodesicsSolver:
         u0[vi_sources] = 1.0
         u = u0
 
-        if method == 'default':  # This is buggy, does not keep boundary exactly on 0. TODO: INVESTIGATE
-            t_mult = 1
-            t = t_mult * np.mean(np.array([self.mesh.face_area(fkey) for fkey in self.mesh.faces()]))  # avg face area
-            solver = scipy.sparse.linalg.factorized(self.M - t * self.L)  # pre-factor solver
-            u = solver(u0)  # solve the heat equation: u = (VA - t * Lc) * u0
+        # Pre-factor the matrix ONCE outside the loop (major speedup)
+        # Using backward Euler: (M - δL)u' = M·u
+        S = self.M - DELTA * self.L
+        solver = scipy.sparse.linalg.factorized(S)
 
-        elif method == 'simulation':
-            u = u0
+        for _i in range(HEAT_DIFFUSION_ITERATIONS):
+            b = self.M * u
+            u_prime = solver(b)
 
-            # Pre-factor the matrix ONCE outside the loop (major speedup)
-            if not USE_FORWARDS_EULER:
-                S = self.M - DELTA * self.L
-                solver = scipy.sparse.linalg.factorized(S)
+            if len(v_equalize) > 0:
+                u_prime[v_equalize] = np.min(u_prime[v_equalize])
 
-            for _i in range(HEAT_DIFFUSION_ITERATIONS):
-                if USE_FORWARDS_EULER:  # Forwards Euler (doesn't work so well)
-                    u_prime = u + DELTA * self.L * u
-                else:  # Backwards Euler - use pre-factored solver
-                    b = self.M * u
-                    u_prime = solver(b)
+            u = u_prime
+            u[vi_sources] = 1.0  # enforce Dirichlet boundary: sources remain fixed
 
-                if len(v_equalize) > 0:
-                    u_prime[v_equalize] = np.min(u_prime[v_equalize])
-
-                u = u_prime
-                u[vi_sources] = 1.0  # make sure sources remain fixed to 1
-
-        # reverse values (to make vstarts on 0)
+        # reverse values (to make sources at 0, increasing outward)
         u = ([np.max(u)] * len(u)) - u
 
         utils.save_to_json([float(value) for value in u], self.OUTPUT_PATH, 'diffused_heat.json')
