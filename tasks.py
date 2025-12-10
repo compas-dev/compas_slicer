@@ -95,25 +95,20 @@ def clean(ctx, docs=True, bytecode=True, builds=True):
 
 @task(
     help={
-        "rebuild": "True to clean all previously built docs before starting, otherwise False.",
-        "doctest": "True to run doctests, otherwise False.",
-        "check_links": "True to check all web links in docs for validity, otherwise False.",
+        "serve": "True to serve docs locally, otherwise just build.",
+        "strict": "True to fail on warnings, otherwise False.",
     }
 )
-def docs(ctx, doctest=False, rebuild=True, check_links=False):
-    """Builds package's HTML documentation."""
-
-    if rebuild:
-        clean(ctx)
-
+def docs(ctx, serve=False, strict=True):
+    """Builds package's HTML documentation using MkDocs."""
     with chdir(BASE_FOLDER):
-        if doctest:
-            ctx.run("sphinx-build -b doctest docs dist/docs")
-
-        ctx.run("sphinx-build -b html -E docs dist/docs")
-
-        if check_links:
-            ctx.run("sphinx-build -b linkcheck docs dist/docs")
+        if serve:
+            ctx.run("mkdocs serve")
+        else:
+            cmd = "mkdocs build"
+            if strict:
+                cmd += " --strict"
+            ctx.run(cmd)
 
 
 @task()
