@@ -37,7 +37,9 @@ class TerminalCommand:
     def get_split_output_strings(self):
         lines = self.stdout.splitlines()
         words = []
-        [words.append(word) for line in lines for word in line.split()]
+        for line in lines:
+            for word in line.split():
+                words.append(word)
         return words
 
 
