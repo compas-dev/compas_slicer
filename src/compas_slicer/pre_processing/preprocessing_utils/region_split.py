@@ -502,9 +502,10 @@ def merge_clusters_saddle_point(zero_contours, saddle_vkeys):
 
     Parameters
     ----------
-    zero_contours: :class: 'compas_slicer.pre_processing.ScalarFieldContours'
-    saddle_vkeys: list, int, the vertex keys of the current saddle points.
-    (Currently this can only be a single saddle point)
+    zero_contours : ScalarFieldContours
+        Contours object.
+    saddle_vkeys : list[int]
+        Vertex keys of the current saddle points (currently only single saddle point supported).
 
     Returns
     ----------

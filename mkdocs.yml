@@ -72,6 +72,11 @@ nav:
   - Getting Started:
     - Installation: installation.md
     - Quick Start: quickstart.md
+  - Concepts:
+    - concepts/index.md
+    - Architecture: concepts/architecture.md
+    - Slicing Algorithms: concepts/slicing-algorithms.md
+    - Print Organization: concepts/print-organization.md
   - Tutorials:
     - tutorials/index.md
     - Introduction: tutorials/introduction.md
