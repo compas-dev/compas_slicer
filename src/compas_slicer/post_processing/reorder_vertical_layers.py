@@ -40,9 +40,11 @@ def reorder_vertical_layers(slicer: BaseSlicer, align_with: AlignWith | Point) -
     logger.info(f"Re-ordering vertical layers to start with the vertical layer closest to: {align_with}")
 
     for layer in slicer.layers:
-        assert layer.min_max_z_height[0] is not None and layer.min_max_z_height[1] is not None, \
-            "To use the 'reorder_vertical_layers function you need first to calculate the layers' z_bounds. To do " \
-            "that use the function 'Layer.calculate_z_bounds()'"
+        if layer.min_max_z_height[0] is None or layer.min_max_z_height[1] is None:
+            raise ValueError(
+                "To use reorder_vertical_layers you need first to calculate the layers' z_bounds. "
+                "Use the function Layer.calculate_z_bounds()"
+            )
 
     # group vertical layers based on the min_max_z_height
     grouped_iter = itertools.groupby(slicer.layers, lambda x: x.min_max_z_height)

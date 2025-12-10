@@ -60,11 +60,17 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
 
         self.vertical_layers = slicer.vertical_layers
         self.horizontal_layers = slicer.horizontal_layers
-        assert len(self.vertical_layers) + len(self.horizontal_layers) == len(slicer.layers)
+        if len(self.vertical_layers) + len(self.horizontal_layers) != len(slicer.layers):
+            raise ValueError(
+                f"Layer count mismatch: {len(self.vertical_layers)} vertical + "
+                f"{len(self.horizontal_layers)} horizontal != {len(slicer.layers)} total"
+            )
 
         if len(self.horizontal_layers) > 0:
-            assert len(self.horizontal_layers) == 1, "Only one brim horizontal layer is currently supported."
-            assert self.horizontal_layers[0].is_brim, "Only one brim horizontal layer is currently supported."
+            if len(self.horizontal_layers) != 1:
+                raise ValueError("Only one brim horizontal layer is currently supported.")
+            if not self.horizontal_layers[0].is_brim:
+                raise ValueError("Only one brim horizontal layer is currently supported.")
             logger.info('Slicer has one horizontal brim layer.')
 
         self.g_evaluation: GradientEvaluation = self.add_gradient_to_vertices()

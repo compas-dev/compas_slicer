@@ -139,7 +139,8 @@ def sort_graph_connected_components(G: nx.Graph) -> dict[int, list[int]]:
                 if node_index_2 not in sorted_node_indices:
                     sorted_node_indices.append(node_index_2)
 
-            assert len(sorted_node_indices) == len(cp), 'Attention. len(sorted_node_indices) != len(G.nodes())'
+            if len(sorted_node_indices) != len(cp):
+                raise RuntimeError(f'Node sorting error: {len(sorted_node_indices)} sorted != {len(cp)} in component')
 
             sorted_indices_dict[current_index] = sorted_node_indices
             current_index += 1

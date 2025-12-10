@@ -39,23 +39,23 @@ class DirectedGraph:
         self.G: nx.DiGraph = nx.DiGraph()
         self.create_graph_nodes()
         self.root_indices = self.find_roots()
-        logger.info('Graph roots : ' + str(self.root_indices))
+        logger.info(f'Graph roots: {self.root_indices}')
         if len(self.root_indices) == 0:
             raise ValueError("No root nodes were found. At least one root node is needed.")
         self.end_indices = self.find_ends()
-        logger.info('Graph ends : ' + str(self.end_indices))
+        logger.info(f'Graph ends: {self.end_indices}')
         if len(self.end_indices) == 0:
             raise ValueError("No end nodes were found. At least one end node is needed.")
 
         self.create_directed_graph_edges(copy.deepcopy(self.root_indices))
-        logger.info('Nodes : ' + str(self.G.nodes(data=True)))
-        logger.info('Edges : ' + str(self.G.edges(data=True)))
+        logger.info(f'Nodes: {list(self.G.nodes(data=True))}')
+        logger.info(f'Edges: {list(self.G.edges(data=True))}')
 
         self.N: int = len(list(self.G.nodes()))
         self.adj_list: list[list[int]] = self.get_adjacency_list()  # Nested list where adj_list[i] is a list of all the neighbors
         # of the i-th component
         self.check_that_all_nodes_found_their_connectivity()
-        logger.info('Adjacency list : ' + str(self.adj_list))
+        logger.info(f'Adjacency list: {self.adj_list}')
         self.in_degree: list[int] = self.get_in_degree()  # Nested list where adj_list[i] is a list of all the edges pointing
         # to the i-th node.
         self.all_orders: list[list[int]] = []
@@ -99,7 +99,8 @@ class DirectedGraph:
             for child_key, common_cuts in zip(children, cut_ids):
                 self.G.add_edge(current_node, child_key, cut=common_cuts)
             for child_key in children:
-                assert child_key not in passed_nodes, 'Error, cyclic directed graph.'
+                if child_key in passed_nodes:
+                    raise ValueError('Error: cyclic directed graph detected.')
             for child_key in children:
                 if child_key not in queue:
                     queue.append(child_key)
@@ -111,8 +112,11 @@ class DirectedGraph:
             for child in children_list:
                 if child not in good_nodes:
                     good_nodes.append(child)
-        assert len(good_nodes) == self.N, 'There are floating vertical_layers_print_data on directed graph. Investigate the process of \
-                                          the creation of the graph. '
+        if len(good_nodes) != self.N:
+            raise ValueError(
+                f'Floating vertical layers detected: {len(good_nodes)} connected nodes vs {self.N} total. '
+                'Check graph creation process.'
+            )
 
     def sort_queue_with_end_targets_last(self, queue: list[int]) -> list[int]:
         """ Sorts the queue so that the vertical_layers_print_data that have an end target are always at the end. """

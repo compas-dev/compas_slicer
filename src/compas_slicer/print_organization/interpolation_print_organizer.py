@@ -107,11 +107,17 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
 
         self.vertical_layers = slicer.vertical_layers
         self.horizontal_layers = slicer.horizontal_layers
-        assert len(self.vertical_layers) + len(self.horizontal_layers) == len(slicer.layers)
+        if len(self.vertical_layers) + len(self.horizontal_layers) != len(slicer.layers):
+            raise ValueError(
+                f"Layer count mismatch: {len(self.vertical_layers)} vertical + "
+                f"{len(self.horizontal_layers)} horizontal != {len(slicer.layers)} total"
+            )
 
         if len(self.horizontal_layers) > 0:
-            assert len(self.horizontal_layers) == 1, "Only one brim horizontal layer is currently supported."
-            assert self.horizontal_layers[0].is_brim, "Only one brim horizontal layer is currently supported."
+            if len(self.horizontal_layers) != 1:
+                raise ValueError("Only one brim horizontal layer is currently supported.")
+            if not self.horizontal_layers[0].is_brim:
+                raise ValueError("Only one brim horizontal layer is currently supported.")
             logger.info('Slicer has one horizontal brim layer.')
 
         # topological sorting of vertical layers depending on their connectivity
@@ -209,7 +215,8 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             self.selected_order = [0]  # there is only one segment, only this option
 
         # (3) --- Then create the printpoints of all the vertical layers in the selected order
-        assert self.selected_order is not None, "selected_order must be set before creating printpoints"
+        if self.selected_order is None:
+            raise RuntimeError("selected_order must be set before creating printpoints")
         for _index, i in enumerate(self.selected_order):
             layer = self.vertical_layers[i]
             print_layer = self.get_layer_ppts(layer, self.base_boundaries[i])

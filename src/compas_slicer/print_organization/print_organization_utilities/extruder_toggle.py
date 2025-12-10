@@ -88,7 +88,8 @@ def override_extruder_toggle(print_organizer: BasePrintOrganizer, override_value
         Value to override the extruder_toggle values with.
 
     """
-    assert isinstance(override_value, bool), "Override value must be of type bool"
+    if not isinstance(override_value, bool):
+        raise TypeError("Override value must be of type bool")
     for printpoint in print_organizer.printpoints_iterator():
         printpoint.extruder_toggle = override_value
 

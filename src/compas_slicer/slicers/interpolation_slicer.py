@@ -50,8 +50,12 @@ class InterpolationSlicer(BaseSlicer):
         logger.info('InterpolationSlicer')
         BaseSlicer.__init__(self, mesh)
 
-        if preprocessor:  # make sure the mesh of the preprocessor and the mesh of the slicer match
-            assert len(list(mesh.vertices())) == len(list(preprocessor.mesh.vertices()))
+        # make sure the mesh of the preprocessor and the mesh of the slicer match
+        if preprocessor and len(list(mesh.vertices())) != len(list(preprocessor.mesh.vertices())):
+            raise ValueError(
+                f"Mesh vertex count mismatch: slicer mesh has {len(list(mesh.vertices()))} vertices, "
+                f"preprocessor mesh has {len(list(preprocessor.mesh.vertices()))} vertices"
+            )
 
         self.config = config if config else InterpolationConfig()
         self.preprocessor = preprocessor
@@ -59,7 +63,8 @@ class InterpolationSlicer(BaseSlicer):
 
     def generate_paths(self) -> None:
         """Generate curved paths."""
-        assert self.preprocessor, 'You need to provide a pre-processor in order to generate paths.'
+        if not self.preprocessor:
+            raise ValueError('You need to provide a pre-processor in order to generate paths.')
 
         avg_layer_height = self.config.avg_layer_height
         n = find_no_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH, avg_layer_height)

@@ -46,7 +46,8 @@ def smooth_printpoint_attribute(
 
     # first smoothen the values
     for ppt in print_organizer.printpoints_iterator():
-        assert get_attr_value(ppt), 'The attribute you are trying to smooth has not been assigned a value'
+        if get_attr_value(ppt) is None:
+            raise ValueError('The attribute you are trying to smooth has not been assigned a value')
 
     attrs = np.array([get_attr_value(ppt) for ppt in print_organizer.printpoints_iterator()])
 

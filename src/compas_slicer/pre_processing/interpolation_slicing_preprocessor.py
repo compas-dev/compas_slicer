@@ -75,7 +75,7 @@ class InterpolationSlicingPreprocessor:
         geodesics_method = self.config.target_high_geodesics_method.value
         method = self.config.target_high_union_method.value
         params = self.config.target_high_union_params
-        logger.info("Creating target with union type : " + method + " and params : " + str(params))
+        logger.info(f"Creating target with union type: {method} and params: {params}")
         self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH,
                                           union_method=method,
                                           union_params=params,
@@ -98,7 +98,8 @@ class InterpolationSlicingPreprocessor:
         iterations: int
         strength: float
         """
-        assert self.target_LOW is not None and self.target_HIGH is not None
+        if self.target_LOW is None or self.target_HIGH is None:
+            raise RuntimeError("Targets not initialized. Call create_compound_targets() first.")
         self.target_LOW.laplacian_smoothing(iterations=iterations, strength=strength)
         self.target_HIGH.laplacian_smoothing(iterations=iterations, strength=strength)
         self.target_LOW.save_distances("distances_LOW.json")
@@ -119,8 +120,10 @@ class InterpolationSlicingPreprocessor:
         Creates a compas_slicer.pre_processing.GradientEvaluation that is stored in self.g_evaluation
         Also, computes the gradient and gradient_norm and saves them to Json .
         """
-        assert self.target_LOW is not None and self.target_HIGH is not None
-        assert self.target_LOW.VN == target_1.VN, "Attention! Preprocessor does not match targets. "
+        if self.target_LOW is None or self.target_HIGH is None:
+            raise RuntimeError("Targets not initialized. Call create_compound_targets() first.")
+        if self.target_LOW.VN != target_1.VN:
+            raise ValueError("Preprocessor does not match targets: vertex count mismatch.")
         assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=0.5,
                                                        target_LOW=self.target_LOW, target_HIGH=self.target_HIGH)
         g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH)
@@ -176,7 +179,7 @@ class InterpolationSlicingPreprocessor:
 
             self.mesh = mesh_splitter.mesh
             logger.info('Completed Region splitting')
-            logger.info("Region split cut indices: " + str(mesh_splitter.cut_indices))
+            logger.info(f"Region split cut indices: {mesh_splitter.cut_indices}")
             # save results to json
             output_path = Path(self.OUTPUT_PATH)
             self.mesh.to_obj(str(output_path / 'mesh_with_cuts.obj'))
@@ -202,7 +205,7 @@ class InterpolationSlicingPreprocessor:
             graph = topo_sort.MeshDirectedGraph(self.split_meshes, self.DATA_PATH)
             all_orders = graph.get_all_topological_orders()
             selected_order = all_orders[0]
-            logger.info('selected_order : ' + str(selected_order))  # TODO: improve the way an order is selected
+            logger.info(f'selected_order: {selected_order}')  # TODO: improve the way an order is selected
             self.cleanup_mesh_attributes_based_on_selected_order(selected_order, graph)
 
             # reorder split_meshes based on selected order

@@ -33,7 +33,7 @@ def move_mesh_to_point(mesh: Mesh, target_point: Point) -> Mesh:
     T = Transformation.from_frame_to_frame(mesh_frame, target_frame)
     mesh.transform(T)
 
-    logger.info("Mesh moved to: " + str(target_point))
+    logger.info(f"Mesh moved to: {target_point}")
 
     return mesh
 

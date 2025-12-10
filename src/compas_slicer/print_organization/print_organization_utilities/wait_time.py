@@ -76,8 +76,8 @@ def set_wait_time_based_on_extruder_toggle(
     """
 
     for printpoint in print_organizer.printpoints_iterator():
-        assert printpoint.extruder_toggle is not None, \
-            'You need to set the extruder toggles first, before you can automatically set the wait time'
+        if printpoint.extruder_toggle is None:
+            raise ValueError('You need to set the extruder toggles first, before you can automatically set the wait time')
 
     logger.info("Setting wait time")
 
@@ -107,7 +107,7 @@ def set_wait_time_based_on_extruder_toggle(
                     next_ppt.blend_radius = 0.0
                     number_of_wait_points += 1
             else:
-                logger.error('Unknown wait type : ' + str(wait_type))
+                logger.error(f'Unknown wait type: {wait_type}')
 
         logger.info(f'Added wait times for {number_of_wait_points} points')
 

@@ -45,8 +45,11 @@ def set_linear_velocity_per_layer(
     """
 
     logger.info("Setting per-layer linear velocity")
-    assert len(per_layer_velocities) == print_organizer.number_of_layers, 'Wrong number of velocity values. You need \
-        to provide one velocity value per layer, on the "per_layer_velocities" list.'
+    if len(per_layer_velocities) != print_organizer.number_of_layers:
+        raise ValueError(
+            f'Wrong number of velocity values: got {len(per_layer_velocities)}, '
+            f'need {print_organizer.number_of_layers} (one per layer)'
+        )
     for printpoint, i, _j, _k in print_organizer.printpoints_indices_iterator():
         printpoint.velocity = per_layer_velocities[i]
 
@@ -76,7 +79,8 @@ def set_linear_velocity_by_range(
     logger.info("Setting linear velocity based on parameter range")
     for printpoint in print_organizer.printpoints_iterator():
         param = param_func(printpoint)
-        assert param, 'The param_func does not return any value for calculating the velocity range.'
+        if param is None:
+            raise ValueError('The param_func does not return any value for calculating the velocity range.')
         if bound_remapping:
             v = remap(param, parameter_range[0], parameter_range[1], velocity_range[0], velocity_range[1])
         else:

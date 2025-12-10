@@ -27,9 +27,9 @@ def add_safety_printpoints(print_organizer: BasePrintOrganizer, z_hop: float = 1
     z_hop: float
         Vertical distance (in millimeters) of the safety point above the PrintPoint.
     """
-    assert check_assigned_extruder_toggle(print_organizer), \
-        'You need to set the extruder toggles first, before you can create safety points'
-    logger.info("Generating safety print points with height " + str(z_hop) + " mm")
+    if not check_assigned_extruder_toggle(print_organizer):
+        raise ValueError('You need to set the extruder toggles first, before you can create safety points')
+    logger.info(f"Generating safety print points with height {z_hop} mm")
 
     from compas_slicer.geometry import PrintPointsCollection
 

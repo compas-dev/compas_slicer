@@ -228,8 +228,8 @@ class GeodesicsSolver:
         X = get_face_gradient_from_scalar_field(self.mesh, u)
         X = normalize_gradient(X)
         geodesic_dist = get_scalar_field_from_gradient(self.mesh, X, self.L, self.cotans)
-        assert not math.isnan(geodesic_dist[0]), \
-            "Attention, the 'get_scalar_field_from_gradient' function returned Nan. "
+        if math.isnan(geodesic_dist[0]):
+            raise RuntimeError("get_scalar_field_from_gradient returned NaN - check mesh quality.")
         geodesic_dist[vi_sources] = 0  # coerce boundary vertices to be on 0 (fixes small boundary imprecision)
         return geodesic_dist
 

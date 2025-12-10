@@ -157,7 +157,7 @@ def get_scalar_field_from_gradient(
     """
     div_X = get_per_vertex_divergence(mesh, X, cotans)
     u = scipy.sparse.linalg.spsolve(C, div_X)
-    logger.info('Solved Δ(u) = div(X). Linear system error |Δ(u) - div(X)| = ' + str(np.linalg.norm(C * u - div_X)))
+    logger.info(f'Solved Δ(u) = div(X). Linear system error |Δ(u) - div(X)| = {np.linalg.norm(C * u - div_X):.6e}')
     u = u - np.amin(u)  # make start value equal 0
     u = 2*u
     return u

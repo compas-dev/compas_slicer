@@ -79,7 +79,7 @@ class CompoundTarget:
         if union_params is None:
             union_params = []
         logger.info(f'Creating target with attribute : {v_attr}={value}')
-        logger.info('union_method : ' + union_method + ', union_params =  ' + str(union_params))
+        logger.info(f'union_method: {union_method}, union_params: {union_params}')
         self.mesh = mesh
         self.v_attr = v_attr
         self.value = value
@@ -122,12 +122,14 @@ class CompoundTarget:
         """
         self.all_target_vkeys = [vkey for vkey, data in self.mesh.vertices(data=True) if
                                  data[self.v_attr] == self.value]
-        assert len(self.all_target_vkeys) > 0, (
-            f"There are no vertices in the mesh with the attribute : {self.v_attr}, value : {self.value} ."
-            "Probably you made a mistake while creating the targets. "
-        )
+        if len(self.all_target_vkeys) == 0:
+            raise ValueError(
+                f"No vertices in mesh with attribute '{self.v_attr}'={self.value}. "
+                "Check your target creation."
+            )
         G = _create_graph_from_mesh_vkeys(self.mesh, self.all_target_vkeys)
-        assert len(list(G.nodes())) == len(self.all_target_vkeys)
+        if len(list(G.nodes())) != len(self.all_target_vkeys):
+            raise RuntimeError("Graph node count doesn't match target vertex count.")
         self.number_of_boundaries = len(list(nx.connected_components(G)))
 
         for _i, cp in enumerate(nx.connected_components(G)):
@@ -192,7 +194,7 @@ class CompoundTarget:
                     ds_avg_HIGH[i] = d + self.offset
 
             self.weight_max_per_cluster = [d / max_param for d in ds_avg_HIGH]
-            logger.info('weight_max_per_cluster : ' + str(self.weight_max_per_cluster))
+            logger.info(f'weight_max_per_cluster: {self.weight_max_per_cluster}')
         else:
             logger.info("Did not compute_norm_of_gradient uneven boundaries, target consists of single component")
 

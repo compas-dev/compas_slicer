@@ -438,7 +438,8 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
                 current_face_flags.append(0)
         cut_flags.append(current_face_flags)
     cut_flags = np.array(cut_flags)
-    assert cut_flags.shape == f.shape
+    if cut_flags.shape != f.shape:
+        raise RuntimeError(f"Cut flags shape {cut_flags.shape} doesn't match face array shape {f.shape}")
 
     # --- cut mesh by duplicating vertices along cut edges
     v_cut, f_cut = _trimesh_cut_mesh(v, f, cut_flags)
@@ -539,7 +540,7 @@ def cleanup_unrelated_isocontour_neighborhoods(zero_contours, keys_of_clusters_t
         logger.error("No common vertex found! Skipping this split_param")
         return None
     else:
-        logger.info('keys_of_clusters_to_keep : ' + str(keys_of_clusters_to_keep))
+        logger.info(f'keys_of_clusters_to_keep: {keys_of_clusters_to_keep}')
         # empty all other clusters that are not in the matching_pair
         sorted_point_clusters_clean = copy.deepcopy(zero_contours.sorted_point_clusters)
         sorted_edge_clusters_clean = copy.deepcopy(zero_contours.sorted_edge_clusters)
