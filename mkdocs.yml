@@ -89,6 +89,7 @@ nav:
     - G-code Generation: examples/04_gcode.md
     - Scalar Field Slicing: examples/05_scalar_field.md
     - Attribute Transfer: examples/06_attributes.md
+    - Medial Axis Infill: examples/07_medial_axis.md
   - API Reference:
     - api/index.md
     - Geometry: api/geometry.md
