@@ -32,7 +32,7 @@ def main(visualize: bool = False):
 
     # Slice the mesh
     logger.info("Slicing mesh...")
-    slicer = PlanarSlicer(mesh, slicer_type="cgal", layer_height=2.0)
+    slicer = PlanarSlicer(mesh, layer_height=2.0)
     slicer.slice_model()
 
     # Simplify paths first (optional but recommended)

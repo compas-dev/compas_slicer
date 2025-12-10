@@ -26,7 +26,7 @@ def main(visualize: bool = False):
         move_mesh_to_point(compas_mesh, Point(gcode_config.print_volume_x/2, gcode_config.print_volume_y/2, 0))
 
     # ----- slicing
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=4.5)
+    slicer = PlanarSlicer(compas_mesh, layer_height=4.5)
     slicer.slice_model()
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
     simplify_paths_rdp(slicer, threshold=0.6)

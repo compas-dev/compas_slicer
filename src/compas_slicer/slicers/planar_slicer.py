@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from typing import Literal
-
 from compas.datastructures import Mesh
 from compas.geometry import Plane, Point, Vector
 from loguru import logger
 
 from compas_slicer.slicers.base_slicer import BaseSlicer
-from compas_slicer.slicers.planar_slicing import create_planar_paths, create_planar_paths_cgal
+from compas_slicer.slicers.planar_slicing import create_planar_paths
 
 __all__ = ['PlanarSlicer']
 
@@ -19,8 +17,6 @@ class PlanarSlicer(BaseSlicer):
     ----------
     mesh : Mesh
         Input mesh, must be triangular (no quads or n-gons allowed).
-    slicer_type : Literal["default", "cgal"]
-        Slicing method to use.
     layer_height : float
         Distance between layers (slices) in mm.
     slice_height_range : tuple[float, float] | None
@@ -32,7 +28,6 @@ class PlanarSlicer(BaseSlicer):
     def __init__(
         self,
         mesh: Mesh,
-        slicer_type: Literal["default", "cgal"] = "default",
         layer_height: float = 2.0,
         slice_height_range: tuple[float, float] | None = None,
     ) -> None:
@@ -40,7 +35,6 @@ class PlanarSlicer(BaseSlicer):
         BaseSlicer.__init__(self, mesh)
 
         self.layer_height = layer_height
-        self.slicer_type = slicer_type
         self.slice_height_range = slice_height_range
 
     def __repr__(self) -> str:
@@ -64,19 +58,5 @@ class PlanarSlicer(BaseSlicer):
         normal = Vector(0, 0, 1)
         planes = [Plane(Point(0, 0, min_z + i * self.layer_height), normal) for i in range(no_of_layers)]
 
-        if self.slicer_type == "default":
-            logger.info('')
-            logger.info("Planar slicing using default function ...")
-            self.layers = create_planar_paths(self.mesh, planes)
-
-        elif self.slicer_type == "cgal":
-            logger.info('')
-            logger.info("Planar slicing using CGAL ...")
-            self.layers = create_planar_paths_cgal(self.mesh, planes)
-
-        else:
-            raise NameError("Invalid slicing type : " + self.slicer_type)
-
-
-if __name__ == "__main__":
-    pass
+        logger.info("Planar slicing using CGAL ...")
+        self.layers = create_planar_paths(self.mesh, planes)

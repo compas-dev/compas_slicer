@@ -53,7 +53,7 @@ def main(visualize: bool = False):
         data['direction_to_pt'] = np.array(normalize_vector(Vector.from_start_end(v_coord, pt)))
 
     # --------------- Slice mesh
-    slicer = PlanarSlicer(mesh, slicer_type="default", layer_height=5.0)
+    slicer = PlanarSlicer(mesh, layer_height=5.0)
     slicer.slice_model()
     simplify_paths_rdp(slicer, threshold=1.0)
     slicer_utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'slicer_data.json')

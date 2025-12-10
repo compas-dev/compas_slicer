@@ -19,7 +19,7 @@ no_of_layers = int(d / layer_height) + 1
 
 def test_planar_slicing_success():
     """ Tests simple planar slicing. """
-    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=layer_height)
+    slicer = PlanarSlicer(compas_mesh, layer_height=layer_height)
     slicer.slice_model()
 
     assert isinstance(slicer.layers, list), "The layers are not a list"

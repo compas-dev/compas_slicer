@@ -33,7 +33,7 @@ def main(visualize: bool = False):
     move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
     # Slicing
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=5.0)
+    slicer = PlanarSlicer(compas_mesh, layer_height=5.0)
     slicer.slice_model()
 
     # Sorting into vertical layers and reordering

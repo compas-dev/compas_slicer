@@ -13,10 +13,10 @@ if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
 
-__all__ = ['create_planar_paths_cgal']
+__all__ = ['create_planar_paths']
 
 
-def create_planar_paths_cgal(mesh: Mesh, planes: list[Plane]) -> list[Layer]:
+def create_planar_paths(mesh: Mesh, planes: list[Plane]) -> list[Layer]:
     """Creates planar contours very efficiently using CGAL.
 
     Parameters

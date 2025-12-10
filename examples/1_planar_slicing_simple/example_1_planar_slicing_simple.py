@@ -32,9 +32,7 @@ def main(visualize: bool = False):
     move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
     # Slicing
-    # options: 'default': Both for open and closed paths. But slow
-    #          'cgal':    Very fast. Only for closed paths.
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
+    slicer = PlanarSlicer(compas_mesh, layer_height=1.5)
     slicer.slice_model()
 
     seams_align(slicer, "next_path")

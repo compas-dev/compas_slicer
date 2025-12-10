@@ -19,7 +19,7 @@ stl_to_test = ['distorted_v_closed_low_res.obj']
 def create_setup(filename):
     """ Setting up the stage for testing. """
     compas_mesh = Mesh.from_obj(DATA_PATH / filename)
-    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=20)
+    slicer = PlanarSlicer(compas_mesh, layer_height=20)
     slicer.slice_model()
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=3)
     simplify_paths_rdp(slicer, threshold=1.3)

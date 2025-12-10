@@ -66,18 +66,12 @@ a point on your print bed.
     compas_mesh = Mesh.from_obj(DATA_PATH / MODEL)
     move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
-Next, we initialize the :class:`PlanarSlicer` to initialize the slicing process. You need to specify the layer height and
-the ``slicing_type`` that defines the methods for generating the 'slices'. Currently, the following methods
-are supported:
-
-* ``default``: Uses only standard compas functions, without external libraries, but can be a bit slow.
-    It works for both open and closed paths.
-* ``cgal``: Uses the 'compas_cgal' package, this is a very fast method but requires you to install compas_cgal.
-    It only works for closed paths
+Next, we initialize the :class:`PlanarSlicer` to initialize the slicing process. You need to specify the layer height.
+Slicing uses CGAL for fast mesh-plane intersection.
 
 .. code-block:: python
 
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
+    slicer = PlanarSlicer(compas_mesh, layer_height=1.5)
     slicer.slice_model()
 
 
@@ -247,11 +241,8 @@ The completed final script can be found below:
 
         # ==========================================================================
         # Slicing
-        # options: 'default': Both for open and closed paths. But slow
-        #          'cgal':    Very fast. Only for closed paths.
-        #                     Requires additional installation (compas_cgal).
         # ==========================================================================
-        slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
+        slicer = PlanarSlicer(compas_mesh, layer_height=1.5)
         slicer.slice_model()
 
         seams_align(slicer, "next_path")

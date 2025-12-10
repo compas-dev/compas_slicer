@@ -13,9 +13,8 @@ The following file can be found in `/examples/4_gcode_generation/`. The gcode fi
 
     from pathlib import Path
 
-    from loguru import logger
-
     import compas_slicer.utilities as utils
+    from compas_slicer.config import GcodeConfig
     from compas_slicer.pre_processing import move_mesh_to_point
     from compas_slicer.slicers import PlanarSlicer
     from compas_slicer.post_processing import generate_brim
@@ -24,7 +23,6 @@ The following file can be found in `/examples/4_gcode_generation/`. The gcode fi
     from compas_slicer.print_organization import PlanarPrintOrganizer
     from compas_slicer.print_organization import set_extruder_toggle
     from compas_slicer.utilities import save_to_json
-    from compas_slicer.parameters import get_param
 
     from compas.datastructures import Mesh
     from compas.geometry import Point
@@ -37,16 +35,14 @@ The following file can be found in `/examples/4_gcode_generation/`. The gcode fi
     def main():
 
         compas_mesh = Mesh.from_obj(DATA_PATH / MODEL)
-        delta = get_param({}, key='delta', defaults_type='gcode')  # boolean for delta printers
-        print_volume_x = get_param({}, key='print_volume_x', defaults_type='gcode')  # in mm
-        print_volume_y = get_param({}, key='print_volume_y', defaults_type='gcode')  # in mm
-        if delta:
+        gcode_config = GcodeConfig()
+        if gcode_config.delta:
             move_mesh_to_point(compas_mesh, Point(0, 0, 0))
         else:
-            move_mesh_to_point(compas_mesh, Point(print_volume_x/2, print_volume_y/2, 0))
+            move_mesh_to_point(compas_mesh, Point(gcode_config.print_volume_x/2, gcode_config.print_volume_y/2, 0))
 
         # ----- slicing
-        slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=4.5)
+        slicer = PlanarSlicer(compas_mesh, layer_height=4.5)
         slicer.slice_model()
         generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
         simplify_paths_rdp(slicer, threshold=0.6)
