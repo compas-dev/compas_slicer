@@ -648,7 +648,7 @@ def flattened_list_of_dictionary(dictionary: dict[Any, list[Any]]) -> list[Any]:
     return flattened_list
 
 
-def get_dict_key_from_value(dictionary: dict[Any, Any], val: Any) -> Any:
+def get_dict_key_from_value(dictionary: dict[Any, Any], val: Any) -> Any | None:
     """Return the key of a dictionary that stores the value.
 
     Parameters
@@ -660,15 +660,15 @@ def get_dict_key_from_value(dictionary: dict[Any, Any], val: Any) -> Any:
 
     Returns
     -------
-    Any
-        The key, or "key doesn't exist" if not found.
+    Any | None
+        The key, or None if not found.
 
     """
     for key in dictionary:
         value = dictionary[key]
         if val == value:
             return key
-    return "key doesn't exist"
+    return None
 
 
 def find_next_printpoint(
