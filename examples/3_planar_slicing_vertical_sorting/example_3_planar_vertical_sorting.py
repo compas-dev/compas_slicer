@@ -1,23 +1,25 @@
 from pathlib import Path
 
-from loguru import logger
-
 from compas.datastructures import Mesh
 from compas.geometry import Point
 
 import compas_slicer.utilities as utils
+from compas_slicer.post_processing import (
+    generate_brim,
+    reorder_vertical_layers,
+    seams_smooth,
+    simplify_paths_rdp,
+    sort_into_vertical_layers,
+)
 from compas_slicer.pre_processing import move_mesh_to_point
+from compas_slicer.print_organization import (
+    PlanarPrintOrganizer,
+    add_safety_printpoints,
+    set_blend_radius,
+    set_extruder_toggle,
+    set_linear_velocity_constant,
+)
 from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.post_processing import generate_brim
-from compas_slicer.post_processing import simplify_paths_rdp
-from compas_slicer.post_processing import sort_into_vertical_layers
-from compas_slicer.post_processing import reorder_vertical_layers
-from compas_slicer.post_processing import seams_smooth
-from compas_slicer.print_organization import PlanarPrintOrganizer
-from compas_slicer.print_organization import set_extruder_toggle
-from compas_slicer.print_organization import add_safety_printpoints
-from compas_slicer.print_organization import set_linear_velocity_constant
-from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.utilities import save_to_json
 from compas_slicer.visualization import should_visualize, visualize_slicer
 

@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 from pathlib import Path as FilePath
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import progressbar
 from compas.geometry import Vector, normalize_vector
 from loguru import logger
 
 import compas_slicer.utilities as utils
+from compas_slicer.config import InterpolationConfig
 from compas_slicer.geometry import PrintLayer, PrintPath, PrintPoint
-from compas_slicer.parameters import get_param
 from compas_slicer.pre_processing import GradientEvaluation
 from compas_slicer.print_organization.base_print_organizer import BasePrintOrganizer
 from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
@@ -28,8 +28,8 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
     ----------
     slicer : ScalarFieldSlicer
         An instance of ScalarFieldSlicer.
-    parameters : dict[str, Any]
-        Parameters dictionary.
+    config : InterpolationConfig
+        Configuration parameters.
     DATA_PATH : str | Path
         Data directory path.
     vertical_layers : list[VerticalLayer]
@@ -46,8 +46,8 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
     def __init__(
         self,
         slicer: ScalarFieldSlicer,
-        parameters: dict[str, Any],
-        DATA_PATH: str | FilePath,
+        config: InterpolationConfig | None = None,
+        DATA_PATH: str | FilePath = ".",
     ) -> None:
         from compas_slicer.slicers import ScalarFieldSlicer
 
@@ -56,7 +56,7 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
         BasePrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
-        self.parameters = parameters
+        self.config = config if config else InterpolationConfig()
 
         self.vertical_layers = slicer.vertical_layers
         self.horizontal_layers = slicer.horizontal_layers
@@ -87,7 +87,7 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
                     for k, point in enumerate(path.points):
                         normal = utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh)
 
-                        h = get_param(self.parameters, 'avg_layer_height', defaults_type='layers')
+                        h = self.config.avg_layer_height
                         printpoint = PrintPoint(pt=point, layer_height=h, mesh_normal=normal)
 
                         print_path.printpoints.append(printpoint)

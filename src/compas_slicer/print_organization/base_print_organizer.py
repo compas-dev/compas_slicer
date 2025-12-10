@@ -17,8 +17,8 @@ from compas.geometry import (
 from compas.itertools import pairwise
 from loguru import logger
 
+from compas_slicer.config import GcodeConfig
 from compas_slicer.geometry import PrintPointsCollection
-from compas_slicer.parameters import GcodeParameters
 from compas_slicer.print_organization.print_organization_utilities.gcode import create_gcode_text
 from compas_slicer.slicers.base_slicer import BaseSlicer
 
@@ -294,13 +294,13 @@ class BasePrintOrganizer:
         logger.info(f"Generated {count} print points")
         return data
 
-    def output_gcode(self, parameters: dict[str, Any] | GcodeParameters) -> str:
+    def output_gcode(self, config: GcodeConfig | None = None) -> str:
         """Generate G-code text.
 
         Parameters
         ----------
-        parameters : dict | GcodeParameters
-            G-code generation parameters.
+        config : GcodeConfig | None
+            G-code configuration. If None, uses defaults.
 
         Returns
         -------
@@ -308,7 +308,7 @@ class BasePrintOrganizer:
             G-code text.
 
         """
-        return create_gcode_text(self, parameters)
+        return create_gcode_text(self, config)
 
     def get_printpoints_attribute(self, attr_name: str) -> list[Any]:
         """Get a list of attribute values from all printpoints.

@@ -6,8 +6,8 @@ import numpy as np
 import progressbar
 from loguru import logger
 
+from compas_slicer.config import InterpolationConfig
 from compas_slicer.geometry import VerticalLayersManager
-from compas_slicer.parameters import get_param
 from compas_slicer.pre_processing.preprocessing_utils.assign_vertex_distance import (
     assign_interpolation_distance_to_mesh_vertices,
 )
@@ -34,8 +34,8 @@ class InterpolationSlicer(BaseSlicer):
         Recommend: re-topologize, triangulate, and weld mesh in advance.
     preprocessor : InterpolationSlicingPreprocessor | None
         Preprocessor containing compound targets.
-    parameters : dict[str, Any]
-        Slicing parameters dictionary.
+    config : InterpolationConfig
+        Interpolation configuration.
     n_multiplier : float
         Multiplier for number of isocurves.
 
@@ -45,7 +45,7 @@ class InterpolationSlicer(BaseSlicer):
         self,
         mesh: Mesh,
         preprocessor: InterpolationSlicingPreprocessor | None = None,
-        parameters: dict[str, Any] | None = None,
+        config: InterpolationConfig | None = None,
     ) -> None:
         logger.info('InterpolationSlicer')
         BaseSlicer.__init__(self, mesh)
@@ -53,7 +53,7 @@ class InterpolationSlicer(BaseSlicer):
         if preprocessor:  # make sure the mesh of the preprocessor and the mesh of the slicer match
             assert len(list(mesh.vertices())) == len(list(preprocessor.mesh.vertices()))
 
-        self.parameters: dict[str, Any] = parameters if parameters else {}
+        self.config = config if config else InterpolationConfig()
         self.preprocessor = preprocessor
         self.n_multiplier: float = 1.0
 
@@ -61,7 +61,7 @@ class InterpolationSlicer(BaseSlicer):
         """Generate curved paths."""
         assert self.preprocessor, 'You need to provide a pre-processor in order to generate paths.'
 
-        avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='layers')
+        avg_layer_height = self.config.avg_layer_height
         n = find_no_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH, avg_layer_height)
         params_list = get_interpolation_parameters_list(n)
         logger.info(f'{n} paths will be generated')

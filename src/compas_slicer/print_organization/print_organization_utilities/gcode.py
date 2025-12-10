@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import math
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from compas.geometry import Point, Vector
 from loguru import logger
 
+from compas_slicer.config import GcodeConfig
 from compas_slicer.geometry import PrintPoint
-from compas_slicer.parameters import get_param
 
 if TYPE_CHECKING:
     from compas_slicer.print_organization import BasePrintOrganizer
@@ -17,17 +17,25 @@ if TYPE_CHECKING:
 __all__ = ['create_gcode_text']
 
 
-def create_gcode_text(print_organizer: BasePrintOrganizer, parameters: dict[str, Any]) -> str:
-    """ Creates a gcode text file
+def create_gcode_text(print_organizer: BasePrintOrganizer, config: GcodeConfig | None = None) -> str:
+    """Create a G-code text file.
+
     Parameters
     ----------
-    print_organizer: :class: compas_slicer.print_organization.PrintOrganizer
-    parameters : dict with gcode parameters.
-        The defaults for those parameters are in the file compas_slicer.parameters.defaults_gcode.
+    print_organizer : BasePrintOrganizer
+        The print organizer with printpoints.
+    config : GcodeConfig | None
+        G-code configuration. If None, uses defaults.
+
     Returns
-    ----------
-    str, gcode text file
+    -------
+    str
+        G-code text file content.
+
     """
+    if config is None:
+        config = GcodeConfig()
+
     n_l = chr(10)  # new line
     # get time stamp
     now = datetime.now()
@@ -36,38 +44,25 @@ def create_gcode_text(print_organizer: BasePrintOrganizer, parameters: dict[str,
     gcode = ''
 
     #######################################################################
-    # get all the necessary parameters:
-    # Physical parameters
-    # nozzle_diameter = get_param(parameters, key='nozzle_diameter', defaults_type='gcode')  # in mm
-    filament_diameter = get_param(parameters, key='filament diameter', defaults_type='gcode')  # in mm
-
-    # Dimensional parameters
-    path_width = get_param(parameters, key='layer_width', defaults_type='gcode')  # in mm
-
-    # Temperature parameters
-    extruder_temperature = get_param(parameters, key='extruder_temperature', defaults_type='gcode')  # in °C
-    bed_temperature = get_param(parameters, key='bed_temperature', defaults_type='gcode')  # in °C
-    fan_speed = get_param(parameters, key='bed_temperature', defaults_type='gcode')  # 0-255
-    fan_start_z = get_param(parameters, key='fan_start_z', defaults_type='gcode')  # in mm
-
-    # Movement parameters
-    flowrate = get_param(parameters, key='flowrate', defaults_type='gcode')  # as fraction; this is a global flow multiplier
-    feedrate = get_param(parameters, key='feedrate', defaults_type='gcode')  # in mm/s
-    feedrate_travel = get_param(parameters, key='feedrate_travel', defaults_type='gcode')  # in mm/s
-    feedrate_low = get_param(parameters, key='feedrate_low', defaults_type='gcode')  # in mm/s, for z < min_over_z
-    feedrate_retraction = get_param(parameters, key='feedrate_retraction', defaults_type='gcode')  # in mm/s
-    acceleration = get_param(parameters, key='acceleration', defaults_type='gcode')  # in mm/s²; ignored if 0
-    jerk = get_param(parameters, key='jerk', defaults_type='gcode')  # in mm/s; if 0, the default driver value is used
-
-    # Retraction and hop parameters
-    z_hop = get_param(parameters, key='z_hop', defaults_type='gcode')  # in mm
-    retraction_length = get_param(parameters, key='retraction_length', defaults_type='gcode')  # in mm
-    retraction_min_travel = get_param(parameters, key='retraction_min_travel', defaults_type='gcode')  # in mm
-
-    # Adhesion parameters
-    flow_over = get_param(parameters, key='flow_over', defaults_type='gcode')  # as fraction > 1
-    min_over_z = get_param(parameters, key='min_over_z', defaults_type='gcode')  # in mm
-    # ______________________________________________________________________/ get parmeters
+    # get all the necessary parameters from config:
+    filament_diameter = config.filament_diameter
+    path_width = config.layer_width
+    extruder_temperature = config.extruder_temperature
+    bed_temperature = config.bed_temperature
+    fan_speed = config.fan_speed
+    fan_start_z = config.fan_start_z
+    flowrate = config.flowrate
+    feedrate = config.feedrate
+    feedrate_travel = config.feedrate_travel
+    feedrate_low = config.feedrate_low
+    feedrate_retraction = config.feedrate_retraction
+    acceleration = config.acceleration
+    jerk = config.jerk
+    z_hop = config.z_hop
+    retraction_length = config.retraction_length
+    retraction_min_travel = config.retraction_min_travel
+    flow_over = config.flow_over
+    min_over_z = config.min_over_z
 
     # ######################################################################
     # gcode header

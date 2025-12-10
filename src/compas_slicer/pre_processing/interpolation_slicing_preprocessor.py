@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from compas.datastructures import Mesh
 from loguru import logger
 
 import compas_slicer.utilities as utils
-from compas_slicer.parameters import get_param
+from compas_slicer.config import InterpolationConfig
 from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
 from compas_slicer.pre_processing.preprocessing_utils import assign_interpolation_distance_to_mesh_vertices
 from compas_slicer.pre_processing.preprocessing_utils import region_split as rs
@@ -27,20 +27,24 @@ __all__ = ['InterpolationSlicingPreprocessor']
 
 
 class InterpolationSlicingPreprocessor:
-    """
-    Takes care of all the pre-processing that is (or might be) needed before the interpolation slicing process.
-    Not all the functionality needs to be run every time, depending on the characteristics of the inputs.
+    """Handles pre-processing for interpolation slicing.
 
     Attributes
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-    parameters: dict
-    DATA_PATH: str, path to the data folder
+    mesh : Mesh
+        Input mesh.
+    config : InterpolationConfig
+        Interpolation configuration.
+    DATA_PATH : str | Path
+        Path to the data folder.
+
     """
 
-    def __init__(self, mesh: Mesh, parameters: dict[str, Any], DATA_PATH: str | Path) -> None:
+    def __init__(
+        self, mesh: Mesh, config: InterpolationConfig | None = None, DATA_PATH: str | Path = "."
+    ) -> None:
         self.mesh = mesh
-        self.parameters = parameters
+        self.config = config if config else InterpolationConfig()
         self.DATA_PATH = DATA_PATH
 
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
@@ -56,23 +60,21 @@ class InterpolationSlicingPreprocessor:
     # --- compound targets
 
     def create_compound_targets(self) -> None:
-        """ Creates the target_LOW and the target_HIGH and computes the geodesic distances. """
+        """Create target_LOW and target_HIGH and compute geodesic distances."""
 
         # --- low target
-        geodesics_method = get_param(self.parameters, key='target_LOW_geodesics_method',
-                                     defaults_type='interpolation_slicing')
-        method: str
-        params: list[Any]
-        method, params = 'min', []  # no other union methods currently supported for lower target
+        geodesics_method = self.config.target_low_geodesics_method.value
+        method = 'min'  # no other union methods currently supported for lower target
+        params: list[float] = []
         self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH,
                                          union_method=method,
                                          union_params=params,
                                          geodesics_method=geodesics_method)
 
         # --- high target
-        geodesics_method = get_param(self.parameters, key='target_HIGH_geodesics_method',
-                                     defaults_type='interpolation_slicing')
-        method, params = get_union_method(self.parameters)
+        geodesics_method = self.config.target_high_geodesics_method.value
+        method = self.config.target_high_union_method.value
+        params = self.config.target_high_union_params
         logger.info("Creating target with union type : " + method + " and params : " + str(params))
         self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH,
                                           union_method=method,
@@ -80,8 +82,7 @@ class InterpolationSlicingPreprocessor:
                                           geodesics_method=geodesics_method)
 
         # --- uneven boundaries of high target
-        self.target_HIGH.offset = get_param(self.parameters, key='uneven_upper_targets_offset',
-                                            defaults_type='interpolation_slicing')
+        self.target_HIGH.offset = self.config.uneven_upper_targets_offset
         self.target_HIGH.compute_uneven_boundaries_weight_max(self.target_LOW)
 
         #  --- save intermediary get_distance outputs
@@ -249,40 +250,6 @@ class InterpolationSlicingPreprocessor:
                                f'pts_boundary_LOW_{index}.json')
             utils.save_to_json(utils.point_list_to_dict(pts_boundary_HIGH), self.OUTPUT_PATH,
                                f'pts_boundary_HIGH_{index}.json')
-
-
-# ---- utils
-
-def get_union_method(params_dict: dict[str, Any]) -> tuple[str, list[Any]]:
-    """
-    Read input params_dict and return union method id and its parameters.
-    target_type: LOW/HIGH
-    """
-    smooth_union_data = get_param(params_dict, key='target_HIGH_smooth_union', defaults_type='interpolation_slicing')
-    chamfer_union_data = get_param(params_dict, key='target_HIGH_chamfer_union', defaults_type='interpolation_slicing')
-    stairs_union_data = get_param(params_dict, key='target_HIGH_stairs_union', defaults_type='interpolation_slicing')
-    if smooth_union_data[0]:
-        method = 'smooth'
-        params = smooth_union_data[1]
-        assert not chamfer_union_data[0] and not stairs_union_data[0], 'You can only select one union method.'
-        assert len(params) == 1, 'Wrong number of union params'
-        return method, params
-    elif chamfer_union_data[0]:
-        method = 'chamfer'
-        params = chamfer_union_data[1]
-        assert not smooth_union_data[0] and not stairs_union_data[0], 'You can only select one union method.'
-        assert len(params) == 1, 'Wrong number of union params'
-        return method, params
-    elif stairs_union_data[0]:
-        method = 'stairs'
-        params = stairs_union_data[1]
-        assert not smooth_union_data[0] and not chamfer_union_data[0], 'You can only select one union method.'
-        assert len(params) == 2, 'Wrong number of union params'
-        return method, params
-    else:
-        method = 'min'
-        params = []
-        return method, params
 
 
 if __name__ == "__main__":

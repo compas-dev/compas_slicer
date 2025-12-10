@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path as FilePath
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 from compas.geometry import (
@@ -18,8 +18,8 @@ from loguru import logger
 from numpy.typing import NDArray
 
 import compas_slicer.utilities as utils
+from compas_slicer.config import InterpolationConfig
 from compas_slicer.geometry import PrintLayer, PrintPath, PrintPoint, VerticalLayer
-from compas_slicer.parameters import get_param
 from compas_slicer.pre_processing.preprocessing_utils import topological_sorting as topo_sort
 from compas_slicer.print_organization.base_print_organizer import BasePrintOrganizer
 from compas_slicer.print_organization.curved_print_organization import BaseBoundary
@@ -75,8 +75,8 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
     ----------
     slicer : InterpolationSlicer
         An instance of InterpolationSlicer.
-    parameters : dict[str, Any]
-        Parameters dictionary.
+    config : InterpolationConfig
+        Interpolation configuration.
     DATA_PATH : str | Path
         Data directory path.
     vertical_layers : list[VerticalLayer]
@@ -93,8 +93,8 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
     def __init__(
         self,
         slicer: InterpolationSlicer,
-        parameters: dict[str, Any],
-        DATA_PATH: str | FilePath,
+        config: InterpolationConfig | None = None,
+        DATA_PATH: str | FilePath = ".",
     ) -> None:
         from compas_slicer.slicers import InterpolationSlicer
 
@@ -103,7 +103,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         BasePrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
-        self.parameters = parameters
+        self.config = config if config else InterpolationConfig()
 
         self.vertical_layers = slicer.vertical_layers
         self.horizontal_layers = slicer.horizontal_layers
@@ -139,7 +139,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         other parts it lies on and which other parts lie on it.
 
         """
-        avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='layers')
+        avg_layer_height = self.config.avg_layer_height
         self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.vertical_layers,
                                                                4 * avg_layer_height, DATA_PATH=self.DATA_PATH)
 
@@ -185,7 +185,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             paths = self.horizontal_layers[0].paths
             for _j, path in enumerate(paths):
                 print_path = PrintPath(printpoints=[
-                    PrintPoint(pt=point, layer_height=get_param(self.parameters, 'avg_layer_height', 'layers'),
+                    PrintPoint(pt=point, layer_height=self.config.avg_layer_height,
                                mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh))
                     for k, point in enumerate(path.points)
                 ])
@@ -218,9 +218,9 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
 
     def get_layer_ppts(self, layer: VerticalLayer, base_boundary: BaseBoundary) -> PrintLayer:
         """Create the PrintPoints of a single layer."""
-        max_layer_height = get_param(self.parameters, key='max_layer_height', defaults_type='layers')
-        min_layer_height = get_param(self.parameters, key='min_layer_height', defaults_type='layers')
-        avg_layer_height = get_param(self.parameters, 'avg_layer_height', 'layers')
+        max_layer_height = self.config.max_layer_height
+        min_layer_height = self.config.min_layer_height
+        avg_layer_height = self.config.avg_layer_height
 
         all_pts = [pt for path in layer.paths for pt in path.points]
         closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.slicer.mesh, all_pts)

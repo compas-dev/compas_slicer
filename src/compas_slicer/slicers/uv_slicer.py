@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 import progressbar
 from loguru import logger
 
+from compas_slicer.config import InterpolationConfig
 from compas_slicer.geometry import VerticalLayersManager
-from compas_slicer.parameters import get_param
 from compas_slicer.slicers import BaseSlicer
 from compas_slicer.slicers.slice_utilities import UVContours
 
@@ -33,8 +33,8 @@ class UVSlicer(BaseSlicer):
         Mapping from vertex key to UV coordinates. UV should be in [0,1].
     no_of_isocurves : int
         Number of levels to generate.
-    parameters : dict[str, Any]
-        Slicing parameters dictionary.
+    config : InterpolationConfig
+        Configuration parameters.
 
     """
 
@@ -43,14 +43,14 @@ class UVSlicer(BaseSlicer):
         mesh: Mesh,
         vkey_to_uv: dict[int, tuple[float, float]],
         no_of_isocurves: int,
-        parameters: dict[str, Any] | None = None,
+        config: InterpolationConfig | None = None,
     ) -> None:
         logger.info('UVSlicer')
         BaseSlicer.__init__(self, mesh)
 
         self.vkey_to_uv = vkey_to_uv
         self.no_of_isocurves = no_of_isocurves
-        self.parameters: dict[str, Any] = parameters if parameters else {}
+        self.config = config if config else InterpolationConfig()
 
         u = [self.vkey_to_uv[vkey][0] for vkey in mesh.vertices()]
         v = [self.vkey_to_uv[vkey][1] for vkey in mesh.vertices()]
@@ -66,7 +66,7 @@ class UVSlicer(BaseSlicer):
         paths_type = 'flat'  # 'spiral' # 'zigzag'
         v_left, v_right = 0.0, 1.0 - 1e-5
 
-        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='layers')
+        max_dist = self.config.vertical_layers_max_centroid_dist
         vertical_layers_manager = VerticalLayersManager(max_dist)
 
         # create paths + layers

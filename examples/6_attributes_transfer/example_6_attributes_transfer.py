@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from loguru import logger
-
 import numpy as np
 from compas.datastructures import Mesh
 from compas.geometry import Point, Vector, distance_point_plane, normalize_vector

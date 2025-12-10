@@ -1,21 +1,16 @@
 from pathlib import Path
 
-from loguru import logger
-
-import compas_slicer.utilities as utils
-from compas_slicer.pre_processing import move_mesh_to_point
-from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.post_processing import generate_brim
-from compas_slicer.post_processing import simplify_paths_rdp
-from compas_slicer.post_processing import seams_smooth
-from compas_slicer.print_organization import PlanarPrintOrganizer
-from compas_slicer.print_organization import set_extruder_toggle
-from compas_slicer.utilities import save_to_json
-from compas_slicer.visualization import should_visualize, visualize_slicer
-from compas_slicer.parameters import get_param
-
 from compas.datastructures import Mesh
 from compas.geometry import Point
+
+import compas_slicer.utilities as utils
+from compas_slicer.config import GcodeConfig
+from compas_slicer.post_processing import generate_brim, seams_smooth, simplify_paths_rdp
+from compas_slicer.pre_processing import move_mesh_to_point
+from compas_slicer.print_organization import PlanarPrintOrganizer, set_extruder_toggle
+from compas_slicer.slicers import PlanarSlicer
+from compas_slicer.utilities import save_to_json
+from compas_slicer.visualization import should_visualize, visualize_slicer
 
 DATA_PATH = Path(__file__).parent / 'data'
 OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
@@ -24,13 +19,11 @@ MODEL = 'simple_vase_open_low_res.obj'
 
 def main(visualize: bool = False):
     compas_mesh = Mesh.from_obj(DATA_PATH / MODEL)
-    delta = get_param({}, key='delta', defaults_type='gcode')  # boolean for delta printers
-    print_volume_x = get_param({}, key='print_volume_x', defaults_type='gcode')  # in mm
-    print_volume_y = get_param({}, key='print_volume_y', defaults_type='gcode')  # in mm
-    if delta:
+    gcode_config = GcodeConfig()
+    if gcode_config.delta:
         move_mesh_to_point(compas_mesh, Point(0, 0, 0))
     else:
-        move_mesh_to_point(compas_mesh, Point(print_volume_x/2, print_volume_y/2, 0))
+        move_mesh_to_point(compas_mesh, Point(gcode_config.print_volume_x/2, gcode_config.print_volume_y/2, 0))
 
     # ----- slicing
     slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=4.5)
@@ -49,8 +42,7 @@ def main(visualize: bool = False):
     print_organizer.printout_info()
 
     # create and output gcode
-    gcode_parameters = {}  # leave all to default
-    gcode_text = print_organizer.output_gcode(gcode_parameters)
+    gcode_text = print_organizer.output_gcode(gcode_config)
     utils.save_to_text_file(gcode_text, OUTPUT_PATH, 'my_gcode.gcode')
 
     if visualize:

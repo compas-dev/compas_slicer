@@ -1,20 +1,21 @@
 import time
 from pathlib import Path
 
-from loguru import logger
-
 from compas.datastructures import Mesh
 
 import compas_slicer.utilities as utils
+from compas_slicer.config import InterpolationConfig
+from compas_slicer.post_processing import seams_smooth, simplify_paths_rdp
+from compas_slicer.pre_processing import InterpolationSlicingPreprocessor, create_mesh_boundary_attributes
+from compas_slicer.print_organization import (
+    InterpolationPrintOrganizer,
+    add_safety_printpoints,
+    set_extruder_toggle,
+    set_linear_velocity_by_range,
+    smooth_printpoints_layer_heights,
+    smooth_printpoints_up_vectors,
+)
 from compas_slicer.slicers import InterpolationSlicer
-from compas_slicer.post_processing import simplify_paths_rdp
-from compas_slicer.post_processing import seams_smooth
-from compas_slicer.pre_processing import InterpolationSlicingPreprocessor
-from compas_slicer.pre_processing import create_mesh_boundary_attributes
-from compas_slicer.print_organization import InterpolationPrintOrganizer
-from compas_slicer.print_organization import set_extruder_toggle, set_linear_velocity_by_range
-from compas_slicer.print_organization import add_safety_printpoints
-from compas_slicer.print_organization import smooth_printpoints_up_vectors, smooth_printpoints_layer_heights
 from compas_slicer.visualization import should_visualize, visualize_slicer
 
 DATA_PATH = Path(__file__).parent / 'data_Y_shape'
@@ -34,11 +35,9 @@ def main(visualize: bool = False):
 
     avg_layer_height = 2.0
 
-    parameters = {
-        'avg_layer_height': avg_layer_height,
-    }
+    config = InterpolationConfig(avg_layer_height=avg_layer_height)
 
-    preprocessor = InterpolationSlicingPreprocessor(mesh, parameters, DATA_PATH)
+    preprocessor = InterpolationSlicingPreprocessor(mesh, config, DATA_PATH)
     preprocessor.create_compound_targets()
     g_eval = preprocessor.create_gradient_evaluation(norm_filename='gradient_norm.json', g_filename='gradient.json',
                                                      target_1=preprocessor.target_LOW,
@@ -46,7 +45,7 @@ def main(visualize: bool = False):
     preprocessor.find_critical_points(g_eval, output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
 
     # Slicing
-    slicer = InterpolationSlicer(mesh, preprocessor, parameters)
+    slicer = InterpolationSlicer(mesh, preprocessor, config)
     slicer.slice_model()
 
     simplify_paths_rdp(slicer, threshold=0.25)
@@ -55,7 +54,7 @@ def main(visualize: bool = False):
     utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer.json')
 
     # Print organizer
-    print_organizer = InterpolationPrintOrganizer(slicer, parameters, DATA_PATH)
+    print_organizer = InterpolationPrintOrganizer(slicer, config, DATA_PATH)
     print_organizer.create_printpoints()
 
     smooth_printpoints_up_vectors(print_organizer, strength=0.5, iterations=10)

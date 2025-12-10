@@ -9,12 +9,10 @@ producing adaptive infill that handles thin walls and complex shapes.
 import time
 from pathlib import Path
 
+from compas.datastructures import Mesh
 from loguru import logger
 
-from compas.datastructures import Mesh
-
-from compas_slicer.post_processing import generate_medial_axis_infill
-from compas_slicer.post_processing import simplify_paths_rdp
+from compas_slicer.post_processing import generate_medial_axis_infill, simplify_paths_rdp
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.utilities import save_to_json
 from compas_slicer.visualization import should_visualize, visualize_slicer

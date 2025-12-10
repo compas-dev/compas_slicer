@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from loguru import logger
-
 from compas.datastructures import Mesh
 from compas.geometry import distance_point_point
 
@@ -33,7 +31,7 @@ def main(visualize: bool = False):
 
     # --- assign the scalar field to the mesh's attributes, under the name 'scalar_field'
     mesh.update_default_vertex_attributes({'scalar_field': 0.0})
-    for i, (v_key, data) in enumerate(mesh.vertices(data=True)):
+    for i, (_v_key, data) in enumerate(mesh.vertices(data=True)):
         data['scalar_field'] = u[i]
 
     # --- Slice model by generating contours of scalar field
@@ -44,7 +42,7 @@ def main(visualize: bool = False):
 
     # --- Print organization calculations (i.e. generation of printpoints with fabrication-related information)
     simplify_paths_rdp(slicer, threshold=0.3)
-    print_organizer = ScalarFieldPrintOrganizer(slicer, parameters={}, DATA_PATH=DATA_PATH)
+    print_organizer = ScalarFieldPrintOrganizer(slicer, DATA_PATH=DATA_PATH)
     print_organizer.create_printpoints()
 
     print_organizer.printout_info()

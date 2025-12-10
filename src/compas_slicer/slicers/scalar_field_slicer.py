@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 import progressbar
 from loguru import logger
 
+from compas_slicer.config import InterpolationConfig
 from compas_slicer.geometry import VerticalLayersManager
-from compas_slicer.parameters import get_param
 from compas_slicer.slicers import BaseSlicer
 from compas_slicer.slicers.slice_utilities import ScalarFieldContours
 
@@ -33,8 +33,8 @@ class ScalarFieldSlicer(BaseSlicer):
         One float per vertex representing the scalar field.
     no_of_isocurves : int
         Number of isocontours to generate.
-    parameters : dict[str, Any]
-        Slicing parameters dictionary.
+    config : InterpolationConfig
+        Configuration parameters.
 
     """
 
@@ -43,14 +43,14 @@ class ScalarFieldSlicer(BaseSlicer):
         mesh: Mesh,
         scalar_field: Sequence[float],
         no_of_isocurves: int,
-        parameters: dict[str, Any] | None = None,
+        config: InterpolationConfig | None = None,
     ) -> None:
         logger.info('ScalarFieldSlicer')
         BaseSlicer.__init__(self, mesh)
 
         self.no_of_isocurves = no_of_isocurves
         self.scalar_field: list[float] = list(np.array(scalar_field) - np.min(np.array(scalar_field)))
-        self.parameters: dict[str, Any] = parameters if parameters else {}
+        self.config = config if config else InterpolationConfig()
 
         mesh.update_default_vertex_attributes({'scalar_field': 0})
 
@@ -59,7 +59,7 @@ class ScalarFieldSlicer(BaseSlicer):
         start_domain, end_domain = min(self.scalar_field), max(self.scalar_field)
         step = (end_domain - start_domain) / (self.no_of_isocurves + 1)
 
-        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='layers')
+        max_dist = self.config.vertical_layers_max_centroid_dist
         vertical_layers_manager = VerticalLayersManager(max_dist)
 
         # create paths + layers

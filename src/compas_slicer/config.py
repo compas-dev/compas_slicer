@@ -1,18 +1,23 @@
 """Configuration dataclasses for compas_slicer.
 
-This module provides typed configuration objects that replace the legacy
-parameter dictionaries. All configs are dataclasses with sensible defaults
-and full type hints.
+This module provides typed configuration objects with defaults loaded from
+a TOML file. All configs are dataclasses with full type hints.
 """
 
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any
 
 from compas.data import Data
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 __all__ = [
     "SlicerConfig",
@@ -22,7 +27,27 @@ __all__ = [
     "OutputConfig",
     "GeodesicsMethod",
     "UnionMethod",
+    "load_defaults",
 ]
+
+# Load defaults from TOML at module import time
+_DEFAULTS_PATH = Path(__file__).parent / "data" / "defaults.toml"
+
+
+def load_defaults() -> dict[str, Any]:
+    """Load default configuration from TOML file.
+
+    Returns
+    -------
+    dict[str, Any]
+        Dictionary with sections: slicer, interpolation, gcode
+
+    """
+    with open(_DEFAULTS_PATH, "rb") as f:
+        return tomllib.load(f)
+
+
+_DEFAULTS = load_defaults()
 
 
 class GeodesicsMethod(str, Enum):
@@ -71,6 +96,18 @@ class OutputConfig:
             self.base_path = Path(self.base_path)
 
 
+def _slicer_defaults() -> dict[str, Any]:
+    return _DEFAULTS.get("slicer", {})
+
+
+def _interpolation_defaults() -> dict[str, Any]:
+    return _DEFAULTS.get("interpolation", {})
+
+
+def _gcode_defaults() -> dict[str, Any]:
+    return _DEFAULTS.get("gcode", {})
+
+
 @dataclass
 class SlicerConfig(Data):
     """Configuration for slicer operations.
@@ -86,9 +123,9 @@ class SlicerConfig(Data):
 
     """
 
-    layer_height: float = 2.0
-    min_path_length: int = 2
-    close_path_tolerance: float = 0.00001
+    layer_height: float = field(default_factory=lambda: _slicer_defaults().get("layer_height", 2.0))
+    min_path_length: int = field(default_factory=lambda: _slicer_defaults().get("min_path_length", 2))
+    close_path_tolerance: float = field(default_factory=lambda: _slicer_defaults().get("close_path_tolerance", 0.00001))
 
     def __post_init__(self) -> None:
         super().__init__()
@@ -103,10 +140,11 @@ class SlicerConfig(Data):
 
     @classmethod
     def __from_data__(cls, data: dict[str, Any]) -> SlicerConfig:
+        d = _slicer_defaults()
         return cls(
-            layer_height=data.get("layer_height", 2.0),
-            min_path_length=data.get("min_path_length", 2),
-            close_path_tolerance=data.get("close_path_tolerance", 0.00001),
+            layer_height=data.get("layer_height", d.get("layer_height", 2.0)),
+            min_path_length=data.get("min_path_length", d.get("min_path_length", 2)),
+            close_path_tolerance=data.get("close_path_tolerance", d.get("close_path_tolerance", 0.00001)),
         )
 
 
@@ -118,6 +156,10 @@ class InterpolationConfig(Data):
     ----------
     avg_layer_height : float
         Average height between layers.
+    min_layer_height : float
+        Minimum layer height.
+    max_layer_height : float
+        Maximum layer height.
     vertical_layers_max_centroid_dist : float
         Maximum distance for grouping paths into vertical layers.
     target_low_geodesics_method : GeodesicsMethod
@@ -133,13 +175,27 @@ class InterpolationConfig(Data):
 
     """
 
-    avg_layer_height: float = 5.0
-    vertical_layers_max_centroid_dist: float = 25.0
-    target_low_geodesics_method: GeodesicsMethod = GeodesicsMethod.HEAT_IGL
-    target_high_geodesics_method: GeodesicsMethod = GeodesicsMethod.HEAT_IGL
-    target_high_union_method: UnionMethod = UnionMethod.MIN
-    target_high_union_params: list[float] = field(default_factory=list)
-    uneven_upper_targets_offset: float = 0.0
+    avg_layer_height: float = field(default_factory=lambda: _interpolation_defaults().get("avg_layer_height", 5.0))
+    min_layer_height: float = field(default_factory=lambda: _interpolation_defaults().get("min_layer_height", 0.5))
+    max_layer_height: float = field(default_factory=lambda: _interpolation_defaults().get("max_layer_height", 10.0))
+    vertical_layers_max_centroid_dist: float = field(
+        default_factory=lambda: _interpolation_defaults().get("vertical_layers_max_centroid_dist", 25.0)
+    )
+    target_low_geodesics_method: GeodesicsMethod = field(
+        default_factory=lambda: GeodesicsMethod(_interpolation_defaults().get("target_low_geodesics_method", "heat_igl"))
+    )
+    target_high_geodesics_method: GeodesicsMethod = field(
+        default_factory=lambda: GeodesicsMethod(_interpolation_defaults().get("target_high_geodesics_method", "heat_igl"))
+    )
+    target_high_union_method: UnionMethod = field(
+        default_factory=lambda: UnionMethod(_interpolation_defaults().get("target_high_union_method", "min"))
+    )
+    target_high_union_params: list[float] = field(
+        default_factory=lambda: list(_interpolation_defaults().get("target_high_union_params", []))
+    )
+    uneven_upper_targets_offset: float = field(
+        default_factory=lambda: _interpolation_defaults().get("uneven_upper_targets_offset", 0.0)
+    )
 
     def __post_init__(self) -> None:
         super().__init__()
@@ -155,6 +211,8 @@ class InterpolationConfig(Data):
     def __data__(self) -> dict[str, Any]:
         return {
             "avg_layer_height": self.avg_layer_height,
+            "min_layer_height": self.min_layer_height,
+            "max_layer_height": self.max_layer_height,
             "vertical_layers_max_centroid_dist": self.vertical_layers_max_centroid_dist,
             "target_low_geodesics_method": self.target_low_geodesics_method.value,
             "target_high_geodesics_method": self.target_high_geodesics_method.value,
@@ -165,41 +223,25 @@ class InterpolationConfig(Data):
 
     @classmethod
     def __from_data__(cls, data: dict[str, Any]) -> InterpolationConfig:
+        d = _interpolation_defaults()
         return cls(
-            avg_layer_height=data.get("avg_layer_height", 5.0),
-            vertical_layers_max_centroid_dist=data.get("vertical_layers_max_centroid_dist", 25.0),
-            target_low_geodesics_method=data.get("target_low_geodesics_method", "heat_cgal"),
-            target_high_geodesics_method=data.get("target_high_geodesics_method", "heat_cgal"),
-            target_high_union_method=data.get("target_high_union_method", "min"),
-            target_high_union_params=data.get("target_high_union_params", []),
-            uneven_upper_targets_offset=data.get("uneven_upper_targets_offset", 0.0),
-        )
-
-    @classmethod
-    def from_legacy_params(cls, params: dict[str, Any]) -> InterpolationConfig:
-        """Create from legacy parameter dictionary."""
-        # Handle old parameter names
-        union_method = UnionMethod.MIN
-        union_params: list[float] = []
-
-        if params.get("target_HIGH_smooth_union", [False])[0]:
-            union_method = UnionMethod.SMOOTH
-            union_params = params["target_HIGH_smooth_union"][1]
-        elif params.get("target_HIGH_chamfer_union", [False])[0]:
-            union_method = UnionMethod.CHAMFER
-            union_params = params["target_HIGH_chamfer_union"][1]
-        elif params.get("target_HIGH_stairs_union", [False])[0]:
-            union_method = UnionMethod.STAIRS
-            union_params = params["target_HIGH_stairs_union"][1]
-
-        return cls(
-            avg_layer_height=params.get("avg_layer_height", 5.0),
-            vertical_layers_max_centroid_dist=params.get("vertical_layers_max_centroid_dist", 25.0),
-            target_low_geodesics_method=params.get("target_LOW_geodesics_method", "heat_cgal"),
-            target_high_geodesics_method=params.get("target_HIGH_geodesics_method", "heat_cgal"),
-            target_high_union_method=union_method,
-            target_high_union_params=union_params,
-            uneven_upper_targets_offset=params.get("uneven_upper_targets_offset", 0.0),
+            avg_layer_height=data.get("avg_layer_height", d.get("avg_layer_height", 5.0)),
+            min_layer_height=data.get("min_layer_height", d.get("min_layer_height", 0.5)),
+            max_layer_height=data.get("max_layer_height", d.get("max_layer_height", 10.0)),
+            vertical_layers_max_centroid_dist=data.get(
+                "vertical_layers_max_centroid_dist", d.get("vertical_layers_max_centroid_dist", 25.0)
+            ),
+            target_low_geodesics_method=data.get(
+                "target_low_geodesics_method", d.get("target_low_geodesics_method", "heat_igl")
+            ),
+            target_high_geodesics_method=data.get(
+                "target_high_geodesics_method", d.get("target_high_geodesics_method", "heat_igl")
+            ),
+            target_high_union_method=data.get("target_high_union_method", d.get("target_high_union_method", "min")),
+            target_high_union_params=data.get("target_high_union_params", d.get("target_high_union_params", [])),
+            uneven_upper_targets_offset=data.get(
+                "uneven_upper_targets_offset", d.get("uneven_upper_targets_offset", 0.0)
+            ),
         )
 
 
@@ -254,30 +296,35 @@ class GcodeConfig(Data):
 
     """
 
-    nozzle_diameter: float = 0.4
-    filament_diameter: float = 1.75
-    delta: bool = False
-    print_volume: tuple[float, float, float] = (300.0, 300.0, 600.0)
-    layer_width: float = 0.6
-    extruder_temperature: int = 200
-    bed_temperature: int = 60
-    fan_speed: int = 255
-    fan_start_z: float = 0.0
-    flowrate: float = 1.0
-    feedrate: float = 3600.0
-    feedrate_travel: float = 4800.0
-    feedrate_low: float = 1800.0
-    feedrate_retraction: float = 2400.0
-    acceleration: float = 0.0
-    jerk: float = 0.0
-    z_hop: float = 0.5
-    retraction_length: float = 1.0
-    retraction_min_travel: float = 6.0
-    flow_over: float = 1.0
-    min_over_z: float = 0.0
+    nozzle_diameter: float = field(default_factory=lambda: _gcode_defaults().get("nozzle_diameter", 0.4))
+    filament_diameter: float = field(default_factory=lambda: _gcode_defaults().get("filament_diameter", 1.75))
+    delta: bool = field(default_factory=lambda: _gcode_defaults().get("delta", False))
+    print_volume: tuple[float, float, float] = field(
+        default_factory=lambda: tuple(_gcode_defaults().get("print_volume", [300.0, 300.0, 600.0]))
+    )
+    layer_width: float = field(default_factory=lambda: _gcode_defaults().get("layer_width", 0.6))
+    extruder_temperature: int = field(default_factory=lambda: _gcode_defaults().get("extruder_temperature", 200))
+    bed_temperature: int = field(default_factory=lambda: _gcode_defaults().get("bed_temperature", 60))
+    fan_speed: int = field(default_factory=lambda: _gcode_defaults().get("fan_speed", 255))
+    fan_start_z: float = field(default_factory=lambda: _gcode_defaults().get("fan_start_z", 0.0))
+    flowrate: float = field(default_factory=lambda: _gcode_defaults().get("flowrate", 1.0))
+    feedrate: float = field(default_factory=lambda: _gcode_defaults().get("feedrate", 3600.0))
+    feedrate_travel: float = field(default_factory=lambda: _gcode_defaults().get("feedrate_travel", 4800.0))
+    feedrate_low: float = field(default_factory=lambda: _gcode_defaults().get("feedrate_low", 1800.0))
+    feedrate_retraction: float = field(default_factory=lambda: _gcode_defaults().get("feedrate_retraction", 2400.0))
+    acceleration: float = field(default_factory=lambda: _gcode_defaults().get("acceleration", 0.0))
+    jerk: float = field(default_factory=lambda: _gcode_defaults().get("jerk", 0.0))
+    z_hop: float = field(default_factory=lambda: _gcode_defaults().get("z_hop", 0.5))
+    retraction_length: float = field(default_factory=lambda: _gcode_defaults().get("retraction_length", 1.0))
+    retraction_min_travel: float = field(default_factory=lambda: _gcode_defaults().get("retraction_min_travel", 6.0))
+    flow_over: float = field(default_factory=lambda: _gcode_defaults().get("flow_over", 1.0))
+    min_over_z: float = field(default_factory=lambda: _gcode_defaults().get("min_over_z", 0.0))
 
     def __post_init__(self) -> None:
         super().__init__()
+        # Ensure print_volume is a tuple
+        if isinstance(self.print_volume, list):
+            self.print_volume = tuple(self.print_volume)
 
     @property
     def print_volume_x(self) -> float:
@@ -319,38 +366,40 @@ class GcodeConfig(Data):
 
     @classmethod
     def __from_data__(cls, data: dict[str, Any]) -> GcodeConfig:
+        d = _gcode_defaults()
         # Handle both tuple and separate x/y/z keys for print_volume
         if "print_volume" in data:
             print_volume = tuple(data["print_volume"])
         else:
+            default_vol = d.get("print_volume", [300.0, 300.0, 600.0])
             print_volume = (
-                data.get("print_volume_x", 300.0),
-                data.get("print_volume_y", 300.0),
-                data.get("print_volume_z", 600.0),
+                data.get("print_volume_x", default_vol[0]),
+                data.get("print_volume_y", default_vol[1]),
+                data.get("print_volume_z", default_vol[2]),
             )
 
         return cls(
-            nozzle_diameter=data.get("nozzle_diameter", 0.4),
-            filament_diameter=data.get("filament_diameter", 1.75),
-            delta=data.get("delta", False),
+            nozzle_diameter=data.get("nozzle_diameter", d.get("nozzle_diameter", 0.4)),
+            filament_diameter=data.get("filament_diameter", d.get("filament_diameter", 1.75)),
+            delta=data.get("delta", d.get("delta", False)),
             print_volume=print_volume,
-            layer_width=data.get("layer_width", 0.6),
-            extruder_temperature=data.get("extruder_temperature", 200),
-            bed_temperature=data.get("bed_temperature", 60),
-            fan_speed=data.get("fan_speed", 255),
-            fan_start_z=data.get("fan_start_z", 0.0),
-            flowrate=data.get("flowrate", 1.0),
-            feedrate=data.get("feedrate", 3600.0),
-            feedrate_travel=data.get("feedrate_travel", 4800.0),
-            feedrate_low=data.get("feedrate_low", 1800.0),
-            feedrate_retraction=data.get("feedrate_retraction", 2400.0),
-            acceleration=data.get("acceleration", 0.0),
-            jerk=data.get("jerk", 0.0),
-            z_hop=data.get("z_hop", 0.5),
-            retraction_length=data.get("retraction_length", 1.0),
-            retraction_min_travel=data.get("retraction_min_travel", 6.0),
-            flow_over=data.get("flow_over", 1.0),
-            min_over_z=data.get("min_over_z", 0.0),
+            layer_width=data.get("layer_width", d.get("layer_width", 0.6)),
+            extruder_temperature=data.get("extruder_temperature", d.get("extruder_temperature", 200)),
+            bed_temperature=data.get("bed_temperature", d.get("bed_temperature", 60)),
+            fan_speed=data.get("fan_speed", d.get("fan_speed", 255)),
+            fan_start_z=data.get("fan_start_z", d.get("fan_start_z", 0.0)),
+            flowrate=data.get("flowrate", d.get("flowrate", 1.0)),
+            feedrate=data.get("feedrate", d.get("feedrate", 3600.0)),
+            feedrate_travel=data.get("feedrate_travel", d.get("feedrate_travel", 4800.0)),
+            feedrate_low=data.get("feedrate_low", d.get("feedrate_low", 1800.0)),
+            feedrate_retraction=data.get("feedrate_retraction", d.get("feedrate_retraction", 2400.0)),
+            acceleration=data.get("acceleration", d.get("acceleration", 0.0)),
+            jerk=data.get("jerk", d.get("jerk", 0.0)),
+            z_hop=data.get("z_hop", d.get("z_hop", 0.5)),
+            retraction_length=data.get("retraction_length", d.get("retraction_length", 1.0)),
+            retraction_min_travel=data.get("retraction_min_travel", d.get("retraction_min_travel", 6.0)),
+            flow_over=data.get("flow_over", d.get("flow_over", 1.0)),
+            min_over_z=data.get("min_over_z", d.get("min_over_z", 0.0)),
         )
 
 
@@ -408,24 +457,20 @@ class PrintConfig(Data):
         )
 
     @classmethod
-    def from_legacy_params(cls, params: dict[str, Any], data_path: str | Path | None = None) -> PrintConfig:
-        """Create from legacy parameter dictionary.
+    def from_toml(cls, path: str | Path) -> PrintConfig:
+        """Load configuration from a TOML file.
 
         Parameters
         ----------
-        params : dict
-            Legacy parameter dictionary.
-        data_path : str | Path | None
-            Optional data path for output configuration.
+        path : str | Path
+            Path to TOML configuration file.
+
+        Returns
+        -------
+        PrintConfig
+            Configuration loaded from file.
 
         """
-        output = OutputConfig(base_path=Path(data_path) if data_path else Path.cwd())
-
-        return cls(
-            slicer=SlicerConfig(
-                layer_height=params.get("avg_layer_height", params.get("layer_height", 2.0)),
-            ),
-            interpolation=InterpolationConfig.from_legacy_params(params),
-            gcode=GcodeConfig.__from_data__(params),
-            output=output,
-        )
+        with open(path, "rb") as f:
+            data = tomllib.load(f)
+        return cls.__from_data__(data)
