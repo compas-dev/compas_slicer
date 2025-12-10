@@ -262,18 +262,6 @@ class MeshDirectedGraph(DirectedGraph):
                 cut_ids.append(common_cuts)
 
         # --- debugging output
-        # self.all_meshes[root].to_obj(self.OUTPUT_PATH + '/root.obj')
-        # for child in children:
-        #     self.all_meshes[child].to_obj(self.OUTPUT_PATH + '/child_%d.obj' % child)
-        # for cuts_id in cut_ids:
-        #     for common_cut in cuts_id:
-        #         pts = utils.get_mesh_vertex_coords_with_attribute(self.all_meshes[root], 'cut', common_cut)
-        #         utils.save_to_json(utils.point_list_to_dict(pts), self.OUTPUT_PATH, 'cut_%d.json' % common_cut)
-        # print('root : ', root)
-        # print('children : ', children)
-        # print('cut_ids : ', cut_ids)
-        # utils.interrupt()
-
         return children, cut_ids
 
 
