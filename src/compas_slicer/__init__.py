@@ -48,6 +48,7 @@ try:
             git_commit = git_head_refs_file.read_text().strip()
             __version__ += "-" + git_commit[:8]
 except Exception:
+    # Git version detection is optional, fail silently if not in git repo
     pass
 
 from .config import *  # noqa: F401 E402 F403
