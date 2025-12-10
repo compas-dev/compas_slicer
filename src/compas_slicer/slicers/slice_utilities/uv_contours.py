@@ -2,7 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from compas.geometry import add_vectors, distance_point_point_xy, intersection_line_line_xy, scale_vector
+from compas.geometry import (
+    add_vectors,
+    distance_point_point_xy,
+    intersection_line_line_xy,
+    is_point_on_segment_xy,
+    scale_vector,
+)
 
 from compas_slicer.slicers.slice_utilities import ContoursBase
 
@@ -25,7 +31,7 @@ class UVContours(ContoursBase):
     def edge_is_intersected(self, v1: int, v2: int) -> bool:
         """ Returns True if the edge v1,v2 intersects the line in the uv domain, False otherwise. """
         p = intersection_line_line_xy((self.p1, self.p2), (self.uv(v1), self.uv(v2)))
-        return bool(p and is_point_on_line_xy(p, (self.uv(v1), self.uv(v2))) and is_point_on_line_xy(p, (self.p1, self.p2)))
+        return bool(p and is_point_on_segment_xy(p, (self.uv(v1), self.uv(v2))) and is_point_on_segment_xy(p, (self.p1, self.p2)))
 
     def find_zero_crossing_data(self, v1: int, v2: int) -> list[float] | None:
         """ Finds the position of the zero-crossing on the edge u,v. """
@@ -37,34 +43,3 @@ class UVContours(ContoursBase):
             pt: list[float] = add_vectors(self.mesh.vertex_coordinates(v1), vec)
             return pt
         return None
-
-
-# utility function
-
-def is_point_on_line_xy(
-    c: list[float] | tuple[float, ...],
-    line: tuple[tuple[float, ...] | list[float], tuple[float, ...] | list[float]],
-    epsilon: float = 1e-6,
-) -> bool:
-    """
-    Not using the equivalent function of compas, because for some reason it always returns True.
-
-    c: list that represents a point with 2 coordinates [x.y] of [x,y,0]
-    line: (p1, p2) where each pt represents a point with 2 coordinates [x.y] of [x,y,0]
-    """
-    a, b = line[0], line[1]
-    cross_product = (c[1] - a[1]) * (b[0] - a[0]) - (c[0] - a[0]) * (b[1] - a[1])
-
-    if abs(cross_product) > epsilon:
-        return False
-
-    dot_product = (c[0] - a[0]) * (b[0] - a[0]) + (c[1] - a[1]) * (b[1] - a[1])
-    if dot_product < 0:
-        return False
-
-    squared_length_ba = (b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1])
-    return not dot_product > squared_length_ba
-
-
-if __name__ == "__main__":
-    pass
