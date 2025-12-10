@@ -94,7 +94,6 @@ class MeshSplitter:
         current_cut_index = 1
 
         for i, param_first_estimation in enumerate(split_params):
-            print('')
             logger.info(f'cut_index : {current_cut_index}, param_first_estimation : {param_first_estimation:.6f}')
 
             # --- (1) More exact estimation of intersecting weight. Recompute gradient evaluation.
@@ -519,7 +518,7 @@ def merge_clusters_saddle_point(zero_contours, saddle_vkeys):
                 if saddle_vkey in e:
                     zero_contours.sorted_point_clusters[cluster_key][i] = \
                         zero_contours.mesh.vertex_coordinates(saddle_vkey)  # merge point with saddle point
-                    print('Found edge to merge: ' + str(e))
+                    logger.debug(f'Found edge to merge: {e}')
                     if cluster_key not in keys_of_clusters_to_keep:
                         keys_of_clusters_to_keep.append(cluster_key)
 

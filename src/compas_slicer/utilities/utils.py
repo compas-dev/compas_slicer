@@ -750,7 +750,6 @@ def interrupt() -> None:
     It asks for the user to press a enter to continue or abort.
     """
     value = input("Press enter to continue, Press 1 to abort ")
-    print("")
     if isinstance(value, str) and value == '1':
         raise ValueError("Aborted")
 

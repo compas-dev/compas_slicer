@@ -162,11 +162,10 @@ class BaseSlicer:
     def printout_info(self) -> None:
         """Prints out slicing information."""
         no_of_paths, closed_paths, open_paths = self.number_of_paths
-        print("\n---- Slicer Info ----")
-        print(f"Number of layers: {self.number_of_layers}")
-        print(f"Number of paths: {no_of_paths}, open: {open_paths}, closed: {closed_paths}")
-        print(f"Number of sampling printpoints: {self.number_of_points}")
-        print("")
+        logger.info("---- Slicer Info ----")
+        logger.info(f"Number of layers: {self.number_of_layers}")
+        logger.info(f"Number of paths: {no_of_paths}, open: {open_paths}, closed: {closed_paths}")
+        logger.info(f"Number of sampling printpoints: {self.number_of_points}")
 
     @classmethod
     def from_data(cls, data: dict[str, Any]) -> BaseSlicer:

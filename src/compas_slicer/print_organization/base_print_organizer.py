@@ -193,23 +193,22 @@ class BasePrintOrganizer:
             for key, val in self.printpoints[0][0][0].attributes.items()
         }
 
-        print("\n---- PrintOrganizer Info ----")
-        print(f"Number of layers: {self.number_of_layers}")
-        print(f"Number of paths: {self.number_of_paths}")
-        print(f"Number of PrintPoints: {self.number_of_printpoints}")
-        print("PrintPoints attributes: ")
+        logger.info("---- PrintOrganizer Info ----")
+        logger.info(f"Number of layers: {self.number_of_layers}")
+        logger.info(f"Number of paths: {self.number_of_paths}")
+        logger.info(f"Number of PrintPoints: {self.number_of_printpoints}")
+        logger.info("PrintPoints attributes: ")
         for key, val in ppts_attributes.items():
-            print(f"     {key} : {val}")
-        print(f"Toolpath length: {self.total_length_of_paths:.0f} mm")
+            logger.info(f"     {key} : {val}")
+        logger.info(f"Toolpath length: {self.total_length_of_paths:.0f} mm")
 
         print_time = self.total_print_time
         if print_time:
             minutes, sec = divmod(print_time, 60)
             hour, minutes = divmod(minutes, 60)
-            print(f"Total print time: {int(hour)} hours, {int(minutes)} minutes, {int(sec)} seconds")
+            logger.info(f"Total print time: {int(hour)} hours, {int(minutes)} minutes, {int(sec)} seconds")
         else:
-            print("Print Velocity has not been assigned, thus print time is not calculated.")
-        print("")
+            logger.info("Print Velocity has not been assigned, thus print time is not calculated.")
 
     def get_printpoint_up_vector(self, path: Path, k: int, normal: Vector) -> Vector:
         """Get printpoint up-vector orthogonal to path direction and normal.

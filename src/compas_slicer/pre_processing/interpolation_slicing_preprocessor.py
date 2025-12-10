@@ -166,7 +166,6 @@ class InterpolationSlicingPreprocessor:
         time, you can turn the respective processes to false.
         """
 
-        print("")
         logger.info("--- Mesh region splitting")
 
         if cut_mesh:  # (1)
@@ -184,7 +183,6 @@ class InterpolationSlicingPreprocessor:
             logger.info(f"Saving to Obj and Json: {output_path / 'mesh_with_cuts.json'}")
 
         if separate_neighborhoods:  # (2)
-            print("")
             logger.info("--- Separating mesh disconnected components")
             self.mesh = Mesh.from_json(str(Path(self.OUTPUT_PATH) / 'mesh_with_cuts.json'))
             region_split_cut_indices = get_existing_cut_indices(self.mesh)
@@ -199,7 +197,6 @@ class InterpolationSlicingPreprocessor:
             logger.info(f'Created {len(self.split_meshes)} split meshes.')
 
         if topological_sorting:  # (3)
-            print("")
             logger.info("--- Topological sort of meshes directed graph to determine print order")
             graph = topo_sort.MeshDirectedGraph(self.split_meshes, self.DATA_PATH)
             all_orders = graph.get_all_topological_orders()
@@ -212,7 +209,6 @@ class InterpolationSlicingPreprocessor:
 
         # --- save split meshes
         if save_split_meshes:  # (4)
-            print("")
             logger.info("--- Saving resulting split meshes")
             output_path = Path(self.OUTPUT_PATH)
             for i, m in enumerate(self.split_meshes):
@@ -220,7 +216,6 @@ class InterpolationSlicingPreprocessor:
                 m.to_json(str(output_path / f'split_mesh_{i}.json'))
             logger.info(f'Saving to Obj and Json: {output_path / "split_mesh_%.obj"}')
             logger.info(f"Saved {len(self.split_meshes)} split_meshes")
-            print('')
 
     def cleanup_mesh_attributes_based_on_selected_order(
         self, selected_order: list[int], graph: MeshDirectedGraph

@@ -1,8 +1,9 @@
 import compas
+from loguru import logger
 
 import compas_slicer
 
 if __name__ == '__main__':
-    print(f'COMPAS: {compas.__version__}')
-    print(f'COMPAS Slicer: {compas_slicer.__version__}')
-    print('Awesome! Your installation worked! :)')
+    logger.info(f'COMPAS: {compas.__version__}')
+    logger.info(f'COMPAS Slicer: {compas_slicer.__version__}')
+    logger.info('Awesome! Your installation worked! :)')

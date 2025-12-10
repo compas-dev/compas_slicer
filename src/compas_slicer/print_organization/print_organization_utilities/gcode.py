@@ -121,7 +121,6 @@ def create_gcode_text(print_organizer: BasePrintOrganizer, parameters: dict[str,
 
     # ######################################################################
     # iterate all layers, paths
-    print('')
     for point_v, i, _j, k in print_organizer.printpoints_indices_iterator():  # i: layer; j: path; k: point index
         layer_height = point_v.layer_height
         # Calculate relative length

@@ -35,7 +35,6 @@ class GradientEvaluation:
         for _v_key, data in mesh.vertices(data=True):
             assert 'scalar_field' in data, "Vertex %d does not have the attribute 'scalar_field'"
 
-        print('')
         logger.info('Gradient evaluation')
         self.mesh = mesh
         self.DATA_PATH = DATA_PATH
