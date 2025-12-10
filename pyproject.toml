@@ -115,3 +115,6 @@ filterwarnings = ["ignore::DeprecationWarning"]
 [tool.coverage.run]
 source = ["src/compas_slicer"]
 omit = ["*/tests/*"]
+
+[tool.coverage.report]
+fail_under = 50
