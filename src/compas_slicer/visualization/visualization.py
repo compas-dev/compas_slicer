@@ -4,12 +4,14 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
+import networkx as nx
+
 if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
     from compas_slicer.slicers import BaseSlicer
 
-__all__ = ["should_visualize", "visualize_slicer"]
+__all__ = ["should_visualize", "visualize_slicer", "plot_networkx_graph"]
 
 
 def should_visualize() -> bool:
@@ -71,3 +73,19 @@ def visualize_slicer(
                 viewer.scene.add(polyline, linecolor=color, linewidth=1)
 
     viewer.show()
+
+
+def plot_networkx_graph(G: nx.Graph) -> None:
+    """Plot a networkx graph.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        The graph to plot.
+
+    """
+    import matplotlib.pyplot as plt
+
+    plt.subplot(121)
+    nx.draw(G, with_labels=True, font_weight='bold', node_color=range(len(list(G.nodes()))))
+    plt.show()

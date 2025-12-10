@@ -5,8 +5,6 @@ from loguru import logger
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-import matplotlib.pyplot as plt
-import networkx as nx
 import numpy as np
 import scipy
 from compas.geometry import (
@@ -52,7 +50,6 @@ __all__ = ['remap',
            'get_closest_pt_index',
            'get_closest_pt',
            'pull_pts_to_mesh_faces',
-           'plot_networkx_graph',
            'get_mesh_vertex_coords_with_attribute',
            'get_dict_key_from_value',
            'find_next_printpoint',
@@ -588,23 +585,6 @@ def get_mesh_massmatrix(mesh: Mesh) -> csr_matrix:
 # Backwards compatibility aliases
 get_mesh_cotmatrix_igl = get_mesh_cotmatrix
 get_mesh_cotans_igl = get_mesh_cotans
-
-
-#######################################
-#  networkx graph
-
-def plot_networkx_graph(G: nx.Graph) -> None:
-    """Plot a networkx graph.
-
-    Parameters
-    ----------
-    G : nx.Graph
-        The graph to plot.
-
-    """
-    plt.subplot(121)
-    nx.draw(G, with_labels=True, font_weight='bold', node_color=range(len(list(G.nodes()))))
-    plt.show()
 
 
 #######################################
