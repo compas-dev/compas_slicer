@@ -18,21 +18,21 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      - uses: actions/checkout@v2
-      - name: 🔗 Install dependencies with miniconda and python 3.8
-        uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/checkout@v4
+      - name: Install dependencies with miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: compas_slicer
           environment-file: environment.yml
-          python-version: 3.8
+          python-version: "3.9"
           auto-activate-base: false
           auto-update-conda: true
-      - name: 📶 Conda info
+      - name: Conda info
         run: conda info
-      - name: 💎 Install
+      - name: Install
         run: |
-          python -m pip install --no-cache-dir -r requirements-dev.txt
-      - name: 📃 Generate docs
+          pip install -e ".[dev]"
+      - name: Generate docs
         if: success()
         run: |
           invoke docs --check-links
@@ -53,21 +53,22 @@ jobs:
           fi;
           echo "Docs will be deployed to https://compas.dev/compas_slicer/$BRANCH_OR_TAG"
           mkdir -p deploy/$BRANCH_OR_TAG && mv -T dist/docs deploy/$BRANCH_OR_TAG/
-      - name: 🚢 Deploy docs
+      - name: Deploy docs
         if: success()
-        uses: crazy-max/ghaction-github-pages@v2
+        uses: crazy-max/ghaction-github-pages@v4
         with:
           target_branch: gh-pages
           build_dir: deploy
           keep_history: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: 💃 Build release
+      - name: Build release
         if: success() && startsWith(github.ref, 'refs/tags')
         run: |
-          python setup.py clean --all sdist bdist_wheel
-      - name: 📦 Publish release to PyPI
+          pip install build
+          python -m build
+      - name: Publish release to PyPI
         if: success() && startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
             password: ${{ secrets.pypi_password }}
