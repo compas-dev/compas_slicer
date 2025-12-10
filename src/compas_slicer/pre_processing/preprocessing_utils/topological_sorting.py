@@ -40,10 +40,12 @@ class DirectedGraph:
         self.create_graph_nodes()
         self.root_indices = self.find_roots()
         logger.info('Graph roots : ' + str(self.root_indices))
-        assert len(self.root_indices) > 0, "No root nodes where found. At least one root node is needed."
+        if len(self.root_indices) == 0:
+            raise ValueError("No root nodes were found. At least one root node is needed.")
         self.end_indices = self.find_ends()
         logger.info('Graph ends : ' + str(self.end_indices))
-        assert len(self.end_indices) > 0, "No end nodes where found. At least one end node is needed."
+        if len(self.end_indices) == 0:
+            raise ValueError("No end nodes were found. At least one end node is needed.")
 
         self.create_directed_graph_edges(copy.deepcopy(self.root_indices))
         logger.info('Nodes : ' + str(self.G.nodes(data=True)))
