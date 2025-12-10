@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas_slicer.geometry import VerticalLayersManager
@@ -8,7 +8,6 @@ from compas_slicer.geometry import VerticalLayersManager
 if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['sort_into_vertical_layers']
 

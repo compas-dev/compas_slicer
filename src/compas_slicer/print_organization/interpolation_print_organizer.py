@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING, Any
 
@@ -64,7 +64,6 @@ from compas_slicer.print_organization.curved_print_organization import BaseBound
 if TYPE_CHECKING:
     from compas_slicer.slicers import InterpolationSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['InterpolationPrintOrganizer']
 

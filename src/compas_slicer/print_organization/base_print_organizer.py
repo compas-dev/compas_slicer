@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from abc import abstractmethod
 from collections.abc import Generator, Iterator
 from typing import TYPE_CHECKING, Any
@@ -25,7 +25,6 @@ from compas_slicer.slicers.base_slicer import BaseSlicer
 if TYPE_CHECKING:
     from compas_slicer.geometry import Path, PrintPoint
 
-logger = logging.getLogger("logger")
 
 __all__ = ["BasePrintOrganizer"]
 

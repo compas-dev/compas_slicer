@@ -11,13 +11,15 @@ The following file can be found in `/examples/4_gcode_generation/`. The gcode fi
 
 .. code-block:: python
 
-    import os
-    import logging
+    from pathlib import Path
+
+    from loguru import logger
+
     import compas_slicer.utilities as utils
     from compas_slicer.pre_processing import move_mesh_to_point
     from compas_slicer.slicers import PlanarSlicer
     from compas_slicer.post_processing import generate_brim
-    from compas_slicer.post_processing import simplify_paths_rdp_igl
+    from compas_slicer.post_processing import simplify_paths_rdp
     from compas_slicer.post_processing import seams_smooth
     from compas_slicer.print_organization import PlanarPrintOrganizer
     from compas_slicer.print_organization import set_extruder_toggle
@@ -27,17 +29,14 @@ The following file can be found in `/examples/4_gcode_generation/`. The gcode fi
     from compas.datastructures import Mesh
     from compas.geometry import Point
 
-    logger = logging.getLogger('logger')
-    logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
-
-    DATA = os.path.join(os.path.dirname(__file__), 'data')
-    OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
+    DATA_PATH = Path(__file__).parent / 'data'
+    OUTPUT_DIR = utils.get_output_directory(DATA_PATH)  # creates 'output' folder if it doesn't already exist
     MODEL = 'simple_vase_open_low_res.obj'
 
 
     def main():
 
-        compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
+        compas_mesh = Mesh.from_obj(DATA_PATH / MODEL)
         delta = get_param({}, key='delta', defaults_type='gcode')  # boolean for delta printers
         print_volume_x = get_param({}, key='print_volume_x', defaults_type='gcode')  # in mm
         print_volume_y = get_param({}, key='print_volume_y', defaults_type='gcode')  # in mm
@@ -50,7 +49,7 @@ The following file can be found in `/examples/4_gcode_generation/`. The gcode fi
         slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=4.5)
         slicer.slice_model()
         generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
-        simplify_paths_rdp_igl(slicer, threshold=0.6)
+        simplify_paths_rdp(slicer, threshold=0.6)
         seams_smooth(slicer, smooth_distance=10)
         slicer.printout_info()
         save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')

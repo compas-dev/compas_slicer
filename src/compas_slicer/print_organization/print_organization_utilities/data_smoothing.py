@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING, Any, Callable
 
 import numpy as np
@@ -10,7 +10,6 @@ if TYPE_CHECKING:
     from compas_slicer.geometry import PrintPoint
     from compas_slicer.print_organization import BasePrintOrganizer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['smooth_printpoint_attribute',
            'smooth_printpoints_up_vectors',

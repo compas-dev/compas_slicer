@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 
     from compas.datastructures import Mesh
 
-logger = logging.getLogger('logger')
 
 __all__ = ['ScalarFieldSlicer']
 

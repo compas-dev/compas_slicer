@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['zig_zag_open_paths']
 

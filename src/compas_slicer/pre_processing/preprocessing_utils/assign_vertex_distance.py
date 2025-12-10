@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from compas.datastructures import Mesh
     from compas_slicer.pre_processing.preprocessing_utils.compound_target import CompoundTarget
 
-logger = logging.getLogger('logger')
 
 __all__ = ['assign_interpolation_distance_to_mesh_vertices',
            'assign_interpolation_distance_to_mesh_vertex']

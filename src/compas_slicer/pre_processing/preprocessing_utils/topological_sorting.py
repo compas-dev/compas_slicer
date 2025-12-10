@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-import logging
+from loguru import logger
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
@@ -17,7 +17,6 @@ from compas_slicer.pre_processing.preprocessing_utils import get_existing_bounda
 if TYPE_CHECKING:
     from compas_slicer.geometry import VerticalLayer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['MeshDirectedGraph',
            'SegmentsDirectedGraph']

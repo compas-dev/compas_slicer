@@ -1,5 +1,6 @@
-import logging
 from pathlib import Path
+
+from loguru import logger
 
 from compas.datastructures import Mesh
 from compas.geometry import Point
@@ -19,9 +20,6 @@ from compas_slicer.print_organization import set_linear_velocity_constant
 from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.utilities import save_to_json
 from compas_slicer.visualization import should_visualize, visualize_slicer
-
-logger = logging.getLogger('logger')
-logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 DATA_PATH = Path(__file__).parent / 'data'
 OUTPUT_PATH = utils.get_output_directory(DATA_PATH)

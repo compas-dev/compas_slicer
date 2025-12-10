@@ -1,5 +1,6 @@
-import logging
 from pathlib import Path
+
+from loguru import logger
 
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing import move_mesh_to_point
@@ -15,9 +16,6 @@ from compas_slicer.parameters import get_param
 
 from compas.datastructures import Mesh
 from compas.geometry import Point
-
-logger = logging.getLogger('logger')
-logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 DATA_PATH = Path(__file__).parent / 'data'
 OUTPUT_PATH = utils.get_output_directory(DATA_PATH)

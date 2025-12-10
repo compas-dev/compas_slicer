@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 import math
 import statistics
 from pathlib import Path
@@ -19,7 +19,6 @@ from compas_slicer.pre_processing.preprocessing_utils.geodesics import (
     get_igl_HEAT_geodesic_distances,
 )
 
-logger = logging.getLogger('logger')
 
 GeodesicsMethod = Literal['exact_igl', 'heat_igl', 'heat_cgal', 'heat']
 UnionMethod = Literal['min', 'smooth', 'chamfer', 'stairs']

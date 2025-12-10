@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING, Any
 
@@ -17,7 +17,6 @@ from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes
 if TYPE_CHECKING:
     from compas_slicer.slicers import ScalarFieldSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['ScalarFieldPrintOrganizer']
 

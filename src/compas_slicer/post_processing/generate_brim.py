@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas.geometry import Point
@@ -22,7 +22,6 @@ except ImportError:
 if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['generate_brim', 'offset_polygon', 'offset_polygon_with_holes']
 

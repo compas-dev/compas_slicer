@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 import progressbar
@@ -13,7 +13,6 @@ from compas_slicer.print_organization.base_print_organizer import BasePrintOrgan
 if TYPE_CHECKING:
     from compas_slicer.slicers import PlanarSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['PlanarPrintOrganizer']
 

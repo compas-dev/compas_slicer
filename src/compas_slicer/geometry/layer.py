@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -13,7 +13,6 @@ from compas_slicer.geometry.path import Path
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
-logger = logging.getLogger("logger")
 
 __all__ = ["Layer", "VerticalLayer", "VerticalLayersManager"]
 

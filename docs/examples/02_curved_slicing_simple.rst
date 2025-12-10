@@ -36,9 +36,12 @@ Imports and initialization
 
 .. code-block:: python
 
-    import os
+    import time
+    from pathlib import Path
+
+    from loguru import logger
     from compas.datastructures import Mesh
-    import logging
+
     import compas_slicer.utilities as utils
     from compas_slicer.slicers import InterpolationSlicer
     from compas_slicer.post_processing import simplify_paths_rdp
@@ -49,14 +52,9 @@ Imports and initialization
     from compas_slicer.print_organization import InterpolationPrintOrganizer
     from compas_slicer.post_processing import seams_smooth
     from compas_slicer.print_organization import smooth_printpoints_up_vectors, smooth_printpoints_layer_heights
-    import time
 
-    logger = logging.getLogger('logger')
-    logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
-
-    DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_Y_shape') # set desired folder name
+    DATA_PATH = Path(__file__).parent / 'data_Y_shape'  # set desired folder name
     OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
-    OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'mesh.obj')
 
 
 Slicing process
@@ -65,7 +63,7 @@ Slicing process
 .. code-block:: python
 
     # --- Load initial_mesh
-    mesh = Mesh.from_obj(os.path.join(DATA_PATH, OBJ_INPUT_NAME))
+    mesh = Mesh.from_obj(DATA_PATH / 'mesh.obj')
 
 
 The interpolation slicer works by interpolating two boundaries provided by the user. Each boundary is represented by a list
@@ -168,9 +166,12 @@ The completed final script can be found below:
 
 .. code-block:: python
 
-    import os
+    import time
+    from pathlib import Path
+
+    from loguru import logger
     from compas.datastructures import Mesh
-    import logging
+
     import compas_slicer.utilities as utils
     from compas_slicer.slicers import InterpolationSlicer
     from compas_slicer.post_processing import simplify_paths_rdp
@@ -181,21 +182,16 @@ The completed final script can be found below:
     from compas_slicer.print_organization import InterpolationPrintOrganizer
     from compas_slicer.post_processing import seams_smooth
     from compas_slicer.print_organization import smooth_printpoints_up_vectors, smooth_printpoints_layer_heights
-    import time
 
-    logger = logging.getLogger('logger')
-    logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
-
-    DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_Y_shape')
+    DATA_PATH = Path(__file__).parent / 'data_Y_shape'
     OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
-    OBJ_INPUT_NAME = os.path.join(DATA_PATH, 'mesh.obj')
 
 
     def main():
         start_time = time.time()
 
         # --- Load initial_mesh
-        mesh = Mesh.from_obj(os.path.join(DATA_PATH, OBJ_INPUT_NAME))
+        mesh = Mesh.from_obj(DATA_PATH / 'mesh.obj')
 
         # --- Load targets (boundaries)
         low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')

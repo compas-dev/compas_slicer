@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -10,7 +10,6 @@ if TYPE_CHECKING:
     from compas_slicer.geometry import Path as SlicerPath
     from compas_slicer.slicers import BaseSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['sort_paths_minimum_travel_time']
 

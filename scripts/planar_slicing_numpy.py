@@ -3,8 +3,7 @@ from compas.datastructures import Mesh
 from compas.geometry import Point, distance_point_point
 from compas_slicer.geometry import Path
 from compas_slicer.geometry import Layer
-import logging
-logger = logging.getLogger('logger')
+from loguru import logger
 
 from progress.bar import Bar
 

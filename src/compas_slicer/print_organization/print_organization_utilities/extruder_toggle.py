@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 import compas_slicer
@@ -9,7 +9,6 @@ if TYPE_CHECKING:
     from compas_slicer.print_organization import BasePrintOrganizer
     from compas_slicer.slicers import BaseSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['set_extruder_toggle',
            'override_extruder_toggle',

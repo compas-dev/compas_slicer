@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 import math
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
@@ -13,7 +13,6 @@ from compas_slicer.parameters import get_param
 if TYPE_CHECKING:
     from compas_slicer.print_organization import BasePrintOrganizer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['create_gcode_text']
 

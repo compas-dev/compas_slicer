@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING, Callable
 
 from compas.geometry import Vector, dot_vectors
@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from compas_slicer.geometry import PrintPoint
     from compas_slicer.print_organization import BasePrintOrganizer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['set_linear_velocity_constant',
            'set_linear_velocity_per_layer',

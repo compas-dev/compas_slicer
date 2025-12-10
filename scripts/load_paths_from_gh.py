@@ -1,14 +1,9 @@
 import os
 
+from loguru import logger
 from compas_slicer.utilities import load_from_json
 from compas_slicer.slicers import PlanarSlicer
 from compas_viewers.objectviewer import ObjectViewer
-
-######################## Logging
-import logging
-
-logger = logging.getLogger('logger')
-logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 
 ########################

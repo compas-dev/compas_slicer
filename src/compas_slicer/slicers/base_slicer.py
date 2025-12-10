@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from abc import abstractmethod
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING, Any
@@ -17,7 +17,6 @@ from compas_slicer.utilities import utils
 if TYPE_CHECKING:
     from compas_slicer.geometry import Path
 
-logger = logging.getLogger("logger")
 
 __all__ = ["BaseSlicer"]
 

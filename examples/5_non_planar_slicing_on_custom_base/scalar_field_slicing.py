@@ -1,5 +1,6 @@
-import logging
 from pathlib import Path
+
+from loguru import logger
 
 from compas.datastructures import Mesh
 from compas.geometry import distance_point_point
@@ -10,9 +11,6 @@ from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.print_organization import ScalarFieldPrintOrganizer
 from compas_slicer.slicers import ScalarFieldSlicer
 from compas_slicer.visualization import should_visualize, visualize_slicer
-
-logger = logging.getLogger('logger')
-logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
 DATA_PATH = Path(__file__).parent / 'data'
 OUTPUT_PATH = slicer_utils.get_output_directory(DATA_PATH)

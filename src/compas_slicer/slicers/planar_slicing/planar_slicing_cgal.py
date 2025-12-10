@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING, Any, Callable
 
 import progressbar
@@ -14,7 +14,6 @@ from compas_slicer.geometry import Layer, Path
 if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
-logger = logging.getLogger('logger')
 
 __all__ = ['create_planar_paths_cgal']
 

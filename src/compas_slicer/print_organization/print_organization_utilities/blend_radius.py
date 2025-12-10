@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas.geometry import Vector, norm_vector
@@ -8,7 +8,6 @@ from compas.geometry import Vector, norm_vector
 if TYPE_CHECKING:
     from compas_slicer.print_organization import BasePrintOrganizer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['set_blend_radius']
 

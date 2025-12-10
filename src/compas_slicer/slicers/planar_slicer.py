@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import Literal
 
 from compas.datastructures import Mesh
@@ -9,7 +9,6 @@ from compas.geometry import Plane, Point, Vector
 from compas_slicer.slicers.base_slicer import BaseSlicer
 from compas_slicer.slicers.planar_slicing import create_planar_paths, create_planar_paths_cgal
 
-logger = logging.getLogger('logger')
 
 __all__ = ['PlanarSlicer']
 

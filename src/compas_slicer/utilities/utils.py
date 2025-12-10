@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-import logging
+from loguru import logger
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -30,7 +30,6 @@ if TYPE_CHECKING:
     from compas_slicer.geometry import Path as SlicerPath
     from compas_slicer.geometry import PrintPoint, PrintPointsCollection
 
-logger = logging.getLogger('logger')
 
 __all__ = ['remap',
            'remap_unbound',

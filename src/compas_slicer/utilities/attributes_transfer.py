@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING, Any
 
 import progressbar
@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
     from compas_slicer.geometry import PrintPointsCollection
 
-logger = logging.getLogger('logger')
 
 
 __all__ = ['transfer_mesh_attributes_to_printpoints']

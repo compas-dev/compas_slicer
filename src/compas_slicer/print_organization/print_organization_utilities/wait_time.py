@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 import math
 from typing import TYPE_CHECKING, Literal
 
@@ -11,7 +11,6 @@ from compas_slicer.utilities import find_next_printpoint
 if TYPE_CHECKING:
     from compas_slicer.print_organization import BasePrintOrganizer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['set_wait_time_on_sharp_corners',
            'set_wait_time_based_on_extruder_toggle',

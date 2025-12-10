@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -22,7 +22,6 @@ from compas_slicer.pre_processing.preprocessing_utils.mesh_attributes_handling i
 if TYPE_CHECKING:
     from compas_slicer.pre_processing.preprocessing_utils.topological_sorting import MeshDirectedGraph
 
-logger = logging.getLogger('logger')
 
 __all__ = ['InterpolationSlicingPreprocessor']
 
@@ -168,7 +167,7 @@ class InterpolationSlicingPreprocessor:
         """
 
         print("")
-        logging.info("--- Mesh region splitting")
+        logger.info("--- Mesh region splitting")
 
         if cut_mesh:  # (1)
             self.mesh.update_default_vertex_attributes({'cut': 0})

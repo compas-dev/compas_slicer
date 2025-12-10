@@ -1,7 +1,7 @@
 """Medial axis based infill generation using CGAL straight skeleton."""
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas.geometry import Point, distance_point_point
@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
     from compas_slicer.slicers import BaseSlicer
 
-logger = logging.getLogger("logger")
 
 __all__ = ["generate_medial_axis_infill"]
 

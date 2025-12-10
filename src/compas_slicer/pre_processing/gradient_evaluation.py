@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING
 
@@ -16,7 +16,6 @@ from compas_slicer.pre_processing.preprocessing_utils import (
 if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
-logger = logging.getLogger('logger')
 
 __all__ = ['GradientEvaluation']
 

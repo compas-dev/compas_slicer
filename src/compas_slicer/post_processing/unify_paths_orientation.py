@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from collections import deque
 from typing import TYPE_CHECKING
 
@@ -9,7 +9,6 @@ from compas.geometry import Point, dot_vectors, normalize_vector, subtract_vecto
 if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['unify_paths_orientation']
 

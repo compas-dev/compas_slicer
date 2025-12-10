@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas.geometry import Frame, Point, Transformation, bounding_box
@@ -8,7 +8,6 @@ from compas.geometry import Frame, Point, Transformation, bounding_box
 if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
-logger = logging.getLogger('logger')
 
 __all__ = ['move_mesh_to_point',
            'get_mid_pt_base',

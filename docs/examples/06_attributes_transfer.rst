@@ -20,28 +20,27 @@ barycentric coordinates.
 
 .. code-block:: python
 
-    import logging
-    import os
+    from pathlib import Path
+
+    from loguru import logger
+    import numpy as np
     from compas.geometry import Point, Vector, distance_point_plane, normalize_vector
     from compas.datastructures import Mesh
+
     import compas_slicer.utilities as slicer_utils
-    from compas_slicer.post_processing import simplify_paths_rdp_igl
+    from compas_slicer.post_processing import simplify_paths_rdp
     from compas_slicer.slicers import PlanarSlicer
     import compas_slicer.utilities.utils as utils
     from compas_slicer.utilities.attributes_transfer import transfer_mesh_attributes_to_printpoints
     from compas_slicer.print_organization import PlanarPrintOrganizer
-    import numpy as np
 
-    logger = logging.getLogger('logger')
-    logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
-
-    DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
+    DATA_PATH = Path(__file__).parent / 'data'
     OUTPUT_PATH = slicer_utils.get_output_directory(DATA_PATH)
     MODEL = 'distorted_v_closed_low_res.obj'
 
     if __name__ == '__main__':
         # load mesh
-        mesh = Mesh.from_obj(os.path.join(DATA_PATH, MODEL))
+        mesh = Mesh.from_obj(DATA_PATH / MODEL)
 
         # --------------- Add attributes to mesh
         # Face attributes can be anything (ex. float, bool, array, text ...)
@@ -77,7 +76,7 @@ barycentric coordinates.
         # --------------- Slice mesh
         slicer = PlanarSlicer(mesh, slicer_type="default", layer_height=5.0)
         slicer.slice_model()
-        simplify_paths_rdp_igl(slicer, threshold=1.0)
+        simplify_paths_rdp(slicer, threshold=1.0)
         slicer_utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'slicer_data.json')
 
         # --------------- Create printpoints

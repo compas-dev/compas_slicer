@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 import math
 from typing import TYPE_CHECKING, Literal
 
@@ -18,7 +18,6 @@ from compas_slicer.pre_processing.preprocessing_utils.gradient import (
 if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
-logger = logging.getLogger('logger')
 
 __all__ = ['get_heat_geodesic_distances',
            'get_custom_HEAT_geodesic_distances',

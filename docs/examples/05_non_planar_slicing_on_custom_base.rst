@@ -20,20 +20,19 @@ run the python file to generate the results, you can visualize them by opening t
 
 .. code-block:: python
 
-    import logging
+    from pathlib import Path
+
+    from loguru import logger
     from compas.geometry import distance_point_point
     from compas.datastructures import Mesh
-    import os
+
     import compas_slicer.utilities as slicer_utils
-    from compas_slicer.post_processing import simplify_paths_rdp_igl
+    from compas_slicer.post_processing import simplify_paths_rdp
     from compas_slicer.slicers import ScalarFieldSlicer
     import compas_slicer.utilities as utils
     from compas_slicer.print_organization import ScalarFieldPrintOrganizer
 
-    logger = logging.getLogger('logger')
-    logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
-
-    DATA_PATH = os.path.join(os.path.dirname(__file__), 'data')
+    DATA_PATH = Path(__file__).parent / 'data'
     OUTPUT_PATH = slicer_utils.get_output_directory(DATA_PATH)
     MODEL = 'geom_to_slice.obj'
     BASE = 'custom_base.obj'
@@ -41,8 +40,8 @@ run the python file to generate the results, you can visualize them by opening t
     if __name__ == '__main__':
 
         # --- load meshes
-        mesh = Mesh.from_obj(os.path.join(DATA_PATH, MODEL))
-        base = Mesh.from_obj(os.path.join(DATA_PATH, BASE))
+        mesh = Mesh.from_obj(DATA_PATH / MODEL)
+        base = Mesh.from_obj(DATA_PATH / BASE)
 
         # --- Create per-vertex scalar field (distance of every vertex from the custom base)
         pts = [mesh.vertex_coordinates(v_key, axes='xyz') for v_key in
@@ -64,7 +63,7 @@ run the python file to generate the results, you can visualize them by opening t
         slicer_utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'isocontours.json')  # save results to json
 
         # --- Print organization calculations (i.e. generation of printpoints with fabrication-related information)
-        simplify_paths_rdp_igl(slicer, threshold=0.3)
+        simplify_paths_rdp(slicer, threshold=0.3)
         print_organizer = ScalarFieldPrintOrganizer(slicer, parameters={}, DATA_PATH=DATA_PATH)
         print_organizer.create_printpoints()
 

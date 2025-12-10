@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from abc import abstractmethod
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING, Any
@@ -18,7 +18,6 @@ from compas_slicer.slicers.slice_utilities.graph_connectivity import (
 if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
-logger = logging.getLogger("logger")
 
 __all__ = ["ContoursBase"]
 

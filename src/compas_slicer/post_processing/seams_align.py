@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
@@ -9,7 +9,6 @@ from compas.geometry import Point
 if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['seams_align']
 

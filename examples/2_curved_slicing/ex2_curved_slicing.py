@@ -1,6 +1,7 @@
-import logging
 import time
 from pathlib import Path
+
+from loguru import logger
 
 from compas.datastructures import Mesh
 
@@ -15,9 +16,6 @@ from compas_slicer.print_organization import set_extruder_toggle, set_linear_vel
 from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.print_organization import smooth_printpoints_up_vectors, smooth_printpoints_layer_heights
 from compas_slicer.visualization import should_visualize, visualize_slicer
-
-logger = logging.getLogger('logger')
-logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
 DATA_PATH = Path(__file__).parent / 'data_Y_shape'
 OUTPUT_PATH = utils.get_output_directory(DATA_PATH)

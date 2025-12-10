@@ -1,5 +1,5 @@
 import copy
-import logging
+from loguru import logger
 from pathlib import Path
 
 import numpy as np
@@ -17,7 +17,6 @@ from compas_slicer.pre_processing.preprocessing_utils.mesh_attributes_handling i
     save_vertex_attributes,
 )
 
-logger = logging.getLogger('logger')
 
 __all__ = ['MeshSplitter']
 

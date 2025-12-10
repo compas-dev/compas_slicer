@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -15,7 +15,6 @@ from compas_slicer._numpy_ops import face_gradient_from_scalar_field as _face_gr
 from compas_slicer._numpy_ops import per_vertex_divergence as _divergence_vectorized
 from compas_slicer._numpy_ops import vertex_gradient_from_face_gradient as _vertex_gradient_vectorized
 
-logger = logging.getLogger('logger')
 
 __all__ = ['get_vertex_gradient_from_face_gradient',
            'get_edge_gradient_from_vertex_gradient',

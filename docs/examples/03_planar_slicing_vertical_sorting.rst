@@ -24,14 +24,15 @@ run the python file to generate the results, you can visualize them by opening t
 
 .. code-block:: python
 
-    import os
-    import logging
+    from pathlib import Path
+
+    from loguru import logger
 
     import compas_slicer.utilities as utils
     from compas_slicer.pre_processing import move_mesh_to_point
     from compas_slicer.slicers import PlanarSlicer
     from compas_slicer.post_processing import generate_brim
-    from compas_slicer.post_processing import simplify_paths_rdp_igl
+    from compas_slicer.post_processing import simplify_paths_rdp
     from compas_slicer.post_processing import sort_into_vertical_layers
     from compas_slicer.post_processing import reorder_vertical_layers
     from compas_slicer.post_processing import seams_smooth
@@ -45,21 +46,15 @@ run the python file to generate the results, you can visualize them by opening t
     from compas.geometry import Point
 
     # ==============================================================================
-    # Logging
-    # ==============================================================================
-    logger = logging.getLogger('logger')
-    logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
-
-    # ==============================================================================
     # Select location of data folder and specify model to slice
     # ==============================================================================
-    DATA = os.path.join(os.path.dirname(__file__), 'data')
-    OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
+    DATA_PATH = Path(__file__).parent / 'data'
+    OUTPUT_DIR = utils.get_output_directory(DATA_PATH)  # creates 'output' folder if it doesn't already exist
     MODEL = 'distorted_v_closed_mid_res.obj'
 
 
     def main():
-        compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
+        compas_mesh = Mesh.from_obj(DATA_PATH / MODEL)
         move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
         # Slicing
@@ -72,7 +67,7 @@ run the python file to generate the results, you can visualize them by opening t
 
         # Post-processing
         generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=5)
-        simplify_paths_rdp_igl(slicer, threshold=0.7)
+        simplify_paths_rdp(slicer, threshold=0.7)
         seams_smooth(slicer, smooth_distance=10)
         slicer.printout_info()
         save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')

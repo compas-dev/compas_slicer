@@ -6,9 +6,10 @@ paths using CGAL's straight skeleton.
 The medial axis naturally follows the centerlines of the geometry,
 producing adaptive infill that handles thin walls and complex shapes.
 """
-import logging
 import time
 from pathlib import Path
+
+from loguru import logger
 
 from compas.datastructures import Mesh
 
@@ -17,9 +18,6 @@ from compas_slicer.post_processing import simplify_paths_rdp
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.utilities import save_to_json
 from compas_slicer.visualization import should_visualize, visualize_slicer
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("logger")
 
 DATA_PATH = Path(__file__).parent / "data"
 OUTPUT_PATH = DATA_PATH / "output"

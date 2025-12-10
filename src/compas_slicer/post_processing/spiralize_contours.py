@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import logging
+from loguru import logger
 from typing import TYPE_CHECKING
 
 from compas.geometry import Point
@@ -11,7 +11,6 @@ from compas_slicer.utilities.utils import pull_pts_to_mesh_faces
 if TYPE_CHECKING:
     from compas_slicer.slicers import PlanarSlicer
 
-logger = logging.getLogger('logger')
 
 __all__ = ['spiralize_contours']
 
