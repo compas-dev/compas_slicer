@@ -51,13 +51,14 @@ viz = [
     "compas_viewer>=1.2",
 ]
 dev = [
+    "bump2version>=1.0",
+    "compas_invocations2>=0.7",
     "invoke>=2.0",
+    "mypy",
     "pytest>=7.0",
     "pytest-benchmark",
     "pytest-cov",
     "ruff",
-    "mypy",
-    "bump2version>=1.0",
     "twine",
 ]
 docs = [

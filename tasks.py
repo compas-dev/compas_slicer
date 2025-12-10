@@ -5,7 +5,8 @@ import os
 import sys
 from shutil import rmtree
 
-from invoke import Exit, task
+from compas_invocations2.grasshopper import publish_yak, yakerize
+from invoke import Collection, Exit, task
 
 BASE_FOLDER = os.path.dirname(__file__)
 
@@ -233,3 +234,19 @@ def chdir(dirname=None):
         yield
     finally:
         os.chdir(current_dir)
+
+
+# Create collection and add compas_invocations2 tasks
+ns = Collection()
+ns.add_task(yakerize)
+ns.add_task(publish_yak)
+ns.add_task(help)
+ns.add_task(clean)
+ns.add_task(docs)
+ns.add_task(check)
+ns.add_task(test)
+ns.add_task(lint)
+ns.add_task(format)
+ns.add_task(typecheck)
+ns.add_task(prepare_changelog)
+ns.add_task(release)
