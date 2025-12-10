@@ -7,8 +7,8 @@ The medial axis naturally follows the centerlines of the geometry,
 producing adaptive infill that handles thin walls and complex shapes.
 """
 import logging
-import os
 import time
+from pathlib import Path
 
 from compas.datastructures import Mesh
 
@@ -18,27 +18,20 @@ from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.utilities import save_to_json
 from compas_slicer.visualization import should_visualize, visualize_slicer
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("logger")
+
+DATA_PATH = Path(__file__).parent / "data"
+OUTPUT_PATH = DATA_PATH / "output"
 
 
 def main(visualize: bool = False):
     start_time = time.time()
 
-    # Paths
-    DATA = os.path.join(os.path.dirname(__file__), "data")
-    OUTPUT = os.path.join(DATA, "output")
-    os.makedirs(OUTPUT, exist_ok=True)
+    OUTPUT_PATH.mkdir(exist_ok=True)
 
     # Load mesh - use the vase from example 1
-    mesh_path = os.path.join(
-        os.path.dirname(__file__),
-        "..",
-        "1_planar_slicing_simple",
-        "data",
-        "simple_vase_open_low_res.obj",
-    )
+    mesh_path = Path(__file__).parent.parent / "1_planar_slicing_simple" / "data" / "simple_vase_open_low_res.obj"
     mesh = Mesh.from_obj(mesh_path)
 
     # Slice the mesh
@@ -57,8 +50,8 @@ def main(visualize: bool = False):
     logger.info("Generating medial axis infill...")
     generate_medial_axis_infill(
         slicer,
-        min_length=2.0,        # Skip very short skeleton edges
-        include_bisectors=True  # Include bisectors connecting skeleton to boundary
+        min_length=2.0,
+        include_bisectors=True,
     )
 
     # Count paths after infill
@@ -68,7 +61,7 @@ def main(visualize: bool = False):
 
     # Save results
     slicer.printout_info()
-    save_to_json(slicer.to_data(), OUTPUT, "medial_axis_slicer.json")
+    save_to_json(slicer.to_data(), OUTPUT_PATH, "medial_axis_slicer.json")
 
     end_time = time.time()
     logger.info(f"Total time: {end_time - start_time:.2f} seconds")

@@ -1,6 +1,6 @@
-import time
-import os
 import logging
+import time
+from pathlib import Path
 
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing import move_mesh_to_point
@@ -14,55 +14,39 @@ from compas_slicer.print_organization import PlanarPrintOrganizer
 from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.print_organization import set_linear_velocity_constant
-from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.utilities import save_to_json
 from compas_slicer.visualization import should_visualize, visualize_slicer
 
 from compas.datastructures import Mesh
 from compas.geometry import Point
 
-# ==============================================================================
-# Logging
-# ==============================================================================
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
-# ==============================================================================
-# Select location of data folder and specify model to slice
-# ==============================================================================
-DATA = os.path.join(os.path.dirname(__file__), 'data')
-OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
+DATA_PATH = Path(__file__).parent / 'data'
+OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 MODEL = 'simple_vase_open_low_res.obj'
 
 
 def main(visualize: bool = False):
     start_time = time.time()
 
-    # ==========================================================================
     # Load mesh
-    # ==========================================================================
-    compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
+    compas_mesh = Mesh.from_obj(DATA_PATH / MODEL)
 
-    # ==========================================================================
     # Move to origin
-    # ==========================================================================
     move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
-    # ==========================================================================
     # Slicing
     # options: 'default': Both for open and closed paths. But slow
     #          'cgal':    Very fast. Only for closed paths.
-    #                     Requires additional installation (compas_cgal).
-    # ==========================================================================
     slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=1.5)
     slicer.slice_model()
 
     seams_align(slicer, "next_path")
 
-    # ==========================================================================
     # Generate brim / raft
-    # ==========================================================================
-    # NOTE: Typically you would want to use either a brim OR a raft, 
+    # NOTE: Typically you would want to use either a brim OR a raft,
     # however, in this example both are used to explain the functionality
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=4)
     generate_raft(slicer,
@@ -71,54 +55,31 @@ def main(visualize: bool = False):
                   direction="xy_diagonal",
                   raft_layers=1)
 
-    # ==========================================================================
     # Simplify the paths by removing points with a certain threshold
-    # change the threshold value to remove more or less points
-    # ==========================================================================
     simplify_paths_rdp(slicer, threshold=0.6)
 
-    # ==========================================================================
     # Smooth the seams between layers
-    # change the smooth_distance value to achieve smoother, or more abrupt seams
-    # ==========================================================================
     seams_smooth(slicer, smooth_distance=10)
 
-    # ==========================================================================
-    # Prints out the info of the slicer
-    # ==========================================================================
     slicer.printout_info()
+    save_to_json(slicer.to_data(), OUTPUT_PATH, 'slicer_data.json')
 
-    # ==========================================================================
-    # Save slicer data to JSON
-    # ==========================================================================
-    save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
-
-    # ==========================================================================
-    # Initializes the PlanarPrintOrganizer and creates PrintPoints
-    # ==========================================================================
+    # Print organization
     print_organizer = PlanarPrintOrganizer(slicer)
     print_organizer.create_printpoints(generate_mesh_normals=False)
 
-    # ==========================================================================
     # Set fabrication-related parameters
-    # ==========================================================================
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
     set_linear_velocity_constant(print_organizer, v=25.0)
 
-    # ==========================================================================
-    # Prints out the info of the PrintOrganizer
-    # ==========================================================================
     print_organizer.printout_info()
 
-    # ==========================================================================
-    # Converts the PrintPoints to data and saves to JSON
-    # =========================================================================
     printpoints_data = print_organizer.output_printpoints_dict()
-    utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints.json')
+    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
     printpoints_data = print_organizer.output_nested_printpoints_dict()
-    utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints_nested.json')
+    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints_nested.json')
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")

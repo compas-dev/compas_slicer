@@ -1,5 +1,6 @@
-import os
 import logging
+from pathlib import Path
+
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing import move_mesh_to_point
 from compas_slicer.slicers import PlanarSlicer
@@ -18,13 +19,13 @@ from compas.geometry import Point
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
-DATA = os.path.join(os.path.dirname(__file__), 'data')
-OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
+DATA_PATH = Path(__file__).parent / 'data'
+OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 MODEL = 'simple_vase_open_low_res.obj'
 
 
 def main(visualize: bool = False):
-    compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
+    compas_mesh = Mesh.from_obj(DATA_PATH / MODEL)
     delta = get_param({}, key='delta', defaults_type='gcode')  # boolean for delta printers
     print_volume_x = get_param({}, key='print_volume_x', defaults_type='gcode')  # in mm
     print_volume_y = get_param({}, key='print_volume_y', defaults_type='gcode')  # in mm
@@ -40,7 +41,7 @@ def main(visualize: bool = False):
     simplify_paths_rdp(slicer, threshold=0.6)
     seams_smooth(slicer, smooth_distance=10)
     slicer.printout_info()
-    save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
+    save_to_json(slicer.to_data(), OUTPUT_PATH, 'slicer_data.json')
 
     # ----- print organization
     print_organizer = PlanarPrintOrganizer(slicer)
@@ -52,7 +53,7 @@ def main(visualize: bool = False):
     # create and output gcode
     gcode_parameters = {}  # leave all to default
     gcode_text = print_organizer.output_gcode(gcode_parameters)
-    utils.save_to_text_file(gcode_text, OUTPUT_DIR, 'my_gcode.gcode')
+    utils.save_to_text_file(gcode_text, OUTPUT_PATH, 'my_gcode.gcode')
 
     if visualize:
         visualize_slicer(slicer, compas_mesh)

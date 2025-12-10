@@ -1,5 +1,8 @@
-import os
 import logging
+from pathlib import Path
+
+from compas.datastructures import Mesh
+from compas.geometry import Point
 
 import compas_slicer.utilities as utils
 from compas_slicer.pre_processing import move_mesh_to_point
@@ -16,25 +19,17 @@ from compas_slicer.print_organization import set_linear_velocity_constant
 from compas_slicer.print_organization import set_blend_radius
 from compas_slicer.utilities import save_to_json
 from compas_slicer.visualization import should_visualize, visualize_slicer
-from compas.datastructures import Mesh
-from compas.geometry import Point
 
-# ==============================================================================
-# Logging
-# ==============================================================================
 logger = logging.getLogger('logger')
 logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
 
-# ==============================================================================
-# Select location of data folder and specify model to slice
-# ==============================================================================
-DATA = os.path.join(os.path.dirname(__file__), 'data')
-OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
+DATA_PATH = Path(__file__).parent / 'data'
+OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 MODEL = 'distorted_v_closed_mid_res.obj'
 
 
 def main(visualize: bool = False):
-    compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
+    compas_mesh = Mesh.from_obj(DATA_PATH / MODEL)
     move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
     # Slicing
@@ -50,7 +45,7 @@ def main(visualize: bool = False):
     simplify_paths_rdp(slicer, threshold=0.7)
     seams_smooth(slicer, smooth_distance=10)
     slicer.printout_info()
-    save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
+    save_to_json(slicer.to_data(), OUTPUT_PATH, 'slicer_data.json')
 
     # PlanarPrintOrganization
     print_organizer = PlanarPrintOrganizer(slicer)
@@ -64,7 +59,7 @@ def main(visualize: bool = False):
     print_organizer.printout_info()
 
     printpoints_data = print_organizer.output_printpoints_dict()
-    utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints.json')
+    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
 
     if visualize:
         visualize_slicer(slicer, compas_mesh)
