@@ -28,3 +28,5 @@ For troubleshooting, see here: [troubleshooting](https://compas.dev/compas_slice
 * Ioanna Mitropoulou <<mitropoulou@arch.ethz.ch>> [@ioannaMitropoulou](https://github.com/ioannaMitropoulou)
 * Joris Burger <<burger@arch.ethz.ch>> [@joburger](https://github.com/joburger)
 * Andrei Jipa <<jipa@arch.ethz.ch>> [@stratocaster](https://github.com/stratocaster)
+
+

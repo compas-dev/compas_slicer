@@ -14,7 +14,12 @@ The package builds upon [COMPAS](https://compas.dev/), an open-source Python-bas
 COMPAS Slicer was developed at [ETH Zurich](https://ethz.ch/) by:
 
 - **[Ioanna Mitropoulou](https://ioannamitropoulouarch.com/)** - [Digital Building Technologies](https://dbt.arch.ethz.ch/)
-- **[Joris Burger](https://github.com/jf---)** - [Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/)
+
+- **[Joris Burger](https://github.com/joburger)** - [Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/)
+
+- **[Andrei Jipa](https://github.com/stratocaster)** - [Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/)
+
+- **[Jelle Feringa](https://github.com/jf---)** - [Gramazio Kohler Research](https://terrestrial.construction)
 
 The package emerged from research on non-planar 3D printing and robotic fabrication at the Institute of Technology in Architecture.
 
