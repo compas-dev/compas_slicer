@@ -19,7 +19,7 @@ COMPAS Slicer was developed at [ETH Zurich](https://ethz.ch/) by:
 
 - **[Andrei Jipa](https://github.com/stratocaster)** - [Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/)
 
-- **[Jelle Feringa](https://github.com/jf---)** - [Gramazio Kohler Research](https://terrestrial.construction)
+- **[Jelle Feringa](https://github.com/jf---)** - [Terrestrial](https://terrestrial.construction)
 
 The package emerged from research on non-planar 3D printing and robotic fabrication at the Institute of Technology in Architecture.
 
