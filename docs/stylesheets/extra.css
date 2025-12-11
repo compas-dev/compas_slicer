@@ -11,6 +11,12 @@
   font-size: 0.85em;
 }
 
+/* Preserve whitespace in code blocks for ASCII art */
+.md-typeset pre code {
+  white-space: pre;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
 /* API docs styling */
 .doc-heading {
   font-weight: 600;

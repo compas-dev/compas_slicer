@@ -21,7 +21,7 @@ Traditional planar slicing creates horizontal layers. For curved surfaces like s
 
 **Curved slicing** generates toolpaths that follow the surface curvature:
 
-```
+```text
 Planar slicing:          Curved slicing:
     ___________              _________
    |___________|            /         \
