@@ -10,29 +10,31 @@
       
       
       
-        <link rel="canonical" href="https://compas.dev/compas_slicer/latest/">
+        <link rel="canonical" href="https://compas.dev/compas_slicer/latest/examples/03_vertical_sorting/">
       
       
+        <link rel="prev" href="../02_curved_slicing/">
       
-        <link rel="next" href="installation/">
+      
+        <link rel="next" href="../04_gcode/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
     
     
       
-        <title>COMPAS Slicer</title>
+        <title>Vertical Sorting - COMPAS Slicer</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,11 +53,11 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="stylesheets/extra.css">
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -90,7 +92,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#compas-slicer" class="md-skip">
+        <a href="#vertical-layer-sorting" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +112,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="COMPAS Slicer" class="md-header__button md-logo" aria-label="COMPAS Slicer" data-md-component="logo">
+    <a href="../.." title="COMPAS Slicer" class="md-header__button md-logo" aria-label="COMPAS Slicer" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2h10v6h2v5h-2.5L13 17h-2l-3.5-4H5V8h2zm3 20H2v-2h8a1 1 0 0 0 1-1v-1h2v1a3 3 0 0 1-3 3"/></svg>
@@ -130,7 +132,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Vertical Sorting
             
           </span>
         </div>
@@ -240,11 +242,9 @@
   
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="." class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -265,7 +265,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="installation/" class="md-tabs__link">
+        <a href="../../installation/" class="md-tabs__link">
           
   
   
@@ -285,7 +285,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="concepts/" class="md-tabs__link">
+        <a href="../../concepts/" class="md-tabs__link">
           
   
   
@@ -305,7 +305,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="tutorials/" class="md-tabs__link">
+        <a href="../../tutorials/" class="md-tabs__link">
           
   
   
@@ -321,11 +321,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="examples/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -345,7 +347,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="api/" class="md-tabs__link">
+        <a href="../../api/" class="md-tabs__link">
           
   
   
@@ -363,7 +365,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="contributing/" class="md-tabs__link">
+      <a href="../../contributing/" class="md-tabs__link">
         
   
   
@@ -382,7 +384,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="citing/" class="md-tabs__link">
+      <a href="../../citing/" class="md-tabs__link">
         
   
   
@@ -423,7 +425,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="COMPAS Slicer" class="md-nav__button md-logo" aria-label="COMPAS Slicer" data-md-component="logo">
+    <a href="../.." title="COMPAS Slicer" class="md-nav__button md-logo" aria-label="COMPAS Slicer" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2h10v6h2v5h-2.5L13 17h-2l-3.5-4H5V8h2zm3 20H2v-2h8a1 1 0 0 0 1-1v-1h2v1a3 3 0 0 1-3 3"/></svg>
@@ -450,37 +452,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -496,59 +471,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#authors" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Authors
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Features
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-links" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Links
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -614,7 +536,7 @@
   
   
     <li class="md-nav__item">
-      <a href="installation/" class="md-nav__link">
+      <a href="../../installation/" class="md-nav__link">
         
   
   
@@ -642,7 +564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="quickstart/" class="md-nav__link">
+      <a href="../../quickstart/" class="md-nav__link">
         
   
   
@@ -731,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="concepts/" class="md-nav__link">
+      <a href="../../concepts/" class="md-nav__link">
         
   
   
@@ -759,7 +681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="concepts/architecture/" class="md-nav__link">
+      <a href="../../concepts/architecture/" class="md-nav__link">
         
   
   
@@ -787,7 +709,7 @@
   
   
     <li class="md-nav__item">
-      <a href="concepts/slicing-algorithms/" class="md-nav__link">
+      <a href="../../concepts/slicing-algorithms/" class="md-nav__link">
         
   
   
@@ -815,7 +737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="concepts/print-organization/" class="md-nav__link">
+      <a href="../../concepts/print-organization/" class="md-nav__link">
         
   
   
@@ -904,7 +826,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/" class="md-nav__link">
+      <a href="../../tutorials/" class="md-nav__link">
         
   
   
@@ -932,7 +854,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/introduction/" class="md-nav__link">
+      <a href="../../tutorials/introduction/" class="md-nav__link">
         
   
   
@@ -960,7 +882,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/grasshopper/" class="md-nav__link">
+      <a href="../../tutorials/grasshopper/" class="md-nav__link">
         
   
   
@@ -992,28 +914,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -1031,7 +956,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1049,7 +974,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -1077,7 +1002,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/01_planar_slicing/" class="md-nav__link">
+      <a href="../01_planar_slicing/" class="md-nav__link">
         
   
   
@@ -1105,7 +1030,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/02_curved_slicing/" class="md-nav__link">
+      <a href="../02_curved_slicing/" class="md-nav__link">
         
   
   
@@ -1130,10 +1055,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="examples/03_vertical_sorting/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vertical Sorting
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1149,6 +1101,186 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Solution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step Walkthrough
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step Walkthrough">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-standard-planar-slicing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Standard Planar Slicing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-sort-into-vertical-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Sort into Vertical Layers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-reorder-vertical-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Reorder Vertical Layers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-standard-post-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Standard Post-Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-print-organization-with-blend-radius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Print Organization with Blend Radius
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Code
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-vertical-sorting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Vertical Sorting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1161,7 +1293,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/04_gcode/" class="md-nav__link">
+      <a href="../04_gcode/" class="md-nav__link">
         
   
   
@@ -1189,7 +1321,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/05_scalar_field/" class="md-nav__link">
+      <a href="../05_scalar_field/" class="md-nav__link">
         
   
   
@@ -1217,7 +1349,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/06_attributes/" class="md-nav__link">
+      <a href="../06_attributes/" class="md-nav__link">
         
   
   
@@ -1245,7 +1377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/07_medial_axis/" class="md-nav__link">
+      <a href="../07_medial_axis/" class="md-nav__link">
         
   
   
@@ -1334,7 +1466,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/" class="md-nav__link">
+      <a href="../../api/" class="md-nav__link">
         
   
   
@@ -1362,7 +1494,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/geometry/" class="md-nav__link">
+      <a href="../../api/geometry/" class="md-nav__link">
         
   
   
@@ -1390,7 +1522,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/slicers/" class="md-nav__link">
+      <a href="../../api/slicers/" class="md-nav__link">
         
   
   
@@ -1418,7 +1550,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/print_organization/" class="md-nav__link">
+      <a href="../../api/print_organization/" class="md-nav__link">
         
   
   
@@ -1446,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/pre_processing/" class="md-nav__link">
+      <a href="../../api/pre_processing/" class="md-nav__link">
         
   
   
@@ -1474,7 +1606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/post_processing/" class="md-nav__link">
+      <a href="../../api/post_processing/" class="md-nav__link">
         
   
   
@@ -1502,7 +1634,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/utilities/" class="md-nav__link">
+      <a href="../../api/utilities/" class="md-nav__link">
         
   
   
@@ -1537,7 +1669,7 @@
   
   
     <li class="md-nav__item">
-      <a href="contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
@@ -1564,7 +1696,7 @@
   
   
     <li class="md-nav__item">
-      <a href="citing/" class="md-nav__link">
+      <a href="../../citing/" class="md-nav__link">
         
   
   
@@ -1611,10 +1743,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#authors" class="md-nav__link">
+  <a href="#what-youll-learn" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Authors
+        What You'll Learn
       
     </span>
   </a>
@@ -1622,10 +1754,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
+  <a href="#the-problem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Features
+        The Problem
       
     </span>
   </a>
@@ -1633,10 +1765,137 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-links" class="md-nav__link">
+  <a href="#the-solution" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Links
+        The Solution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step Walkthrough
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step Walkthrough">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-standard-planar-slicing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Standard Planar Slicing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-sort-into-vertical-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Sort into Vertical Layers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-reorder-vertical-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Reorder Vertical Layers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-standard-post-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Standard Post-Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-print-organization-with-blend-radius" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Print Organization with Blend Radius
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Code
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-vertical-sorting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Vertical Sorting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
       
     </span>
   </a>
@@ -1661,6 +1920,46 @@
   
 
 
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Examples
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
               
               <article class="md-content__inner md-typeset">
                 
@@ -1668,7 +1967,7 @@
 
 
   
-    <a href="https://github.com/compas-dev/compas_slicer/edit/master/docs/index.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/compas-dev/compas_slicer/edit/master/docs/examples/03_vertical_sorting.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -1676,68 +1975,159 @@
   
 
 
-<h1 id="compas-slicer">COMPAS Slicer<a class="headerlink" href="#compas-slicer" title="Permanent link">&para;</a></h1>
-<p><img alt="COMPAS Slicer" src="_images/compas_slicer_main_image_small.jpg" /></p>
-<p><strong>COMPAS Slicer is a slicing package for FDM 3D Printing using COMPAS.</strong></p>
-<p>The package builds upon <a href="https://compas.dev/">COMPAS</a>, an open-source Python-based framework for collaboration and research in architecture, engineering and digital fabrication.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>COMPAS Slicer is a collaborative work-in-progress project and might contain bugs. If you find bugs or would like to request additional functionality, please submit an issue using the <a href="https://github.com/compas-dev/compas_slicer/issues">Issue Tracker</a>.</p>
+<h1 id="vertical-layer-sorting">Vertical Layer Sorting<a class="headerlink" href="#vertical-layer-sorting" title="Permanent link">&para;</a></h1>
+<p>This example demonstrates how to handle models with multiple disconnected regions at the same height - like V-shapes, trees, or branching structures.</p>
+<p><img alt="Vertical sorting visualization" src="../figures/03_print_organization_planar_slicing_vertical_sorting.png" /></p>
+<h2 id="what-youll-learn">What You'll Learn<a class="headerlink" href="#what-youll-learn" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Sorting paths into vertical layers (disconnected regions)</li>
+<li>Reordering vertical layers for optimal printing</li>
+<li>Setting blend radius for smooth robotic motion</li>
+</ul>
+<h2 id="the-problem">The Problem<a class="headerlink" href="#the-problem" title="Permanent link">&para;</a></h2>
+<p>When slicing a V-shaped or branching model, a single horizontal slice may intersect multiple disconnected regions:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>     Layer 5:    ●          ●    (two separate contours)
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>     Layer 4:    ●          ●
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>     Layer 3:     ●        ●
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>     Layer 2:      ●      ●
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>     Layer 1:       ●    ●
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>     Layer 0:        ●●●●        (one contour at base)
+</span></code></pre></div>
+<p>Without vertical sorting, the printer jumps between left and right branches randomly. With vertical sorting, each branch is printed completely before moving to the next.</p>
+<h2 id="the-solution">The Solution<a class="headerlink" href="#the-solution" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>flowchart LR
+    A[Planar Slicing] --&gt; B[Sort into Vertical Layers]
+    B --&gt; C[Reorder Vertical Layers]
+    C --&gt; D[Print Organization]</code></pre>
+<h2 id="step-by-step-walkthrough">Step-by-Step Walkthrough<a class="headerlink" href="#step-by-step-walkthrough" title="Permanent link">&para;</a></h2>
+<h3 id="1-standard-planar-slicing">1. Standard Planar Slicing<a class="headerlink" href="#1-standard-planar-slicing" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">compas.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mesh</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Point</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">compas_slicer.slicers</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlanarSlicer</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">compas_slicer.pre_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">move_mesh_to_point</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="n">DATA_PATH</span> <span class="o">/</span> <span class="s1">&#39;distorted_v_closed_mid_res.obj&#39;</span><span class="p">)</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">move_mesh_to_point</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">slicer</span> <span class="o">=</span> <span class="n">PlanarSlicer</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">layer_height</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">slicer</span><span class="o">.</span><span class="n">slice_model</span><span class="p">()</span>
+</span></code></pre></div>
+<h3 id="2-sort-into-vertical-layers">2. Sort into Vertical Layers<a class="headerlink" href="#2-sort-into-vertical-layers" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">compas_slicer.post_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">sort_into_vertical_layers</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">sort_into_vertical_layers</span><span class="p">(</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">slicer</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">25.0</span><span class="p">,</span>    <span class="c1"># Max distance to group paths together</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">max_paths_per_layer</span><span class="o">=</span><span class="mi">25</span>  <span class="c1"># Max paths per vertical layer</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">)</span>
+</span></code></pre></div>
+<p>This groups paths into "vertical layers" - continuous vertical columns that can be printed without jumping.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dist_threshold</code></td>
+<td>Maximum XY distance between paths to be in same vertical layer</td>
+</tr>
+<tr>
+<td><code>max_paths_per_layer</code></td>
+<td>Limit on paths per vertical layer (prevents huge groups)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-reorder-vertical-layers">3. Reorder Vertical Layers<a class="headerlink" href="#3-reorder-vertical-layers" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">compas_slicer.post_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">reorder_vertical_layers</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">reorder_vertical_layers</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">align_with</span><span class="o">=</span><span class="s2">&quot;x_axis&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Orders the vertical layers for optimal printing sequence. Options:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"x_axis"</code></td>
+<td>Left to right</td>
+</tr>
+<tr>
+<td><code>"y_axis"</code></td>
+<td>Front to back</td>
+</tr>
+<tr>
+<td><code>"centroids"</code></td>
+<td>By centroid position</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-standard-post-processing">4. Standard Post-Processing<a class="headerlink" href="#4-standard-post-processing" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">compas_slicer.post_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_brim</span><span class="p">,</span> <span class="n">simplify_paths_rdp</span><span class="p">,</span> <span class="n">seams_smooth</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">generate_brim</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">layer_width</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">number_of_brim_offsets</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">simplify_paths_rdp</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">seams_smooth</span><span class="p">(</span><span class="n">slicer</span><span class="p">,</span> <span class="n">smooth_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="5-print-organization-with-blend-radius">5. Print Organization with Blend Radius<a class="headerlink" href="#5-print-organization-with-blend-radius" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">compas_slicer.print_organization</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">PlanarPrintOrganizer</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">set_extruder_toggle</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">add_safety_printpoints</span><span class="p">,</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">set_linear_velocity_constant</span><span class="p">,</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">set_blend_radius</span><span class="p">,</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">)</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="n">print_organizer</span> <span class="o">=</span> <span class="n">PlanarPrintOrganizer</span><span class="p">(</span><span class="n">slicer</span><span class="p">)</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="n">print_organizer</span><span class="o">.</span><span class="n">create_printpoints</span><span class="p">()</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="n">set_extruder_toggle</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">slicer</span><span class="p">)</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="n">add_safety_printpoints</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">z_hop</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="n">set_linear_velocity_constant</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mf">25.0</span><span class="p">)</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="c1"># Blend radius for smooth robot motion</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="n">set_blend_radius</span><span class="p">(</span><span class="n">print_organizer</span><span class="p">,</span> <span class="n">d_fillet</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">What is blend radius?</p>
+<p>Blend radius (or fillet) smooths sharp corners in the robot path. Instead of stopping at each point, the robot blends through with a curved motion.</p>
+<ul>
+<li><code>d_fillet=0</code>: Stop at each point (precise but slow)</li>
+<li><code>d_fillet=10</code>: 10mm blend radius (smooth and fast)</li>
+</ul>
 </div>
-<h2 id="authors">Authors<a class="headerlink" href="#authors" title="Permanent link">&para;</a></h2>
-<p>COMPAS Slicer was developed at <a href="https://ethz.ch/">ETH Zurich</a> by:</p>
+<h2 id="complete-code">Complete Code<a class="headerlink" href="#complete-code" title="Permanent link">&para;</a></h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="o">--</span><span class="mi">8</span><span class="o">&lt;--</span> <span class="s2">&quot;examples/3_planar_slicing_vertical_sorting/example_3_planar_vertical_sorting.py&quot;</span>
+</span></code></pre></div>
+<h2 id="running-the-example">Running the Example<a class="headerlink" href="#running-the-example" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">cd</span><span class="w"> </span>examples/3_planar_slicing_vertical_sorting
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>python<span class="w"> </span>example_3_planar_vertical_sorting.py<span class="w"> </span>--visualize
+</span></code></pre></div>
+<h2 id="when-to-use-vertical-sorting">When to Use Vertical Sorting<a class="headerlink" href="#when-to-use-vertical-sorting" title="Permanent link">&para;</a></h2>
+<p>Use vertical sorting when your model has:</p>
 <ul>
-<li>
-<p><strong><a href="https://ioannamitropoulouarch.com/">Ioanna Mitropoulou</a></strong> - <a href="https://dbt.arch.ethz.ch/">Digital Building Technologies</a></p>
-</li>
-<li>
-<p><strong><a href="https://github.com/joburger">Joris Burger</a></strong> - <a href="https://gramaziokohler.arch.ethz.ch/">Gramazio Kohler Research</a></p>
-</li>
-<li>
-<p><strong><a href="https://github.com/stratocaster">Andrei Jipa</a></strong> - <a href="https://gramaziokohler.arch.ethz.ch/">Gramazio Kohler Research</a></p>
-</li>
-<li>
-<p><strong><a href="https://github.com/jf---">Jelle Feringa</a></strong> - <a href="https://terrestrial.construction">Gramazio Kohler Research</a></p>
-</li>
+<li><strong>Branching geometry</strong>: Y-shapes, trees, coral-like structures</li>
+<li><strong>Multiple parts</strong>: Several objects on one build plate</li>
+<li><strong>Islands</strong>: Disconnected regions at the same height</li>
 </ul>
-<p>The package emerged from research on non-planar 3D printing and robotic fabrication at the Institute of Technology in Architecture.</p>
-<h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
+<h2 id="key-takeaways">Key Takeaways<a class="headerlink" href="#key-takeaways" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Vertical sorting groups continuous regions</strong>: Print one branch completely before moving to the next</li>
+<li><strong>Reordering optimizes travel</strong>: Choose sensible order to minimize jumps</li>
+<li><strong>Blend radius matters for robots</strong>: Smooth motion reduces wear and improves quality</li>
+</ol>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Planar Slicing</strong> - Fast CGAL-based mesh slicing with configurable layer heights</li>
-<li><strong>Curved Slicing</strong> - Non-planar toolpaths following scalar fields or interpolation</li>
-<li><strong>Print Organization</strong> - Generate printpoints with fabrication parameters</li>
-<li><strong>G-code Generation</strong> - Export toolpaths for desktop 3D printers</li>
-<li><strong>Grasshopper Integration</strong> - Visualize results in Rhino/Grasshopper</li>
+<li><a href="../04_gcode/">G-code Generation</a> - Export for desktop printers</li>
+<li><a href="../02_curved_slicing/">Curved Slicing</a> - Non-planar approach for branching</li>
 </ul>
-<h2 id="quick-links">Quick Links<a class="headerlink" href="#quick-links" title="Permanent link">&para;</a></h2>
-<div class="grid cards">
-<ul>
-<li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7z"/></svg></span> <strong>Installation</strong></p>
-<hr />
-<p>Get started with COMPAS Slicer in minutes</p>
-<p><a href="installation/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Install</a></p>
-</li>
-<li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.5c-1.35-.85-3.8-1.5-5.5-1.5-1.65 0-3.35.3-4.75 1.05-.1.05-.15.05-.25.05-.25 0-.5-.25-.5-.5V6c.6-.45 1.25-.75 2-1 1.11-.35 2.33-.5 3.5-.5 1.95 0 4.05.4 5.5 1.5 1.45-1.1 3.55-1.5 5.5-1.5 1.17 0 2.39.15 3.5.5.75.25 1.4.55 2 1v14.6c0 .25-.25.5-.5.5-.1 0-.15 0-.25-.05-1.4-.75-3.1-1.05-4.75-1.05-1.7 0-4.15.65-5.5 1.5M12 8v11.5c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5V7c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5m1 3.5c1.11-.68 2.6-1 4.5-1 .91 0 1.76.09 2.5.28V9.23c-.87-.15-1.71-.23-2.5-.23q-2.655 0-4.5.84zm4.5.17c-1.71 0-3.21.26-4.5.79v1.69c1.11-.65 2.6-.99 4.5-.99 1.04 0 1.88.08 2.5.24v-1.5c-.87-.16-1.71-.23-2.5-.23m2.5 2.9c-.87-.16-1.71-.24-2.5-.24-1.83 0-3.33.27-4.5.8v1.69c1.11-.66 2.6-.99 4.5-.99 1.04 0 1.88.08 2.5.24z"/></svg></span> <strong>Tutorials</strong></p>
-<hr />
-<p>Learn the fundamentals with step-by-step guides</p>
-<p><a href="tutorials/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Tutorials</a></p>
-</li>
-<li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.6 16.6 4.6-4.6-4.6-4.6L16 6l6 6-6 6zm-5.2 0L4.8 12l4.6-4.6L8 6l-6 6 6 6z"/></svg></span> <strong>Examples</strong></p>
-<hr />
-<p>Explore complete working examples</p>
-<p><a href="examples/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Examples</a></p>
-</li>
-<li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 7H5a2 2 0 0 0-2 2v8h2v-4h2v4h2V9a2 2 0 0 0-2-2m0 4H5V9h2m7-2h-4v10h2v-4h2a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2m0 4h-2V9h2m6 0v6h1v2h-4v-2h1V9h-1V7h4v2Z"/></svg></span> <strong>API Reference</strong></p>
-<hr />
-<p>Detailed documentation of all modules</p>
-<p><a href="api/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> API</a></p>
-</li>
-</ul>
-</div>
 
 
 
@@ -1776,15 +2166,31 @@
       
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
+          
+          <a href="../02_curved_slicing/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Curved Slicing">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Curved Slicing
+              </div>
+            </div>
+          </a>
+        
         
           
-          <a href="installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Installation">
+          <a href="../04_gcode/" class="md-footer__link md-footer__link--next" aria-label="Next: G-code Generation">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Installation
+                G-code Generation
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1850,12 +2256,12 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.action.edit", "toc.follow"], "search": "assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.action.edit", "toc.follow"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
       
-        <script src="javascripts/mathjax.js"></script>
+        <script src="../../javascripts/mathjax.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       
