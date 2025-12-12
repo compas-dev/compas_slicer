@@ -1,7 +1,6 @@
 name: build
 
 on:
-#  [push]
   push:
     branches:
       - master
@@ -10,33 +9,39 @@ on:
       - master
 
 jobs:
-  build-packages:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup miniconda with python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
-          activate-environment: compas_slicer
-          environment-file: environment.yml
-          python-version: 3.8
-          auto-activate-base: false
-          auto-update-conda: true
-      - name: Conda info
-        run: conda info
-      - name: Install project
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
         run: |
-          python -m pip install --no-cache-dir -r requirements-dev.txt
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
       - name: Test import
         run: |
-          python -c "import compas_slicer; print('COMPAS Slicer version: ' + compas_slicer.__version__)" 
-      - name: Lint with flake8
+          python -c "import compas_slicer; print('COMPAS Slicer version: ' + compas_slicer.__version__)"
+
+      - name: Lint with ruff
         run: |
-          invoke lint
+          ruff check src/
+
+      - name: Type check with mypy
+        run: |
+          mypy src/compas_slicer --ignore-missing-imports
+
       - name: Test with pytest
         run: |
-          invoke test
+          pytest tests/ -v

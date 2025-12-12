@@ -1,0 +1,123 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "compas_slicer"
+version = "0.8.0"
+description = "Slicing package for FDM 3D Printing with COMPAS"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Ioanna Mitropoulou", email = "mitropoulou@arch.ethz.ch"},
+    {name = "Joris Burger"},
+]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Unix",
+    "Operating System :: POSIX",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+dependencies = [
+    "attrs>=25.0",
+    "compas>=2.15",
+    "compas_cgal>=0.9",
+    "loguru>=0.7",
+    "networkx>=3.6",
+    "numpy>=2.0",
+    "progressbar2>=4.5",
+    "pyclipper>=1.4",
+    "rdp>=0.8",
+    "scipy>=1.16",
+    "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.urls]
+Homepage = "https://github.com/compas-dev/compas_slicer"
+Documentation = "https://compas.dev/compas_slicer"
+Repository = "https://github.com/compas-dev/compas_slicer"
+
+[project.optional-dependencies]
+viz = [
+    "compas_viewer>=1.2",
+]
+dev = [
+    "bump2version>=1.0",
+    "compas_invocations2>=0.7",
+    "invoke>=2.0",
+    "mypy",
+    "pytest>=7.0",
+    "pytest-benchmark",
+    "pytest-cov",
+    "ruff",
+    "twine",
+]
+docs = [
+    "mike>=2.0",
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.27",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.obj", "*.toml"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+src = ["src"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "I",      # isort
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "SIM",    # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "B008",   # do not perform function calls in argument defaults
+    "SIM108", # use ternary operator instead of if-else
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["compas_slicer", "compas_slicer_ghpython"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = ["tests", "docs", "examples", "scripts"]
+
+[[tool.mypy.overrides]]
+module = ["compas_slicer.slicers.*", "compas_slicer.print_organization.*", "compas_slicer.pre_processing.*"]
+disable_error_code = ["no-redef", "operator"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+addopts = "-ra --tb=short"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.coverage.run]
+source = ["src/compas_slicer"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+fail_under = 50

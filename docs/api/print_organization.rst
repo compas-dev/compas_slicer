@@ -1,1 +1,0 @@
-.. automodule:: compas_slicer.print_organization

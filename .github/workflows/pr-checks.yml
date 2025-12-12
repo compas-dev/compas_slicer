@@ -1,20 +1,25 @@
-name: verify-pr-checklist
+name: pr-checks
+
 on:
   pull_request:
-    types: [assigned, opened, synchronize, reopened, labeled, unlabeled]
-    branches:
-      - main
-      - master
+    branches: [master]
 
 jobs:
-  build:
-    name: Check Actions
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Changelog check
-        uses: Zomzog/changelog-checker@v1.1.0
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          fileName: CHANGELOG.rst
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          python-version: "3.12"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Check formatting
+        run: ruff format --check src/ tests/
+
+      - name: Check linting
+        run: ruff check src/ tests/

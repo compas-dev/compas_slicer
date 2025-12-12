@@ -1,231 +1,233 @@
-import compas_slicer
-import logging
-from compas.geometry import Vector, distance_point_point, norm_vector, normalize_vector, subtract_vectors, \
-    cross_vectors, scale_vector
-from compas.utilities import pairwise
-import numpy as np
+from __future__ import annotations
+
 from abc import abstractmethod
+from collections.abc import Generator, Iterator
+from typing import TYPE_CHECKING, Any
 
-logger = logging.getLogger('logger')
+import numpy as np
+from compas.geometry import (
+    Vector,
+    cross_vectors,
+    distance_point_point,
+    norm_vector,
+    normalize_vector,
+    scale_vector,
+    subtract_vectors,
+)
+from compas.itertools import pairwise
+from loguru import logger
 
-__all__ = ['BasePrintOrganizer']
+from compas_slicer.config import GcodeConfig
+from compas_slicer.geometry import PrintPointsCollection
+from compas_slicer.print_organization.print_organization_utilities.gcode import create_gcode_text
+from compas_slicer.slicers.base_slicer import BaseSlicer
+
+if TYPE_CHECKING:
+    from compas_slicer.geometry import Path, PrintPoint
 
 
-class BasePrintOrganizer(object):
-    """
-    Base class for organizing the printing process.
-    This class is meant to be extended for the implementation of the various print organizers.
-    Do not use this class directly in your python code. Instead use PlanarPrintOrganizer or InterpolationPrintOrganizer.
+__all__ = ["BasePrintOrganizer"]
+
+
+class BasePrintOrganizer:
+    """Base class for organizing the printing process.
+
+    This class is meant to be extended for implementing various print organizers.
+    Do not use this class directly. Use PlanarPrintOrganizer or InterpolationPrintOrganizer.
 
     Attributes
     ----------
-    slicer: :class:`compas_slicer.slicers.PlanarSlicer`
-        An instance of the compas_slicer.slicers.PlanarSlicer.
+    slicer : BaseSlicer
+        An instance of a slicer class.
+    printpoints : PrintPointsCollection
+        Collection of printpoints organized by layer and path.
+
     """
 
-    def __init__(self, slicer):
-        assert isinstance(slicer, compas_slicer.slicers.BaseSlicer)  # check input
-        logger.info('Print Organizer')
+    def __init__(self, slicer: BaseSlicer) -> None:
+        if not isinstance(slicer, BaseSlicer):
+            raise TypeError(f"slicer must be BaseSlicer, not {type(slicer)}")
+        logger.info("Print Organizer")
         self.slicer = slicer
-        self.printpoints_dict = {}
+        self.printpoints = PrintPointsCollection()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<BasePrintOrganizer>"
 
-    ######################
-    # Abstract methods
-    ######################
-
     @abstractmethod
-    def create_printpoints(self):
-        """To be implemented by the inheriting classes"""
+    def create_printpoints(self) -> None:
+        """To be implemented by inheriting classes."""
         pass
 
-    ######################
-    # Iterators
-    ######################
-    def printpoints_iterator(self):
-        """
-        Iterate over the printpoints of the print organizer.
+    def printpoints_iterator(self) -> Generator[PrintPoint, None, None]:
+        """Iterate over all printpoints.
 
         Yields
         ------
-        printpoint: :class: 'compas_slicer.geometry.Printpoint'
-        """
-        assert len(self.printpoints_dict) > 0, 'No printpoints have been created.'
-        for layer_key in self.printpoints_dict:
-            for path_key in self.printpoints_dict[layer_key]:
-                for printpoint in self.printpoints_dict[layer_key][path_key]:
-                    yield printpoint
+        PrintPoint
+            Each printpoint in the organizer.
 
-    def printpoints_indices_iterator(self):
         """
-        Iterate over the printpoints of the print organizer.
+        if not self.printpoints.layers:
+            raise ValueError("No printpoints have been created.")
+        yield from self.printpoints.iter_printpoints()
+
+    def printpoints_indices_iterator(self) -> Iterator[tuple[PrintPoint, int, int, int]]:
+        """Iterate over printpoints with their indices.
 
         Yields
         ------
-        printpoint: :class: 'compas_slicer.geometry.Printpoint'
-        i: int, layer index. To get the layer key use: layer_key = 'layer_%d' % i
-        j: int, path index. To get the path key use: path_key = 'path_%d' % j
-        k: int, printpoint index
+        tuple[PrintPoint, int, int, int]
+            Printpoint, layer index, path index, printpoint index.
+
         """
-        assert len(self.printpoints_dict) > 0, 'No printpoints have been created.'
-        for i, layer_key in enumerate(self.printpoints_dict):
-            for j, path_key in enumerate(self.printpoints_dict[layer_key]):
-                for k, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
-                    yield printpoint, i, j, k
-
-    ######################
-    # Properties
-    ######################
+        if not self.printpoints.layers:
+            raise ValueError("No printpoints have been created.")
+        yield from self.printpoints.iter_with_indices()
 
     @property
-    def number_of_printpoints(self):
-        """int: Total number of points in the PrintOrganizer."""
-        total_number_of_pts = 0
-        for layer_key in self.printpoints_dict:
-            for path_key in self.printpoints_dict[layer_key]:
-                for _ in self.printpoints_dict[layer_key][path_key]:
-                    total_number_of_pts += 1
-        return total_number_of_pts
+    def number_of_printpoints(self) -> int:
+        """Total number of printpoints."""
+        return self.printpoints.number_of_printpoints
 
     @property
-    def number_of_paths(self):
-        total_number_of_paths = 0
-        for layer_key in self.printpoints_dict:
-            for _ in self.printpoints_dict[layer_key]:
-                total_number_of_paths += 1
-        return total_number_of_paths
+    def number_of_paths(self) -> int:
+        """Total number of paths."""
+        return self.printpoints.number_of_paths
 
     @property
-    def number_of_layers(self):
-        """int: Number of layers in the PrintOrganizer."""
-        return len(self.printpoints_dict)
+    def number_of_layers(self) -> int:
+        """Number of layers."""
+        return self.printpoints.number_of_layers
 
     @property
-    def total_length_of_paths(self):
-        """ Returns the total length of all paths. Does not consider extruder toggle. """
-        total_length = 0
-        for layer_key in self.printpoints_dict:
-            for path_key in self.printpoints_dict[layer_key]:
-                for prev, curr in pairwise(self.printpoints_dict[layer_key][path_key]):
-                    length = distance_point_point(prev.pt, curr.pt)
-                    total_length += length
+    def total_length_of_paths(self) -> float:
+        """Total length of all paths (ignores extruder toggle)."""
+        total_length = 0.0
+        for layer in self.printpoints:
+            for path in layer:
+                for prev, curr in pairwise(path):
+                    total_length += distance_point_point(prev.pt, curr.pt)
         return total_length
 
     @property
-    def total_print_time(self):
-        """ If the print speed is defined, it returns the total time of the print, else returns None"""
-        if self.printpoints_dict['layer_0']['path_0'][0].velocity is not None:  # assume that all ppts are set or none
-            total_time = 0
-            for layer_key in self.printpoints_dict:
-                for path_key in self.printpoints_dict[layer_key]:
-                    for prev, curr in pairwise(self.printpoints_dict[layer_key][path_key]):
-                        length = distance_point_point(prev.pt, curr.pt)
-                        total_time += length / curr.velocity
-            return total_time
+    def total_print_time(self) -> float | None:
+        """Total print time if velocity is defined, else None."""
+        if self.printpoints[0][0][0].velocity is None:
+            return None
 
-    def number_of_paths_on_layer(self, layer_index):
-        """int: Number of paths within a Layer of the PrintOrganizer."""
-        return len(self.printpoints_dict['layer_%d' % layer_index])
+        total_time = 0.0
+        for layer in self.printpoints:
+            for path in layer:
+                for prev, curr in pairwise(path):
+                    length = distance_point_point(prev.pt, curr.pt)
+                    total_time += length / curr.velocity
+        return total_time
 
-    ######################
-    # Utils
-    ######################
+    def number_of_paths_on_layer(self, layer_index: int) -> int:
+        """Number of paths within a layer."""
+        return len(self.printpoints[layer_index])
 
-    def remove_duplicate_points_in_path(self, layer_key, path_key, tolerance=0.0001):
-        """Remove subsequent points that are within a certain threshold.
+    def remove_duplicate_points_in_path(
+        self, layer_idx: int, path_idx: int, tolerance: float = 0.0001
+    ) -> None:
+        """Remove subsequent points within a threshold distance.
 
         Parameters
         ----------
-        layer_key: str
-            They key of the layer to remove points from.
-        path_key: str
-            The key of the path to remove points from.
-        tolerance: float, optional
-            Distance between points to remove. Defaults to 0.0001.
-        """
+        layer_idx : int
+            The layer index.
+        path_idx : int
+            The path index.
+        tolerance : float
+            Distance threshold for duplicate detection.
 
+        """
         dup_index = []
-        # find duplicates
         duplicate_ppts = []
-        for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
-            if i < len(self.printpoints_dict[layer_key][path_key]) - 1:
-                next_ppt = self.printpoints_dict[layer_key][path_key][i + 1]
-                if np.linalg.norm(np.array(printpoint.pt) - np.array(next_ppt.pt)) < tolerance:
-                    dup_index.append(i)
-                    duplicate_ppts.append(printpoint)
 
-        # warn user
-        if len(duplicate_ppts) > 0:
+        path = self.printpoints[layer_idx][path_idx]
+        for i, printpoint in enumerate(path.printpoints[:-1]):
+            next_ppt = path.printpoints[i + 1]
+            if np.linalg.norm(np.array(printpoint.pt) - np.array(next_ppt.pt)) < tolerance:
+                dup_index.append(i)
+                duplicate_ppts.append(printpoint)
+
+        if duplicate_ppts:
             logger.warning(
-                'Attention! %d Duplicate printpoint(s) ' % len(duplicate_ppts) + 'on ' + layer_key + ', ' + path_key +
-                ', indices: ' + str(dup_index) + '. They will be removed.')
-
-        # remove duplicates
-        if len(duplicate_ppts) > 0:
+                f"Attention! {len(duplicate_ppts)} Duplicate printpoint(s) on "
+                f"layer {layer_idx}, path {path_idx}, indices: {dup_index}. They will be removed."
+            )
             for ppt in duplicate_ppts:
-                self.printpoints_dict[layer_key][path_key].remove(ppt)
+                path.printpoints.remove(ppt)
 
-    def get_printpoint_neighboring_items(self, layer_key, path_key, i):
-        """
-        layer_key: str
-            They key of the layer the current printpoint belongs to.
-        path_key: str
-            They key of the path the current printpoint belongs to.
-        i: int
-            The index of the current printpoint.
+    def get_printpoint_neighboring_items(
+        self, layer_idx: int, path_idx: int, i: int
+    ) -> list[PrintPoint | None]:
+        """Get neighboring printpoints.
+
+        Parameters
+        ----------
+        layer_idx : int
+            The layer index.
+        path_idx : int
+            The path index.
+        i : int
+            Index of current printpoint.
 
         Returns
-        ----------
-        list, :class:  'compas_slicer.geometry.PrintPoint'
+        -------
+        list[PrintPoint | None]
+            Previous and next printpoints (None if at boundary).
+
         """
-        neighboring_items = []
-        if i > 0:
-            neighboring_items.append(self.printpoints_dict[layer_key][path_key][i - 1])
-        else:
-            neighboring_items.append(None)
-        if i < len(self.printpoints_dict[layer_key][path_key]) - 1:
-            neighboring_items.append(self.printpoints_dict[layer_key][path_key][i + 1])
-        else:
-            neighboring_items.append(None)
-        return neighboring_items
+        path = self.printpoints[layer_idx][path_idx]
+        prev_pt = path[i - 1] if i > 0 else None
+        next_pt = path[i + 1] if i < len(path) - 1 else None
+        return [prev_pt, next_pt]
 
-    def printout_info(self):
-        """Prints out information from the PrintOrganizer"""
-        ppts_attributes = {}
-        for key in self.printpoints_dict['layer_0']['path_0'][0].attributes:
-            ppts_attributes[key] = str(type(self.printpoints_dict['layer_0']['path_0'][0].attributes[key]))
+    def printout_info(self) -> None:
+        """Print information about the PrintOrganizer."""
+        ppts_attributes = {
+            key: str(type(val))
+            for key, val in self.printpoints[0][0][0].attributes.items()
+        }
 
-        print("\n---- PrintOrganizer Info ----")
-        print("Number of layers: %d" % self.number_of_layers)
-        print("Number of paths: %d" % self.number_of_paths)
-        print("Number of PrintPoints: %d" % self.number_of_printpoints)
-        print("PrintPoints attributes: ")
-        for key in ppts_attributes:
-            print('     % s : % s' % (str(key), ppts_attributes[key]))
-        print("Toolpath length: %d mm" % self.total_length_of_paths)
+        logger.info("---- PrintOrganizer Info ----")
+        logger.info(f"Number of layers: {self.number_of_layers}")
+        logger.info(f"Number of paths: {self.number_of_paths}")
+        logger.info(f"Number of PrintPoints: {self.number_of_printpoints}")
+        logger.info("PrintPoints attributes: ")
+        for key, val in ppts_attributes.items():
+            logger.info(f"     {key} : {val}")
+        logger.info(f"Toolpath length: {self.total_length_of_paths:.0f} mm")
 
         print_time = self.total_print_time
         if print_time:
-            minutes, sec = divmod(self.total_print_time, 60)
+            minutes, sec = divmod(print_time, 60)
             hour, minutes = divmod(minutes, 60)
-            print("Total print time: %d hours, %d minutes, %d seconds" % (hour, minutes, sec))
+            logger.info(f"Total print time: {int(hour)} hours, {int(minutes)} minutes, {int(sec)} seconds")
         else:
-            print("Print Velocity has not been assigned, thus print time is not calculated.")
-        print("")
+            logger.info("Print Velocity has not been assigned, thus print time is not calculated.")
 
-    def get_printpoint_up_vector(self, path, k, normal):
-        """
-        Returns the printpoint up-vector so that it is orthogonal to the path direction and the normal
+    def get_printpoint_up_vector(self, path: Path, k: int, normal: Vector) -> Vector:
+        """Get printpoint up-vector orthogonal to path direction and normal.
 
         Parameters
         ----------
-        path: :class:`compas_slicer.geometry.Path`
-        k: the index of the point in path.points that the PrintPoint represents
-        normal: :class:`compas.geometry.Vector`
-        """
+        path : Path
+            The path containing the point.
+        k : int
+            Index of the point in path.points.
+        normal : Vector
+            The normal vector.
 
+        Returns
+        -------
+        Vector
+            The up vector.
+
+        """
         p = path.points[k]
         if k < len(path.points) - 1:
             negative = False
@@ -233,97 +235,111 @@ class BasePrintOrganizer(object):
         else:
             negative = True
             other_pt = path.points[k - 1]
+
         diff = normalize_vector(subtract_vectors(p, other_pt))
         up_vec = normalize_vector(cross_vectors(normal, diff))
+
         if negative:
             up_vec = scale_vector(up_vec, -1.0)
         if norm_vector(up_vec) == 0:
             up_vec = Vector(0, 0, 1)
+
         return Vector(*up_vec)
 
-    ######################
-    # Output data
-    ######################
-
-    def output_printpoints_dict(self):
-        """Creates a flattened PrintPoints as a dictionary.
-
-        Returns
-        ----------
-        dict, with printpoints that can be saved as json
-        """
-        data = {}
-
-        count = 0
-        for layer_key in self.printpoints_dict:
-            for path_key in self.printpoints_dict[layer_key]:
-                self.remove_duplicate_points_in_path(layer_key, path_key)
-                for printpoint in self.printpoints_dict[layer_key][path_key]:
-                    data[count] = printpoint.to_data()
-
-                    count += 1
-        logger.info("Generated %d print points" % count)
-        return data
-
-    def output_nested_printpoints_dict(self):
-        """Creates a nested PrintPoints as a dictionary.
-
-        Returns
-        ----------
-        dict, with printpoints that can be saved as json
-        """
-        data = {}
-
-        count = 0
-        for layer_key in self.printpoints_dict:
-            data[layer_key] = {}
-            for path_key in self.printpoints_dict[layer_key]:
-                data[layer_key][path_key] = {}
-                self.remove_duplicate_points_in_path(layer_key, path_key)
-                for i, printpoint in enumerate(self.printpoints_dict[layer_key][path_key]):
-                    data[layer_key][path_key][i] = printpoint.to_data()
-
-                    count += 1
-
-        logger.info("Generated %d print points" % count)
-        return data
-
-    def output_gcode(self, parameters):
-        """ Gets a gcode text file using the function that creates gcode
-        Parameters
-        ----------
-        parameters: dict with gcode parameters
-
-        Returns
-        ----------
-        str, gcode text file
-        """
-        # check print organizer: Should have horizontal layers, ideally should be planar
-        # ...
-        gcode = compas_slicer.print_organization.create_gcode_text(self, parameters)
-        return gcode
-
-    def get_printpoints_attribute(self, attr_name):
-        """
-        Returns a list of printpoint attributes that have key=attr_name.
-
-        Parameters
-        ----------
-        attr_name: str
+    def output_printpoints_dict(self) -> dict[int, dict[str, Any]]:
+        """Create a flattened printpoints dictionary.
 
         Returns
         -------
-        list of size len(ppts) with whatever type the ppts.attribute[attr_name] is.
+        dict
+            Flattened printpoints data for JSON serialization.
+
+        """
+        data = {}
+        count = 0
+
+        for i, layer in enumerate(self.printpoints):
+            for j, path in enumerate(layer):
+                self.remove_duplicate_points_in_path(i, j)
+                for printpoint in path:
+                    data[count] = printpoint.to_data()
+                    count += 1
+
+        logger.info(f"Generated {count} print points")
+        return data
+
+    def output_nested_printpoints_dict(self) -> dict[str, dict[str, dict[int, dict[str, Any]]]]:
+        """Create a nested printpoints dictionary.
+
+        Returns
+        -------
+        dict
+            Nested printpoints data for JSON serialization.
+
+        """
+        data: dict[str, dict[str, dict[int, dict[str, Any]]]] = {}
+        count = 0
+
+        for i, layer in enumerate(self.printpoints):
+            layer_key = f"layer_{i}"
+            data[layer_key] = {}
+            for j, path in enumerate(layer):
+                path_key = f"path_{j}"
+                data[layer_key][path_key] = {}
+                self.remove_duplicate_points_in_path(i, j)
+                for k, printpoint in enumerate(path):
+                    data[layer_key][path_key][k] = printpoint.to_data()
+                    count += 1
+
+        logger.info(f"Generated {count} print points")
+        return data
+
+    def output_gcode(self, config: GcodeConfig | None = None) -> str:
+        """Generate G-code text.
+
+        Parameters
+        ----------
+        config : GcodeConfig | None
+            G-code configuration. If None, uses defaults.
+
+        Returns
+        -------
+        str
+            G-code text.
+
+        """
+        return create_gcode_text(self, config)
+
+    def get_printpoints_attribute(self, attr_name: str) -> list[Any]:
+        """Get a list of attribute values from all printpoints.
+
+        Parameters
+        ----------
+        attr_name : str
+            Name of the attribute.
+
+        Returns
+        -------
+        list
+            Attribute values from all printpoints.
+
         """
         attr_values = []
-        for layer_key in self.printpoints_dict:
-            for path_key in self.printpoints_dict[layer_key]:
-                for ppt in self.printpoints_dict[layer_key][path_key]:
-                    assert attr_name in ppt.attributes, \
-                        "The attribute '%s' is not in the printpoint.attributes" % attr_name
-                    attr_values.append(ppt.attributes[attr_name])
+        for pp in self.printpoints.iter_printpoints():
+            if attr_name not in pp.attributes:
+                raise KeyError(f"Attribute '{attr_name}' not in printpoint.attributes")
+            attr_values.append(pp.attributes[attr_name])
         return attr_values
 
-
-if __name__ == "__main__":
-    pass
+    # Legacy compatibility: provide printpoints_dict property that builds the old dict format
+    @property
+    def printpoints_dict(self) -> dict[str, dict[str, list[PrintPoint]]]:
+        """Legacy accessor for the old dict format. Prefer using self.printpoints directly."""
+        result: dict[str, dict[str, list[PrintPoint]]] = {}
+        for i, layer in enumerate(self.printpoints):
+            layer_key = f"layer_{i}"
+            result[layer_key] = {}
+            for j, path in enumerate(layer):
+                path_key = f"path_{j}"
+                result[layer_key][path_key] = list(path.printpoints)
+        return result

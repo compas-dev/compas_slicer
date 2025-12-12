@@ -1,11 +1,23 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import networkx as nx
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
+    from compas.geometry import Point
 
 __all__ = ['create_graph_from_mesh_edges',
            'sort_graph_connected_components',
            'create_graph_from_mesh_vkeys']
 
 
-def create_graph_from_mesh_edges(mesh, intersection_data, edge_to_index):
+def create_graph_from_mesh_edges(
+    mesh: Mesh,
+    intersection_data: dict[tuple[int, int], Point],
+    edge_to_index: dict[tuple[int, int], int],
+) -> nx.Graph:
     """
     Creates a graph with one node for every intersected edge.
     The connectivity of nodes (i.e. edges between them) is based on their neighboring on the mesh.
@@ -35,7 +47,7 @@ def create_graph_from_mesh_edges(mesh, intersection_data, edge_to_index):
 
         # find current neighboring edges that are also intersected
         current_edge_connections = []
-        for f in mesh.edge_faces(u=mesh_edge[0], v=mesh_edge[1]):
+        for f in mesh.edge_faces(mesh_edge):
             if f is not None:
                 face_edges = mesh.face_halfedges(f)
                 for e in face_edges:
@@ -54,7 +66,7 @@ def create_graph_from_mesh_edges(mesh, intersection_data, edge_to_index):
     return G
 
 
-def create_graph_from_mesh_vkeys(mesh, v_keys):
+def create_graph_from_mesh_vkeys(mesh: Mesh, v_keys: list[int]) -> nx.Graph:
     """
     Creates a graph with one node for every vertex, and edges between neighboring vertices.
 
@@ -78,7 +90,7 @@ def create_graph_from_mesh_vkeys(mesh, v_keys):
     return G
 
 
-def sort_graph_connected_components(G):
+def sort_graph_connected_components(G: nx.Graph) -> dict[int, list[int]]:
     """
     For every connected component of the graph G:
     1) It finds a start node. For open paths it is on one of its ends, for closed paths it can be any of its points.
@@ -103,7 +115,7 @@ def sort_graph_connected_components(G):
 
     current_index = 0
 
-    for j, cp in enumerate(nx.connected_components(G)):
+    for _j, cp in enumerate(nx.connected_components(G)):
 
         if len(cp) > 1:  # we need at least 2 elements to have an edge
             sorted_node_indices = []
@@ -127,7 +139,8 @@ def sort_graph_connected_components(G):
                 if node_index_2 not in sorted_node_indices:
                     sorted_node_indices.append(node_index_2)
 
-            assert len(sorted_node_indices) == len(cp), 'Attention. len(sorted_node_indices) != len(G.nodes())'
+            if len(sorted_node_indices) != len(cp):
+                raise RuntimeError(f'Node sorting error: {len(sorted_node_indices)} sorted != {len(cp)} in component')
 
             sorted_indices_dict[current_index] = sorted_node_indices
             current_index += 1

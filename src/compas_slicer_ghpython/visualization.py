@@ -1,12 +1,12 @@
-import os
 import json
+from pathlib import Path
+
+import Rhino.Geometry as rg
 import rhinoscriptsyntax as rs
 from compas.datastructures import Mesh
-import Rhino.Geometry as rg
-from compas_ghpython.artists import MeshArtist
 from compas.geometry import Frame
+from compas_ghpython.artists import MeshArtist
 from compas_ghpython.utilities import list_to_ghtree
-
 
 #######################################
 # --- Slicer
@@ -23,7 +23,7 @@ def load_slicer(path, folder_name, json_name):
     if data:
 
         if 'mesh' in data:
-            compas_mesh = Mesh.from_data(data['mesh'])
+            compas_mesh = Mesh.__from_data__(data['mesh'])
             artist = MeshArtist(compas_mesh)
             artist.show_mesh = True
             artist.show_vertices = False
@@ -59,7 +59,7 @@ def load_slicer(path, folder_name, json_name):
         else:
             print('No layers have been saved in the json file. Is this the correct json?')
 
-    print('The slicer contains %d layers. ' % len(paths_nested_list))
+    print(f'The slicer contains {len(paths_nested_list)} layers. ')
     paths_nested_list = list_to_ghtree(paths_nested_list)
     return mesh, paths_nested_list, are_closed, all_points
 
@@ -112,7 +112,7 @@ def load_nested_printpoints(path, folder_name, json_name, load_frames, load_laye
                     ppt = PrintPointGH(rg.Point3d(ppt_data["point"][0], ppt_data["point"][1], ppt_data["point"][2]))
 
                     if load_frames:
-                        compas_frame = Frame.from_data(ppt_data["frame"])
+                        compas_frame = Frame.__from_data__(ppt_data["frame"])
                         pt, x_axis, y_axis = compas_frame.point, compas_frame.xaxis, compas_frame.yaxis
                         ppt.frame = rs.PlaneFromFrame(pt, x_axis, y_axis)
 
@@ -173,7 +173,7 @@ def load_printpoints(path, folder_name, json_name):
             point = rg.Point3d(data_point["point"][0], data_point["point"][1], data_point["point"][2])
             points.append(point)
 
-            compas_frame = Frame.from_data(data_point["frame"])
+            compas_frame = Frame.__from_data__(data_point["frame"])
             pt, x_axis, y_axis = compas_frame.point, compas_frame.xaxis, compas_frame.yaxis
             frame = rs.PlaneFromFrame(pt, x_axis, y_axis)
             frames.append(frame)
@@ -322,8 +322,9 @@ def tool_visualization(origin_coords, mesh, planes, i):
 
 def load_multiple_meshes(starts_with, ends_with, path, folder_name):
     """ Load all the meshes that have the specified name, and print them in different colors. """
-    filenames = get_files_with_name(starts_with, ends_with, os.path.join(path, folder_name, 'output'))
-    meshes = [Mesh.from_obj(os.path.join(path, folder_name, 'output', filename)) for filename in filenames]
+    output_dir = Path(path) / folder_name / 'output'
+    filenames = get_files_with_name(starts_with, ends_with, str(output_dir))
+    meshes = [Mesh.from_obj(str(output_dir / filename)) for filename in filenames]
 
     loaded_meshes = []
     for i, m in enumerate(meshes):
@@ -451,29 +452,27 @@ def missing_input():
 
 def load_json_file(path, folder_name, json_name, in_output_folder=True):
     """ Loads data from json. """
-
+    base = Path(path) / folder_name
     if in_output_folder:
-        filename = os.path.join(os.path.join(path), folder_name, 'output', json_name)
+        filename = base / 'output' / json_name
     else:
-        filename = os.path.join(os.path.join(path), folder_name, json_name)
+        filename = base / json_name
     data = None
 
-    if os.path.isfile(filename):
-        with open(filename, 'r') as f:
-            data = json.load(f)
-        print("Loaded Json: '" + filename + "'")
+    if filename.is_file():
+        data = json.loads(filename.read_text())
+        print(f"Loaded Json: '{filename}'")
     else:
-        print("Attention! Filename: '" + filename + "' does not exist. ")
+        print(f"Attention! Filename: '{filename}' does not exist. ")
 
     return data
 
 
 def save_json_file(data, path, folder_name, json_name):
     """ Saves data to json. """
-    filename = os.path.join(path, folder_name, json_name)
-    with open(filename, 'w') as f:
-        f.write(json.dumps(data, indent=3, sort_keys=True))
-    print("Saved to Json: '" + filename + "'")
+    filename = Path(path) / folder_name / json_name
+    filename.write_text(json.dumps(data, indent=3, sort_keys=True))
+    print(f"Saved to Json: '{filename}'")
 
 
 def get_closest_point_index(pt, pts):
@@ -492,11 +491,9 @@ def distance_of_pt_from_crv(pt, crv):
 
 def get_files_with_name(startswith, endswith, DATA_PATH):
     """ Find all files with the specified start and end in the data path. """
-    files = []
-    for file in os.listdir(DATA_PATH):
-        if file.startswith(startswith) and file.endswith(endswith):
-            files.append(file)
-    print('Found %d files with the given criteria : ' % len(files) + str(files))
+    files = [f.name for f in Path(DATA_PATH).iterdir()
+             if f.name.startswith(startswith) and f.name.endswith(endswith)]
+    print(f'Found {len(files)} files with the given criteria : {files}')
     return files
 
 

@@ -1,6 +1,8 @@
 import os
+import time
+import math
 from compas.datastructures import Mesh
-import logging
+from loguru import logger
 import compas_slicer.utilities as utils
 from compas_slicer.slicers import InterpolationSlicer
 from compas_slicer.post_processing import simplify_paths_rdp_igl
@@ -11,10 +13,6 @@ from compas_slicer.print_organization import set_extruder_toggle
 from compas_slicer.print_organization import add_safety_printpoints, set_wait_time_on_sharp_corners
 from compas_slicer.print_organization import smooth_printpoints_up_vectors, set_blend_radius
 from compas_slicer.post_processing import generate_brim, seams_smooth
-import time, math
-
-logger = logging.getLogger('logger')
-logging.basicConfig(format='%(levelname)s - %(message)s', level=logging.INFO)
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'data_advanced_example')
 OUTPUT_PATH = utils.get_output_directory(DATA_PATH)

@@ -1,215 +1,267 @@
-import logging
-import compas_slicer
-import compas_slicer.utilities.utils as utils
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
-from compas_slicer.geometry import Path
+from compas.data import Data
+from loguru import logger
 
-logger = logging.getLogger('logger')
+import compas_slicer.utilities.utils as utils
+from compas_slicer.geometry.path import Path
 
-__all__ = ['Layer',
-           'VerticalLayer',
-           'VerticalLayersManager']
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 
-class Layer(object):
-    """
-    A Layer stores a group of ordered paths that are generated when a geometry is sliced.
-    Layers are typically organized horizontally, but can also be organized vertically (see VerticalLayer).
-    A Layer consists of one, or multiple Paths (depending on the geometry).
+__all__ = ["Layer", "VerticalLayer", "VerticalLayersManager"]
+
+
+def _parse_min_max(value: Any) -> tuple[float | None, float | None]:
+    """Parse min_max_z_height from data."""
+    if value is None:
+        return (None, None)
+    if isinstance(value, (list, tuple)) and len(value) == 2:
+        return (value[0], value[1])
+    return (None, None)
+
+
+@dataclass
+class Layer(Data):
+    """A Layer stores a group of ordered paths generated when a geometry is sliced.
+
+    Layers are typically organized horizontally, but can also be organized
+    vertically (see VerticalLayer). A Layer consists of one or multiple Paths.
 
     Attributes
     ----------
-    paths: list
-        :class:`compas_slicer.geometry.Path`
-    is_brim: bool
+    paths : list[Path]
+        List of paths in this layer.
+    is_brim : bool
         True if this layer is a brim layer.
-    number_of_brim_offsets: int
+    number_of_brim_offsets : int | None
         The number of brim offsets this layer has (None if no brim).
-    is_raft: bool
+    is_raft : bool
         True if this layer is a raft layer.
+    min_max_z_height : tuple[float | None, float | None]
+        Tuple containing the min and max z height of the layer.
+
     """
 
-    def __init__(self, paths):
-        # check input
-        if paths is None:
-            paths = []
-        if len(paths) > 0:
-            assert isinstance(paths[0], compas_slicer.geometry.Path)
-        self.paths = paths
+    paths: list[Path] = field(default_factory=list)
+    is_brim: bool = False
+    number_of_brim_offsets: int | None = None
+    is_raft: bool = False
+    min_max_z_height: tuple[float | None, float | None] = (None, None)
 
-        self.min_max_z_height = (None, None)  # Tuple containing the min and max z height of the layer.
-        if paths:
-            self.calculate_z_bounds()
+    def __post_init__(self) -> None:
+        super().__init__()  # Initialize Data base class
+        if len(self.paths) > 0:
+            if not isinstance(self.paths[0], Path):
+                raise TypeError("paths must contain Path objects")
+            if self.min_max_z_height == (None, None):
+                self.calculate_z_bounds()
 
-        # brim
-        self.is_brim = False
-        self.number_of_brim_offsets = None
-
-        # raft
-        self.is_raft = False
-
-    def __repr__(self):
+    def __repr__(self) -> str:
         no_of_paths = len(self.paths) if self.paths else 0
-        return "<Layer object with %i paths>" % no_of_paths
+        return f"<Layer with {no_of_paths} paths>"
 
     @property
-    def total_number_of_points(self):
+    def total_number_of_points(self) -> int:
         """Returns the total number of points within the layer."""
-        num = 0
-        for path in self.paths:
-            num += len(path.printpoints)
-        return num
+        return sum(len(path.points) for path in self.paths)
 
-    def calculate_z_bounds(self):
-        """ Fills in the attribute self.min_max_z_height. """
-        assert len(self.paths) > 0, "You cannot calculate z_bounds because the list of paths is empty."
-        z_min = 2 ** 32  # very big number
-        z_max = -2 ** 32  # very small number
+    def calculate_z_bounds(self) -> None:
+        """Fills in the attribute self.min_max_z_height."""
+        if not self.paths:
+            raise ValueError("Cannot calculate z_bounds because the list of paths is empty.")
+
+        # Vectorized z extraction
+        all_z = []
         for path in self.paths:
             for pt in path.points:
-                z_min = min(z_min, pt[2])
-                z_max = max(z_max, pt[2])
-        self.min_max_z_height = (z_min, z_max)
+                all_z.append(pt[2])
+
+        self.min_max_z_height = (min(all_z), max(all_z))
+
+    @property
+    def __data__(self) -> dict[str, Any]:
+        return {
+            "paths": [path.__data__ for path in self.paths],
+            "layer_type": "horizontal_layer",
+            "is_brim": self.is_brim,
+            "number_of_brim_offsets": self.number_of_brim_offsets,
+            "min_max_z_height": list(self.min_max_z_height),
+        }
 
     @classmethod
-    def from_data(cls, data):
+    def __from_data__(cls, data: dict[str, Any]) -> Layer:
+        paths_data = data["paths"]
+        # Handle both list format and legacy dict format
+        if isinstance(paths_data, dict):
+            paths = [Path.from_data(paths_data[key]) for key in sorted(paths_data.keys(), key=lambda x: int(x))]
+        else:
+            paths = [Path.from_data(p) for p in paths_data]
+
+        return cls(
+            paths=paths,
+            is_brim=data.get("is_brim", False),
+            number_of_brim_offsets=data.get("number_of_brim_offsets"),
+            min_max_z_height=_parse_min_max(data.get("min_max_z_height")),
+        )
+
+    @classmethod
+    def from_data(cls, data: dict[str, Any]) -> Layer:
         """Construct a layer from its data representation.
 
         Parameters
         ----------
-        data: dict
+        data : dict
             The data dictionary.
 
         Returns
         -------
-        layer
+        Layer
             The constructed layer.
-        """
-        paths_data = data['paths']
-        paths = [Path.from_data(paths_data[key]) for key in paths_data]
-        layer = cls(paths=paths)
-        layer.is_brim = data['is_brim']
-        layer.number_of_brim_offsets = data['number_of_brim_offsets']
-        layer.min_max_z_height = data['min_max_z_height']
-        return layer
 
-    def to_data(self):
-        """Returns a dictionary of structured data representing the data structure.
+        """
+        return cls.__from_data__(data)
+
+    def to_data(self) -> dict[str, Any]:
+        """Returns a dictionary of structured data representing the layer.
 
         Returns
         -------
         dict
             The layer's data.
+
         """
-        data = {'paths': {i: [] for i in range(len(self.paths))},
-                'layer_type': 'horizontal_layer',
-                'is_brim': self.is_brim,
-                'number_of_brim_offsets': self.number_of_brim_offsets,
-                'min_max_z_height': self.min_max_z_height}
-        for i, path in enumerate(self.paths):
-            data['paths'][i] = path.to_data()
-        return data
+        return self.__data__
 
 
+@dataclass
 class VerticalLayer(Layer):
-    """
-    Vertical ordering. A VerticalLayer stores the print paths sorted in vertical groups.
+    """Vertical ordering layer that stores print paths sorted in vertical groups.
+
     It is created with an empty list of paths that is filled in afterwards.
 
     Attributes
     ----------
-    id: int
+    id : int
         Identifier of vertical layer.
+    head_centroid : NDArray | None
+        Centroid of the last path's points.
+
     """
 
-    def __init__(self, id=0, paths=None):
-        Layer.__init__(self, paths=paths)
-        self.id = id
-        self.head_centroid = None
+    id: int = 0
+    head_centroid: NDArray | None = field(default=None, repr=False)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         no_of_paths = len(self.paths) if self.paths else 0
-        return "<Vertical Layer object with id : %d and %d paths>" % (self.id, no_of_paths)
+        return f"<VerticalLayer id={self.id} with {no_of_paths} paths>"
 
-    def append_(self, path):
-        """ Add path to self.paths list. """
+    def append_(self, path: Path) -> None:
+        """Add path to self.paths list."""
         self.paths.append(path)
         self.compute_head_centroid()
         self.calculate_z_bounds()
 
-    def compute_head_centroid(self):
-        """ Find the centroid of all the points of the last path in the self.paths list"""
+    def compute_head_centroid(self) -> None:
+        """Find the centroid of all the points of the last path."""
         pts = np.array(self.paths[-1].points)
         self.head_centroid = np.mean(pts, axis=0)
 
-    def printout_details(self):
-        """ Prints the details of the class. """
-        logger.info("VerticalLayer id : %d" % self.id)
-        logger.info("Total number of paths : %d" % len(self.paths))
+    def printout_details(self) -> None:
+        """Prints the details of the class."""
+        logger.info(f"VerticalLayer id: {self.id}")
+        logger.info(f"Total number of paths: {len(self.paths)}")
 
-    def to_data(self):
-        """Returns a dictionary of structured data representing the data structure.
+    @property
+    def __data__(self) -> dict[str, Any]:
+        return {
+            "paths": [path.__data__ for path in self.paths],
+            "min_max_z_height": list(self.min_max_z_height),
+            "layer_type": "vertical_layer",
+            "id": self.id,
+        }
+
+    @classmethod
+    def __from_data__(cls, data: dict[str, Any]) -> VerticalLayer:
+        paths_data = data["paths"]
+        # Handle both list format and legacy dict format
+        if isinstance(paths_data, dict):
+            paths = [Path.from_data(paths_data[key]) for key in sorted(paths_data.keys(), key=lambda x: int(x))]
+        else:
+            paths = [Path.from_data(p) for p in paths_data]
+
+        layer = cls(
+            paths=paths,
+            id=data.get("id", 0),
+            min_max_z_height=_parse_min_max(data.get("min_max_z_height")),
+        )
+        return layer
+
+    @classmethod
+    def from_data(cls, data: dict[str, Any]) -> VerticalLayer:
+        """Construct a vertical layer from its data representation.
+
+        Parameters
+        ----------
+        data : dict
+            The data dictionary.
+
+        Returns
+        -------
+        VerticalLayer
+            The constructed vertical layer.
+
+        """
+        return cls.__from_data__(data)
+
+    def to_data(self) -> dict[str, Any]:
+        """Returns a dictionary of structured data representing the vertical layer.
 
         Returns
         -------
         dict
             The vertical layer's data.
+
         """
-        data = {'paths': {i: [] for i in range(len(self.paths))},
-                'min_max_z_height': self.min_max_z_height,
-                'layer_type': 'vertical_layer'}
-        for i, path in enumerate(self.paths):
-            data['paths'][i] = path.to_data()
-        return data
-
-    @classmethod
-    def from_data(cls, data):
-        """Construct a vertical layer from its data representation.
-
-        Parameters
-        ----------
-        data: dict
-            The data dictionary.
-
-        Returns
-        -------
-        layer
-            The constructed vertical layer.
-        """
-        paths_data = data['paths']
-        paths = [Path.from_data(paths_data[key]) for key in paths_data]
-        layer = cls(id=None)
-        layer.paths = paths
-        layer.min_max_z_height = data['min_max_z_height']
-        return layer
+        return self.__data__
 
 
 class VerticalLayersManager:
-    """
-    Creates empty vertical layers and assigns to the input paths to the fitting vertical layer using the add() function.
-    The criterion for grouping paths to VerticalLayers is based on the proximity of the centroids of the paths.
-    If the input paths don't fit in any vertical layer, then new vertical layer is created with that path.
+    """Creates and manages vertical layers, assigning paths to fitting layers.
+
+    The criterion for grouping paths to VerticalLayers is based on the
+    proximity of the centroids of the paths. If the input paths don't fit
+    in any vertical layer, then a new vertical layer is created.
 
     Attributes
     ----------
-    max_paths_per_layer: int
-        Maximum number of layers that a vertical layer can consist of.
-        If None, then the vertical layer has an unlimited number of layers.
+    layers : list[VerticalLayer]
+        List of vertical layers.
+    avg_layer_height : float
+        Average layer height for proximity calculations.
+    max_paths_per_layer : int | None
+        Maximum number of paths per vertical layer. If None, unlimited.
+
     """
 
-    def __init__(self, avg_layer_height, max_paths_per_layer=None):
-        self.layers = [VerticalLayer(id=0)]  # vertical_layers_print_data that contain isocurves (compas_slicer.Path)
+    def __init__(self, avg_layer_height: float, max_paths_per_layer: int | None = None) -> None:
+        self.layers: list[VerticalLayer] = [VerticalLayer(id=0)]
         self.avg_layer_height = avg_layer_height
         self.max_paths_per_layer = max_paths_per_layer
 
-    def add(self, path):
-        selected_layer = None
+    def add(self, path: Path) -> None:
+        """Add a path to the appropriate vertical layer."""
+        selected_layer: VerticalLayer | None = None
 
-        #  Find an eligible layer for path (called selected_layer)
-        if len(self.layers[0].paths) == 0:  # first path goes to first layer
+        # Find an eligible layer for path
+        if len(self.layers[0].paths) == 0:
             selected_layer = self.layers[0]
-
-        else:  # find the candidate segment for new isocurve
+        else:
             centroid = np.mean(np.array(path.points), axis=0)
             other_centroids = get_vertical_layers_centroids_list(self.layers)
             candidate_layer = self.layers[utils.get_closest_pt_index(centroid, other_centroids)]
@@ -222,35 +274,43 @@ class VerticalLayersManager:
                 else:
                     selected_layer = candidate_layer
 
-                if selected_layer:  # also check that the actual distance between the layers is acceptable
+                if selected_layer:
+                    # Check that actual distance between layers is acceptable
                     pts_selected_layer = np.array(candidate_layer.paths[-1].points)
                     pts = np.array(path.points)
-                    # find min distance between pts_selected_layer and pts
-                    min_dist = 1e10  # some large number
-                    max_dist = 0.0  # some small number
+
+                    min_dist = float("inf")
+                    max_dist = 0.0
                     for pt in pts:
                         pt_array = np.tile(pt, (pts_selected_layer.shape[0], 1))
                         dists = np.linalg.norm(pts_selected_layer - pt_array, axis=1)
                         min_dist = min(np.min(dists), min_dist)
                         max_dist = max(np.min(dists), max_dist)
+
                     if min_dist > 3.0 * self.avg_layer_height or max_dist > 8.0 * self.avg_layer_height:
                         selected_layer = None
 
-            if not selected_layer:  # then create new layer
+            if not selected_layer:
                 selected_layer = VerticalLayer(id=self.layers[-1].id + 1)
                 self.layers.append(selected_layer)
 
         selected_layer.append_(path)
 
 
-def get_vertical_layers_centroids_list(vert_layers):
-    """ Returns a list with points that are the centroids of the heads of all vertical_layers_print_data. The head
-    of a vertical_layer is its last path. """
-    head_centroids = []
-    for vert_layer in vert_layers:
-        head_centroids.append(vert_layer.head_centroid)
-    return head_centroids
+def get_vertical_layers_centroids_list(vert_layers: list[VerticalLayer]) -> list[NDArray]:
+    """Returns a list of centroids of the heads of all vertical layers.
 
+    The head of a vertical_layer is its last path.
 
-if __name__ == "__main__":
-    pass
+    Parameters
+    ----------
+    vert_layers : list[VerticalLayer]
+        List of vertical layers.
+
+    Returns
+    -------
+    list[NDArray]
+        List of head centroids.
+
+    """
+    return [vert_layer.head_centroid for vert_layer in vert_layers]

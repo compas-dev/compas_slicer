@@ -1,18 +1,22 @@
+from __future__ import annotations
+
 import itertools
-from compas.geometry import Point
-from compas_slicer.geometry import Layer
-from compas_slicer.geometry import Path
+from typing import TYPE_CHECKING, Any, Callable
+
 import progressbar
-import logging
-import compas_slicer.utilities as utils
+from compas.geometry import Plane, Point
 from compas.plugins import PluginNotInstalledError
 
-logger = logging.getLogger('logger')
+from compas_slicer.geometry import Layer, Path
 
-__all__ = ['create_planar_paths_cgal']
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
 
 
-def create_planar_paths_cgal(mesh, planes):
+__all__ = ['create_planar_paths']
+
+
+def create_planar_paths(mesh: Mesh, planes: list[Plane]) -> list[Layer]:
     """Creates planar contours very efficiently using CGAL.
 
     Parameters
@@ -21,16 +25,14 @@ def create_planar_paths_cgal(mesh, planes):
         A compas mesh.
     planes: list, :class: 'compas.geometry.Plane'
     """
-    packages = utils.TerminalCommand('conda list').get_split_output_strings()
-
-    if 'compas-cgal' in packages or 'compas_cgal' in packages:
+    try:
         from compas_cgal.slicer import slice_mesh
-    else:
-        raise PluginNotInstalledError("--------ATTENTION! ----------- \
-                        Compas_cgal library is missing! \
-                        You can't use this planar slicing method without it. \
-                        Check the README instructions for how to install it, \
-                        or use another planar slicing method.")
+    except ImportError as e:
+        raise PluginNotInstalledError(
+            "Compas_cgal library is missing! "
+            "You can't use this planar slicing method without it. "
+            "Install it with: pip install compas_cgal"
+        ) from e
 
     # prepare mesh for slicing
     M = mesh.to_vertices_and_faces()
@@ -68,7 +70,9 @@ def create_planar_paths_cgal(mesh, planes):
     return layers
 
 
-def get_grouped_list(item_list, key_function):
+def get_grouped_list(
+    item_list: list[Any], key_function: Callable[[Any], Any]
+) -> list[list[Any]]:
     """ Groups layers horizontally. """
     # first sort, because grouping only groups consecutively matching items
     sorted_list = sorted(item_list, key=key_function)
@@ -78,7 +82,7 @@ def get_grouped_list(item_list, key_function):
     return [list(group) for _key, group in grouped_iter]
 
 
-def key_function(item):
+def key_function(item: list[list[float]]) -> float:
     return item[0][2]
 
 

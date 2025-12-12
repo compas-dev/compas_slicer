@@ -1,46 +1,65 @@
-import numpy as np
-from compas_slicer.slicers import BaseSlicer
-import logging
-from compas_slicer.slicers.slice_utilities import ScalarFieldContours
-import progressbar
-from compas_slicer.geometry import VerticalLayersManager
-from compas_slicer.parameters import get_param
+from __future__ import annotations
 
-logger = logging.getLogger('logger')
+from typing import TYPE_CHECKING
+
+import numpy as np
+import progressbar
+from loguru import logger
+
+from compas_slicer.config import InterpolationConfig
+from compas_slicer.geometry import VerticalLayersManager
+from compas_slicer.slicers import BaseSlicer
+from compas_slicer.slicers.slice_utilities import ScalarFieldContours
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from compas.datastructures import Mesh
+
 
 __all__ = ['ScalarFieldSlicer']
 
 
 class ScalarFieldSlicer(BaseSlicer):
-    """
-    Generates the isocontours of a scalar field defined on the mesh vertices.
+    """Generates the isocontours of a scalar field defined on mesh vertices.
 
     Attributes
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
-        Note that the topology of the mesh matters, irregular tesselation can lead to undesired results.
-        We recommend to 1)re-topologize, 2) triangulate, and 3) weld your mesh in advance.
-    scalar_field: list, Vx1 (one float per vertex that represents the scalar field)
-    no_of_isocurves: int, how many isocontours to be generated
+    mesh : Mesh
+        Input mesh, must be triangular (no quads or n-gons allowed).
+        Topology matters; irregular tessellation can lead to undesired results.
+        Recommend: re-topologize, triangulate, and weld mesh in advance.
+    scalar_field : list[float]
+        One float per vertex representing the scalar field.
+    no_of_isocurves : int
+        Number of isocontours to generate.
+    config : InterpolationConfig
+        Configuration parameters.
+
     """
 
-    def __init__(self, mesh, scalar_field, no_of_isocurves, parameters=None):
+    def __init__(
+        self,
+        mesh: Mesh,
+        scalar_field: Sequence[float],
+        no_of_isocurves: int,
+        config: InterpolationConfig | None = None,
+    ) -> None:
         logger.info('ScalarFieldSlicer')
         BaseSlicer.__init__(self, mesh)
 
         self.no_of_isocurves = no_of_isocurves
-        self.scalar_field = list(np.array(scalar_field) - np.min(np.array(scalar_field)))
-        self.parameters = parameters if parameters else {}
+        self.scalar_field: list[float] = list(np.array(scalar_field) - np.min(np.array(scalar_field)))
+        self.config = config if config else InterpolationConfig()
 
         mesh.update_default_vertex_attributes({'scalar_field': 0})
 
-    def generate_paths(self):
-        """ Generates isocontours. """
+    def generate_paths(self) -> None:
+        """Generate isocontours."""
         start_domain, end_domain = min(self.scalar_field), max(self.scalar_field)
         step = (end_domain - start_domain) / (self.no_of_isocurves + 1)
 
-        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='layers')
+        max_dist = self.config.vertical_layers_max_centroid_dist
         vertical_layers_manager = VerticalLayersManager(max_dist)
 
         # create paths + layers

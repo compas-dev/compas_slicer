@@ -5,14 +5,12 @@ from compas_slicer.geometry import Path
 import numpy as np
 import copy
 import networkx as nx
-import logging
+from loguru import logger
 import compas_slicer.utilities as utils
 from compas_slicer.slicers.slice_utilities import sort_graph_connected_components
 import progressbar
 
 __all__ = ['create_planar_paths_igl']
-
-logger = logging.getLogger('logger')
 
 
 def try_to_create_connection(G, isoV, ei, ej, i, j, side_i, side_j, connections_found, tol):

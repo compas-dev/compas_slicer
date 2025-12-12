@@ -1,66 +1,84 @@
-from compas_slicer.slicers import BaseSlicer
-import logging
-from compas_slicer.slicers.slice_utilities import UVContours
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
-
 import progressbar
-from compas_slicer.geometry import VerticalLayersManager
-from compas_slicer.parameters import get_param
+from loguru import logger
 
-logger = logging.getLogger('logger')
+from compas_slicer.config import InterpolationConfig
+from compas_slicer.geometry import VerticalLayersManager
+from compas_slicer.slicers import BaseSlicer
+from compas_slicer.slicers.slice_utilities import UVContours
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
+
 
 __all__ = ['UVSlicer']
 
 
 class UVSlicer(BaseSlicer):
-    """
-    Generates the contours on the mesh that correspond to straight lines on the plane,
-    using on a UV map (from 3D space to the plane) defined on the mesh vertices.
+    """Generates contours on the mesh corresponding to straight lines on the UV plane.
+
+    Uses a UV map (from 3D space to plane) defined on mesh vertices.
 
     Attributes
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
-        Note that the topology of the mesh matters, irregular tesselation can lead to undesired results.
-        We recommend to 1)re-topologize, 2) triangulate, and 3) weld your mesh in advance.
-    vkey_to_uv: dict {vkey : tuple (u,v)}. U,V coordinates should be in the domain [0,1]. The U coordinate
-    no_of_isocurves: int, how many levels to be generated
+    mesh : Mesh
+        Input mesh, must be triangular (no quads or n-gons allowed).
+        Topology matters; irregular tessellation can lead to undesired results.
+        Recommend: re-topologize, triangulate, and weld mesh in advance.
+    vkey_to_uv : dict[int, tuple[float, float]]
+        Mapping from vertex key to UV coordinates. UV should be in [0,1].
+    no_of_isocurves : int
+        Number of levels to generate.
+    config : InterpolationConfig
+        Configuration parameters.
+
     """
 
-    def __init__(self, mesh, vkey_to_uv, no_of_isocurves, parameters=None):
+    def __init__(
+        self,
+        mesh: Mesh,
+        vkey_to_uv: dict[int, tuple[float, float]],
+        no_of_isocurves: int,
+        config: InterpolationConfig | None = None,
+    ) -> None:
         logger.info('UVSlicer')
         BaseSlicer.__init__(self, mesh)
 
         self.vkey_to_uv = vkey_to_uv
         self.no_of_isocurves = no_of_isocurves
-        self.parameters = parameters if parameters else {}
+        self.config = config if config else InterpolationConfig()
 
         u = [self.vkey_to_uv[vkey][0] for vkey in mesh.vertices()]
         v = [self.vkey_to_uv[vkey][1] for vkey in mesh.vertices()]
-        u = np.array(u) * float(no_of_isocurves + 1)
+        u_arr = np.array(u) * float(no_of_isocurves + 1)
         vkey_to_i = self.mesh.key_index()
 
         mesh.update_default_vertex_attributes({'uv': 0})
         for vkey in mesh.vertices():
-            mesh.vertex_attribute(vkey, 'uv', (u[vkey_to_i[vkey]], v[vkey_to_i[vkey]]))
+            mesh.vertex_attribute(vkey, 'uv', (u_arr[vkey_to_i[vkey]], v[vkey_to_i[vkey]]))
 
-    def generate_paths(self):
-        """ Generates isocontours. """
+    def generate_paths(self) -> None:
+        """Generate isocontours."""
         paths_type = 'flat'  # 'spiral' # 'zigzag'
         v_left, v_right = 0.0, 1.0 - 1e-5
 
-        max_dist = get_param(self.parameters, key='vertical_layers_max_centroid_dist', defaults_type='layers')
+        max_dist = self.config.vertical_layers_max_centroid_dist
         vertical_layers_manager = VerticalLayersManager(max_dist)
 
         # create paths + layers
         with progressbar.ProgressBar(max_value=self.no_of_isocurves) as bar:
             for i in range(0, self.no_of_isocurves + 1):
+                u_val = float(i)
                 if i == 0:
-                    i += 0.05  # contours are a bit tricky in the edges
+                    u_val += 0.05  # contours are a bit tricky in the edges
                 if paths_type == 'spiral':
-                    u1, u2 = i, i + 1.0
+                    u1, u2 = u_val, u_val + 1.0
                 else:  # 'flat'
-                    u1 = u2 = i
+                    u1 = u2 = u_val
 
                 p1 = (u1, v_left)
                 p2 = (u2, v_right)

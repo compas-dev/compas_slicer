@@ -1,0 +1,163 @@
+site_name: COMPAS Slicer
+site_description: Slicing package for FDM 3D Printing with COMPAS
+site_url: https://compas.dev/compas_slicer
+repo_url: https://github.com/compas-dev/compas_slicer
+repo_name: compas-dev/compas_slicer
+edit_uri: edit/master/docs/
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/printer-3d-nozzle
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+    - toc.follow
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: numpy
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            merge_init_into_class: true
+            separate_signature: true
+            signature_crossrefs: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: installation.md
+    - Quick Start: quickstart.md
+  - Concepts:
+    - concepts/index.md
+    - Architecture: concepts/architecture.md
+    - Slicing Algorithms: concepts/slicing-algorithms.md
+    - Print Organization: concepts/print-organization.md
+  - Tutorials:
+    - tutorials/index.md
+    - Introduction: tutorials/introduction.md
+    - Grasshopper Visualization: tutorials/grasshopper.md
+  - Examples:
+    - examples/index.md
+    - Planar Slicing: examples/01_planar_slicing.md
+    - Curved Slicing: examples/02_curved_slicing.md
+    - Vertical Sorting: examples/03_vertical_sorting.md
+    - G-code Generation: examples/04_gcode.md
+    - Scalar Field Slicing: examples/05_scalar_field.md
+    - Attribute Transfer: examples/06_attributes.md
+    - Medial Axis Infill: examples/07_medial_axis.md
+  - API Reference:
+    - api/index.md
+    - Geometry: api/geometry.md
+    - Slicers: api/slicers.md
+    - Print Organization: api/print_organization.md
+    - Pre-processing: api/pre_processing.md
+    - Post-processing: api/post_processing.md
+    - Utilities: api/utilities.md
+  - Contributing: contributing.md
+  - Citing: citing.md
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/compas-dev/compas_slicer
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/compas_slicer/
+  version:
+    provider: mike
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+watch:
+  - src/compas_slicer

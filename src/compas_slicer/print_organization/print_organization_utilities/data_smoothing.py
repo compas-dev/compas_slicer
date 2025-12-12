@@ -1,14 +1,27 @@
-import logging
-from copy import deepcopy
+from __future__ import annotations
 
-logger = logging.getLogger('logger')
+from typing import TYPE_CHECKING, Any, Callable
+
+import numpy as np
+from compas.geometry import Vector
+
+if TYPE_CHECKING:
+    from compas_slicer.geometry import PrintPoint
+    from compas_slicer.print_organization import BasePrintOrganizer
+
 
 __all__ = ['smooth_printpoint_attribute',
            'smooth_printpoints_up_vectors',
            'smooth_printpoints_layer_heights']
 
 
-def smooth_printpoint_attribute(print_organizer, iterations, strength, get_attr_value, set_attr_value):
+def smooth_printpoint_attribute(
+    print_organizer: BasePrintOrganizer,
+    iterations: int,
+    strength: float,
+    get_attr_value: Callable[[PrintPoint], Any],
+    set_attr_value: Callable[[PrintPoint, Any], None],
+) -> None:
     """
     Iterative smoothing of the printpoints attribute.
     The attribute is accessed using the function 'get_attr_value(ppt)', and is set using the function
@@ -33,25 +46,28 @@ def smooth_printpoint_attribute(print_organizer, iterations, strength, get_attr_
 
     # first smoothen the values
     for ppt in print_organizer.printpoints_iterator():
-        assert get_attr_value(ppt), 'The attribute you are trying to smooth has not been assigned a value'
+        if get_attr_value(ppt) is None:
+            raise ValueError('The attribute you are trying to smooth has not been assigned a value')
 
-    attrs = [get_attr_value(ppt) for ppt in print_organizer.printpoints_iterator()]
-    new_values = deepcopy(attrs)
+    attrs = np.array([get_attr_value(ppt) for ppt in print_organizer.printpoints_iterator()])
 
-    for iteration in range(iterations):
-        for i, ppt in enumerate(print_organizer.printpoints_iterator()):
-            if 0 < i < len(attrs) - 1:  # ignore first and last element
-                mid = (attrs[i - 1] + attrs[i + 1]) * 0.5
-                new_values[i] = mid * strength + attrs[i] * (1 - strength)
-        attrs = new_values
+    # Vectorized smoothing: use numpy slicing instead of per-element loop
+    for _ in range(iterations):
+        # mid = 0.5 * (attrs[i-1] + attrs[i+1]) for interior points
+        mid = 0.5 * (attrs[:-2] + attrs[2:])  # shape: (n-2,)
+        # new_val = mid * strength + attrs[1:-1] * (1 - strength)
+        attrs[1:-1] = mid * strength + attrs[1:-1] * (1 - strength)
 
-        # in the end assign the new (smoothened) values to the printpoints
-        if iteration == iterations - 1:
-            for i, ppt in enumerate(print_organizer.printpoints_iterator()):
-                set_attr_value(ppt, attrs[i])
+    # Assign the smoothened values back to the printpoints
+    for i, ppt in enumerate(print_organizer.printpoints_iterator()):
+        val = attrs[i]
+        # Convert back from numpy type if needed
+        set_attr_value(ppt, val.tolist() if hasattr(val, 'tolist') else float(val))
 
 
-def smooth_printpoints_layer_heights(print_organizer, iterations, strength):
+def smooth_printpoints_layer_heights(
+    print_organizer: BasePrintOrganizer, iterations: int, strength: float
+) -> None:
     """ This function is an example for how the 'smooth_printpoint_attribute' function can be used. """
 
     def get_ppt_layer_height(printpoint):
@@ -63,14 +79,17 @@ def smooth_printpoints_layer_heights(print_organizer, iterations, strength):
     smooth_printpoint_attribute(print_organizer, iterations, strength, get_ppt_layer_height, set_ppt_layer_height)
 
 
-def smooth_printpoints_up_vectors(print_organizer, iterations, strength):
+def smooth_printpoints_up_vectors(
+    print_organizer: BasePrintOrganizer, iterations: int, strength: float
+) -> None:
     """ This function is an example for how the 'smooth_printpoint_attribute' function can be used. """
 
     def get_ppt_up_vec(printpoint):
         return printpoint.up_vector  # get value
 
     def set_ppt_up_vec(printpoint, v):
-        printpoint.up_vector = v  # set value
+        # Convert list back to Vector for proper serialization
+        printpoint.up_vector = Vector(*v) if isinstance(v, list) else v
 
     smooth_printpoint_attribute(print_organizer, iterations, strength, get_ppt_up_vec, set_ppt_up_vec)
     # finally update any values in the printpoints that are affected by the changed attribute

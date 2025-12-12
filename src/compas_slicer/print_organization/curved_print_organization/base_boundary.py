@@ -1,9 +1,12 @@
-import logging
-from compas.geometry import Vector, normalize_vector
-from compas_slicer.geometry import PrintPoint
-import compas_slicer.utilities as utils
+from __future__ import annotations
 
-logger = logging.getLogger('logger')
+from typing import Any
+
+from compas.datastructures import Mesh
+from compas.geometry import Point, Vector, normalize_vector
+
+import compas_slicer.utilities as utils
+from compas_slicer.geometry import PrintPoint
 
 __all__ = ['BaseBoundary']
 
@@ -21,11 +24,13 @@ class BaseBoundary:
     override_vector :
     """
 
-    def __init__(self, mesh, points, override_vector=None):
+    def __init__(
+        self, mesh: Mesh, points: list[Point], override_vector: Vector | None = None
+    ) -> None:
         self.mesh = mesh
         self.points = points
         self.override_vector = override_vector
-        closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.mesh, [pt for pt in self.points])
+        closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.mesh, list(self.points))
         self.normals = [Vector(*self.mesh.face_normal(fkey)) for fkey in closest_fks]
 
         if self.override_vector:
@@ -40,10 +45,10 @@ class BaseBoundary:
         for i, pp in enumerate(self.printpoints):
             pp.up_vector = self.up_vectors[i]
 
-    def __repr__(self):
-        return "<BaseBoundary object with %i points>" % len(self.points)
+    def __repr__(self) -> str:
+        return f"<BaseBoundary object with {len(self.points)} points>"
 
-    def get_up_vectors(self):
+    def get_up_vectors(self) -> list[Vector]:
         """ Finds the up_vectors of each point of the boundary. A smoothing step is also included. """
         up_vectors = []
         for i, p in enumerate(self.points):
@@ -56,7 +61,7 @@ class BaseBoundary:
         up_vectors = utils.smooth_vectors(up_vectors, strength=0.4, iterations=3)
         return up_vectors
 
-    def to_data(self):
+    def to_data(self) -> dict[str, Any]:
         """ Returns a dictionary with the data of the class. """
         return {"points": utils.point_list_to_dict(self.points),
                 "up_vectors": utils.point_list_to_dict(self.up_vectors)}

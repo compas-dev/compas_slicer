@@ -1,15 +1,19 @@
-import logging
+from __future__ import annotations
 
-logger = logging.getLogger('logger')
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
+
 
 __all__ = ['zig_zag_open_paths']
 
 
-def zig_zag_open_paths(slicer):
+def zig_zag_open_paths(slicer: BaseSlicer) -> None:
     """ Reverses half of the open paths of the slicer, so that they can be printed in a zig zag motion. """
     reverse = False
     for layer in slicer.layers:
-        for i, path in enumerate(layer.paths):
+        for _i, path in enumerate(layer.paths):
             if not path.is_closed:
                 if not reverse:
                     reverse = True

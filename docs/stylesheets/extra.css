@@ -1,0 +1,38 @@
+/* Custom styles for COMPAS Slicer docs */
+
+:root {
+  --md-primary-fg-color: #673ab7;
+  --md-primary-fg-color--light: #9575cd;
+  --md-primary-fg-color--dark: #512da8;
+}
+
+/* Code block styling */
+.md-typeset code {
+  font-size: 0.85em;
+}
+
+/* Preserve whitespace in code blocks for ASCII art */
+.md-typeset pre code {
+  white-space: pre;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* API docs styling */
+.doc-heading {
+  font-weight: 600;
+}
+
+/* Better image styling */
+.md-typeset img {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Admonition icons */
+.md-typeset .admonition.tip {
+  border-color: #00bfa5;
+}
+
+.md-typeset .admonition.warning {
+  border-color: #ff9100;
+}

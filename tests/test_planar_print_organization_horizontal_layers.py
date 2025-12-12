@@ -1,6 +1,8 @@
-import os
-import compas_slicer
+from pathlib import Path
+
 import numpy as np
+
+import compas_slicer
 from compas_slicer.slicers import PlanarSlicer
 from compas_slicer.post_processing import generate_brim
 from compas_slicer.post_processing import simplify_paths_rdp
@@ -10,20 +12,17 @@ from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.print_organization.print_organization_utilities.extruder_toggle import check_assigned_extruder_toggle
 from compas.datastructures import Mesh
 
-HERE = os.path.dirname(__file__)
-DATA = os.path.join(HERE, 'tests_data')
-stl_to_test = ['distorted_v_closed_low_res.obj']  # , 'distorted_a_closed_low_res.obj']
+DATA_PATH = Path(__file__).parent / 'tests_data'
+stl_to_test = ['distorted_v_closed_low_res.obj']
 
 
 def create_setup(filename):
     """ Setting up the stage for testing. """
-    FILE = os.path.abspath(os.path.join(DATA, filename))
-    compas_mesh = Mesh.from_obj(FILE)
-    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=20)
+    compas_mesh = Mesh.from_obj(DATA_PATH / filename)
+    slicer = PlanarSlicer(compas_mesh, layer_height=20)
     slicer.slice_model()
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=3)
     simplify_paths_rdp(slicer, threshold=1.3)
-    # seams_smooth(slicer, smooth_distance=10)
     slicer.printout_info()
     print_organizer = PlanarPrintOrganizer(slicer)
     print_organizer.create_printpoints()
@@ -103,7 +102,7 @@ def test_planar_add_safety_printpoints_for_horizontal_layers():
 
     for filename in stl_to_test:
         slicer, print_organizer = create_setup(filename)
-        set_extruder_toggle(print_organizer, slicer)  # has already been don
+        set_extruder_toggle(print_organizer, slicer)
 
         pp_dict = print_organizer.printpoints_dict
 
@@ -129,26 +128,12 @@ def test_planar_add_safety_printpoints_for_horizontal_layers():
 
 def test_planar_set_linear_velocity_constant_for_horizontal_layers():
     """ Tests set_linear_velocity on planar slicer, with constant value. """
-    #
-    # # copy to avoid altering the classes, so that all test functions can start from same setup
-    # print_organizer_copy = copy.deepcopy(print_organizer)
-    # slicer_copy = copy.deepcopy(slicer)
-    #
-    # set_linear_velocity(print_organizer_copy, "constant", v=25.0)
     pass
-    # TODO check results
 
 
 def test_planar_set_blend_radius_for_horizontal_layers():
     """ Tests set_blend_radius on planar slicer. """
-    #
-    # # copy to avoid altering the classes, so that all test functions can start from same setup
-    # print_organizer_copy = copy.deepcopy(print_organizer)
-    # slicer_copy = copy.deepcopy(slicer)
-    #
-    # set_blend_radius(print_organizer_copy, d_fillet=10.0)
     pass
-    # TODO check results
 
 
 if __name__ == '__main__':

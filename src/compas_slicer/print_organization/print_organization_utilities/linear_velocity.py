@@ -1,8 +1,16 @@
-from compas.geometry import Vector, dot_vectors
-from compas_slicer.utilities import remap, remap_unbound
-import logging
+from __future__ import annotations
 
-logger = logging.getLogger('logger')
+from typing import TYPE_CHECKING, Callable
+
+from compas.geometry import Vector, dot_vectors
+from loguru import logger
+
+from compas_slicer.utilities import remap, remap_unbound
+
+if TYPE_CHECKING:
+    from compas_slicer.geometry import PrintPoint
+    from compas_slicer.print_organization import BasePrintOrganizer
+
 
 __all__ = ['set_linear_velocity_constant',
            'set_linear_velocity_per_layer',
@@ -10,7 +18,7 @@ __all__ = ['set_linear_velocity_constant',
            'set_linear_velocity_by_overhang']
 
 
-def set_linear_velocity_constant(print_organizer, v=25.0):
+def set_linear_velocity_constant(print_organizer: BasePrintOrganizer, v: float = 25.0) -> None:
     """Sets the linear velocity parameter of the printpoints depending on the selected type.
 
     Parameters
@@ -24,7 +32,9 @@ def set_linear_velocity_constant(print_organizer, v=25.0):
         printpoint.velocity = v
 
 
-def set_linear_velocity_per_layer(print_organizer, per_layer_velocities):
+def set_linear_velocity_per_layer(
+    print_organizer: BasePrintOrganizer, per_layer_velocities: list[float]
+) -> None:
     """Sets the linear velocity parameter of the printpoints depending on the selected type.
 
     Parameters
@@ -35,14 +45,22 @@ def set_linear_velocity_per_layer(print_organizer, per_layer_velocities):
     """
 
     logger.info("Setting per-layer linear velocity")
-    assert len(per_layer_velocities) == print_organizer.number_of_layers, 'Wrong number of velocity values. You need \
-        to provide one velocity value per layer, on the "per_layer_velocities" list.'
-    for printpoint, i, j, k in print_organizer.printpoints_indices_iterator():
+    if len(per_layer_velocities) != print_organizer.number_of_layers:
+        raise ValueError(
+            f'Wrong number of velocity values: got {len(per_layer_velocities)}, '
+            f'need {print_organizer.number_of_layers} (one per layer)'
+        )
+    for printpoint, i, _j, _k in print_organizer.printpoints_indices_iterator():
         printpoint.velocity = per_layer_velocities[i]
 
 
-def set_linear_velocity_by_range(print_organizer, param_func, parameter_range, velocity_range,
-                                 bound_remapping=True):
+def set_linear_velocity_by_range(
+    print_organizer: BasePrintOrganizer,
+    param_func: Callable[[PrintPoint], float],
+    parameter_range: tuple[float, float],
+    velocity_range: tuple[float, float],
+    bound_remapping: bool = True,
+) -> None:
     """Sets the linear velocity parameter of the printpoints depending on the selected type.
 
     Parameters
@@ -61,7 +79,8 @@ def set_linear_velocity_by_range(print_organizer, param_func, parameter_range, v
     logger.info("Setting linear velocity based on parameter range")
     for printpoint in print_organizer.printpoints_iterator():
         param = param_func(printpoint)
-        assert param, 'The param_func does not return any value for calculating the velocity range.'
+        if param is None:
+            raise ValueError('The param_func does not return any value for calculating the velocity range.')
         if bound_remapping:
             v = remap(param, parameter_range[0], parameter_range[1], velocity_range[0], velocity_range[1])
         else:
@@ -69,7 +88,12 @@ def set_linear_velocity_by_range(print_organizer, param_func, parameter_range, v
         printpoint.velocity = v
 
 
-def set_linear_velocity_by_overhang(print_organizer, overhang_range, velocity_range, bound_remapping=True):
+def set_linear_velocity_by_overhang(
+    print_organizer: BasePrintOrganizer,
+    overhang_range: tuple[float, float],
+    velocity_range: tuple[float, float],
+    bound_remapping: bool = True,
+) -> None:
     """Set velocity by overhang by using set_linear_velocity_by_range.
 
     An example function for how to use the 'set_linear_velocity_by_range'. In this case the parameter that controls the

@@ -1,13 +1,14 @@
-from compas_slicer.geometry import Layer
-from compas_slicer.geometry import Path
-import os
+from pathlib import Path
+
 from compas.datastructures import Mesh
+
+from compas_slicer.geometry import Layer
+from compas_slicer.geometry import Path as SlicerPath
 from compas_slicer.slicers import PlanarSlicer
 
-DATA = os.path.join(os.path.dirname(__file__), 'tests_data')
-FILE = os.path.abspath(os.path.join(DATA, 'cylinder.obj'))
+DATA_PATH = Path(__file__).parent / 'tests_data'
 
-compas_mesh = Mesh.from_obj(os.path.join(DATA, FILE))
+compas_mesh = Mesh.from_obj(DATA_PATH / 'cylinder.obj')
 layer_height = 15.0
 
 z = [compas_mesh.vertex_attribute(key, 'z') for key in compas_mesh.vertices()]
@@ -18,7 +19,7 @@ no_of_layers = int(d / layer_height) + 1
 
 def test_planar_slicing_success():
     """ Tests simple planar slicing. """
-    slicer = PlanarSlicer(compas_mesh, slicer_type="default", layer_height=layer_height)
+    slicer = PlanarSlicer(compas_mesh, layer_height=layer_height)
     slicer.slice_model()
 
     assert isinstance(slicer.layers, list), "The layers are not a list"
@@ -27,11 +28,10 @@ def test_planar_slicing_success():
     assert isinstance(slicer.layers[0], Layer), "The slicer does not contain layers of type 'compas_slicer.Layer'"
     for i in range(len(slicer.layers)):
         assert len(slicer.layers[i].paths) == 1, "There is a layer with empty Contours list at index %d" % i
-        assert isinstance(slicer.layers[i].paths[0], Path), "Wrong class type in Layer.Contour list"
+        assert isinstance(slicer.layers[i].paths[0], SlicerPath), "Wrong class type in Layer.Contour list"
         assert slicer.layers[i].paths[0].is_closed, "Path resulting from slicing of cylinder using 'planar_compas' is " \
                                                     "open. It should be closed "
 
 
-# test inclined cylinder. How many paths open, how many paths closed
 if __name__ == '__main__':
     pass

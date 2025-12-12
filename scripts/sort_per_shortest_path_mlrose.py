@@ -1,7 +1,5 @@
 import mlrose
-import logging
-
-logger = logging.getLogger('logger')
+from loguru import logger
 
 __all__ = ['sort_per_shortest_path_mlrose']
 

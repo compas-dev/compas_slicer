@@ -1,14 +1,21 @@
-import logging
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, Literal
+
+import numpy as np
 from compas.geometry import Point
-from compas.geometry import distance_point_point
+from loguru import logger
 
-logger = logging.getLogger('logger')
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
+
 
 __all__ = ['seams_align']
 
+AlignWith = Literal["next_path", "origin", "x_axis", "y_axis"]
 
-def seams_align(slicer, align_with="next_path"):
+
+def seams_align(slicer: BaseSlicer, align_with: AlignWith | Point = "next_path") -> None:
     """Aligns the seams (start- and endpoint) of a print.
 
     Parameters
@@ -23,12 +30,9 @@ def seams_align(slicer, align_with="next_path"):
         y_axis       = orients the seam to the y_axis
         Point(x,y,z) = orients the seam according to the given point
 
-    Returns
-    -------
-    None
     """
     #  TODO: Implement random seams
-    logger.info("Aligning seams to: %s" % align_with)
+    logger.info(f"Aligning seams to: {align_with}")
 
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
@@ -84,10 +88,12 @@ def seams_align(slicer, align_with="next_path"):
                 else:
                     first_last_point_the_same = False
 
-                #  computes distance between pt_to_align_with and the current path points
-                distance_current_pt_align_pt = [distance_point_point(pt_to_align_with, pt) for pt in path_to_change]
-                #  gets the index of the closest point by looking for the minimum
-                new_start_index = distance_current_pt_align_pt.index(min(distance_current_pt_align_pt))
+                #  computes distance between pt_to_align_with and the current path points (vectorized)
+                ref = np.asarray(pt_to_align_with, dtype=np.float64)
+                pts = np.asarray(path_to_change, dtype=np.float64)
+                distances = np.linalg.norm(pts - ref, axis=1)
+                #  gets the index of the closest point
+                new_start_index = int(np.argmin(distances))
                 #  shifts the list by the distance determined
                 shift_list = path_to_change[new_start_index:] + path_to_change[:new_start_index]
 
@@ -100,11 +106,10 @@ def seams_align(slicer, align_with="next_path"):
                 # OPEN PATHS
                 path_to_change = layer.paths[j].points
 
-                # get the distance between the align point and the start/end point
-                start = path_to_change[0]
-                end = path_to_change[-1]
-                d_start = distance_point_point(start, pt_to_align_with)
-                d_end = distance_point_point(end, pt_to_align_with)
+                # get the distance between the align point and the start/end point (vectorized)
+                ref = np.asarray(pt_to_align_with, dtype=np.float64)
+                d_start = np.linalg.norm(np.asarray(path_to_change[0]) - ref)
+                d_end = np.linalg.norm(np.asarray(path_to_change[-1]) - ref)
 
                 # if closer to end point > reverse list
                 if d_start > d_end:

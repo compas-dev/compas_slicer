@@ -1,22 +1,21 @@
-import os
-import logging
-import numpy as np
 import copy
-import compas
-import compas_slicer.utilities as utils
-from compas_slicer.pre_processing.preprocessing_utils import restore_mesh_attributes, save_vertex_attributes
+from pathlib import Path
+
+import numpy as np
+import scipy.sparse
 from compas.datastructures import Mesh
-from compas_slicer.pre_processing.preprocessing_utils import assign_interpolation_distance_to_mesh_vertex
-from compas_slicer.slicers.slice_utilities import ScalarFieldContours
-from compas_slicer.pre_processing.preprocessing_utils import assign_interpolation_distance_to_mesh_vertices
-from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
 from compas.geometry import Line, distance_point_point_sqrd, project_point_line
+from loguru import logger
 
-packages = utils.TerminalCommand('conda list').get_split_output_strings()
-if 'igl' in packages:
-    import igl
-
-logger = logging.getLogger('logger')
+import compas_slicer.utilities as utils
+from compas_slicer.pre_processing.preprocessing_utils.assign_vertex_distance import (
+    assign_interpolation_distance_to_mesh_vertex,
+    assign_interpolation_distance_to_mesh_vertices,
+)
+from compas_slicer.pre_processing.preprocessing_utils.mesh_attributes_handling import (
+    restore_mesh_attributes,
+    save_vertex_attributes,
+)
 
 __all__ = ['MeshSplitter']
 
@@ -58,6 +57,9 @@ class MeshSplitter:
 
         assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=0.5, target_LOW=self.target_LOW,
                                                        target_HIGH=self.target_HIGH)
+        # Late import to avoid circular dependency
+        from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
+
         g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH)
         g_evaluation.find_critical_points()  # First estimation of saddle points with weight = 0.5
         self.saddles = g_evaluation.saddles
@@ -85,21 +87,23 @@ class MeshSplitter:
         # (1) first rough estimation of split params
         split_params = self.identify_positions_to_split(self.saddles)
         # TODO: merge params that are too close together to avoid creation of very thin neighborhoods.
-        logger.info("%d Split params. First rough estimation :  " % len(split_params) + str(split_params))
+        logger.info(f"{len(split_params)} Split params. First rough estimation :  {split_params}")
 
         # split mesh at params
         logger.info('Splitting mesh at split params')
         current_cut_index = 1
 
         for i, param_first_estimation in enumerate(split_params):
-            print('')
-            logger.info('cut_index : %d, param_first_estimation : %.6f' % (current_cut_index, param_first_estimation))
+            logger.info(f'cut_index : {current_cut_index}, param_first_estimation : {param_first_estimation:.6f}')
 
             # --- (1) More exact estimation of intersecting weight. Recompute gradient evaluation.
             # Find exact saddle point and the weight that intersects it.
 
             assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=param_first_estimation,
                                                            target_LOW=self.target_LOW, target_HIGH=self.target_HIGH)
+            # Late import to avoid circular dependency
+            from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
+
             g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH)
             g_evaluation.find_critical_points()
             saddles_ds_tupples = [(vkey, abs(g_evaluation.mesh.vertex_attribute(vkey, 'scalar_field'))) for vkey in
@@ -107,10 +111,13 @@ class MeshSplitter:
             saddles_ds_tupples = sorted(saddles_ds_tupples, key=lambda saddle_tupple: saddle_tupple[1])
             vkey = saddles_ds_tupples[0][0]
             t = self.identify_positions_to_split([vkey])[0]
-            logger.info('vkey_exact : %d , t_exact : %.6f' % (vkey, t))
+            logger.info(f'vkey_exact : {vkey} , t_exact : {t:.6f}')
 
             # --- (2) find zero-crossing points
             assign_interpolation_distance_to_mesh_vertices(self.mesh, t, self.target_LOW, self.target_HIGH)
+            # Late import to avoid circular dependency
+            from compas_slicer.slicers.slice_utilities import ScalarFieldContours
+
             zero_contours = ScalarFieldContours(self.mesh)
             zero_contours.compute()
             keys_of_clusters_to_keep = merge_clusters_saddle_point(zero_contours, saddle_vkeys=[vkey])
@@ -124,7 +131,7 @@ class MeshSplitter:
 
                 # save to json intermediary results
                 zero_contours.save_point_clusters_as_polylines_to_json(self.OUTPUT_PATH,
-                                                                       'point_clusters_polylines_%d.json' % int(i))
+                                                                       f'point_clusters_polylines_{int(i)}.json')
 
                 #  --- (4) Create cut
                 logger.info("Creating cut on mesh")
@@ -143,7 +150,7 @@ class MeshSplitter:
                     logger.info('Updating targets, recomputing geodesic distances')
                     self.update_targets()
 
-            self.mesh.to_obj(os.path.join(self.OUTPUT_PATH, 'most_recent_cut_mesh.obj'))
+            self.mesh.to_obj(str(Path(self.OUTPUT_PATH) / 'most_recent_cut_mesh.obj'))
 
     def update_targets(self):
         """
@@ -247,7 +254,7 @@ class MeshSplitter:
             next_d = assign_interpolation_distance_to_mesh_vertex(vkey, weight_list[i + 1], self.target_LOW, self.target_HIGH)
             if abs(current_d) < abs(next_d) and current_d < threshold:
                 return weight
-        raise ValueError('Could NOT find param for saddle vkey %d!' % vkey)
+        raise ValueError(f'Could NOT find param for saddle vkey {vkey}!')
 
 
 ###############################################
@@ -260,12 +267,146 @@ def get_weights_list(n, start=0.03, end=1.0):
 
 
 ###############################################
+# --- Mesh cutting utilities (pure Python replacements for libigl)
+
+
+def _trimesh_cut_mesh(
+    vertices: np.ndarray,
+    faces: np.ndarray,
+    cut_flags: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Cut a mesh along flagged edges by duplicating vertices.
+
+    This is a pure Python replacement for compas_libigl.trimesh_cut_mesh.
+
+    Parameters
+    ----------
+    vertices : np.ndarray
+        Vertex coordinates (V x 3).
+    faces : np.ndarray
+        Face indices (F x 3).
+    cut_flags : np.ndarray
+        Per-face edge flags (F x 3). 1 = cut this edge, 0 = don't cut.
+        Edge i of face f is the edge from vertex f[i] to f[(i+1)%3].
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        New vertices and faces with duplicated vertices along cut edges.
+    """
+    n_faces = len(faces)
+
+    # Build a map from (vertex, face) -> new vertex index
+    # Vertices that are on cut edges need to be duplicated per face
+    vertex_face_to_new_index: dict[tuple[int, int], int] = {}
+    new_vertices = list(vertices)
+
+    # For each face, determine which vertices need to be duplicated
+    for fi in range(n_faces):
+        face = faces[fi]
+        for ei in range(3):
+            v0, v1 = face[ei], face[(ei + 1) % 3]
+
+            # Check if this edge is cut
+            if cut_flags[fi, ei] == 1:
+                # Both endpoints of cut edges need their own copy for this face
+                for v in [v0, v1]:
+                    key = (v, fi)
+                    if key not in vertex_face_to_new_index:
+                        # Create a new vertex (duplicate)
+                        new_idx = len(new_vertices)
+                        new_vertices.append(vertices[v])
+                        vertex_face_to_new_index[key] = new_idx
+
+    # Build new faces with updated vertex indices
+    new_faces = []
+    for fi in range(n_faces):
+        face = faces[fi]
+        new_face = []
+        for vi in range(3):
+            v = face[vi]
+            key = (v, fi)
+            if key in vertex_face_to_new_index:
+                # Use the duplicated vertex
+                new_face.append(vertex_face_to_new_index[key])
+            else:
+                # Use original vertex, but need to check if any adjacent face
+                # on a cut edge shares this vertex
+                new_face.append(v)
+        new_faces.append(new_face)
+
+    return np.array(new_vertices), np.array(new_faces)
+
+
+def _trimesh_face_components(
+    vertices: np.ndarray,
+    faces: np.ndarray,
+) -> np.ndarray:
+    """Find connected components of faces based on shared vertices.
+
+    This is a pure Python replacement for compas_libigl.trimesh_face_components.
+
+    Parameters
+    ----------
+    vertices : np.ndarray
+        Vertex coordinates (V x 3).
+    faces : np.ndarray
+        Face indices (F x 3).
+
+    Returns
+    -------
+    np.ndarray
+        Component label for each face.
+    """
+    n_faces = len(faces)
+
+    if n_faces == 0:
+        return np.array([], dtype=np.int32)
+
+    # Build face adjacency based on shared edges
+    # Two faces are adjacent if they share an edge (two vertices)
+    edge_to_faces: dict[tuple[int, int], list[int]] = {}
+
+    for fi, face in enumerate(faces):
+        for ei in range(3):
+            v0, v1 = int(face[ei]), int(face[(ei + 1) % 3])
+            edge = (min(v0, v1), max(v0, v1))
+            if edge not in edge_to_faces:
+                edge_to_faces[edge] = []
+            edge_to_faces[edge].append(fi)
+
+    # Build sparse adjacency matrix for faces
+    row, col = [], []
+    for _edge, face_list in edge_to_faces.items():
+        if len(face_list) == 2:
+            f0, f1 = face_list
+            row.extend([f0, f1])
+            col.extend([f1, f0])
+
+    if len(row) == 0:
+        # No adjacencies - each face is its own component
+        return np.arange(n_faces, dtype=np.int32)
+
+    data = np.ones(len(row), dtype=np.int32)
+    adjacency = scipy.sparse.csr_matrix(
+        (data, (row, col)), shape=(n_faces, n_faces)
+    )
+
+    # Find connected components
+    n_components, labels = scipy.sparse.csgraph.connected_components(
+        adjacency, directed=False
+    )
+
+    return labels
+
+
+###############################################
 # --- Separate disconnected components
 
 def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
     """
     Given a mesh with cuts that have already been created, it separates the disconnected
-    components using the igl function. Then it welds them and restores their attributes.
+    components by cutting along marked edges. Then it welds them and restores their attributes.
 
     Parameters
     ----------
@@ -284,7 +425,7 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
     v, f = mesh.to_vertices_and_faces()
     v, f = np.array(v), np.array(f)
 
-    # --- create cut flags for igl
+    # --- create cut flags for edges
     cut_flags = []
     for fkey in mesh.faces():
         edges = mesh.face_halfedges(fkey)
@@ -297,26 +438,28 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
                 current_face_flags.append(0)
         cut_flags.append(current_face_flags)
     cut_flags = np.array(cut_flags)
-    assert cut_flags.shape == f.shape
+    if cut_flags.shape != f.shape:
+        raise RuntimeError(f"Cut flags shape {cut_flags.shape} doesn't match face array shape {f.shape}")
 
-    # --- cut mesh
-    v_cut, f_cut = igl.cut_mesh(v, f, cut_flags)
-    connected_components = igl.face_components(f_cut)
+    # --- cut mesh by duplicating vertices along cut edges
+    v_cut, f_cut = _trimesh_cut_mesh(v, f, cut_flags)
+    connected_components = _trimesh_face_components(v_cut, f_cut)
 
-    f_dict = {}
+    f_dict: dict[int, list[list[int]]] = {}
     for i in range(max(connected_components) + 1):
         f_dict[i] = []
-    for f_index, f in enumerate(f_cut):
+    for f_index, face in enumerate(f_cut):
         component = connected_components[f_index]
-        f_dict[component].append(f)
+        f_dict[component].append(face.tolist() if hasattr(face, 'tolist') else list(face))
 
     cut_meshes = []
     for component in f_dict:
-        cut_mesh = Mesh.from_vertices_and_faces(v_cut, f_dict[component])
+        cut_mesh = Mesh.from_vertices_and_faces(v_cut.tolist(), f_dict[component])
         cut_mesh.cull_vertices()
         if len(list(cut_mesh.faces())) > 2:
-            cut_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))
-            cut_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # get rid of too many empty keys
+            temp_path = Path(OUTPUT_PATH) / 'temp.obj'
+            cut_mesh.to_obj(str(temp_path))
+            cut_mesh = Mesh.from_obj(str(temp_path))  # get rid of too many empty keys
             cut_meshes.append(cut_mesh)
 
     for mesh in cut_meshes:
@@ -360,9 +503,10 @@ def merge_clusters_saddle_point(zero_contours, saddle_vkeys):
 
     Parameters
     ----------
-    zero_contours: :class: 'compas_slicer.pre_processing.ScalarFieldContours'
-    saddle_vkeys: list, int, the vertex keys of the current saddle points.
-    (Currently this can only be a single saddle point)
+    zero_contours : ScalarFieldContours
+        Contours object.
+    saddle_vkeys : list[int]
+        Vertex keys of the current saddle points (currently only single saddle point supported).
 
     Returns
     ----------
@@ -376,7 +520,7 @@ def merge_clusters_saddle_point(zero_contours, saddle_vkeys):
                 if saddle_vkey in e:
                     zero_contours.sorted_point_clusters[cluster_key][i] = \
                         zero_contours.mesh.vertex_coordinates(saddle_vkey)  # merge point with saddle point
-                    print('Found edge to merge: ' + str(e))
+                    logger.debug(f'Found edge to merge: {e}')
                     if cluster_key not in keys_of_clusters_to_keep:
                         keys_of_clusters_to_keep.append(cluster_key)
 
@@ -396,7 +540,7 @@ def cleanup_unrelated_isocontour_neighborhoods(zero_contours, keys_of_clusters_t
         logger.error("No common vertex found! Skipping this split_param")
         return None
     else:
-        logger.info('keys_of_clusters_to_keep : ' + str(keys_of_clusters_to_keep))
+        logger.info(f'keys_of_clusters_to_keep: {keys_of_clusters_to_keep}')
         # empty all other clusters that are not in the matching_pair
         sorted_point_clusters_clean = copy.deepcopy(zero_contours.sorted_point_clusters)
         sorted_edge_clusters_clean = copy.deepcopy(zero_contours.sorted_edge_clusters)
@@ -418,10 +562,11 @@ def weld_mesh(mesh, OUTPUT_PATH, precision='2f'):
         if len(mesh.face_vertices(f_key)) < 3:
             mesh.delete_face(f_key)
 
-    welded_mesh = compas.datastructures.mesh_weld(mesh, precision=precision)
+    welded_mesh = mesh.weld(precision=precision)
 
-    welded_mesh.to_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # make sure there's no empty f_keys
-    welded_mesh = Mesh.from_obj(os.path.join(OUTPUT_PATH, 'temp.obj'))  # TODO: find a better way to do this
+    temp_path = Path(OUTPUT_PATH) / 'temp.obj'
+    welded_mesh.to_obj(str(temp_path))  # make sure there's no empty f_keys
+    welded_mesh = Mesh.from_obj(str(temp_path))  # TODO: find a better way to do this
 
     try:
         welded_mesh.unify_cycles()

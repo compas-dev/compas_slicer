@@ -1,0 +1,52 @@
+# compas_slicer default configuration
+# This file is the single source of truth for all parameter defaults
+
+[slicer]
+layer_height = 2.0
+min_path_length = 2
+close_path_tolerance = 0.00001
+
+[interpolation]
+avg_layer_height = 5.0
+min_layer_height = 0.5
+max_layer_height = 10.0
+vertical_layers_max_centroid_dist = 25.0
+target_low_geodesics_method = "heat_cgal"
+target_high_geodesics_method = "heat_cgal"
+target_high_union_method = "min"
+target_high_union_params = []
+uneven_upper_targets_offset = 0.0
+
+[gcode]
+# Physical parameters
+nozzle_diameter = 0.4  # mm
+filament_diameter = 1.75  # mm
+delta = false
+print_volume = [300.0, 300.0, 600.0]  # mm [x, y, z]
+
+# Dimensional parameters
+layer_width = 0.6  # mm
+
+# Temperature parameters
+extruder_temperature = 200  # C
+bed_temperature = 60  # C
+fan_speed = 255  # 0-255
+fan_start_z = 0.0  # mm, height at which fan starts
+
+# Movement parameters
+flowrate = 1.0  # global flow multiplier
+feedrate = 3600.0  # mm/min
+feedrate_travel = 4800.0  # mm/min
+feedrate_low = 1800.0  # mm/min
+feedrate_retraction = 2400.0  # mm/min
+acceleration = 0.0  # mm/s2, 0 = driver default
+jerk = 0.0  # mm/s, 0 = driver default
+
+# Retraction
+z_hop = 0.5  # mm
+retraction_length = 1.0  # mm
+retraction_min_travel = 6.0  # mm, below this no retraction
+
+# Adhesion parameters
+flow_over = 1.0  # overextrusion factor for z < min_over_z
+min_over_z = 0.0  # mm, height below which overextrusion applies

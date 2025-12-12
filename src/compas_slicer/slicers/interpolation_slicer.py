@@ -1,50 +1,75 @@
-import numpy as np
-from compas_slicer.slicers import BaseSlicer
-import logging
-import progressbar
-from compas_slicer.parameters import get_param
-from compas_slicer.pre_processing import assign_interpolation_distance_to_mesh_vertices
-from compas_slicer.slicers.slice_utilities import ScalarFieldContours
-from compas_slicer.geometry import VerticalLayersManager
+from __future__ import annotations
 
-logger = logging.getLogger('logger')
+from typing import TYPE_CHECKING, Any
+
+import numpy as np
+import progressbar
+from loguru import logger
+
+from compas_slicer.config import InterpolationConfig
+from compas_slicer.geometry import VerticalLayersManager
+from compas_slicer.pre_processing.preprocessing_utils.assign_vertex_distance import (
+    assign_interpolation_distance_to_mesh_vertices,
+)
+from compas_slicer.slicers import BaseSlicer
+from compas_slicer.slicers.slice_utilities import ScalarFieldContours
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
+
+    from compas_slicer.pre_processing import InterpolationSlicingPreprocessor
+
 
 __all__ = ['InterpolationSlicer']
 
 
 class InterpolationSlicer(BaseSlicer):
-    """
-    Generates non-planar contours that interpolate user-defined boundaries.
+    """Generates non-planar contours that interpolate user-defined boundaries.
 
     Attributes
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-        Input mesh, it must be a triangular mesh (i.e. no quads or n-gons allowed)
-        Note that the topology of the mesh matters, irregular tesselation can lead to undesired results.
-        We recommend to 1)re-topologize, 2) triangulate, and 3) weld your mesh in advance.
-    preprocessor: :class: 'compas_slicer.pre_processing.InterpolationSlicingPreprocessor'
-    parameters: dict
+    mesh : Mesh
+        Input mesh, must be triangular (no quads or n-gons allowed).
+        Topology matters; irregular tessellation can lead to undesired results.
+        Recommend: re-topologize, triangulate, and weld mesh in advance.
+    preprocessor : InterpolationSlicingPreprocessor | None
+        Preprocessor containing compound targets.
+    config : InterpolationConfig
+        Interpolation configuration.
+    n_multiplier : float
+        Multiplier for number of isocurves.
+
     """
 
-    def __init__(self, mesh, preprocessor=None, parameters=None):
+    def __init__(
+        self,
+        mesh: Mesh,
+        preprocessor: InterpolationSlicingPreprocessor | None = None,
+        config: InterpolationConfig | None = None,
+    ) -> None:
         logger.info('InterpolationSlicer')
         BaseSlicer.__init__(self, mesh)
 
-        if preprocessor:  # make sure the mesh of the preprocessor and the mesh of the slicer match
-            assert len(list(mesh.vertices())) == len(list(preprocessor.mesh.vertices()))
+        # make sure the mesh of the preprocessor and the mesh of the slicer match
+        if preprocessor and len(list(mesh.vertices())) != len(list(preprocessor.mesh.vertices())):
+            raise ValueError(
+                f"Mesh vertex count mismatch: slicer mesh has {len(list(mesh.vertices()))} vertices, "
+                f"preprocessor mesh has {len(list(preprocessor.mesh.vertices()))} vertices"
+            )
 
-        self.parameters = parameters if parameters else {}
+        self.config = config if config else InterpolationConfig()
         self.preprocessor = preprocessor
-        self.n_multiplier = 1.0
+        self.n_multiplier: float = 1.0
 
-    def generate_paths(self):
-        """ Generates curved paths. """
-        assert self.preprocessor, 'You need to provide a pre-processor in order to generate paths.'
+    def generate_paths(self) -> None:
+        """Generate curved paths."""
+        if not self.preprocessor:
+            raise ValueError('You need to provide a pre-processor in order to generate paths.')
 
-        avg_layer_height = get_param(self.parameters, key='avg_layer_height', defaults_type='layers')
+        avg_layer_height = self.config.avg_layer_height
         n = find_no_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH, avg_layer_height)
         params_list = get_interpolation_parameters_list(n)
-        logger.info('%d paths will be generated' % n)
+        logger.info(f'{n} paths will be generated')
 
         vertical_layers_manager = VerticalLayersManager(avg_layer_height)
 
@@ -62,18 +87,45 @@ class InterpolationSlicer(BaseSlicer):
         self.layers = vertical_layers_manager.layers
 
 
-def find_no_of_isocurves(target_0, target_1, avg_layer_height=1.1):
-    """ Returns the average number of isocurves that can cover the get_distance from target_0 to target_1. """
+def find_no_of_isocurves(target_0: Any, target_1: Any, avg_layer_height: float = 1.1) -> int:
+    """Return the number of isocurves to cover the distance from target_0 to target_1.
+
+    Parameters
+    ----------
+    target_0 : CompoundTarget
+        First target boundary.
+    target_1 : CompoundTarget
+        Second target boundary.
+    avg_layer_height : float
+        Average layer height in mm.
+
+    Returns
+    -------
+    int
+        Number of isocurves.
+
+    """
     avg_ds0 = target_0.get_avg_distances_from_other_target(target_1)
     avg_ds1 = target_1.get_avg_distances_from_other_target(target_0)
     number_of_curves = ((avg_ds0 + avg_ds1) * 0.5) / avg_layer_height
     return max(1, int(number_of_curves))
 
 
-def get_interpolation_parameters_list(number_of_curves):
-    """ Returns a list of #number_of_curves floats from 0.001 to 0.997. """
-    # t_list = [0.001]
-    t_list = []
+def get_interpolation_parameters_list(number_of_curves: int) -> list[float]:
+    """Return list of interpolation parameters from 0.0 to 0.997.
+
+    Parameters
+    ----------
+    number_of_curves : int
+        Number of curves to generate.
+
+    Returns
+    -------
+    list[float]
+        List of interpolation parameter values.
+
+    """
+    t_list: list[float] = []
     a = list(np.arange(number_of_curves + 1) / (number_of_curves + 1))
     a.pop(0)
     t_list.extend(a)

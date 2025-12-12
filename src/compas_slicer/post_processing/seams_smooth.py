@@ -1,14 +1,20 @@
-import logging
-from compas.geometry import distance_point_point
-from compas.geometry import Vector
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from compas.geometry import Vector, distance_point_point
+from loguru import logger
+
 import compas_slicer
 
-logger = logging.getLogger('logger')
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
+
 
 __all__ = ['seams_smooth']
 
 
-def seams_smooth(slicer, smooth_distance):
+def seams_smooth(slicer: BaseSlicer, smooth_distance: float) -> None:
     """Smooths the seams (transition between layers)
     by removing points within a certain distance.
 
@@ -20,11 +26,11 @@ def seams_smooth(slicer, smooth_distance):
         Distance (in mm) to perform smoothing
     """
 
-    logger.info("Smoothing seams with a distance of %i mm" % smooth_distance)
+    logger.info(f"Smoothing seams with a distance of {smooth_distance} mm")
 
     for i, layer in enumerate(slicer.layers):
         if len(layer.paths) == 1 or isinstance(layer, compas_slicer.geometry.VerticalLayer):
-            for j, path in enumerate(layer.paths):
+            for _j, path in enumerate(layer.paths):
                 if path.is_closed:  # only for closed paths
                     pt0 = path.points[0]
                     # only points in the first half of a path should be evaluated
@@ -44,8 +50,10 @@ def seams_smooth(slicer, smooth_distance):
                             path.points.pop(-1)  # remove last point
                             break
         else:
-            logger.warning("Smooth seams only works for layers consisting out of a single path, or for vertical layers."
-                           "\nPaths were not changed, seam smoothing skipped for layer %i" % i)
+            logger.warning(
+                "Smooth seams only works for layers consisting out of a single path, or for vertical layers."
+                f"\nPaths were not changed, seam smoothing skipped for layer {i}"
+            )
 
 
 if __name__ == "__main__":

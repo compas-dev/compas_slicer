@@ -1,14 +1,21 @@
-import logging
+from __future__ import annotations
+
 import itertools
+from typing import TYPE_CHECKING, Literal
 
 from compas.geometry import Point, distance_point_point
+from loguru import logger
 
-logger = logging.getLogger('logger')
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
+
 
 __all__ = ['reorder_vertical_layers']
 
+AlignWith = Literal["x_axis", "y_axis"]
 
-def reorder_vertical_layers(slicer, align_with):
+
+def reorder_vertical_layers(slicer: BaseSlicer, align_with: AlignWith | Point) -> None:
     """Re-orders the vertical layers in a specific way
 
     Parameters
@@ -30,12 +37,14 @@ def reorder_vertical_layers(slicer, align_with):
     else:
         raise NameError("Unknown align_with : " + str(align_with))
 
-    logger.info("Re-ordering vertical layers to start with the vertical layer closest to: %s" % align_with)
+    logger.info(f"Re-ordering vertical layers to start with the vertical layer closest to: {align_with}")
 
     for layer in slicer.layers:
-        assert layer.min_max_z_height[0] is not None and layer.min_max_z_height[1] is not None, \
-            "To use the 'reorder_vertical_layers function you need first to calculate the layers' z_bounds. To do " \
-            "that use the function 'Layer.calculate_z_bounds()'"
+        if layer.min_max_z_height[0] is None or layer.min_max_z_height[1] is None:
+            raise ValueError(
+                "To use reorder_vertical_layers you need first to calculate the layers' z_bounds. "
+                "Use the function Layer.calculate_z_bounds()"
+            )
 
     # group vertical layers based on the min_max_z_height
     grouped_iter = itertools.groupby(slicer.layers, lambda x: x.min_max_z_height)

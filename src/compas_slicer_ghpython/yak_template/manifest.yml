@@ -1,0 +1,9 @@
+name: compas_slicer
+version: {{ version }}
+authors:
+  - Ioanna Mitropoulou
+  - Joris Burger
+  - Jelle Feringa
+description: Slicing package for FDM 3D Printing with COMPAS - Grasshopper components for visualization and data loading.
+url: "https://github.com/compas-dev/compas_slicer"
+keywords: ["COMPAS", "slicer", "3D printing", "FDM", "Grasshopper", "fabrication"]

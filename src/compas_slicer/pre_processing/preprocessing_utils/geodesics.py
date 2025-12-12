@@ -1,42 +1,147 @@
-import numpy as np
-import logging
-import compas_slicer.utilities as utils
-from compas_slicer.pre_processing.preprocessing_utils.gradient import get_scalar_field_from_gradient, \
-    get_face_gradient_from_scalar_field, normalize_gradient
-import scipy
+from __future__ import annotations
+
 import math
+from typing import TYPE_CHECKING
 
-logger = logging.getLogger('logger')
+import numpy as np
+import scipy
+from loguru import logger
+from numpy.typing import NDArray
 
-__all__ = ['get_igl_EXACT_geodesic_distances',
-           'get_custom_HEAT_geodesic_distances']
+import compas_slicer.utilities as utils
+from compas_slicer.pre_processing.preprocessing_utils.gradient import (
+    get_face_gradient_from_scalar_field,
+    get_scalar_field_from_gradient,
+    normalize_gradient,
+)
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
 
 
-def get_igl_EXACT_geodesic_distances(mesh, vertices_start):
+__all__ = ['get_heat_geodesic_distances',
+           'get_custom_HEAT_geodesic_distances',
+           'GeodesicsCache']
+
+
+# CGAL heat method solver cache (for precomputation reuse)
+_cgal_solver_cache: dict[int, object] = {}
+
+
+def get_heat_geodesic_distances(
+    mesh: Mesh, vertices_start: list[int]
+) -> NDArray[np.floating]:
     """
-    Calculate geodesic distances using libigl.
+    Calculate geodesic distances using CGAL heat method.
+
+    Uses compas_cgal's HeatGeodesicSolver which provides CGAL's Heat_method_3
+    implementation with intrinsic Delaunay triangulation.
 
     Parameters
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-    vertices_start: list, int
+    mesh : Mesh
+        A compas mesh (must be triangulated).
+    vertices_start : list[int]
+        Source vertex indices.
+
+    Returns
+    -------
+    NDArray
+        Minimum distance from any source to each vertex.
     """
-    # utils.check_package_is_installed('igl')
-    import igl
+    from compas_cgal.geodesics import HeatGeodesicSolver
 
-    v, f = mesh.to_vertices_and_faces()
-    v = np.array(v)
-    f = np.array(f)
-    vertices_target = np.arange(len(v))  # all vertices are targets
-    vstart = np.array(vertices_start)
-    distances = igl.exact_geodesic(v, f, vstart, vertices_target)
-    return distances
+    # Check if we have a cached solver for this mesh
+    mesh_hash = hash((len(list(mesh.vertices())), len(list(mesh.faces()))))
+    if mesh_hash not in _cgal_solver_cache:
+        _cgal_solver_cache.clear()  # Clear old solvers
+        _cgal_solver_cache[mesh_hash] = HeatGeodesicSolver(mesh)
+
+    solver = _cgal_solver_cache[mesh_hash]
+
+    # Compute distances for each source and take minimum
+    all_distances = []
+    for source in vertices_start:
+        distances = solver.solve([source])
+        all_distances.append(distances)
+
+    return np.min(np.array(all_distances), axis=0)
 
 
-def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH, v_equalize=None, anisotropic_scaling=False):
-    """ Calculate geodesic distances using the heat method. """
+# Backwards compatibility aliases
+get_cgal_HEAT_geodesic_distances = get_heat_geodesic_distances
+get_igl_HEAT_geodesic_distances = get_heat_geodesic_distances
+get_igl_EXACT_geodesic_distances = get_heat_geodesic_distances
+
+
+class GeodesicsCache:
+    """Cache for geodesic distances to avoid redundant computations.
+
+    Note: This class is kept for backwards compatibility but now uses CGAL.
+    The CGAL solver has its own internal caching via _cgal_solver_cache.
+    """
+
+    def __init__(self) -> None:
+        self._cache: dict[tuple[int, str], NDArray[np.floating]] = {}
+        self._mesh_hash: int | None = None
+
+    def clear(self) -> None:
+        """Clear the cache."""
+        self._cache.clear()
+        self._mesh_hash = None
+
+    def get_distances(
+        self, mesh: Mesh, sources: list[int], method: str = 'heat'
+    ) -> NDArray[np.floating]:
+        """Get geodesic distances from sources, using cache when possible.
+
+        Parameters
+        ----------
+        mesh : Mesh
+            The mesh to compute distances on.
+        sources : list[int]
+            Source vertex indices.
+        method : str
+            Geodesic method (ignored, always uses CGAL heat method).
+
+        Returns
+        -------
+        NDArray
+            Minimum distance from any source to each vertex.
+        """
+        return get_heat_geodesic_distances(mesh, sources)
+
+
+def get_custom_HEAT_geodesic_distances(
+    mesh: Mesh,
+    vi_sources: list[int],
+    OUTPUT_PATH: str,
+    v_equalize: list[int] | None = None,
+) -> NDArray[np.floating]:
+    """Calculate geodesic distances using the custom heat method.
+
+    This is a pure Python implementation of the heat method (Crane et al., 2013).
+    For production use, prefer CGAL's implementation via get_heat_geodesic_distances()
+    which uses intrinsic Delaunay triangulation for better accuracy.
+
+    Parameters
+    ----------
+    mesh : Mesh
+        A compas mesh (must be triangulated).
+    vi_sources : list[int]
+        Source vertex indices.
+    OUTPUT_PATH : str
+        Path to save intermediate results.
+    v_equalize : list[int] | None
+        Vertices to equalize (for saddle point handling).
+
+    Returns
+    -------
+    NDArray
+        Geodesic distance from sources to each vertex.
+    """
     geodesics_solver = GeodesicsSolver(mesh, OUTPUT_PATH)
-    u = geodesics_solver.diffuse_heat(vi_sources, v_equalize, method='simulation')
+    u = geodesics_solver.diffuse_heat(vi_sources, v_equalize)
     geodesic_dist = geodesics_solver.get_geodesic_distances(u, vi_sources, v_equalize)
     return geodesic_dist
 
@@ -44,9 +149,9 @@ def get_custom_HEAT_geodesic_distances(mesh, vi_sources, OUTPUT_PATH, v_equalize
 ######################################
 # --- GeodesicsSolver
 
-USE_FORWARDS_EULER = False
+# Heat diffusion parameters for custom solver
 HEAT_DIFFUSION_ITERATIONS = 250
-DELTA = 0.1
+DELTA = 0.1  # Time step for backward Euler
 
 
 class GeodesicsSolver:
@@ -60,34 +165,41 @@ class GeodesicsSolver:
     OUTPUT_PATH: str
     """
 
-    def __init__(self, mesh, OUTPUT_PATH):
-        # utils.check_package_is_installed('igl')
-        import igl
-
+    def __init__(self, mesh: Mesh, OUTPUT_PATH: str) -> None:
         logger.info('GeodesicsSolver')
         self.mesh = mesh
         self.OUTPUT_PATH = OUTPUT_PATH
 
         self.use_forwards_euler = True
 
-        v, f = mesh.to_vertices_and_faces()
-        v = np.array(v)
-        f = np.array(f)
+        # Compute matrices using NumPy implementations
+        self.cotans = utils.get_mesh_cotans(mesh)
+        self.L = utils.get_mesh_cotmatrix(mesh, fix_boundaries=False)
+        self.M = utils.get_mesh_massmatrix(mesh)
 
-        # compute necessary data
-        self.cotans = igl.cotmatrix_entries(v, f)  # compute_cotan_field(self.mesh)
-        self.L = igl.cotmatrix(v, f)  # assemble_laplacian_matrix(self.mesh, self.cotans)
-        self.M = igl.massmatrix(v, f)  # create_mass_matrix(mesh)
-
-    def diffuse_heat(self, vi_sources, v_equalize=None, method='simulation'):
+    def diffuse_heat(
+        self,
+        vi_sources: list[int],
+        v_equalize: list[int] | None = None,
+    ) -> NDArray[np.floating]:
         """
-        Heat diffusion.
+        Heat diffusion using iterative backward Euler.
 
-        Attributes
+        This is a custom Python implementation of the heat method. For production use,
+        prefer CGAL's heat method (geodesics_method='heat_cgal') which uses intrinsic
+        Delaunay triangulation for better accuracy.
+
+        Parameters
         ----------
-        vi_sources: list, int, the vertex indices of the sources
-        v_equalize: list, int, the vertex indices whose value should be equalized
-        method: str (Currently only 'simulation' works.)
+        vi_sources : list[int]
+            The vertex indices of the heat sources.
+        v_equalize : list[int] | None
+            Vertex indices whose values should be equalized (for handling saddle points).
+
+        Returns
+        -------
+        NDArray
+            Heat distribution u, with sources at 0 and increasing away from them.
         """
         if not v_equalize:
             v_equalize = []
@@ -97,37 +209,30 @@ class GeodesicsSolver:
         u0[vi_sources] = 1.0
         u = u0
 
-        if method == 'default':  # This is buggy, does not keep boundary exactly on 0. TODO: INVESTIGATE
-            t_mult = 1
-            t = t_mult * np.mean(np.array([self.mesh.face_area(fkey) for fkey in self.mesh.faces()]))  # avg face area
-            solver = scipy.sparse.linalg.factorized(self.M - t * self.L)  # pre-factor solver
-            u = solver(u0)  # solve the heat equation: u = (VA - t * Lc) * u0
+        # Pre-factor the matrix ONCE outside the loop (major speedup)
+        # Using backward Euler: (M - δL)u' = M·u
+        S = self.M - DELTA * self.L
+        solver = scipy.sparse.linalg.factorized(S)
 
-        elif method == 'simulation':
-            u = u0
+        for _i in range(HEAT_DIFFUSION_ITERATIONS):
+            b = self.M * u
+            u_prime = solver(b)
 
-            for i in range(HEAT_DIFFUSION_ITERATIONS):
-                if USE_FORWARDS_EULER:  # Forwards Euler (doesn't work so well)
-                    u_prime = u + DELTA * self.L * u
-                else:  # Backwards Euler
-                    #  (M-delta*L) * u_prime = M*U
-                    S = (self.M - DELTA * self.L)
-                    b = self.M * u
-                    u_prime = scipy.sparse.linalg.spsolve(S, b)
+            if len(v_equalize) > 0:
+                u_prime[v_equalize] = np.min(u_prime[v_equalize])
 
-                if len(v_equalize) > 0:
-                    u_prime[v_equalize] = np.min(u_prime[v_equalize])
+            u = u_prime
+            u[vi_sources] = 1.0  # enforce Dirichlet boundary: sources remain fixed
 
-                u = u_prime
-                u[vi_sources] = 1.0  # make sure sources remain fixed to 1
-
-        # reverse values (to make vstarts on 0)
+        # reverse values (to make sources at 0, increasing outward)
         u = ([np.max(u)] * len(u)) - u
 
         utils.save_to_json([float(value) for value in u], self.OUTPUT_PATH, 'diffused_heat.json')
         return u
 
-    def get_geodesic_distances(self, u, vi_sources, v_equalize=None):
+    def get_geodesic_distances(
+        self, u: NDArray[np.floating], vi_sources: list[int], v_equalize: list[int] | None = None
+    ) -> NDArray[np.floating]:
         """
         Finds geodesic distances from heat distribution u. I
 
@@ -140,8 +245,8 @@ class GeodesicsSolver:
         X = get_face_gradient_from_scalar_field(self.mesh, u)
         X = normalize_gradient(X)
         geodesic_dist = get_scalar_field_from_gradient(self.mesh, X, self.L, self.cotans)
-        assert not math.isnan(geodesic_dist[0]), \
-            "Attention, the 'get_scalar_field_from_gradient' function returned Nan. "
+        if math.isnan(geodesic_dist[0]):
+            raise RuntimeError("get_scalar_field_from_gradient returned NaN - check mesh quality.")
         geodesic_dist[vi_sources] = 0  # coerce boundary vertices to be on 0 (fixes small boundary imprecision)
         return geodesic_dist
 

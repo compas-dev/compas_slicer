@@ -1,43 +1,39 @@
-import os
-import logging
+from pathlib import Path
 
-import compas_slicer.utilities as utils
-from compas_slicer.pre_processing import move_mesh_to_point
-from compas_slicer.slicers import PlanarSlicer
-from compas_slicer.post_processing import generate_brim
-from compas_slicer.post_processing import simplify_paths_rdp_igl
-from compas_slicer.post_processing import sort_into_vertical_layers
-from compas_slicer.post_processing import reorder_vertical_layers
-from compas_slicer.post_processing import seams_smooth
-from compas_slicer.print_organization import PlanarPrintOrganizer
-from compas_slicer.print_organization import set_extruder_toggle
-from compas_slicer.print_organization import add_safety_printpoints
-from compas_slicer.print_organization import set_linear_velocity_constant
-from compas_slicer.print_organization import set_blend_radius
-from compas_slicer.utilities import save_to_json
 from compas.datastructures import Mesh
 from compas.geometry import Point
 
-# ==============================================================================
-# Logging
-# ==============================================================================
-logger = logging.getLogger('logger')
-logging.basicConfig(format='%(levelname)s-%(message)s', level=logging.INFO)
+import compas_slicer.utilities as utils
+from compas_slicer.post_processing import (
+    generate_brim,
+    reorder_vertical_layers,
+    seams_smooth,
+    simplify_paths_rdp,
+    sort_into_vertical_layers,
+)
+from compas_slicer.pre_processing import move_mesh_to_point
+from compas_slicer.print_organization import (
+    PlanarPrintOrganizer,
+    add_safety_printpoints,
+    set_blend_radius,
+    set_extruder_toggle,
+    set_linear_velocity_constant,
+)
+from compas_slicer.slicers import PlanarSlicer
+from compas_slicer.utilities import save_to_json
+from compas_slicer.visualization import should_visualize, visualize_slicer
 
-# ==============================================================================
-# Select location of data folder and specify model to slice
-# ==============================================================================
-DATA = os.path.join(os.path.dirname(__file__), 'data')
-OUTPUT_DIR = utils.get_output_directory(DATA)  # creates 'output' folder if it doesn't already exist
+DATA_PATH = Path(__file__).parent / 'data'
+OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 MODEL = 'distorted_v_closed_mid_res.obj'
 
 
-def main():
-    compas_mesh = Mesh.from_obj(os.path.join(DATA, MODEL))
+def main(visualize: bool = False):
+    compas_mesh = Mesh.from_obj(DATA_PATH / MODEL)
     move_mesh_to_point(compas_mesh, Point(0, 0, 0))
 
     # Slicing
-    slicer = PlanarSlicer(compas_mesh, slicer_type="cgal", layer_height=5.0)
+    slicer = PlanarSlicer(compas_mesh, layer_height=5.0)
     slicer.slice_model()
 
     # Sorting into vertical layers and reordering
@@ -46,10 +42,10 @@ def main():
 
     # Post-processing
     generate_brim(slicer, layer_width=3.0, number_of_brim_offsets=5)
-    simplify_paths_rdp_igl(slicer, threshold=0.7)
+    simplify_paths_rdp(slicer, threshold=0.7)
     seams_smooth(slicer, smooth_distance=10)
     slicer.printout_info()
-    save_to_json(slicer.to_data(), OUTPUT_DIR, 'slicer_data.json')
+    save_to_json(slicer.to_data(), OUTPUT_PATH, 'slicer_data.json')
 
     # PlanarPrintOrganization
     print_organizer = PlanarPrintOrganizer(slicer)
@@ -63,8 +59,11 @@ def main():
     print_organizer.printout_info()
 
     printpoints_data = print_organizer.output_printpoints_dict()
-    utils.save_to_json(printpoints_data, OUTPUT_DIR, 'out_printpoints.json')
+    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
+
+    if visualize:
+        visualize_slicer(slicer, compas_mesh)
 
 
 if __name__ == "__main__":
-    main()
+    main(visualize=should_visualize())

@@ -1,16 +1,33 @@
-import os
+from __future__ import annotations
+
 import json
-import logging
-from compas.geometry import Point, distance_point_point_sqrd, normalize_vector
-from compas.geometry import Vector, length_vector, closest_point_in_cloud, closest_point_on_plane
-import matplotlib.pyplot as plt
-import networkx as nx
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
 import scipy
+from compas.geometry import (
+    Point,
+    Vector,
+    closest_point_in_cloud,
+    closest_point_on_plane,
+    distance_point_point_sqrd,
+    length_vector,
+    normalize_vector,
+)
 from compas.plugins import PluginNotInstalledError
-from compas_slicer.utilities import TerminalCommand
+from loguru import logger
 
-logger = logging.getLogger('logger')
+from compas_slicer.utilities.terminal_command import TerminalCommand
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
+    from numpy.typing import NDArray
+    from scipy.sparse import csr_matrix
+
+    from compas_slicer.geometry import Path as SlicerPath
+    from compas_slicer.geometry import PrintPoint, PrintPointsCollection
+
 
 __all__ = ['remap',
            'remap_unbound',
@@ -25,12 +42,14 @@ __all__ = ['remap',
            'point_list_to_dict',
            'point_list_from_dict',
            'get_closest_mesh_vkey_to_pt',
+           'get_mesh_cotmatrix',
+           'get_mesh_cotans',
+           'get_mesh_massmatrix',
            'get_mesh_cotmatrix_igl',
            'get_mesh_cotans_igl',
            'get_closest_pt_index',
            'get_closest_pt',
            'pull_pts_to_mesh_faces',
-           'plot_networkx_graph',
            'get_mesh_vertex_coords_with_attribute',
            'get_dict_key_from_value',
            'find_next_printpoint',
@@ -42,8 +61,8 @@ __all__ = ['remap',
            'check_package_is_installed']
 
 
-def remap(input_val, in_from, in_to, out_from, out_to):
-    """ Bounded remap. """
+def remap(input_val: float, in_from: float, in_to: float, out_from: float, out_to: float) -> float:
+    """Bounded remap from source domain to target domain."""
     if input_val <= in_from:
         return out_from
     elif input_val >= in_to:
@@ -52,12 +71,8 @@ def remap(input_val, in_from, in_to, out_from, out_to):
         return remap_unbound(input_val, in_from, in_to, out_from, out_to)
 
 
-def remap_unbound(input_val, in_from, in_to, out_from, out_to):
-    """
-    Remaps input_val from source domain to target domain.
-    No clamping is performed, the result can be outside of the target domain
-    if the input is outside of the source domain.
-    """
+def remap_unbound(input_val: float, in_from: float, in_to: float, out_from: float, out_to: float) -> float:
+    """Remap input_val from source domain to target domain (no clamping)."""
     out_range = out_to - out_from
     in_range = in_to - in_from
     in_val = input_val - in_from
@@ -66,103 +81,108 @@ def remap_unbound(input_val, in_from, in_to, out_from, out_to):
     return out_val
 
 
-def get_output_directory(path):
-    """
-    Checks if a directory with the name 'output' exists in the path. If not it creates it.
+def get_output_directory(path: str | Path) -> Path:
+    """Get or create 'output' directory in the given path.
 
     Parameters
     ----------
-    path: str
-        The path where the 'output' directory will be created
+    path : str | Path
+        The path where the 'output' directory will be created.
 
     Returns
-    ----------
-    str
-        The path to the new (or already existing) 'output' directory
+    -------
+    Path
+        The path to the 'output' directory.
+
     """
-    output_dir = os.path.join(path, 'output')
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
+    output_dir = Path(path) / 'output'
+    output_dir.mkdir(exist_ok=True)
     return output_dir
 
 
-def get_closest_pt_index(pt, pts):
-    """
-    Finds the index of the closest point of 'pt' in the point cloud 'pts'.
+def get_closest_pt_index(pt: Point | NDArray, pts: list[Point] | NDArray) -> int:
+    """Find the index of the closest point to pt in pts.
 
     Parameters
     ----------
-    pt: compas.geometry.Point3d
-    pts: list, compas.geometry.Point3d
+    pt : Point | NDArray
+        Query point.
+    pts : list[Point] | NDArray
+        Point cloud to search.
 
     Returns
-    ----------
+    -------
     int
-        The index of the closest point
+        Index of the closest point.
+
     """
-    ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
-    # distances = [distance_point_point_sqrd(p, pt) for p in pts]
-    # ci = distances.index(min(distances))
+    ci: int = closest_point_in_cloud(point=pt, cloud=pts)[2]
     return ci
 
 
-def get_closest_pt(pt, pts):
-    """
-     Finds the closest point of 'pt' in the point cloud 'pts'.
+def get_closest_pt(pt: Point | NDArray, pts: list[Point]) -> Point:
+    """Find the closest point to pt in pts.
 
     Parameters
     ----------
-    pt: :class: 'compas.geometry.Point'
-    pts: list, :class: 'compas.geometry.Point3d'
+    pt : Point | NDArray
+        Query point.
+    pts : list[Point]
+        Point cloud to search.
 
     Returns
-    ----------
-    compas.geometry.Point3d
-        The closest point
+    -------
+    Point
+        The closest point.
+
     """
     ci = closest_point_in_cloud(point=pt, cloud=pts)[2]
     return pts[ci]
 
 
-def pull_pts_to_mesh_faces(mesh, points):
-    """
-    Very fast method for projecting a list of points on a mesh, and finding their closest face keys.
+def pull_pts_to_mesh_faces(mesh: Mesh, points: list[Point]) -> tuple[list[int], list[Point]]:
+    """Project points to mesh and find their closest face keys.
 
     Parameters
     ----------
-    mesh: :class: compas.datastructures.Mesh
-    points: list, compas.geometry.Point
+    mesh : Mesh
+        The mesh to project onto.
+    points : list[Point]
+        Points to project.
 
     Returns
     -------
-    closest_fks: a list of the closest face keys
-    projected_pts: a list of the projected points on the mesh
+    tuple[list[int], list[Point]]
+        Closest face keys and projected points.
+
     """
-    points = np.array(points, dtype=np.float64).reshape((-1, 3))
-    fi_fk = {index: fkey for index, fkey in enumerate(mesh.faces())}
+    points_arr = np.array(points, dtype=np.float64).reshape((-1, 3))
+    fi_fk = dict(enumerate(mesh.faces()))
     f_centroids = np.array([mesh.face_centroid(fkey) for fkey in mesh.faces()], dtype=np.float64)
-    closest_fis = np.argmin(scipy.spatial.distance_matrix(points, f_centroids), axis=1)
+    closest_fis = np.argmin(scipy.spatial.distance_matrix(points_arr, f_centroids), axis=1)
     closest_fks = [fi_fk[fi] for fi in closest_fis]
-    projected_pts = [closest_point_on_plane(point, mesh.face_plane(fi)) for point, fi in zip(points, closest_fis)]
+    projected_pts = [closest_point_on_plane(point, mesh.face_plane(fi)) for point, fi in zip(points_arr, closest_fis)]
     return closest_fks, projected_pts
 
 
-def smooth_vectors(vectors, strength, iterations):
-    """
-    Smooths the vector iteratively, with the given number of iterations and strength per iteration
+def smooth_vectors(vectors: list[Vector], strength: float, iterations: int) -> list[Vector]:
+    """Smooth vectors iteratively.
 
     Parameters
     ----------
-    vectors: list, :class: 'compas.geometry.Vector'
-    strength: float
-    iterations: int
+    vectors : list[Vector]
+        Vectors to smooth.
+    strength : float
+        Smoothing strength (0-1).
+    iterations : int
+        Number of smoothing iterations.
 
     Returns
-    ----------
-    list, :class: 'compas.geometry.Vector3d'
-        The smoothened vectors
-    """
+    -------
+    list[Vector]
+        Smoothed vectors.
 
+    """
     for _ in range(iterations):
         for i, n in enumerate(vectors):
             if 0 < i < len(vectors) - 1:
@@ -176,42 +196,50 @@ def smooth_vectors(vectors, strength, iterations):
 #######################################
 #  json
 
-def save_to_json(data, filepath, name):
-    """
-    Save the provided data to json on the filepath, with the given name
+def save_to_json(
+    data: dict[str, Any] | dict[int, Any] | list[Any], filepath: str | Path, name: str
+) -> None:
+    """Save data to JSON file.
 
     Parameters
     ----------
-    data: dict_or_list
-    filepath: str
-    name: str
+    data : dict | list
+        Data to save.
+    filepath : str | Path
+        Directory path.
+    name : str
+        Filename.
+
     """
-
-    filename = os.path.join(filepath, name)
-    logger.info("Saving to json: " + filename)
-    with open(filename, 'w') as f:
-        f.write(json.dumps(data, indent=3, sort_keys=True))
+    filename = Path(filepath) / name
+    logger.info(f"Saving to json: {filename}")
+    filename.write_text(json.dumps(data, indent=3, sort_keys=True))
 
 
-def load_from_json(filepath, name):
-    """
-    Loads json from the filepath
+def load_from_json(filepath: str | Path, name: str) -> Any:
+    """Load data from JSON file.
 
     Parameters
     ----------
-    filepath: str
-    name: str
-    """
+    filepath : str | Path
+        Directory path.
+    name : str
+        Filename.
 
-    filename = os.path.join(filepath, name)
-    with open(filename, 'r') as f:
-        data = json.load(f)
-    logger.info("Loaded json: " + filename)
+    Returns
+    -------
+    Any
+        Loaded data.
+
+    """
+    filename = Path(filepath) / name
+    data = json.loads(filename.read_text())
+    logger.info(f"Loaded json: {filename}")
     return data
 
 
-def is_jsonable(x):
-    """ Returns True if x can be json-serialized, False otherwise. """
+def is_jsonable(x: Any) -> bool:
+    """Return True if x can be JSON-serialized."""
     try:
         json.dumps(x)
         return True
@@ -219,8 +247,9 @@ def is_jsonable(x):
         return False
 
 
-def get_jsonable_attributes(attributes_dict):
-    jsonable_attr = {}
+def get_jsonable_attributes(attributes_dict: dict[str, Any]) -> dict[str, Any]:
+    """Convert attributes dict to JSON-serializable form."""
+    jsonable_attr: dict[str, Any] = {}
     for attr_key in attributes_dict:
         attr = attributes_dict[attr_key]
         if is_jsonable(attr):
@@ -230,130 +259,141 @@ def get_jsonable_attributes(attributes_dict):
                 jsonable_attr[attr_key] = list(attr)
             else:
                 jsonable_attr[attr_key] = 'non serializable attribute'
-
     return jsonable_attr
 
 
 #######################################
 #  text file
 
-def save_to_text_file(data, filepath, name):
-    """
-    Save the provided text on the filepath, with the given name
+def save_to_text_file(data: str, filepath: str | Path, name: str) -> None:
+    """Save text to file.
 
     Parameters
     ----------
-    data: str
-    filepath: str
-    name: str
-    """
+    data : str
+        Text to save.
+    filepath : str | Path
+        Directory path.
+    name : str
+        Filename.
 
-    filename = os.path.join(filepath, name)
-    logger.info("Saving to text file: " + filename)
-    with open(filename, 'w') as f:
-        f.write(data)
+    """
+    filename = Path(filepath) / name
+    logger.info(f"Saving to text file: {filename}")
+    filename.write_text(data)
 
 
 #######################################
 #  mesh utils
 
-def check_triangular_mesh(mesh):
-    """
-    Checks if the mesh is triangular. If not, then it raises an error
+def check_triangular_mesh(mesh: Mesh) -> None:
+    """Check if mesh is triangular, raise TypeError if not.
 
     Parameters
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-    """
+    mesh : Mesh
+        The mesh to check.
 
+    Raises
+    ------
+    TypeError
+        If any face is not a triangle.
+
+    """
     for f_key in mesh.faces():
         vs = mesh.face_vertices(f_key)
         if len(vs) != 3:
-            raise TypeError("Found a quad at face key: " + str(f_key) + " ,number of face vertices:" + str(
-                len(vs)) + ". \nOnly triangular meshes supported.")
+            raise TypeError(f"Found quad at face {f_key}, vertices: {len(vs)}. Only triangular meshes supported.")
 
 
-def get_closest_mesh_vkey_to_pt(mesh, pt):
-    """
-    Finds the vertex key that is the closest to the point.
+def get_closest_mesh_vkey_to_pt(mesh: Mesh, pt: Point) -> int:
+    """Find the vertex key closest to the point.
 
     Parameters
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-    pt: :class: 'compas.geometry.Point'
+    mesh : Mesh
+        The mesh.
+    pt : Point
+        Query point.
 
     Returns
-    ----------
+    -------
     int
-        the closest vertex key
+        Closest vertex key.
+
     """
-    # cloud = [Point(data['x'], data['y'], data['z']) for v_key, data in mesh.vertices(data=True)]
-    # closest_index = compas.geometry.closest_point_in_cloud(pt, cloud)[2]
     vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
     vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(pt, v_tupple[1]))
-    closest_vkey = vertex_tupples[0][0]
+    closest_vkey: int = vertex_tupples[0][0]
     return closest_vkey
 
 
-def get_closest_mesh_normal_to_pt(mesh, pt):
-    """
-    Finds the closest vertex normal to the point.
+def get_closest_mesh_normal_to_pt(mesh: Mesh, pt: Point) -> Vector:
+    """Find the closest vertex normal to the point.
 
     Parameters
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-    pt: :class: 'compas.geometry.Point'
+    mesh : Mesh
+        The mesh.
+    pt : Point
+        Query point.
 
     Returns
-    ----------
-    :class: 'compas.geometry.Vector'
-        The closest normal of the mesh.
-    """
+    -------
+    Vector
+        Normal at closest vertex.
 
+    """
     closest_vkey = get_closest_mesh_vkey_to_pt(mesh, pt)
     v = mesh.vertex_normal(closest_vkey)
     return Vector(v[0], v[1], v[2])
 
 
-def get_mesh_vertex_coords_with_attribute(mesh, attr, value):
-    """
-    Finds the coordinates of all the vertices that have an attribute with key=attr that equals the value.
+def get_mesh_vertex_coords_with_attribute(mesh: Mesh, attr: str, value: Any) -> list[Point]:
+    """Get coordinates of vertices where attribute equals value.
 
     Parameters
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
-    attr: str
-    value: anything that can be stored into a dictionary
+    mesh : Mesh
+        The mesh.
+    attr : str
+        Attribute name.
+    value : Any
+        Value to match.
 
     Returns
-    ----------
-    list, :class: 'compas.geometry.Point'
-        the closest vertex key
-    """
+    -------
+    list[Point]
+        Points of matching vertices.
 
-    pts = []
+    """
+    pts: list[Point] = []
     for vkey, data in mesh.vertices(data=True):
         if data[attr] == value:
             pts.append(Point(*mesh.vertex_coordinates(vkey)))
     return pts
 
 
-def get_normal_of_path_on_xy_plane(k, point, path, mesh):
-    """
-    Finds the normal of the curve that lies on the xy plane at the point with index k
+def get_normal_of_path_on_xy_plane(k: int, point: Point, path: SlicerPath, mesh: Mesh) -> Vector:
+    """Find the normal of the curve on xy plane at point with index k.
 
     Parameters
     ----------
-    k: int, index of the point
-    point: :class: 'compas.geometry.Point'
-    path: :class: 'compas_slicer.geometry.Path'
-    mesh: :class: 'compas.datastructures.Mesh'
+    k : int
+        Index of the point.
+    point : Point
+        The point.
+    path : SlicerPath
+        The path containing the point.
+    mesh : Mesh
+        The mesh (fallback for degenerate cases).
 
     Returns
-    ----------
-    :class: 'compas.geometry.Vector'
-    """
+    -------
+    Vector
+        Normal vector.
 
+    """
     # find mesh normal is not really needed in the 2D case of planar slicer
     # instead we only need the normal of the curve based on the neighboring pts
     if (0 < k < len(path.points) - 1) or path.is_closed:
@@ -386,201 +426,340 @@ def get_normal_of_path_on_xy_plane(k, point, path, mesh):
 
 
 #######################################
-# igl utils
+# mesh matrix utils (NumPy implementations)
 
-def get_mesh_cotmatrix_igl(mesh, fix_boundaries=True):
-    """
-    Gets the laplace operator of the mesh
+def get_mesh_cotmatrix(mesh: Mesh, fix_boundaries: bool = True) -> csr_matrix:
+    """Get the cotangent Laplacian matrix of the mesh.
+
+    Computes L_ij = (cot α_ij + cot β_ij) / 2 for adjacent vertices,
+    with L_ii = -sum_j L_ij (row sum = 0).
 
     Parameters
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
+    mesh : Mesh
+        The mesh (must be triangulated).
     fix_boundaries : bool
+        If True, zero out rows for boundary vertices.
 
     Returns
-    ----------
-    :class: 'scipy.sparse.csr_matrix'
-        sparse matrix (dimensions: #V x #V), laplace operator, each row i corresponding to v(i, :)
+    -------
+    csr_matrix
+        Sparse matrix (V x V), cotangent Laplacian.
+
     """
-    # check_package_is_installed('igl')
-    import igl
-    v, f = mesh.to_vertices_and_faces()
-    C = igl.cotmatrix(np.array(v), np.array(f))
+    V, F = mesh.to_vertices_and_faces()
+    vertices = np.array(V, dtype=np.float64)
+    faces = np.array(F, dtype=np.int32)
+
+    n_vertices = len(vertices)
+
+    # Get cotangent weights for each half-edge
+    # For each face, compute cotangents of all three angles
+    i0, i1, i2 = faces[:, 0], faces[:, 1], faces[:, 2]
+    v0, v1, v2 = vertices[i0], vertices[i1], vertices[i2]
+
+    # Edge vectors
+    e0 = v2 - v1  # opposite to vertex 0
+    e1 = v0 - v2  # opposite to vertex 1
+    e2 = v1 - v0  # opposite to vertex 2
+
+    # Cotangent of angle at vertex i = dot(e_j, e_k) / |cross(e_j, e_k)|
+    # where e_j and e_k are edges adjacent to vertex i
+    def cotangent(a: NDArray, b: NDArray) -> NDArray:
+        cross = np.cross(a, b)
+        cross_norm = np.linalg.norm(cross, axis=1)
+        dot = np.sum(a * b, axis=1)
+        # Avoid division by zero
+        cross_norm = np.maximum(cross_norm, 1e-10)
+        return dot / cross_norm
+
+    # Cotangent at each vertex of each face
+    cot0 = cotangent(-e2, e1)  # angle at vertex 0
+    cot1 = cotangent(-e0, e2)  # angle at vertex 1
+    cot2 = cotangent(-e1, e0)  # angle at vertex 2
+
+    # Build sparse matrix
+    # L_ij += 0.5 * cot(angle opposite to edge ij)
+    row = np.concatenate([i0, i1, i1, i2, i2, i0])
+    col = np.concatenate([i1, i0, i2, i1, i0, i2])
+    data = np.concatenate([cot2, cot2, cot0, cot0, cot1, cot1]) * 0.5
+
+    L = csr_matrix((data, (row, col)), shape=(n_vertices, n_vertices))
+
+    # Make symmetric and set diagonal to negative row sum
+    L = L + L.T
+    L = L - scipy.sparse.diags(np.array(L.sum(axis=1)).flatten())
 
     if fix_boundaries:
-        # fix boundaries by putting the corresponding columns of the sparse matrix to 0
-        C_dense = C.toarray()
-        for i, (vkey, data) in enumerate(mesh.vertices(data=True)):
-            if data['boundary'] > 0:
-                C_dense[i][:] = np.zeros(len(v))
-        C = scipy.sparse.csr_matrix(C_dense)
-    return C
+        # Zero out rows for boundary vertices
+        boundary_mask = np.zeros(n_vertices, dtype=bool)
+        for i, (_vkey, vdata) in enumerate(mesh.vertices(data=True)):
+            if vdata.get('boundary', 0) > 0:
+                boundary_mask[i] = True
+
+        if np.any(boundary_mask):
+            L = L.tolil()
+            for i in np.where(boundary_mask)[0]:
+                L[i, :] = 0
+            L = L.tocsr()
+
+    return L
 
 
-def get_mesh_cotans_igl(mesh):
-    """
-    Gets the cotangent entries of the mesh
-
+def get_mesh_cotans(mesh: Mesh) -> NDArray:
+    """Get the cotangent entries of the mesh.
 
     Parameters
     ----------
-    mesh: :class: 'compas.datastructures.Mesh'
+    mesh : Mesh
+        The mesh (must be triangulated).
 
     Returns
-    ----------
-    :class: 'np.array'
-        Dimensions: F by 3 list of 1/2*cotangents corresponding angles
+    -------
+    NDArray
+        F x 3 array of 1/2*cotangents for corresponding angles.
+        Column i contains cotangent of angle at vertex i of each face.
+
     """
-    # check_package_is_installed('igl')
-    import igl
-    v, f = mesh.to_vertices_and_faces()
-    return igl.cotmatrix_entries(np.array(v), np.array(f))
+    V, F = mesh.to_vertices_and_faces()
+    vertices = np.array(V, dtype=np.float64)
+    faces = np.array(F, dtype=np.int32)
+
+    i0, i1, i2 = faces[:, 0], faces[:, 1], faces[:, 2]
+    v0, v1, v2 = vertices[i0], vertices[i1], vertices[i2]
+
+    e0 = v2 - v1
+    e1 = v0 - v2
+    e2 = v1 - v0
+
+    def cotangent(a: NDArray, b: NDArray) -> NDArray:
+        cross = np.cross(a, b)
+        cross_norm = np.linalg.norm(cross, axis=1)
+        dot = np.sum(a * b, axis=1)
+        cross_norm = np.maximum(cross_norm, 1e-10)
+        return dot / cross_norm
+
+    cot0 = cotangent(-e2, e1)
+    cot1 = cotangent(-e0, e2)
+    cot2 = cotangent(-e1, e0)
+
+    return np.column_stack([cot0, cot1, cot2]) * 0.5
 
 
-#######################################
-#  networkx graph
-
-def plot_networkx_graph(G):
-    """
-    Plots the graph G
+def get_mesh_massmatrix(mesh: Mesh) -> csr_matrix:
+    """Get the mass matrix of the mesh (Voronoi area weights).
 
     Parameters
     ----------
-    G: networkx.Graph
-    """
+    mesh : Mesh
+        The mesh (must be triangulated).
 
-    plt.subplot(121)
-    nx.draw(G, with_labels=True, font_weight='bold', node_color=range(len(list(G.nodes()))))
-    plt.show()
+    Returns
+    -------
+    csr_matrix
+        Sparse diagonal matrix (V x V), vertex areas.
+
+    """
+    V, F = mesh.to_vertices_and_faces()
+    vertices = np.array(V, dtype=np.float64)
+    faces = np.array(F, dtype=np.int32)
+
+    n_vertices = len(vertices)
+
+    # Compute face areas
+    i0, i1, i2 = faces[:, 0], faces[:, 1], faces[:, 2]
+    v0, v1, v2 = vertices[i0], vertices[i1], vertices[i2]
+
+    cross = np.cross(v1 - v0, v2 - v0)
+    face_areas = 0.5 * np.linalg.norm(cross, axis=1)
+
+    # Distribute 1/3 of each face area to each vertex
+    vertex_areas = np.zeros(n_vertices)
+    np.add.at(vertex_areas, i0, face_areas / 3)
+    np.add.at(vertex_areas, i1, face_areas / 3)
+    np.add.at(vertex_areas, i2, face_areas / 3)
+
+    return scipy.sparse.diags(vertex_areas)
+
+
+# Backwards compatibility aliases
+get_mesh_cotmatrix_igl = get_mesh_cotmatrix
+get_mesh_cotans_igl = get_mesh_cotans
 
 
 #######################################
 #  dict utils
 
-def point_list_to_dict(pts_list):
-    """
-    Turns a list of compas.geometry.Point into a dictionary, so that it can be saved to Json. Works identically for
-    3D vectors.
+def point_list_to_dict(pts_list: list[Point | Vector]) -> dict[int, list[float]]:
+    """Convert list of points/vectors to dict for JSON.
 
     Parameters
     ----------
-    pts_list: list, :class:`compas.geometry.Point` / :class:`compas.geometry.Vector`
+    pts_list : list[Point | Vector]
+        List of points or vectors.
 
     Returns
-    ----------
-    dict: The dictionary of pts in the form { key=index : [x,y,z] }
+    -------
+    dict[int, list[float]]
+        Dict mapping index to [x, y, z].
+
     """
-    data = {}
+    data: dict[int, list[float]] = {}
     for i in range(len(pts_list)):
         data[i] = list(pts_list[i])
     return data
 
 
-def point_list_from_dict(data):
-    """
-    Turns a dictionary of pts to a list of Compas.geometry.Point. Works identically for 3D vectors.
+def point_list_from_dict(data: dict[Any, list[float]]) -> list[list[float]]:
+    """Convert dict of points to list of [x, y, z].
 
     Parameters
     ----------
-    dict: The dictionary of pts in the form { key=index : [x,y,z] }
+    data : dict[Any, list[float]]
+        Dict mapping keys to [x, y, z].
 
     Returns
-    ----------
-    2D list,  [[x1, y1, z1], ... , [xn, yn, zn]]
+    -------
+    list[list[float]]
+        List of [x, y, z] coordinates.
+
     """
     return [[data[i][0], data[i][1], data[i][2]] for i in data]
 
 
-#  --- Flattened list of dictionary
-def flattened_list_of_dictionary(dictionary):
-    """
-    Turns the dictionary into a flat list
+def flattened_list_of_dictionary(dictionary: dict[Any, list[Any]]) -> list[Any]:
+    """Flatten dictionary values into a single list.
 
     Parameters
     ----------
-    dictionary: dict
+    dictionary : dict[Any, list[Any]]
+        Dictionary with list values.
 
     Returns
-    ----------
-    list
+    -------
+    list[Any]
+        Flattened list.
+
     """
-    flattened_list = []
+    flattened_list: list[Any] = []
     for key in dictionary:
-        [flattened_list.append(item) for item in dictionary[key]]
+        for item in dictionary[key]:
+            flattened_list.append(item)
     return flattened_list
 
 
-def get_dict_key_from_value(dictionary, val):
-    """
-    Return the key of a dictionary that stores the val
+def get_dict_key_from_value(dictionary: dict[Any, Any], val: Any) -> Any | None:
+    """Return the key of a dictionary that stores the value.
 
     Parameters
     ----------
-    dictionary: dict
-    val: anything that can be stored in a dictionary
-    """
+    dictionary : dict
+        The dictionary to search.
+    val : Any
+        Value to find.
 
+    Returns
+    -------
+    Any | None
+        The key, or None if not found.
+
+    """
     for key in dictionary:
         value = dictionary[key]
         if val == value:
             return key
-    return "key doesn't exist"
+    return None
 
 
-def find_next_printpoint(pp_dict, i, j, k):
+def find_next_printpoint(
+    printpoints: PrintPointsCollection, i: int, j: int, k: int
+) -> PrintPoint | None:
     """
     Returns the next printpoint from the current printpoint if it exists, otherwise returns None.
+
+    Parameters
+    ----------
+    printpoints : PrintPointsCollection
+        The collection of printpoints.
+    i : int
+        Layer index.
+    j : int
+        Path index.
+    k : int
+        Printpoint index within the path.
+
+    Returns
+    -------
+    PrintPoint | None
+        The next printpoint or None if at the end.
+
     """
     next_ppt = None
-    layer_key, path_key = 'layer_%d' % i, 'path_%d' % j
-    if k < len(pp_dict[layer_key][path_key]) - 1:  # If there are more ppts in the current path, then take the next ppt
-        next_ppt = pp_dict[layer_key][path_key][k + 1]
+    if k < len(printpoints[i][j]) - 1:  # If there are more ppts in the current path
+        next_ppt = printpoints[i][j][k + 1]
     else:
-        if j < len(pp_dict[layer_key]) - 1:  # Otherwise take the next path if there are more paths in the current layer
-            next_ppt = pp_dict[layer_key]['path_%d' % (j + 1)][0]
+        if j < len(printpoints[i]) - 1:  # Otherwise take the next path
+            next_ppt = printpoints[i][j + 1][0]
         else:
-            if i < len(pp_dict) - 1:  # Otherwise take the next layer if there are more layers in the current slicer
-                next_ppt = pp_dict['layer_%d' % (i + 1)]['path_0'][0]
+            if i < len(printpoints) - 1:  # Otherwise take the next layer
+                next_ppt = printpoints[i + 1][0][0]
     return next_ppt
 
 
-def find_previous_printpoint(pp_dict, layer_key, path_key, i, j, k):
+def find_previous_printpoint(
+    printpoints: PrintPointsCollection, i: int, j: int, k: int
+) -> PrintPoint | None:
     """
     Returns the previous printpoint from the current printpoint if it exists, otherwise returns None.
+
+    Parameters
+    ----------
+    printpoints : PrintPointsCollection
+        The collection of printpoints.
+    i : int
+        Layer index.
+    j : int
+        Path index.
+    k : int
+        Printpoint index within the path.
+
+    Returns
+    -------
+    PrintPoint | None
+        The previous printpoint or None if at the start.
+
     """
     prev_ppt = None
-    if k > 0:  # If not the first point in a path, take the previous point in the path
-        prev_ppt = pp_dict[layer_key][path_key][k - 1]
+    if k > 0:  # If not the first point in a path
+        prev_ppt = printpoints[i][j][k - 1]
     else:
-        if j > 0:  # Otherwise take the last point of the previous path, if there are more paths in the current layer
-            prev_ppt = pp_dict[layer_key]['path_%d' % (j - 1)][-1]
+        if j > 0:  # Otherwise take the last point of the previous path
+            prev_ppt = printpoints[i][j - 1][-1]
         else:
-            if i > 0:  # Otherwise take the last path of the previous layer if there are more layers in the current slicer
-                last_path_key = len(pp_dict[layer_key]) - 1
-                prev_ppt = pp_dict['layer_%d' % (i - 1)]['path_%d' % (last_path_key)][-1]
+            if i > 0:  # Otherwise take the last path of the previous layer
+                prev_ppt = printpoints[i - 1][-1][-1]
     return prev_ppt
 
 
 #######################################
 #  control flow
 
-def interrupt():
+def interrupt() -> None:
     """
     Interrupts the flow of the code while it is running.
     It asks for the user to press a enter to continue or abort.
     """
-
     value = input("Press enter to continue, Press 1 to abort ")
-    print("")
-    if isinstance(value, str):
-        if value == '1':
-            raise ValueError("Aborted")
+    if isinstance(value, str) and value == '1':
+        raise ValueError("Aborted")
 
 
 #######################################
 #  load all files with name
 
-def get_all_files_with_name(startswith, endswith, DATA_PATH):
+def get_all_files_with_name(
+    startswith: str, endswith: str, DATA_PATH: str | Path
+) -> list[str]:
     """
     Finds all the filenames in the DATA_PATH that start and end with the provided strings
 
@@ -588,20 +767,16 @@ def get_all_files_with_name(startswith, endswith, DATA_PATH):
     ----------
     startswith: str
     endswith: str
-    DATA_PATH: str
+    DATA_PATH: str | Path
 
     Returns
     ----------
-    list, str
+    list[str]
         All the filenames
     """
-
-    files = []
-    for file in os.listdir(DATA_PATH):
-        if file.startswith(startswith) and file.endswith(endswith):
-            files.append(file)
-    print('')
-    logger.info('Reloading : ' + str(files))
+    files = [f.name for f in Path(DATA_PATH).iterdir()
+             if f.name.startswith(startswith) and f.name.endswith(endswith)]
+    logger.info(f'Reloading: {files}')
     return files
 
 
@@ -609,7 +784,7 @@ def get_all_files_with_name(startswith, endswith, DATA_PATH):
 # check installation
 
 
-def check_package_is_installed(package_name):
+def check_package_is_installed(package_name: str) -> None:
     """ Throws an error if igl python bindings are not installed in the current environment. """
     packages = TerminalCommand('conda list').get_split_output_strings()
     if package_name not in packages:

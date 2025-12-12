@@ -1,15 +1,29 @@
-import logging
-from compas_slicer.pre_processing.preprocessing_utils import blend_union_list, stairs_union_list, chamfer_union_list
-from compas_slicer.utilities.utils import remap_unbound
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 
-logger = logging.getLogger('logger')
+from compas_slicer.pre_processing.preprocessing_utils.compound_target import (
+    blend_union_list,
+    chamfer_union_list,
+    stairs_union_list,
+)
+from compas_slicer.utilities.utils import remap_unbound
+
+if TYPE_CHECKING:
+    from compas.datastructures import Mesh
+
+    from compas_slicer.pre_processing.preprocessing_utils.compound_target import CompoundTarget
+
 
 __all__ = ['assign_interpolation_distance_to_mesh_vertices',
            'assign_interpolation_distance_to_mesh_vertex']
 
 
-def assign_interpolation_distance_to_mesh_vertices(mesh, weight, target_LOW, target_HIGH):
+def assign_interpolation_distance_to_mesh_vertices(
+    mesh: Mesh, weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget | None
+) -> None:
     """
     Fills in the 'get_distance' attribute of every vertex of the mesh.
 
@@ -23,12 +37,71 @@ def assign_interpolation_distance_to_mesh_vertices(mesh, weight, target_LOW, tar
     target_HIGH:  :class: 'compas_slicer.pre_processing.CompoundTarget'
         The upper compound target.
     """
-    for i, vkey in enumerate(mesh.vertices()):
-        d = assign_interpolation_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH)
-        mesh.vertex[vkey]['scalar_field'] = d
+    # Vectorized computation for all vertices at once
+    distances = _compute_all_distances_vectorized(weight, target_LOW, target_HIGH)
+    for vkey, d in zip(mesh.vertices(), distances):
+        mesh.vertex[vkey]['scalar_field'] = float(d)
 
 
-def assign_interpolation_distance_to_mesh_vertex(vkey, weight, target_LOW, target_HIGH):
+def _compute_all_distances_vectorized(
+    weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget | None
+) -> np.ndarray:
+    """Compute weighted distances for all vertices at once."""
+    if target_LOW and target_HIGH:
+        return _get_weighted_distances_vectorized(weight, target_LOW, target_HIGH)
+    elif target_LOW:
+        offset = weight * target_LOW.get_max_dist()
+        return target_LOW.get_all_distances() - offset
+    else:
+        raise ValueError('You need to provide at least one target')
+
+
+def _get_weighted_distances_vectorized(
+    weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget
+) -> np.ndarray:
+    """Vectorized weighted distance computation for all vertices."""
+    d_low = target_LOW.get_all_distances()  # (n_vertices,)
+
+    if target_HIGH.has_uneven_weights:
+        # (n_boundaries, n_vertices)
+        ds_high = target_HIGH.get_all_distances_array()
+
+        if target_HIGH.number_of_boundaries > 1:
+            weights = np.array([
+                remap_unbound(weight, 0, wmax, 0, 1)
+                for wmax in target_HIGH.weight_max_per_cluster
+            ])  # (n_boundaries,)
+        else:
+            weights = np.array([weight])
+
+        # Broadcast: (n_boundaries, n_vertices)
+        distances = (weights[:, None] - 1) * d_low + weights[:, None] * ds_high
+
+        if target_HIGH.union_method == 'min':
+            return np.min(distances, axis=0)
+        elif target_HIGH.union_method == 'smooth':
+            return np.array([
+                blend_union_list(distances[:, i].tolist(), target_HIGH.union_params[0])
+                for i in range(distances.shape[1])
+            ])
+        elif target_HIGH.union_method == 'chamfer':
+            return np.array([
+                chamfer_union_list(distances[:, i].tolist(), target_HIGH.union_params[0])
+                for i in range(distances.shape[1])
+            ])
+        elif target_HIGH.union_method == 'stairs':
+            return np.array([
+                stairs_union_list(distances[:, i].tolist(), target_HIGH.union_params[0], target_HIGH.union_params[1])
+                for i in range(distances.shape[1])
+            ])
+    else:
+        d_high = target_HIGH.get_all_distances()
+        return d_low * (1 - weight) - d_high * weight
+
+
+def assign_interpolation_distance_to_mesh_vertex(
+    vkey: int, weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget | None
+) -> float:
     """
     Fills in the 'get_distance' attribute for a single vertex with vkey.
 
@@ -53,7 +126,9 @@ def assign_interpolation_distance_to_mesh_vertex(vkey, weight, target_LOW, targe
     return d
 
 
-def get_weighted_distance(vkey, weight, target_LOW, target_HIGH):
+def get_weighted_distance(
+    vkey: int, weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget
+) -> float:
     """
     Computes the weighted get_distance for a single vertex with vkey.
 

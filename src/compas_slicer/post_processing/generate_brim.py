@@ -1,18 +1,197 @@
-import pyclipper
-from pyclipper import scale_from_clipper, scale_to_clipper
-from compas_slicer.geometry import Layer
-from compas_slicer.geometry import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from compas.geometry import Point
+from loguru import logger
+
 import compas_slicer
-import logging
-from compas_slicer.post_processing import seams_align
+from compas_slicer.geometry import Layer, Path
+from compas_slicer.post_processing.seams_align import seams_align
 
-logger = logging.getLogger('logger')
+# Try CGAL first, fall back to pyclipper
+_USE_CGAL = False
+try:
+    from compas_cgal.straight_skeleton_2 import offset_polygon as _cgal_offset
+    from compas_cgal.straight_skeleton_2 import offset_polygon_with_holes as _cgal_offset_with_holes
+    _USE_CGAL = True
+except ImportError:
+    _cgal_offset = None
+    _cgal_offset_with_holes = None
 
-__all__ = ['generate_brim']
+if TYPE_CHECKING:
+    from compas_slicer.slicers import BaseSlicer
 
 
-def generate_brim(slicer, layer_width, number_of_brim_offsets):
+__all__ = ['generate_brim', 'offset_polygon', 'offset_polygon_with_holes']
+
+
+def _offset_polygon_cgal(points: list[Point], offset: float, z: float) -> list[Point]:
+    """Offset a polygon using CGAL straight skeleton.
+
+    Parameters
+    ----------
+    points : list[Point]
+        2D/3D points of the polygon (z ignored for offset, restored after).
+    offset : float
+        Offset distance (positive = outward, negative = inward).
+    z : float
+        Z coordinate to assign to result points.
+
+    Returns
+    -------
+    list[Point]
+        Offset polygon points with z coordinate.
+    """
+    # CGAL expects points with z=0 and normal pointing up
+    pts_2d = [[p[0], p[1], 0] for p in points]
+
+    # CGAL offset: negative = inward, positive = outward (opposite of pyclipper)
+    # For brim we want outward offset
+    result_polys = _cgal_offset(pts_2d, -offset)
+
+    if not result_polys:
+        return []
+
+    # Take first result polygon, add z coordinate
+    result_pts = [Point(p[0], p[1], z) for p in result_polys[0].points]
+
+    # Close the polygon
+    if result_pts and result_pts[0] != result_pts[-1]:
+        result_pts.append(result_pts[0])
+
+    return result_pts
+
+
+def _offset_polygon_pyclipper(points: list[Point], offset: float, z: float) -> list[Point]:
+    """Offset a polygon using pyclipper.
+
+    Parameters
+    ----------
+    points : list[Point]
+        2D/3D points of the polygon.
+    offset : float
+        Offset distance (positive = outward).
+    z : float
+        Z coordinate to assign to result points.
+
+    Returns
+    -------
+    list[Point]
+        Offset polygon points with z coordinate.
+    """
+    import pyclipper
+    from pyclipper import scale_from_clipper, scale_to_clipper
+
+    SCALING_FACTOR = 2 ** 32
+
+    xy_coords = [[p[0], p[1]] for p in points]
+
+    pco = pyclipper.PyclipperOffset()
+    pco.AddPath(
+        scale_to_clipper(xy_coords, SCALING_FACTOR),
+        pyclipper.JT_MITER,
+        pyclipper.ET_CLOSEDPOLYGON
+    )
+
+    result = scale_from_clipper(pco.Execute(offset * SCALING_FACTOR), SCALING_FACTOR)
+
+    if not result:
+        return []
+
+    result_pts = [Point(xy[0], xy[1], z) for xy in result[0]]
+
+    # Close the polygon
+    if result_pts:
+        result_pts.append(result_pts[0])
+
+    return result_pts
+
+
+def offset_polygon(points: list[Point], offset: float, z: float) -> list[Point]:
+    """Offset a polygon, using CGAL if available.
+
+    Parameters
+    ----------
+    points : list[Point]
+        Points of the polygon.
+    offset : float
+        Offset distance (positive = outward).
+    z : float
+        Z coordinate for result points.
+
+    Returns
+    -------
+    list[Point]
+        Offset polygon points.
+    """
+    if _USE_CGAL:
+        return _offset_polygon_cgal(points, offset, z)
+    else:
+        return _offset_polygon_pyclipper(points, offset, z)
+
+
+def offset_polygon_with_holes(
+    outer: list[Point],
+    holes: list[list[Point]],
+    offset: float,
+    z: float
+) -> list[tuple[list[Point], list[list[Point]]]]:
+    """Offset a polygon with holes using CGAL straight skeleton.
+
+    Parameters
+    ----------
+    outer : list[Point]
+        Points of the outer boundary (CCW orientation).
+    holes : list[list[Point]]
+        List of hole polygons (CW orientation).
+    offset : float
+        Offset distance (positive = outward, negative = inward).
+    z : float
+        Z coordinate for result points.
+
+    Returns
+    -------
+    list[tuple[list[Point], list[list[Point]]]]
+        List of (outer_boundary, holes) tuples for resulting polygons.
+
+    Raises
+    ------
+    ImportError
+        If CGAL is not available.
+    """
+    if not _USE_CGAL:
+        raise ImportError("offset_polygon_with_holes requires compas_cgal")
+
+    from compas.geometry import Polygon
+
+    # CGAL expects Polygon objects with z=0, normal up for outer, down for holes
+    outer_poly = Polygon([[p[0], p[1], 0] for p in outer])
+    hole_polys = [Polygon([[p[0], p[1], 0] for p in hole]) for hole in holes]
+
+    # CGAL: negative = outward, positive = inward (opposite of our convention)
+    result = _cgal_offset_with_holes(outer_poly, hole_polys, -offset)
+
+    # Convert back to Points with z coordinate
+    output = []
+    for poly, poly_holes in result:
+        outer_pts = [Point(p[0], p[1], z) for p in poly.points]
+        if outer_pts and outer_pts[0] != outer_pts[-1]:
+            outer_pts.append(outer_pts[0])
+
+        hole_pts_list = []
+        for hole in poly_holes:
+            hole_pts = [Point(p[0], p[1], z) for p in hole.points]
+            if hole_pts and hole_pts[0] != hole_pts[-1]:
+                hole_pts.append(hole_pts[0])
+            hole_pts_list.append(hole_pts)
+
+        output.append((outer_pts, hole_pts_list))
+
+    return output
+
+
+def generate_brim(slicer: BaseSlicer, layer_width: float, number_of_brim_offsets: int) -> None:
     """Creates a brim around the bottom contours of the print.
 
     Parameters
@@ -25,14 +204,8 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
     number_of_brim_offsets: int
         Number of brim paths to add.
     """
-
-    logger.info(
-        "Generating brim with layer width: %.2f mm, consisting of %d layers" % (layer_width, number_of_brim_offsets))
-
-    #  TODO: Add post_processing for merging several contours when the brims overlap.
-    #  uses the default scaling factor of 2**32
-    #  see: https://github.com/fonttools/pyclipper/wiki/Deprecating-SCALING_FACTOR
-    SCALING_FACTOR = 2 ** 32
+    backend = "CGAL" if _USE_CGAL else "pyclipper"
+    logger.info(f"Generating brim with layer width: {layer_width:.2f} mm, {number_of_brim_offsets} offsets ({backend})")
 
     if slicer.layers[0].is_raft:
         raise NameError("Raft found: cannot apply brim when raft is used, choose one")
@@ -50,8 +223,8 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
         paths_to_offset = slicer.layers[0].paths
         has_vertical_layers = False
 
-    assert len(paths_to_offset) > 0, 'Attention the brim generator did not find any path on the base. Please check the \
-                                      paths of your slicer. '
+    if len(paths_to_offset) == 0:
+        raise ValueError('Brim generator did not find any path on the base. Please check the paths of your slicer.')
 
     # (2) --- create new empty brim_layer
     brim_layer = Layer(paths=[])
@@ -60,39 +233,15 @@ def generate_brim(slicer, layer_width, number_of_brim_offsets):
 
     # (3) --- create offsets and add them to the paths of the brim_layer
     for path in paths_to_offset:
-        #  evaluate per path
-        xy_coords_for_clipper = []
-        for point in path.points:
-            # gets the X and Y coordinate since Clipper only does 2D offset operations
-            xy_coords = [point[0], point[1]]
-            xy_coords_for_clipper.append(xy_coords)
-
-        #  initialise Clipper
-        pco = pyclipper.PyclipperOffset()
-        pco.AddPath(scale_to_clipper(xy_coords_for_clipper, SCALING_FACTOR), pyclipper.JT_MITER,
-                    pyclipper.ET_CLOSEDPOLYGON)
+        z = path.points[0][2]
 
         for i in range(number_of_brim_offsets):
-            #  iterate through a list of brim paths
-            clipper_points_per_brim_path = []
+            offset_distance = i * layer_width
+            offset_pts = offset_polygon(path.points, offset_distance, z)
 
-            #  gets result
-            result = scale_from_clipper(pco.Execute((i) * layer_width * SCALING_FACTOR), SCALING_FACTOR)
-
-            for xy in result[0]:
-                #  gets the X and Y coordinate from the Clipper result
-                x = xy[0]
-                y = xy[1]
-                z = path.points[0][2]
-
-                clipper_points_per_brim_path.append(Point(x, y, z))
-
-            # adds the first point as the last point to form a closed contour
-            clipper_points_per_brim_path = clipper_points_per_brim_path + [clipper_points_per_brim_path[0]]
-
-            #  create a path per brim contour
-            new_path = Path(points=clipper_points_per_brim_path, is_closed=True)
-            brim_layer.paths.append(new_path)
+            if offset_pts:
+                new_path = Path(points=offset_pts, is_closed=True)
+                brim_layer.paths.append(new_path)
 
     brim_layer.paths.reverse()  # go from outside towards the object
     brim_layer.calculate_z_bounds()
