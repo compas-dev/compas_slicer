@@ -185,29 +185,21 @@ To build connected contours:
 
 ## Contour Assembly
 
-All slicers eventually produce contours via the `ScalarFieldContours` class:
-
-### From Crossings to Paths
+All slicers produce contours via `ScalarFieldContours`, which uses CGAL's isoline extraction:
 
 ```mermaid
 flowchart LR
-    A[Edge crossings] --> B[Face traversal]
-    B --> C[Connected polylines]
+    A[Scalar field on vertices] --> B[CGAL isolines]
+    B --> C[Sorted polylines]
     C --> D[Path objects]
 ```
 
-1. **Build crossing map**: Dictionary of edge → crossing point
-2. **Traverse faces**: Walk around faces connecting crossings
-3. **Handle branches**: Multiple paths per layer for complex geometry
-4. **Create Paths**: Wrap polylines in Path objects with metadata
+The CGAL backend (`compas_cgal.isolines`) handles:
 
-### Handling Complex Topology
-
-The algorithm handles:
-
-- **Multiple contours per layer**: Holes, disconnected regions
-- **Open contours**: When path hits mesh boundary
-- **Branching**: When contours merge or split
+- **Edge crossing detection**: Finding zero-crossings on mesh edges
+- **Polyline assembly**: Connecting crossings into coherent curves
+- **Multiple contours**: Holes, disconnected regions, branching
+- **Open/closed detection**: Identifying boundary-hitting paths
 
 ## Performance Considerations
 

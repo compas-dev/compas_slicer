@@ -11,14 +11,8 @@ from loguru import logger
 from numpy.typing import NDArray
 
 import compas_slicer.utilities as utils
-from compas_slicer.pre_processing.preprocessing_utils.geodesics import (
-    get_cgal_HEAT_geodesic_distances,
-    get_custom_HEAT_geodesic_distances,
-    get_igl_EXACT_geodesic_distances,
-    get_igl_HEAT_geodesic_distances,
-)
+from compas_slicer.pre_processing.preprocessing_utils.geodesics import get_heat_geodesic_distances
 
-GeodesicsMethod = Literal['exact_igl', 'heat_igl', 'heat_cgal', 'heat']
 UnionMethod = Literal['min', 'smooth', 'chamfer', 'stairs']
 
 
@@ -57,11 +51,6 @@ class CompoundTarget:
     DATA_PATH: str
     has_blend_union: bool
     blend_radius : float
-    geodesics_method: str
-        'heat_cgal'  CGAL heat geodesic distances (recommended)
-        'heat'       custom heat geodesic distances
-    anisotropic_scaling: bool
-        This is not yet implemented
     """
 
     def __init__(
@@ -72,8 +61,6 @@ class CompoundTarget:
         DATA_PATH: str,
         union_method: UnionMethod = 'min',
         union_params: list[Any] | None = None,
-        geodesics_method: GeodesicsMethod = 'heat_cgal',
-        anisotropic_scaling: bool = False,
     ) -> None:
 
         if union_params is None:
@@ -88,9 +75,6 @@ class CompoundTarget:
 
         self.union_method = union_method
         self.union_params = union_params
-
-        self.geodesics_method = geodesics_method
-        self.anisotropic_scaling = anisotropic_scaling  # Anisotropic scaling not yet implemented
 
         self.offset = 0
         self.VN = len(list(self.mesh.vertices()))
@@ -145,20 +129,9 @@ class CompoundTarget:
         Computes the geodesic distances from each of the target's neighborhoods  to all the mesh vertices.
         Fills in the distances attributes.
         """
-        if self.geodesics_method == 'exact_igl':
-            distances_lists = [get_igl_EXACT_geodesic_distances(self.mesh, vstarts) for vstarts in
-                               self.clustered_vkeys]
-        elif self.geodesics_method == 'heat_igl':
-            distances_lists = [get_igl_HEAT_geodesic_distances(self.mesh, vstarts) for vstarts in
-                               self.clustered_vkeys]
-        elif self.geodesics_method == 'heat_cgal':
-            distances_lists = [get_cgal_HEAT_geodesic_distances(self.mesh, vstarts) for vstarts in
-                               self.clustered_vkeys]
-        elif self.geodesics_method == 'heat':
-            distances_lists = [get_custom_HEAT_geodesic_distances(self.mesh, vstarts, str(self.OUTPUT_PATH)) for vstarts in
-                               self.clustered_vkeys]
-        else:
-            raise ValueError('Unknown geodesics method : ' + self.geodesics_method)
+        distances_lists = [
+            get_heat_geodesic_distances(self.mesh, vstarts) for vstarts in self.clustered_vkeys
+        ]
 
         distances_lists = [list(dl) for dl in distances_lists]  # number_of_boundaries x #V
         self.update_distances_lists(distances_lists)

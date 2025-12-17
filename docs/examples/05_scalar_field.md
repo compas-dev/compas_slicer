@@ -193,9 +193,9 @@ Creates concentric circular layers (spiral vase mode).
 ### Geodesic Field
 
 ```python
-# Using igl for geodesic distance from boundary vertices
-import igl
-distances = igl.exact_geodesic(V, F, boundary_vertices)
+# Using CGAL for geodesic distance from boundary vertices
+from compas_cgal.geodesics import heat_geodesic_distances
+distances = heat_geodesic_distances((V, F), boundary_vertices)
 ```
 
 Creates layers that follow surface curvature.

@@ -63,23 +63,15 @@ class InterpolationSlicingPreprocessor:
         """Create target_LOW and target_HIGH and compute geodesic distances."""
 
         # --- low target
-        geodesics_method = self.config.target_low_geodesics_method.value
-        method = 'min'  # no other union methods currently supported for lower target
-        params: list[float] = []
-        self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH,
-                                         union_method=method,
-                                         union_params=params,
-                                         geodesics_method=geodesics_method)
+        self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH)
 
         # --- high target
-        geodesics_method = self.config.target_high_geodesics_method.value
         method = self.config.target_high_union_method.value
         params = self.config.target_high_union_params
         logger.info(f"Creating target with union type: {method} and params: {params}")
-        self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH,
-                                          union_method=method,
-                                          union_params=params,
-                                          geodesics_method=geodesics_method)
+        self.target_HIGH = CompoundTarget(
+            self.mesh, 'boundary', 2, self.DATA_PATH, union_method=method, union_params=params
+        )
 
         # --- uneven boundaries of high target
         self.target_HIGH.offset = self.config.uneven_upper_targets_offset
