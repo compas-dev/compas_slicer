@@ -17,7 +17,7 @@ from compas_slicer.pre_processing.preprocessing_utils.mesh_attributes_handling i
     save_vertex_attributes,
 )
 
-__all__ = ['MeshSplitter']
+__all__ = ["MeshSplitter"]
 
 # --- Parameters
 T_SEARCH_RESOLUTION = 60000
@@ -55,8 +55,9 @@ class MeshSplitter:
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
         self.target_LOW, self.target_HIGH = target_LOW, target_HIGH
 
-        assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=0.5, target_LOW=self.target_LOW,
-                                                       target_HIGH=self.target_HIGH)
+        assign_interpolation_distance_to_mesh_vertices(
+            self.mesh, weight=0.5, target_LOW=self.target_LOW, target_HIGH=self.target_HIGH
+        )
         # Late import to avoid circular dependency
         from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
 
@@ -90,28 +91,30 @@ class MeshSplitter:
         logger.info(f"{len(split_params)} Split params. First rough estimation :  {split_params}")
 
         # split mesh at params
-        logger.info('Splitting mesh at split params')
+        logger.info("Splitting mesh at split params")
         current_cut_index = 1
 
         for i, param_first_estimation in enumerate(split_params):
-            logger.info(f'cut_index : {current_cut_index}, param_first_estimation : {param_first_estimation:.6f}')
+            logger.info(f"cut_index : {current_cut_index}, param_first_estimation : {param_first_estimation:.6f}")
 
             # --- (1) More exact estimation of intersecting weight. Recompute gradient evaluation.
             # Find exact saddle point and the weight that intersects it.
 
-            assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=param_first_estimation,
-                                                           target_LOW=self.target_LOW, target_HIGH=self.target_HIGH)
+            assign_interpolation_distance_to_mesh_vertices(
+                self.mesh, weight=param_first_estimation, target_LOW=self.target_LOW, target_HIGH=self.target_HIGH
+            )
             # Late import to avoid circular dependency
             from compas_slicer.pre_processing.gradient_evaluation import GradientEvaluation
 
             g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH)
             g_evaluation.find_critical_points()
-            saddles_ds_tupples = [(vkey, abs(g_evaluation.mesh.vertex_attribute(vkey, 'scalar_field'))) for vkey in
-                                  g_evaluation.saddles]
+            saddles_ds_tupples = [
+                (vkey, abs(g_evaluation.mesh.vertex_attribute(vkey, "scalar_field"))) for vkey in g_evaluation.saddles
+            ]
             saddles_ds_tupples = sorted(saddles_ds_tupples, key=lambda saddle_tupple: saddle_tupple[1])
             vkey = saddles_ds_tupples[0][0]
             t = self.identify_positions_to_split([vkey])[0]
-            logger.info(f'vkey_exact : {vkey} , t_exact : {t:.6f}')
+            logger.info(f"vkey_exact : {vkey} , t_exact : {t:.6f}")
 
             # --- (2) find zero-crossing points
             assign_interpolation_distance_to_mesh_vertices(self.mesh, t, self.target_LOW, self.target_HIGH)
@@ -126,12 +129,14 @@ class MeshSplitter:
             cleanup_unrelated_isocontour_neighborhoods(zero_contours, keys_of_clusters_to_keep)
 
             if zero_contours:  # if there are remaining zero-crossing neighborhoods
-                zero_contours = smoothen_cut(zero_contours, self.mesh, saddle_vkeys=[vkey], iterations=15,
-                                             strength=0.2)  # smoothen the cut close to the saddle point.
+                zero_contours = smoothen_cut(
+                    zero_contours, self.mesh, saddle_vkeys=[vkey], iterations=15, strength=0.2
+                )  # smoothen the cut close to the saddle point.
 
                 # save to json intermediary results
-                zero_contours.save_point_clusters_as_polylines_to_json(self.OUTPUT_PATH,
-                                                                       f'point_clusters_polylines_{int(i)}.json')
+                zero_contours.save_point_clusters_as_polylines_to_json(
+                    self.OUTPUT_PATH, f"point_clusters_polylines_{int(i)}.json"
+                )
 
                 #  --- (4) Create cut
                 logger.info("Creating cut on mesh")
@@ -140,17 +145,17 @@ class MeshSplitter:
                 current_cut_index += 1
 
                 #  --- (5) Weld mesh and restore attributes
-                logger.info('Cleaning up the mesh. Welding and restoring attributes')
+                logger.info("Cleaning up the mesh. Welding and restoring attributes")
                 v_attributes_dict = save_vertex_attributes(self.mesh)
                 self.mesh = weld_mesh(self.mesh, self.OUTPUT_PATH)
                 restore_mesh_attributes(self.mesh, v_attributes_dict)
 
                 #  --- (6) Update targets
                 if i < len(split_params) - 1:  # does not need to happen at the end
-                    logger.info('Updating targets, recomputing geodesic distances')
+                    logger.info("Updating targets, recomputing geodesic distances")
                     self.update_targets()
 
-            self.mesh.to_obj(str(Path(self.OUTPUT_PATH) / 'most_recent_cut_mesh.obj'))
+            self.mesh.to_obj(str(Path(self.OUTPUT_PATH) / "most_recent_cut_mesh.obj"))
 
     def update_targets(self):
         """
@@ -181,7 +186,7 @@ class MeshSplitter:
 
             # add first vertex
             p = pts[0]
-            v0 = self.mesh.add_vertex(x=p[0], y=p[1], z=p[2], attr_dict={'cut': 1})
+            v0 = self.mesh.add_vertex(x=p[0], y=p[1], z=p[2], attr_dict={"cut": 1})
 
             for i, edge in enumerate(edges):
                 next_edge = edges[(i + 1) % len(edges)]
@@ -195,7 +200,7 @@ class MeshSplitter:
                 v_other_a = list(set(edge).difference([vkey_common]))[0]
                 v_other_b = list(set(next_edge).difference([vkey_common]))[0]
 
-                v_new = self.mesh.add_vertex(x=p[0], y=p[1], z=p[2], attr_dict={'cut': cut_index})
+                v_new = self.mesh.add_vertex(x=p[0], y=p[1], z=p[2], attr_dict={"cut": cut_index})
 
                 # remove and add faces
                 if fkey_common in list(self.mesh.faces()):
@@ -204,16 +209,16 @@ class MeshSplitter:
                     self.mesh.add_face([v_new, v_other_a, v0])
                     self.mesh.add_face([v_other_b, v_other_a, v_new])
                 else:
-                    logger.warning('Did not need to modify faces.')
+                    logger.warning("Did not need to modify faces.")
                 v0 = v_new
 
         self.mesh.cull_vertices()  # remove all unused vertices
         try:
             self.mesh.unify_cycles()
         except AssertionError:
-            logger.warning('Could NOT unify cycles')
+            logger.warning("Could NOT unify cycles")
         if not self.mesh.is_valid():
-            logger.warning('Attention! Mesh is NOT valid!')
+            logger.warning("Attention! Mesh is NOT valid!")
 
     def identify_positions_to_split(self, saddles):
         """
@@ -251,18 +256,21 @@ class MeshSplitter:
         # TODO: save next d to avoid re-evaluating
         for i, weight in enumerate(weight_list[:-1]):
             current_d = assign_interpolation_distance_to_mesh_vertex(vkey, weight, self.target_LOW, self.target_HIGH)
-            next_d = assign_interpolation_distance_to_mesh_vertex(vkey, weight_list[i + 1], self.target_LOW, self.target_HIGH)
+            next_d = assign_interpolation_distance_to_mesh_vertex(
+                vkey, weight_list[i + 1], self.target_LOW, self.target_HIGH
+            )
             if abs(current_d) < abs(next_d) and current_d < threshold:
                 return weight
-        raise ValueError(f'Could NOT find param for saddle vkey {vkey}!')
+        raise ValueError(f"Could NOT find param for saddle vkey {vkey}!")
 
 
 ###############################################
 # --- helpers
 ###############################################
 
+
 def get_weights_list(n, start=0.03, end=1.0):
-    """ Returns a numpy array with n numbers from start to end. """
+    """Returns a numpy array with n numbers from start to end."""
     return list(np.arange(start=start, stop=end, step=(end - start) / n))
 
 
@@ -388,20 +396,17 @@ def _trimesh_face_components(
         return np.arange(n_faces, dtype=np.int32)
 
     data = np.ones(len(row), dtype=np.int32)
-    adjacency = scipy.sparse.csr_matrix(
-        (data, (row, col)), shape=(n_faces, n_faces)
-    )
+    adjacency = scipy.sparse.csr_matrix((data, (row, col)), shape=(n_faces, n_faces))
 
     # Find connected components
-    n_components, labels = scipy.sparse.csgraph.connected_components(
-        adjacency, directed=False
-    )
+    n_components, labels = scipy.sparse.csgraph.connected_components(adjacency, directed=False)
 
     return labels
 
 
 ###############################################
 # --- Separate disconnected components
+
 
 def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
     """
@@ -450,14 +455,14 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
         f_dict[i] = []
     for f_index, face in enumerate(f_cut):
         component = connected_components[f_index]
-        f_dict[component].append(face.tolist() if hasattr(face, 'tolist') else list(face))
+        f_dict[component].append(face.tolist() if hasattr(face, "tolist") else list(face))
 
     cut_meshes = []
     for component in f_dict:
         cut_mesh = Mesh.from_vertices_and_faces(v_cut.tolist(), f_dict[component])
         cut_mesh.cull_vertices()
         if len(list(cut_mesh.faces())) > 2:
-            temp_path = Path(OUTPUT_PATH) / 'temp.obj'
+            temp_path = Path(OUTPUT_PATH) / "temp.obj"
             cut_mesh.to_obj(str(temp_path))
             cut_mesh = Mesh.from_obj(str(temp_path))  # get rid of too many empty keys
             cut_meshes.append(cut_mesh)
@@ -472,8 +477,8 @@ def separate_disconnected_components(mesh, attr, values, OUTPUT_PATH):
 # --- saddle points merging
 
 
-def smoothen_cut(zero_contours, mesh, saddle_vkeys, iterations, strength, distance_threshold=20.0*20.0):
-    """ Iterative smoothing of the cut around the saddle point. """
+def smoothen_cut(zero_contours, mesh, saddle_vkeys, iterations, strength, distance_threshold=20.0 * 20.0):
+    """Iterative smoothing of the cut around the saddle point."""
     for _ in range(iterations):
         saddles = [mesh.vertex_coordinates(key) for key in saddle_vkeys]
         count = 0
@@ -518,9 +523,10 @@ def merge_clusters_saddle_point(zero_contours, saddle_vkeys):
         for i, e in enumerate(edges):
             for saddle_vkey in saddle_vkeys:
                 if saddle_vkey in e:
-                    zero_contours.sorted_point_clusters[cluster_key][i] = \
-                        zero_contours.mesh.vertex_coordinates(saddle_vkey)  # merge point with saddle point
-                    logger.debug(f'Found edge to merge: {e}')
+                    zero_contours.sorted_point_clusters[cluster_key][i] = zero_contours.mesh.vertex_coordinates(
+                        saddle_vkey
+                    )  # merge point with saddle point
+                    logger.debug(f"Found edge to merge: {e}")
                     if cluster_key not in keys_of_clusters_to_keep:
                         keys_of_clusters_to_keep.append(cluster_key)
 
@@ -540,7 +546,7 @@ def cleanup_unrelated_isocontour_neighborhoods(zero_contours, keys_of_clusters_t
         logger.error("No common vertex found! Skipping this split_param")
         return None
     else:
-        logger.info(f'keys_of_clusters_to_keep: {keys_of_clusters_to_keep}')
+        logger.info(f"keys_of_clusters_to_keep: {keys_of_clusters_to_keep}")
         # empty all other clusters that are not in the matching_pair
         sorted_point_clusters_clean = copy.deepcopy(zero_contours.sorted_point_clusters)
         sorted_edge_clusters_clean = copy.deepcopy(zero_contours.sorted_edge_clusters)
@@ -556,15 +562,16 @@ def cleanup_unrelated_isocontour_neighborhoods(zero_contours, keys_of_clusters_t
 ########################################################
 # --- Mesh welding and sanitizing
 
-def weld_mesh(mesh, OUTPUT_PATH, precision='2f'):
-    """ Welds mesh and check that the result is valid. """
+
+def weld_mesh(mesh, OUTPUT_PATH, precision="2f"):
+    """Welds mesh and check that the result is valid."""
     for f_key in mesh.faces():
         if len(mesh.face_vertices(f_key)) < 3:
             mesh.delete_face(f_key)
 
     welded_mesh = mesh.weld(precision=precision)
 
-    temp_path = Path(OUTPUT_PATH) / 'temp.obj'
+    temp_path = Path(OUTPUT_PATH) / "temp.obj"
     welded_mesh.to_obj(str(temp_path))  # make sure there's no empty f_keys
     welded_mesh = Mesh.from_obj(str(temp_path))  # TODO: find a better way to do this
 

@@ -9,15 +9,13 @@ if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
 
-__all__ = ['get_heat_geodesic_distances']
+__all__ = ["get_heat_geodesic_distances"]
 
 
 _cgal_solver_cache: dict[int, object] = {}
 
 
-def get_heat_geodesic_distances(
-    mesh: Mesh, vertices_start: list[int]
-) -> NDArray[np.floating]:
+def get_heat_geodesic_distances(mesh: Mesh, vertices_start: list[int]) -> NDArray[np.floating]:
     """Calculate geodesic distances using CGAL heat method.
 
     Uses compas_cgal's HeatGeodesicSolver which provides CGAL's Heat_method_3

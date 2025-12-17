@@ -8,7 +8,7 @@ from compas.geometry import Point, Vector, normalize_vector
 import compas_slicer.utilities as utils
 from compas_slicer.geometry import PrintPoint
 
-__all__ = ['BaseBoundary']
+__all__ = ["BaseBoundary"]
 
 
 class BaseBoundary:
@@ -24,9 +24,7 @@ class BaseBoundary:
     override_vector :
     """
 
-    def __init__(
-        self, mesh: Mesh, points: list[Point], override_vector: Vector | None = None
-    ) -> None:
+    def __init__(self, mesh: Mesh, points: list[Point], override_vector: Vector | None = None) -> None:
         self.mesh = mesh
         self.points = points
         self.override_vector = override_vector
@@ -38,9 +36,14 @@ class BaseBoundary:
         else:
             self.up_vectors = self.get_up_vectors()
 
-        self.printpoints = [PrintPoint(pt=pt,  # Create fake print points
-                                       layer_height=1.0,
-                                       mesh_normal=self.normals[i]) for i, pt in enumerate(self.points)]
+        self.printpoints = [
+            PrintPoint(
+                pt=pt,  # Create fake print points
+                layer_height=1.0,
+                mesh_normal=self.normals[i],
+            )
+            for i, pt in enumerate(self.points)
+        ]
 
         for i, pp in enumerate(self.printpoints):
             pp.up_vector = self.up_vectors[i]
@@ -49,7 +52,7 @@ class BaseBoundary:
         return f"<BaseBoundary object with {len(self.points)} points>"
 
     def get_up_vectors(self) -> list[Vector]:
-        """ Finds the up_vectors of each point of the boundary. A smoothing step is also included. """
+        """Finds the up_vectors of each point of the boundary. A smoothing step is also included."""
         up_vectors = []
         for i, p in enumerate(self.points):
             v1 = Vector.from_start_end(p, self.points[(i + 1) % len(self.points)])
@@ -62,9 +65,11 @@ class BaseBoundary:
         return up_vectors
 
     def to_data(self) -> dict[str, Any]:
-        """ Returns a dictionary with the data of the class. """
-        return {"points": utils.point_list_to_dict(self.points),
-                "up_vectors": utils.point_list_to_dict(self.up_vectors)}
+        """Returns a dictionary with the data of the class."""
+        return {
+            "points": utils.point_list_to_dict(self.points),
+            "up_vectors": utils.point_list_to_dict(self.up_vectors),
+        }
 
 
 if __name__ == "__main__":

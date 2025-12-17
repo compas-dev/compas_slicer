@@ -10,7 +10,7 @@ from compas_slicer.geometry import Path, VerticalLayersManager
 if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
-__all__ = ['ScalarFieldContours']
+__all__ = ["ScalarFieldContours"]
 
 
 class ScalarFieldContours:
@@ -34,7 +34,7 @@ class ScalarFieldContours:
         """Extract zero-level isolines from scalar field."""
         from compas_cgal.isolines import isolines
 
-        results = isolines(self.mesh, 'scalar_field', isovalues=[0.0])
+        results = isolines(self.mesh, "scalar_field", isovalues=[0.0])
 
         for pts in results:
             points = [Point(*p) for p in pts.tolist()]

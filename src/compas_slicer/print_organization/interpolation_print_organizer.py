@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 _USE_CGAL = False
 try:
     from compas_cgal.polylines import closest_points_on_polyline as _cgal_closest
+
     _USE_CGAL = True
 except ImportError:
     _cgal_closest = None
@@ -65,7 +66,7 @@ def _batch_closest_points_on_polyline(
         return np.array(closest), np.array(distances)
 
 
-__all__ = ['InterpolationPrintOrganizer']
+__all__ = ["InterpolationPrintOrganizer"]
 
 
 class InterpolationPrintOrganizer(BasePrintOrganizer):
@@ -99,7 +100,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         from compas_slicer.slicers import InterpolationSlicer
 
         if not isinstance(slicer, InterpolationSlicer):
-            raise TypeError('Please provide an InterpolationSlicer')
+            raise TypeError("Please provide an InterpolationSlicer")
         BasePrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
@@ -118,7 +119,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
                 raise ValueError("Only one brim horizontal layer is currently supported.")
             if not self.horizontal_layers[0].is_brim:
                 raise ValueError("Only one brim horizontal layer is currently supported.")
-            logger.info('Slicer has one horizontal brim layer.')
+            logger.info("Slicer has one horizontal brim layer.")
 
         # topological sorting of vertical layers depending on their connectivity
         self.topo_sort_graph: topo_sort.SegmentsDirectedGraph | None = None
@@ -146,13 +147,14 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
 
         """
         avg_layer_height = self.config.avg_layer_height
-        self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(self.slicer.mesh, self.vertical_layers,
-                                                               4 * avg_layer_height, DATA_PATH=self.DATA_PATH)
+        self.topo_sort_graph = topo_sort.SegmentsDirectedGraph(
+            self.slicer.mesh, self.vertical_layers, 4 * avg_layer_height, DATA_PATH=self.DATA_PATH
+        )
 
     def create_base_boundaries(self) -> list[BaseBoundary]:
         """Create one BaseBoundary per vertical_layer."""
         bs: list[BaseBoundary] = []
-        root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, 'boundary', 1)
+        root_vs = utils.get_mesh_vertex_coords_with_attribute(self.slicer.mesh, "boundary", 1)
         root_boundary = BaseBoundary(self.slicer.mesh, [Point(*v) for v in root_vs])
 
         if len(self.vertical_layers) > 1 and self.topo_sort_graph is not None:
@@ -172,7 +174,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
 
         # save intermediary outputs
         b_data = {i: b.to_data() for i, b in enumerate(bs)}
-        utils.save_to_json(b_data, self.OUTPUT_PATH, 'boundaries.json')
+        utils.save_to_json(b_data, self.OUTPUT_PATH, "boundaries.json")
 
         return bs
 
@@ -190,11 +192,16 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
             print_layer = PrintLayer()
             paths = self.horizontal_layers[0].paths
             for _j, path in enumerate(paths):
-                print_path = PrintPath(printpoints=[
-                    PrintPoint(pt=point, layer_height=self.config.avg_layer_height,
-                               mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh))
-                    for k, point in enumerate(path.points)
-                ])
+                print_path = PrintPath(
+                    printpoints=[
+                        PrintPoint(
+                            pt=point,
+                            layer_height=self.config.avg_layer_height,
+                            mesh_normal=utils.get_normal_of_path_on_xy_plane(k, point, path, self.slicer.mesh),
+                        )
+                        for k, point in enumerate(path.points)
+                    ]
+                )
                 print_layer.paths.append(print_path)
             self.printpoints.layers.append(print_layer)
             current_layer_index += 1
@@ -204,7 +211,6 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
 
         # (2) --- Select order of vertical layers
         if len(self.vertical_layers) > 1:  # then you need to select one topological order
-
             if not self.topo_sort_graph:
                 logger.error("no topology graph found, cannnot set the order of vertical layers")
                 self.selected_order = [0]
@@ -239,9 +245,7 @@ class InterpolationPrintOrganizer(BasePrintOrganizer):
         print_layer = PrintLayer()
         for _i, path in enumerate(layer.paths):
             # Batch query: find closest points for all points in this path at once
-            closest_pts, distances = _batch_closest_points_on_polyline(
-                path.points, support_polyline_pts
-            )
+            closest_pts, distances = _batch_closest_points_on_polyline(path.points, support_polyline_pts)
 
             print_path = PrintPath()
             for k, p in enumerate(path.points):

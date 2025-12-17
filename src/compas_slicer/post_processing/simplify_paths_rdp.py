@@ -11,12 +11,13 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
 
-__all__ = ['simplify_paths_rdp']
+__all__ = ["simplify_paths_rdp"]
 
 # Check for CGAL availability at module load
 _USE_CGAL = False
 try:
     from compas_cgal.polylines import simplify_polylines as _cgal_simplify
+
     _USE_CGAL = True
 except ImportError:
     _cgal_simplify = None
@@ -63,7 +64,7 @@ def _simplify_paths_cgal(slicer: BaseSlicer, threshold: float) -> None:
             path.points = [Point(pt[0], pt[1], pt[2]) for pt in pts_simplified]
             remaining_pts_num += len(path.points)
 
-    logger.info(f'{remaining_pts_num} points remaining after simplification')
+    logger.info(f"{remaining_pts_num} points remaining after simplification")
 
 
 def _simplify_paths_python(slicer: BaseSlicer, threshold: float) -> None:
@@ -80,7 +81,7 @@ def _simplify_paths_python(slicer: BaseSlicer, threshold: float) -> None:
             path.points = [Point(pt[0], pt[1], pt[2]) for pt in pts_rdp]
             remaining_pts_num += len(path.points)
 
-    logger.info(f'{remaining_pts_num} points remaining after simplification')
+    logger.info(f"{remaining_pts_num} points remaining after simplification")
 
 
 if __name__ == "__main__":

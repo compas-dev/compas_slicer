@@ -12,10 +12,12 @@ if TYPE_CHECKING:
     from compas_slicer.print_organization import BasePrintOrganizer
 
 
-__all__ = ['set_linear_velocity_constant',
-           'set_linear_velocity_per_layer',
-           'set_linear_velocity_by_range',
-           'set_linear_velocity_by_overhang']
+__all__ = [
+    "set_linear_velocity_constant",
+    "set_linear_velocity_per_layer",
+    "set_linear_velocity_by_range",
+    "set_linear_velocity_by_overhang",
+]
 
 
 def set_linear_velocity_constant(print_organizer: BasePrintOrganizer, v: float = 25.0) -> None:
@@ -32,9 +34,7 @@ def set_linear_velocity_constant(print_organizer: BasePrintOrganizer, v: float =
         printpoint.velocity = v
 
 
-def set_linear_velocity_per_layer(
-    print_organizer: BasePrintOrganizer, per_layer_velocities: list[float]
-) -> None:
+def set_linear_velocity_per_layer(print_organizer: BasePrintOrganizer, per_layer_velocities: list[float]) -> None:
     """Sets the linear velocity parameter of the printpoints depending on the selected type.
 
     Parameters
@@ -47,8 +47,8 @@ def set_linear_velocity_per_layer(
     logger.info("Setting per-layer linear velocity")
     if len(per_layer_velocities) != print_organizer.number_of_layers:
         raise ValueError(
-            f'Wrong number of velocity values: got {len(per_layer_velocities)}, '
-            f'need {print_organizer.number_of_layers} (one per layer)'
+            f"Wrong number of velocity values: got {len(per_layer_velocities)}, "
+            f"need {print_organizer.number_of_layers} (one per layer)"
         )
     for printpoint, i, _j, _k in print_organizer.printpoints_indices_iterator():
         printpoint.velocity = per_layer_velocities[i]
@@ -80,7 +80,7 @@ def set_linear_velocity_by_range(
     for printpoint in print_organizer.printpoints_iterator():
         param = param_func(printpoint)
         if param is None:
-            raise ValueError('The param_func does not return any value for calculating the velocity range.')
+            raise ValueError("The param_func does not return any value for calculating the velocity range.")
         if bound_remapping:
             v = remap(param, parameter_range[0], parameter_range[1], velocity_range[0], velocity_range[1])
         else:
@@ -109,7 +109,9 @@ def set_linear_velocity_by_overhang(
     bound_remapping: bool
     """
 
-    def param_func(ppt): return dot_vectors(ppt.mesh_normal, Vector(0.0, 0.0, 1.0))
+    def param_func(ppt):
+        return dot_vectors(ppt.mesh_normal, Vector(0.0, 0.0, 1.0))
+
     # returns values from 0.0 (no overhang) to 1.0 (horizontal overhang)
     set_linear_velocity_by_range(print_organizer, param_func, overhang_range, velocity_range, bound_remapping)
 

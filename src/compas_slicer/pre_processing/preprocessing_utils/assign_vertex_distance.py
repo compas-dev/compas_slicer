@@ -17,8 +17,7 @@ if TYPE_CHECKING:
     from compas_slicer.pre_processing.preprocessing_utils.compound_target import CompoundTarget
 
 
-__all__ = ['assign_interpolation_distance_to_mesh_vertices',
-           'assign_interpolation_distance_to_mesh_vertex']
+__all__ = ["assign_interpolation_distance_to_mesh_vertices", "assign_interpolation_distance_to_mesh_vertex"]
 
 
 def assign_interpolation_distance_to_mesh_vertices(
@@ -40,7 +39,7 @@ def assign_interpolation_distance_to_mesh_vertices(
     # Vectorized computation for all vertices at once
     distances = _compute_all_distances_vectorized(weight, target_LOW, target_HIGH)
     for vkey, d in zip(mesh.vertices(), distances):
-        mesh.vertex[vkey]['scalar_field'] = float(d)
+        mesh.vertex[vkey]["scalar_field"] = float(d)
 
 
 def _compute_all_distances_vectorized(
@@ -53,7 +52,7 @@ def _compute_all_distances_vectorized(
         offset = weight * target_LOW.get_max_dist()
         return target_LOW.get_all_distances() - offset
     else:
-        raise ValueError('You need to provide at least one target')
+        raise ValueError("You need to provide at least one target")
 
 
 def _get_weighted_distances_vectorized(
@@ -67,33 +66,40 @@ def _get_weighted_distances_vectorized(
         ds_high = target_HIGH.get_all_distances_array()
 
         if target_HIGH.number_of_boundaries > 1:
-            weights = np.array([
-                remap_unbound(weight, 0, wmax, 0, 1)
-                for wmax in target_HIGH.weight_max_per_cluster
-            ])  # (n_boundaries,)
+            weights = np.array(
+                [remap_unbound(weight, 0, wmax, 0, 1) for wmax in target_HIGH.weight_max_per_cluster]
+            )  # (n_boundaries,)
         else:
             weights = np.array([weight])
 
         # Broadcast: (n_boundaries, n_vertices)
         distances = (weights[:, None] - 1) * d_low + weights[:, None] * ds_high
 
-        if target_HIGH.union_method == 'min':
+        if target_HIGH.union_method == "min":
             return np.min(distances, axis=0)
-        elif target_HIGH.union_method == 'smooth':
-            return np.array([
-                blend_union_list(distances[:, i].tolist(), target_HIGH.union_params[0])
-                for i in range(distances.shape[1])
-            ])
-        elif target_HIGH.union_method == 'chamfer':
-            return np.array([
-                chamfer_union_list(distances[:, i].tolist(), target_HIGH.union_params[0])
-                for i in range(distances.shape[1])
-            ])
-        elif target_HIGH.union_method == 'stairs':
-            return np.array([
-                stairs_union_list(distances[:, i].tolist(), target_HIGH.union_params[0], target_HIGH.union_params[1])
-                for i in range(distances.shape[1])
-            ])
+        elif target_HIGH.union_method == "smooth":
+            return np.array(
+                [
+                    blend_union_list(distances[:, i].tolist(), target_HIGH.union_params[0])
+                    for i in range(distances.shape[1])
+                ]
+            )
+        elif target_HIGH.union_method == "chamfer":
+            return np.array(
+                [
+                    chamfer_union_list(distances[:, i].tolist(), target_HIGH.union_params[0])
+                    for i in range(distances.shape[1])
+                ]
+            )
+        elif target_HIGH.union_method == "stairs":
+            return np.array(
+                [
+                    stairs_union_list(
+                        distances[:, i].tolist(), target_HIGH.union_params[0], target_HIGH.union_params[1]
+                    )
+                    for i in range(distances.shape[1])
+                ]
+            )
     else:
         d_high = target_HIGH.get_all_distances()
         return d_low * (1 - weight) - d_high * weight
@@ -122,13 +128,11 @@ def assign_interpolation_distance_to_mesh_vertex(
         offset = weight * target_LOW.get_max_dist()
         d = target_LOW.get_distance(vkey) - offset
     else:
-        raise ValueError('You need to provide at least one target')
+        raise ValueError("You need to provide at least one target")
     return d
 
 
-def get_weighted_distance(
-    vkey: int, weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget
-) -> float:
+def get_weighted_distance(vkey: int, weight: float, target_LOW: CompoundTarget, target_HIGH: CompoundTarget) -> float:
     """
     Computes the weighted get_distance for a single vertex with vkey.
 
@@ -149,8 +153,9 @@ def get_weighted_distance(
         ds_high = target_HIGH.get_all_distances_for_vkey(vkey)  # list of floats (# number_of_boundaries)
 
         if target_HIGH.number_of_boundaries > 1:
-            weights_remapped = [remap_unbound(weight, 0, weight_max, 0, 1)
-                                for weight_max in target_HIGH.weight_max_per_cluster]
+            weights_remapped = [
+                remap_unbound(weight, 0, weight_max, 0, 1) for weight_max in target_HIGH.weight_max_per_cluster
+            ]
             weights = weights_remapped
         else:
             weights = [weight]
@@ -158,16 +163,16 @@ def get_weighted_distance(
         distances = [(weight - 1) * d_low + weight * d_high for d_high, weight in zip(ds_high, weights)]
 
         # return the distance based on the union method of the high target
-        if target_HIGH.union_method == 'min':
+        if target_HIGH.union_method == "min":
             # --- simple union
             return np.min(distances)
-        elif target_HIGH.union_method == 'smooth':
+        elif target_HIGH.union_method == "smooth":
             # --- blend (smooth) union
             return blend_union_list(values=distances, r=target_HIGH.union_params[0])
-        elif target_HIGH.union_method == 'chamfer':
+        elif target_HIGH.union_method == "chamfer":
             # --- blend (smooth) union
             return chamfer_union_list(values=distances, r=target_HIGH.union_params[0])
-        elif target_HIGH.union_method == 'stairs':
+        elif target_HIGH.union_method == "stairs":
             # --- stairs union
             return stairs_union_list(values=distances, r=target_HIGH.union_params[0], n=target_HIGH.union_params[1])
 

@@ -7,7 +7,7 @@ from loguru import logger
 from compas_slicer.slicers.base_slicer import BaseSlicer
 from compas_slicer.slicers.planar_slicing import create_planar_paths
 
-__all__ = ['PlanarSlicer']
+__all__ = ["PlanarSlicer"]
 
 
 class PlanarSlicer(BaseSlicer):
@@ -31,7 +31,7 @@ class PlanarSlicer(BaseSlicer):
         layer_height: float = 2.0,
         slice_height_range: tuple[float, float] | None = None,
     ) -> None:
-        logger.info('PlanarSlicer')
+        logger.info("PlanarSlicer")
         BaseSlicer.__init__(self, mesh)
 
         self.layer_height = layer_height
@@ -42,12 +42,14 @@ class PlanarSlicer(BaseSlicer):
 
     def generate_paths(self) -> None:
         """Generate the planar slicing paths."""
-        z = [self.mesh.vertex_attribute(key, 'z') for key in self.mesh.vertices()]
+        z = [self.mesh.vertex_attribute(key, "z") for key in self.mesh.vertices()]
         min_z, max_z = min(z), max(z)
 
         if self.slice_height_range:
             if min_z <= self.slice_height_range[0] <= max_z and min_z <= self.slice_height_range[1] <= max_z:
-                logger.info(f"Slicing mesh in range from Z = {self.slice_height_range[0]} to Z = {self.slice_height_range[1]}.")
+                logger.info(
+                    f"Slicing mesh in range from Z = {self.slice_height_range[0]} to Z = {self.slice_height_range[1]}."
+                )
                 max_z = min_z + self.slice_height_range[1]
                 min_z = min_z + self.slice_height_range[0]
             else:

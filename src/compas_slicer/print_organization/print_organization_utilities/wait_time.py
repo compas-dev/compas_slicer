@@ -12,15 +12,13 @@ if TYPE_CHECKING:
     from compas_slicer.print_organization import BasePrintOrganizer
 
 
-__all__ = ['set_wait_time_on_sharp_corners',
-           'set_wait_time_based_on_extruder_toggle',
-           'override_wait_time']
+__all__ = ["set_wait_time_on_sharp_corners", "set_wait_time_based_on_extruder_toggle", "override_wait_time"]
 
 WaitType = Literal[
-    'wait_before_extrusion',
-    'wait_after_extrusion',
-    'wait_before_and_after_extrusion',
-    'wait_at_sharp_corners',
+    "wait_before_extrusion",
+    "wait_after_extrusion",
+    "wait_before_and_after_extrusion",
+    "wait_at_sharp_corners",
 ]
 
 
@@ -53,7 +51,7 @@ def set_wait_time_on_sharp_corners(
                 printpoint.wait_time = wait_time
                 printpoint.blend_radius = 0.0  # 0.0 blend radius for points where the robot will wait
                 number_of_wait_points += 1
-    logger.info(f'Added wait times for {number_of_wait_points} points')
+    logger.info(f"Added wait times for {number_of_wait_points} points")
 
 
 def set_wait_time_based_on_extruder_toggle(
@@ -77,7 +75,9 @@ def set_wait_time_based_on_extruder_toggle(
 
     for printpoint in print_organizer.printpoints_iterator():
         if printpoint.extruder_toggle is None:
-            raise ValueError('You need to set the extruder toggles first, before you can automatically set the wait time')
+            raise ValueError(
+                "You need to set the extruder toggles first, before you can automatically set the wait time"
+            )
 
     logger.info("Setting wait time")
 
@@ -107,9 +107,9 @@ def set_wait_time_based_on_extruder_toggle(
                     next_ppt.blend_radius = 0.0
                     number_of_wait_points += 1
             else:
-                logger.error(f'Unknown wait type: {wait_type}')
+                logger.error(f"Unknown wait type: {wait_type}")
 
-        logger.info(f'Added wait times for {number_of_wait_points} points')
+        logger.info(f"Added wait times for {number_of_wait_points} points")
 
 
 def override_wait_time(print_organizer: BasePrintOrganizer, override_value: float) -> None:
