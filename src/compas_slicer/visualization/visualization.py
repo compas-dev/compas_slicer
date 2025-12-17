@@ -1,4 +1,5 @@
 """Visualization utilities for compas_slicer using compas_viewer."""
+
 from __future__ import annotations
 
 import sys
@@ -33,6 +34,7 @@ def visualize_slicer(
     mesh: Mesh | None = None,
     show_mesh: bool = True,
     mesh_opacity: float = 0.3,
+    mesh_colorfield: str = "z",
 ) -> None:
     """Visualize slicer toolpaths in compas_viewer.
 
@@ -46,17 +48,35 @@ def visualize_slicer(
         If True, display the mesh.
     mesh_opacity : float
         Opacity for mesh display (0-1).
+    mesh_colorfield : str
+        Vertex attribute name to use for mesh coloring.
 
     """
     from compas.colors import Color
+    from compas.colors import ColorMap
     from compas.geometry import Polyline
     from compas_viewer import Viewer
 
     viewer = Viewer()
 
-    # Add mesh if provided
+    # Add mesh if provided, colored by vertex or face attribute
     if mesh and show_mesh:
-        viewer.scene.add(mesh, opacity=mesh_opacity)
+        cmap = ColorMap.from_mpl("viridis")
+
+        # check if colorfield is vertex or face attribute
+        first_vertex = next(mesh.vertices())
+        if mesh.vertex_attribute(first_vertex, mesh_colorfield) is not None:
+            scalars = {v: mesh.vertex_attribute(v, mesh_colorfield) for v in mesh.vertices()}
+            smin, smax = min(scalars.values()), max(scalars.values())
+            vertexcolor = {v: cmap(s, minval=smin, maxval=smax) for v, s in scalars.items()}
+            viewer.scene.add(
+                mesh, vertexcolor=vertexcolor, opacity=mesh_opacity, use_vertexcolors=True, show_lines=False
+            )
+        else:
+            scalars = {f: mesh.face_attribute(f, mesh_colorfield) for f in mesh.faces()}
+            smin, smax = min(scalars.values()), max(scalars.values())
+            facecolor = {f: cmap(s, minval=smin, maxval=smax) for f, s in scalars.items()}
+            viewer.scene.add(mesh, facecolor=facecolor, opacity=mesh_opacity, show_lines=False)
 
     # Add paths as polylines with color gradient by layer
     n_layers = len(slicer.layers)
@@ -87,5 +107,5 @@ def plot_networkx_graph(G: nx.Graph) -> None:
     import matplotlib.pyplot as plt
 
     plt.subplot(121)
-    nx.draw(G, with_labels=True, font_weight='bold', node_color=range(len(list(G.nodes()))))
+    nx.draw(G, with_labels=True, font_weight="bold", node_color=range(len(list(G.nodes()))))
     plt.show()

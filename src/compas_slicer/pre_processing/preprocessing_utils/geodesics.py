@@ -19,18 +19,14 @@ if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
 
-__all__ = ['get_heat_geodesic_distances',
-           'get_custom_HEAT_geodesic_distances',
-           'GeodesicsCache']
+__all__ = ["get_heat_geodesic_distances", "get_custom_HEAT_geodesic_distances", "GeodesicsCache"]
 
 
 # CGAL heat method solver cache (for precomputation reuse)
 _cgal_solver_cache: dict[int, object] = {}
 
 
-def get_heat_geodesic_distances(
-    mesh: Mesh, vertices_start: list[int]
-) -> NDArray[np.floating]:
+def get_heat_geodesic_distances(mesh: Mesh, vertices_start: list[int]) -> NDArray[np.floating]:
     """
     Calculate geodesic distances using CGAL heat method.
 
@@ -55,7 +51,9 @@ def get_heat_geodesic_distances(
     mesh_hash = hash((len(list(mesh.vertices())), len(list(mesh.faces()))))
     if mesh_hash not in _cgal_solver_cache:
         _cgal_solver_cache.clear()  # Clear old solvers
-        _cgal_solver_cache[mesh_hash] = HeatGeodesicSolver(mesh)
+        V = mesh.vertices_attributes("xyz")
+        F = [mesh.face_vertices(f) for f in mesh.faces()]
+        _cgal_solver_cache[mesh_hash] = HeatGeodesicSolver((V, F))
 
     solver = _cgal_solver_cache[mesh_hash]
 
@@ -90,9 +88,7 @@ class GeodesicsCache:
         self._cache.clear()
         self._mesh_hash = None
 
-    def get_distances(
-        self, mesh: Mesh, sources: list[int], method: str = 'heat'
-    ) -> NDArray[np.floating]:
+    def get_distances(self, mesh: Mesh, sources: list[int], method: str = "heat") -> NDArray[np.floating]:
         """Get geodesic distances from sources, using cache when possible.
 
         Parameters
@@ -166,7 +162,7 @@ class GeodesicsSolver:
     """
 
     def __init__(self, mesh: Mesh, OUTPUT_PATH: str) -> None:
-        logger.info('GeodesicsSolver')
+        logger.info("GeodesicsSolver")
         self.mesh = mesh
         self.OUTPUT_PATH = OUTPUT_PATH
 
@@ -227,7 +223,7 @@ class GeodesicsSolver:
         # reverse values (to make sources at 0, increasing outward)
         u = ([np.max(u)] * len(u)) - u
 
-        utils.save_to_json([float(value) for value in u], self.OUTPUT_PATH, 'diffused_heat.json')
+        utils.save_to_json([float(value) for value in u], self.OUTPUT_PATH, "diffused_heat.json")
         return u
 
     def get_geodesic_distances(
