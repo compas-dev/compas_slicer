@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import PlanarSlicer
 
 
-__all__ = ['spiralize_contours']
+__all__ = ["spiralize_contours"]
 
 
 def spiralize_contours(slicer: PlanarSlicer) -> None:
@@ -24,7 +24,7 @@ def spiralize_contours(slicer: PlanarSlicer) -> None:
     slicer: :class: 'compas_slicer.slicers.PlanarSlicer'
         An instance of the compas_slicer.slicers.PlanarSlicer class.
     """
-    logger.info('Spiralizing contours')
+    logger.info("Spiralizing contours")
 
     if not isinstance(slicer, compas_slicer.slicers.PlanarSlicer):
         logger.warning("spiralize_contours() contours only works for PlanarSlicer. Skipping function.")

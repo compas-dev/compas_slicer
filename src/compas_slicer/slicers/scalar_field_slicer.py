@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
 
-__all__ = ['ScalarFieldSlicer']
+__all__ = ["ScalarFieldSlicer"]
 
 
 class ScalarFieldSlicer(BaseSlicer):
@@ -45,14 +45,14 @@ class ScalarFieldSlicer(BaseSlicer):
         no_of_isocurves: int,
         config: InterpolationConfig | None = None,
     ) -> None:
-        logger.info('ScalarFieldSlicer')
+        logger.info("ScalarFieldSlicer")
         BaseSlicer.__init__(self, mesh)
 
         self.no_of_isocurves = no_of_isocurves
         self.scalar_field: list[float] = list(np.array(scalar_field) - np.min(np.array(scalar_field)))
         self.config = config if config else InterpolationConfig()
 
-        mesh.update_default_vertex_attributes({'scalar_field': 0})
+        mesh.update_default_vertex_attributes({"scalar_field": 0})
 
     def generate_paths(self) -> None:
         """Generate isocontours."""
@@ -67,9 +67,9 @@ class ScalarFieldSlicer(BaseSlicer):
             for i in range(0, self.no_of_isocurves + 1):
                 for vkey, data in self.mesh.vertices(data=True):
                     if i == 0:
-                        data['scalar_field'] = self.scalar_field[vkey] - 0.05 * step  # things can be tricky in the edge
+                        data["scalar_field"] = self.scalar_field[vkey] - 0.05 * step  # things can be tricky in the edge
                     else:
-                        data['scalar_field'] = self.scalar_field[vkey] - i * step
+                        data["scalar_field"] = self.scalar_field[vkey] - i * step
 
                 contours = ScalarFieldContours(self.mesh)
                 contours.compute()

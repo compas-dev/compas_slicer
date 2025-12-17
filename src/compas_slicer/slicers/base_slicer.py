@@ -44,7 +44,9 @@ class BaseSlicer:
         utils.check_triangular_mesh(mesh)
 
         self.mesh = mesh
-        logger.info(f"Input Mesh with: {len(list(self.mesh.vertices()))} vertices, {len(list(self.mesh.faces()))} faces")
+        logger.info(
+            f"Input Mesh with: {len(list(self.mesh.vertices()))} vertices, {len(list(self.mesh.faces()))} faces"
+        )
 
         self.layer_height: float | None = None
         self.layers: list[Layer] = []
@@ -143,7 +145,7 @@ class BaseSlicer:
             Paths on base and their vertical layer indices.
 
         """
-        vertices = list(self.mesh.vertices_attributes('xyz'))
+        vertices = list(self.mesh.vertices_attributes("xyz"))
         bbox = bounding_box(vertices)
         z_min = min(p[2] for p in bbox)
         paths_on_base = []

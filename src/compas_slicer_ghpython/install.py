@@ -38,9 +38,7 @@ def after_rhino_install(installed_packages):
             dst = Path(dstdir) / src.name
             shutil.copyfile(src, dst)
 
-        results.append(
-            ("compas_slicer_ghpython", f"Installed {len(userobjects)} GH User Objects on {dstdir}", True)
-        )
+        results.append(("compas_slicer_ghpython", f"Installed {len(userobjects)} GH User Objects on {dstdir}", True))
     except PermissionError as err:
         raise Exception("Please close all instances of Rhino first and then rerun the command") from err
 

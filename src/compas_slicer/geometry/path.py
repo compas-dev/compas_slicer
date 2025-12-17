@@ -49,10 +49,7 @@ class Path(Data):
         points_data = data["points"]
         # Handle both list format and legacy dict format
         if isinstance(points_data, dict):
-            pts = [
-                Point.__from_data__(points_data[key])
-                for key in sorted(points_data.keys(), key=lambda x: int(x))
-            ]
+            pts = [Point.__from_data__(points_data[key]) for key in sorted(points_data.keys(), key=lambda x: int(x))]
         else:
             pts = [Point.__from_data__(p) for p in points_data]
         return cls(points=pts, is_closed=data["is_closed"])

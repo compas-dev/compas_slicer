@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import ScalarFieldSlicer
 
 
-__all__ = ['ScalarFieldPrintOrganizer']
+__all__ = ["ScalarFieldPrintOrganizer"]
 
 
 class ScalarFieldPrintOrganizer(BasePrintOrganizer):
@@ -52,7 +52,7 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
         from compas_slicer.slicers import ScalarFieldSlicer
 
         if not isinstance(slicer, ScalarFieldSlicer):
-            raise TypeError('Please provide a ScalarFieldSlicer')
+            raise TypeError("Please provide a ScalarFieldSlicer")
         BasePrintOrganizer.__init__(self, slicer)
         self.DATA_PATH = DATA_PATH
         self.OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
@@ -71,7 +71,7 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
                 raise ValueError("Only one brim horizontal layer is currently supported.")
             if not self.horizontal_layers[0].is_brim:
                 raise ValueError("Only one brim horizontal layer is currently supported.")
-            logger.info('Slicer has one horizontal brim layer.')
+            logger.info("Slicer has one horizontal brim layer.")
 
         self.g_evaluation: GradientEvaluation = self.add_gradient_to_vertices()
 
@@ -81,9 +81,8 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
     def create_printpoints(self) -> None:
         """Create the print points of the fabrication process."""
         count = 0
-        logger.info('Creating print points ...')
+        logger.info("Creating print points ...")
         with progressbar.ProgressBar(max_value=self.slicer.number_of_points) as bar:
-
             for _i, layer in enumerate(self.slicer.layers):
                 print_layer = PrintLayer()
 
@@ -111,8 +110,8 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
         for layer in self.printpoints:
             for path in layer:
                 for pp in path:
-                    grad_norm = pp.attributes['gradient_norm']
-                    grad = pp.attributes['gradient']
+                    grad_norm = pp.attributes["gradient_norm"]
+                    grad = pp.attributes["gradient"]
                     pp.distance_to_support = grad_norm
                     pp.layer_height = grad_norm
                     pp.up_vector = Vector(*normalize_vector(grad))
@@ -123,14 +122,14 @@ class ScalarFieldPrintOrganizer(BasePrintOrganizer):
         g_evaluation.compute_gradient()
         g_evaluation.compute_gradient_norm()
 
-        utils.save_to_json(g_evaluation.vertex_gradient_norm, self.OUTPUT_PATH, 'gradient_norm.json')
-        utils.save_to_json(utils.point_list_to_dict(g_evaluation.vertex_gradient), self.OUTPUT_PATH, 'gradient.json')
+        utils.save_to_json(g_evaluation.vertex_gradient_norm, self.OUTPUT_PATH, "gradient_norm.json")
+        utils.save_to_json(utils.point_list_to_dict(g_evaluation.vertex_gradient), self.OUTPUT_PATH, "gradient.json")
 
-        self.slicer.mesh.update_default_vertex_attributes({'gradient': 0.0})
-        self.slicer.mesh.update_default_vertex_attributes({'gradient_norm': 0.0})
+        self.slicer.mesh.update_default_vertex_attributes({"gradient": 0.0})
+        self.slicer.mesh.update_default_vertex_attributes({"gradient_norm": 0.0})
         for i, (_v_key, data) in enumerate(self.slicer.mesh.vertices(data=True)):
-            data['gradient'] = g_evaluation.vertex_gradient[i]
-            data['gradient_norm'] = g_evaluation.vertex_gradient_norm[i]
+            data["gradient"] = g_evaluation.vertex_gradient[i]
+            data["gradient_norm"] = g_evaluation.vertex_gradient_norm[i]
         return g_evaluation
 
 

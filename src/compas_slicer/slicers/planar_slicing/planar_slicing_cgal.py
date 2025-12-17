@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
 
-__all__ = ['create_planar_paths']
+__all__ = ["create_planar_paths"]
 
 
 def create_planar_paths(mesh: Mesh, planes: list[Plane]) -> list[Layer]:
@@ -70,10 +70,8 @@ def create_planar_paths(mesh: Mesh, planes: list[Plane]) -> list[Layer]:
     return layers
 
 
-def get_grouped_list(
-    item_list: list[Any], key_function: Callable[[Any], Any]
-) -> list[list[Any]]:
-    """ Groups layers horizontally. """
+def get_grouped_list(item_list: list[Any], key_function: Callable[[Any], Any]) -> list[list[Any]]:
+    """Groups layers horizontally."""
     # first sort, because grouping only groups consecutively matching items
     sorted_list = sorted(item_list, key=key_function)
     # group items, using the provided key function

@@ -6,11 +6,11 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
 
-__all__ = ['zig_zag_open_paths']
+__all__ = ["zig_zag_open_paths"]
 
 
 def zig_zag_open_paths(slicer: BaseSlicer) -> None:
-    """ Reverses half of the open paths of the slicer, so that they can be printed in a zig zag motion. """
+    """Reverses half of the open paths of the slicer, so that they can be printed in a zig zag motion."""
     reverse = False
     for layer in slicer.layers:
         for _i, path in enumerate(layer.paths):

@@ -1,4 +1,5 @@
 """Medial axis based infill generation using CGAL straight skeleton."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -64,9 +65,7 @@ def generate_medial_axis_infill(
                 continue
 
             # Extract skeleton edges as paths
-            skeleton_paths = _skeleton_to_paths(
-                graph, z_height, min_length, include_bisectors
-            )
+            skeleton_paths = _skeleton_to_paths(graph, z_height, min_length, include_bisectors)
             infill_paths.extend(skeleton_paths)
 
         # Add infill paths to layer
