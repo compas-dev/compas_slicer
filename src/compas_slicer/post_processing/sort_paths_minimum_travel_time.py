@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
 
-__all__ = ['sort_paths_minimum_travel_time']
+__all__ = ["sort_paths_minimum_travel_time"]
 
 
 def sort_paths_minimum_travel_time(slicer: BaseSlicer) -> None:
@@ -24,7 +24,7 @@ def sort_paths_minimum_travel_time(slicer: BaseSlicer) -> None:
     """
     logger.info("Sorting contours to minimize travel time")
 
-    ref_point = Point(2 ** 32, 0, 0)  # set the reference point to the X-axis
+    ref_point = Point(2**32, 0, 0)  # set the reference point to the X-axis
 
     for i, layer in enumerate(slicer.layers):
         sorted_paths = []

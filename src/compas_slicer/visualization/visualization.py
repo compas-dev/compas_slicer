@@ -1,4 +1,5 @@
 """Visualization utilities for compas_slicer using compas_viewer."""
+
 from __future__ import annotations
 
 import sys
@@ -87,5 +88,5 @@ def plot_networkx_graph(G: nx.Graph) -> None:
     import matplotlib.pyplot as plt
 
     plt.subplot(121)
-    nx.draw(G, with_labels=True, font_weight='bold', node_color=range(len(list(G.nodes()))))
+    nx.draw(G, with_labels=True, font_weight="bold", node_color=range(len(list(G.nodes()))))
     plt.show()

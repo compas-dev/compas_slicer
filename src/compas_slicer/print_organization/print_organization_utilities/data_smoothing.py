@@ -10,9 +10,7 @@ if TYPE_CHECKING:
     from compas_slicer.print_organization import BasePrintOrganizer
 
 
-__all__ = ['smooth_printpoint_attribute',
-           'smooth_printpoints_up_vectors',
-           'smooth_printpoints_layer_heights']
+__all__ = ["smooth_printpoint_attribute", "smooth_printpoints_up_vectors", "smooth_printpoints_layer_heights"]
 
 
 def smooth_printpoint_attribute(
@@ -47,7 +45,7 @@ def smooth_printpoint_attribute(
     # first smoothen the values
     for ppt in print_organizer.printpoints_iterator():
         if get_attr_value(ppt) is None:
-            raise ValueError('The attribute you are trying to smooth has not been assigned a value')
+            raise ValueError("The attribute you are trying to smooth has not been assigned a value")
 
     attrs = np.array([get_attr_value(ppt) for ppt in print_organizer.printpoints_iterator()])
 
@@ -62,13 +60,11 @@ def smooth_printpoint_attribute(
     for i, ppt in enumerate(print_organizer.printpoints_iterator()):
         val = attrs[i]
         # Convert back from numpy type if needed
-        set_attr_value(ppt, val.tolist() if hasattr(val, 'tolist') else float(val))
+        set_attr_value(ppt, val.tolist() if hasattr(val, "tolist") else float(val))
 
 
-def smooth_printpoints_layer_heights(
-    print_organizer: BasePrintOrganizer, iterations: int, strength: float
-) -> None:
-    """ This function is an example for how the 'smooth_printpoint_attribute' function can be used. """
+def smooth_printpoints_layer_heights(print_organizer: BasePrintOrganizer, iterations: int, strength: float) -> None:
+    """This function is an example for how the 'smooth_printpoint_attribute' function can be used."""
 
     def get_ppt_layer_height(printpoint):
         return printpoint.layer_height  # get value
@@ -79,10 +75,8 @@ def smooth_printpoints_layer_heights(
     smooth_printpoint_attribute(print_organizer, iterations, strength, get_ppt_layer_height, set_ppt_layer_height)
 
 
-def smooth_printpoints_up_vectors(
-    print_organizer: BasePrintOrganizer, iterations: int, strength: float
-) -> None:
-    """ This function is an example for how the 'smooth_printpoint_attribute' function can be used. """
+def smooth_printpoints_up_vectors(print_organizer: BasePrintOrganizer, iterations: int, strength: float) -> None:
+    """This function is an example for how the 'smooth_printpoint_attribute' function can be used."""
 
     def get_ppt_up_vec(printpoint):
         return printpoint.up_vector  # get value

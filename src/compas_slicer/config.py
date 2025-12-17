@@ -182,10 +182,14 @@ class InterpolationConfig(Data):
         default_factory=lambda: _interpolation_defaults().get("vertical_layers_max_centroid_dist", 25.0)
     )
     target_low_geodesics_method: GeodesicsMethod = field(
-        default_factory=lambda: GeodesicsMethod(_interpolation_defaults().get("target_low_geodesics_method", "heat_igl"))
+        default_factory=lambda: GeodesicsMethod(
+            _interpolation_defaults().get("target_low_geodesics_method", "heat_igl")
+        )
     )
     target_high_geodesics_method: GeodesicsMethod = field(
-        default_factory=lambda: GeodesicsMethod(_interpolation_defaults().get("target_high_geodesics_method", "heat_igl"))
+        default_factory=lambda: GeodesicsMethod(
+            _interpolation_defaults().get("target_high_geodesics_method", "heat_igl")
+        )
     )
     target_high_union_method: UnionMethod = field(
         default_factory=lambda: UnionMethod(_interpolation_defaults().get("target_high_union_method", "min"))

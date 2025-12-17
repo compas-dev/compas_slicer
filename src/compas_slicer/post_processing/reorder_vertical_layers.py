@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
 
-__all__ = ['reorder_vertical_layers']
+__all__ = ["reorder_vertical_layers"]
 
 AlignWith = Literal["x_axis", "y_axis"]
 
@@ -29,9 +29,9 @@ def reorder_vertical_layers(slicer: BaseSlicer, align_with: AlignWith | Point) -
     """
 
     if align_with == "x_axis":
-        align_pt = Point(2 ** 32, 0, 0)
+        align_pt = Point(2**32, 0, 0)
     elif align_with == "y_axis":
-        align_pt = Point(0, 2 ** 32, 0)
+        align_pt = Point(0, 2**32, 0)
     elif isinstance(align_with, Point):
         align_pt = align_with
     else:
@@ -56,7 +56,9 @@ def reorder_vertical_layers(slicer: BaseSlicer, align_with: AlignWith | Point) -
         distances = []
         for vert_layer in grouped_layers:
             # recreate head_centroid_pt as compas.Point
-            head_centroid_pt = Point(vert_layer.head_centroid[0], vert_layer.head_centroid[1], vert_layer.head_centroid[2])
+            head_centroid_pt = Point(
+                vert_layer.head_centroid[0], vert_layer.head_centroid[1], vert_layer.head_centroid[2]
+            )
             # measure distance
             distances.append(distance_point_point(head_centroid_pt, align_pt))
 

@@ -62,7 +62,7 @@ class ContoursBase:
         nodeDict = dict(G.nodes(data=True))
         for key in sorted_indices_dict:
             sorted_indices = sorted_indices_dict[key]
-            self.sorted_edge_clusters[key] = [nodeDict[node_index]['mesh_edge'] for node_index in sorted_indices]
+            self.sorted_edge_clusters[key] = [nodeDict[node_index]["mesh_edge"] for node_index in sorted_indices]
             self.sorted_point_clusters[key] = [self.intersection_data[e] for e in self.sorted_edge_clusters[key]]
 
         self.label_closed_paths()
@@ -78,22 +78,20 @@ class ContoursBase:
         """
         Fills in the
         dict self.intersection_data: key=(ui,vi) : [xi,yi,zi],
-        dict self.edge_to_index: key=(u1,v1) : point_index. """
+        dict self.edge_to_index: key=(u1,v1) : point_index."""
         for edge in list(self.mesh.edges()):
             if self.edge_is_intersected(edge[0], edge[1]):
                 point = self.find_zero_crossing_data(edge[0], edge[1])
                 if point and edge not in self.intersection_data and tuple(reversed(edge)) not in self.intersection_data:
-                        # create [edge - point] dictionary
-                        self.intersection_data[edge] = {}
-                        self.intersection_data[edge] = Point(point[0], point[1], point[2])
+                    # create [edge - point] dictionary
+                    self.intersection_data[edge] = {}
+                    self.intersection_data[edge] = Point(point[0], point[1], point[2])
 
             # create [edge - point] dictionary
             for i, e in enumerate(self.intersection_data):
                 self.edge_to_index[e] = i
 
-    def save_point_clusters_as_polylines_to_json(
-        self, DATA_PATH: str | FilePath, name: str
-    ) -> None:
+    def save_point_clusters_as_polylines_to_json(self, DATA_PATH: str | FilePath, name: str) -> None:
         all_points: dict[str, Any] = {}
         for i, key in enumerate(self.sorted_point_clusters):
             all_points[str(i)] = utils.point_list_to_dict(self.sorted_point_clusters[key])
@@ -102,19 +100,17 @@ class ContoursBase:
     # --- Abstract methods
     @abstractmethod
     def edge_is_intersected(self, u: int, v: int) -> bool:
-        """ Returns True if the edge u,v has a zero-crossing, False otherwise. """
+        """Returns True if the edge u,v has a zero-crossing, False otherwise."""
         # to be implemented by the inheriting classes
         pass
 
     @abstractmethod
     def find_zero_crossing_data(self, u: int, v: int) -> list[float] | None:
-        """ Finds the position of the zero-crossing on the edge u,v. """
+        """Finds the position of the zero-crossing on the edge u,v."""
         # to be implemented by the inheriting classes
         pass
 
-    def add_to_vertical_layers_manager(
-        self, vertical_layers_manager: VerticalLayersManager
-    ) -> None:
+    def add_to_vertical_layers_manager(self, vertical_layers_manager: VerticalLayersManager) -> None:
         for key in self.sorted_point_clusters:
             pts = self.sorted_point_clusters[key]
             if len(pts) > 3:  # discard curves that are too small

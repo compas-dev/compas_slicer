@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
 
-__all__ = ['seams_align']
+__all__ = ["seams_align"]
 
 AlignWith = Literal["next_path", "origin", "x_axis", "y_axis"]
 
@@ -36,7 +36,6 @@ def seams_align(slicer: BaseSlicer, align_with: AlignWith | Point = "next_path")
 
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
-
             if align_with == "next_path":
                 pt_to_align_with = None  # make sure aligning point is cleared
 
@@ -67,9 +66,9 @@ def seams_align(slicer: BaseSlicer, align_with: AlignWith | Point = "next_path")
             elif align_with == "origin":
                 pt_to_align_with = Point(0, 0, 0)
             elif align_with == "x_axis":
-                pt_to_align_with = Point(2 ** 32, 0, 0)
+                pt_to_align_with = Point(2**32, 0, 0)
             elif align_with == "y_axis":
-                pt_to_align_with = Point(0, 2 ** 32, 0)
+                pt_to_align_with = Point(0, 2**32, 0)
             elif isinstance(align_with, Point):
                 pt_to_align_with = align_with
             else:

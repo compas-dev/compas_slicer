@@ -9,9 +9,7 @@ if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
 
-__all__ = ['move_mesh_to_point',
-           'get_mid_pt_base',
-           'remesh_mesh']
+__all__ = ["move_mesh_to_point", "get_mid_pt_base", "remesh_mesh"]
 
 
 def move_mesh_to_point(mesh: Mesh, target_point: Point) -> Mesh:
@@ -53,7 +51,7 @@ def get_mid_pt_base(mesh: Mesh) -> Point:
 
     """
     # get center bottom point of mesh model
-    vertices = list(mesh.vertices_attributes('xyz'))
+    vertices = list(mesh.vertices_attributes("xyz"))
     bbox = bounding_box(vertices)
     corner_pts = [bbox[0], bbox[2]]
 
@@ -66,12 +64,7 @@ def get_mid_pt_base(mesh: Mesh) -> Point:
     return mesh_mid_pt
 
 
-def remesh_mesh(
-    mesh: Mesh,
-    target_edge_length: float,
-    number_of_iterations: int = 10,
-    do_project: bool = True
-) -> Mesh:
+def remesh_mesh(mesh: Mesh, target_edge_length: float, number_of_iterations: int = 10, do_project: bool = True) -> Mesh:
     """Remesh a triangle mesh to achieve uniform edge lengths.
 
     Uses CGAL's isotropic remeshing to improve mesh quality for slicing.
@@ -108,9 +101,7 @@ def remesh_mesh(
     try:
         from compas_cgal.meshing import trimesh_remesh
     except ImportError as e:
-        raise ImportError(
-            "remesh_mesh requires compas_cgal. Install with: pip install compas_cgal"
-        ) from e
+        raise ImportError("remesh_mesh requires compas_cgal. Install with: pip install compas_cgal") from e
 
     from compas.datastructures import Mesh as CompasMesh
 

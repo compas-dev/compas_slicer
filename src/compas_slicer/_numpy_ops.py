@@ -143,9 +143,7 @@ def face_gradient_from_scalar_field(
     cross2 = np.cross(v1 - v0, face_normals)  # (F, 3)
 
     # Compute gradient
-    grad = (
-        (u1 - u0)[:, np.newaxis] * cross1 + (u2 - u0)[:, np.newaxis] * cross2
-    ) / (2 * face_areas[:, np.newaxis])
+    grad = ((u1 - u0)[:, np.newaxis] * cross1 + (u2 - u0)[:, np.newaxis] * cross2) / (2 * face_areas[:, np.newaxis])
 
     return grad
 
@@ -187,9 +185,9 @@ def per_vertex_divergence(
     e2 = v0 - v1  # edge opposite to v2
 
     # Compute dot products with gradient
-    dot0 = np.einsum('ij,ij->i', X, e0)  # (F,)
-    dot1 = np.einsum('ij,ij->i', X, e1)  # (F,)
-    dot2 = np.einsum('ij,ij->i', X, e2)  # (F,)
+    dot0 = np.einsum("ij,ij->i", X, e0)  # (F,)
+    dot1 = np.einsum("ij,ij->i", X, e1)  # (F,)
+    dot2 = np.einsum("ij,ij->i", X, e2)  # (F,)
 
     # Cotangent contributions (cotans[f, i] is cotan of angle at vertex i)
     # For vertex i: contrib = cotan[k] * dot(X, e_i) + cotan[j] * dot(X, -e_k)

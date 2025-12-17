@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import PlanarSlicer
 
 
-__all__ = ['PlanarPrintOrganizer']
+__all__ = ["PlanarPrintOrganizer"]
 
 
 class PlanarPrintOrganizer(BasePrintOrganizer):
@@ -33,7 +33,7 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
         from compas_slicer.slicers import PlanarSlicer
 
         if not isinstance(slicer, PlanarSlicer):
-            raise TypeError('Please provide a PlanarSlicer')
+            raise TypeError("Please provide a PlanarSlicer")
         BasePrintOrganizer.__init__(self, slicer)
 
     def __repr__(self) -> str:
@@ -50,11 +50,10 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
         """
 
         count = 0
-        logger.info('Creating print points ...')
+        logger.info("Creating print points ...")
         with progressbar.ProgressBar(max_value=self.slicer.number_of_points) as bar:
-
             if generate_mesh_normals:
-                logger.info('Generating mesh normals ...')
+                logger.info("Generating mesh normals ...")
                 # fast method for getting the closest mesh normals to all the printpoints
                 all_pts = [pt for layer in self.slicer.layers for path in layer.paths for pt in path.points]
                 closest_fks, projected_pts = utils.pull_pts_to_mesh_faces(self.slicer.mesh, all_pts)
@@ -67,7 +66,6 @@ class PlanarPrintOrganizer(BasePrintOrganizer):
                     print_path = PrintPath()
 
                     for k, point in enumerate(path.points):
-
                         n = normals[count] if generate_mesh_normals else Vector(0, 1, 0)
                         layer_h = self.slicer.layer_height if self.slicer.layer_height else 2.0
                         printpoint = PrintPoint(pt=point, layer_height=layer_h, mesh_normal=n)

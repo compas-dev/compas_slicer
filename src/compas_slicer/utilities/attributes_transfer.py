@@ -14,13 +14,13 @@ if TYPE_CHECKING:
     from compas_slicer.geometry import PrintPointsCollection
 
 
-
-__all__ = ['transfer_mesh_attributes_to_printpoints']
+__all__ = ["transfer_mesh_attributes_to_printpoints"]
 
 
 ######################
 # PrintPoints Attributes
 ######################
+
 
 def transfer_mesh_attributes_to_printpoints(
     mesh: Mesh,
@@ -45,7 +45,7 @@ def transfer_mesh_attributes_to_printpoints(
         The collection of printpoints to transfer attributes to.
 
     """
-    logger.info('Transferring mesh attributes to the printpoints.')
+    logger.info("Transferring mesh attributes to the printpoints.")
 
     all_pts = [ppt.pt for ppt in printpoints.iter_printpoints()]
 
@@ -62,9 +62,8 @@ def transfer_mesh_attributes_to_printpoints(
 
 
 def is_reserved_attribute(attr: str) -> bool:
-    """ Returns True if the attribute name is a reserved, false otherwise. """
-    taken_attributes = ['x', 'y', 'z', 'uv',
-                        'scalar_field']
+    """Returns True if the attribute name is a reserved, false otherwise."""
+    taken_attributes = ["x", "y", "z", "uv", "scalar_field"]
     return attr in taken_attributes
 
 
@@ -86,9 +85,10 @@ def transfer_mesh_attributes_to_point(mesh: Mesh, fkey: int, proj_pt: list[float
     """
 
     vs = mesh.face_vertices(fkey)
-    bar_coords = barycentric_coordinates(proj_pt, triangle=(mesh.vertex_coordinates(vs[0]),
-                                                            mesh.vertex_coordinates(vs[1]),
-                                                            mesh.vertex_coordinates(vs[2])))
+    bar_coords = barycentric_coordinates(
+        proj_pt,
+        triangle=(mesh.vertex_coordinates(vs[0]), mesh.vertex_coordinates(vs[1]), mesh.vertex_coordinates(vs[2])),
+    )
 
     # get face attributes
     face_attrs = mesh.face_attributes(fkey)
@@ -120,5 +120,5 @@ def check_that_attribute_can_be_multiplied(attr_name: str, value: Any) -> bool:
         return True
     except TypeError as err:
         raise ValueError(
-            f'Attention! The following vertex attribute cannot be multiplied with a scalar. {attr_name} : {type(value)!s} '
+            f"Attention! The following vertex attribute cannot be multiplied with a scalar. {attr_name} : {type(value)!s} "
         ) from err

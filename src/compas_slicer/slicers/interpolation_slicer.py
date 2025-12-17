@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from compas_slicer.pre_processing import InterpolationSlicingPreprocessor
 
 
-__all__ = ['InterpolationSlicer']
+__all__ = ["InterpolationSlicer"]
 
 
 class InterpolationSlicer(BaseSlicer):
@@ -47,7 +47,7 @@ class InterpolationSlicer(BaseSlicer):
         preprocessor: InterpolationSlicingPreprocessor | None = None,
         config: InterpolationConfig | None = None,
     ) -> None:
-        logger.info('InterpolationSlicer')
+        logger.info("InterpolationSlicer")
         BaseSlicer.__init__(self, mesh)
 
         # make sure the mesh of the preprocessor and the mesh of the slicer match
@@ -64,20 +64,21 @@ class InterpolationSlicer(BaseSlicer):
     def generate_paths(self) -> None:
         """Generate curved paths."""
         if not self.preprocessor:
-            raise ValueError('You need to provide a pre-processor in order to generate paths.')
+            raise ValueError("You need to provide a pre-processor in order to generate paths.")
 
         avg_layer_height = self.config.avg_layer_height
         n = find_no_of_isocurves(self.preprocessor.target_LOW, self.preprocessor.target_HIGH, avg_layer_height)
         params_list = get_interpolation_parameters_list(n)
-        logger.info(f'{n} paths will be generated')
+        logger.info(f"{n} paths will be generated")
 
         vertical_layers_manager = VerticalLayersManager(avg_layer_height)
 
         # create paths + layers
         with progressbar.ProgressBar(max_value=len(params_list)) as bar:
             for i, param in enumerate(params_list):
-                assign_interpolation_distance_to_mesh_vertices(self.mesh, param, self.preprocessor.target_LOW,
-                                                               self.preprocessor.target_HIGH)
+                assign_interpolation_distance_to_mesh_vertices(
+                    self.mesh, param, self.preprocessor.target_LOW, self.preprocessor.target_HIGH
+                )
                 contours = ScalarFieldContours(self.mesh)
                 contours.compute()
                 contours.add_to_vertical_layers_manager(vertical_layers_manager)

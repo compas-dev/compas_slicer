@@ -1,9 +1,10 @@
 """
 TerminalCommand class is used to run commands from python as if we are in a shell/cmd
 """
+
 import subprocess as p
 
-__all__ = ['TerminalCommand']
+__all__ = ["TerminalCommand"]
 
 
 class TerminalCommand:
@@ -22,8 +23,8 @@ class TerminalCommand:
         process = p.Popen(cmd, stdout=p.PIPE, stderr=p.PIPE, shell=True, cwd=cwd, env=env)
         stdout, stderr = process.communicate()
 
-        self.stdout = stdout.decode('utf8')
-        self.stderr = stderr.decode('utf8')
+        self.stdout = stdout.decode("utf8")
+        self.stderr = stderr.decode("utf8")
 
         self.return_code = process.returncode
         process.kill()

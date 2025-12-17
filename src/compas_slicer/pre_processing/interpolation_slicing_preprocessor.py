@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from compas_slicer.pre_processing.preprocessing_utils.topological_sorting import MeshDirectedGraph
 
 
-__all__ = ['InterpolationSlicingPreprocessor']
+__all__ = ["InterpolationSlicingPreprocessor"]
 
 
 class InterpolationSlicingPreprocessor:
@@ -40,9 +40,7 @@ class InterpolationSlicingPreprocessor:
 
     """
 
-    def __init__(
-        self, mesh: Mesh, config: InterpolationConfig | None = None, DATA_PATH: str | Path = "."
-    ) -> None:
+    def __init__(self, mesh: Mesh, config: InterpolationConfig | None = None, DATA_PATH: str | Path = ".") -> None:
         self.mesh = mesh
         self.config = config if config else InterpolationConfig()
         self.DATA_PATH = DATA_PATH
@@ -64,22 +62,32 @@ class InterpolationSlicingPreprocessor:
 
         # --- low target
         geodesics_method = self.config.target_low_geodesics_method.value
-        method = 'min'  # no other union methods currently supported for lower target
+        method = "min"  # no other union methods currently supported for lower target
         params: list[float] = []
-        self.target_LOW = CompoundTarget(self.mesh, 'boundary', 1, self.DATA_PATH,
-                                         union_method=method,
-                                         union_params=params,
-                                         geodesics_method=geodesics_method)
+        self.target_LOW = CompoundTarget(
+            self.mesh,
+            "boundary",
+            1,
+            self.DATA_PATH,
+            union_method=method,
+            union_params=params,
+            geodesics_method=geodesics_method,
+        )
 
         # --- high target
         geodesics_method = self.config.target_high_geodesics_method.value
         method = self.config.target_high_union_method.value
         params = self.config.target_high_union_params
         logger.info(f"Creating target with union type: {method} and params: {params}")
-        self.target_HIGH = CompoundTarget(self.mesh, 'boundary', 2, self.DATA_PATH,
-                                          union_method=method,
-                                          union_params=params,
-                                          geodesics_method=geodesics_method)
+        self.target_HIGH = CompoundTarget(
+            self.mesh,
+            "boundary",
+            2,
+            self.DATA_PATH,
+            union_method=method,
+            union_params=params,
+            geodesics_method=geodesics_method,
+        )
 
         # --- uneven boundaries of high target
         self.target_HIGH.offset = self.config.uneven_upper_targets_offset
@@ -113,8 +121,8 @@ class InterpolationSlicingPreprocessor:
         target_1: CompoundTarget,
         target_2: CompoundTarget | None = None,
         save_output: bool = True,
-        norm_filename: str = 'gradient_norm.json',
-        g_filename: str = 'gradient.json',
+        norm_filename: str = "gradient_norm.json",
+        g_filename: str = "gradient.json",
     ) -> GradientEvaluation:
         """
         Creates a compas_slicer.pre_processing.GradientEvaluation that is stored in self.g_evaluation
@@ -124,8 +132,9 @@ class InterpolationSlicingPreprocessor:
             raise RuntimeError("Targets not initialized. Call create_compound_targets() first.")
         if self.target_LOW.VN != target_1.VN:
             raise ValueError("Preprocessor does not match targets: vertex count mismatch.")
-        assign_interpolation_distance_to_mesh_vertices(self.mesh, weight=0.5,
-                                                       target_LOW=self.target_LOW, target_HIGH=self.target_HIGH)
+        assign_interpolation_distance_to_mesh_vertices(
+            self.mesh, weight=0.5, target_LOW=self.target_LOW, target_HIGH=self.target_HIGH
+        )
         g_evaluation = GradientEvaluation(self.mesh, self.DATA_PATH)
         g_evaluation.compute_gradient()
         g_evaluation.compute_gradient_norm()
@@ -137,10 +146,8 @@ class InterpolationSlicingPreprocessor:
 
         return g_evaluation
 
-    def find_critical_points(
-        self, g_evaluation: GradientEvaluation, output_filenames: tuple[str, str, str]
-    ) -> None:
-        """ Computes and saves to json the critical points of the df on the mesh (minima, maxima, saddles)"""
+    def find_critical_points(self, g_evaluation: GradientEvaluation, output_filenames: tuple[str, str, str]) -> None:
+        """Computes and saves to json the critical points of the df on the mesh (minima, maxima, saddles)"""
         g_evaluation.find_critical_points()
         # save results to json
         utils.save_to_json(g_evaluation.minima, self.OUTPUT_PATH, output_filenames[0])
@@ -173,39 +180,42 @@ class InterpolationSlicingPreprocessor:
         logger.info("--- Mesh region splitting")
 
         if cut_mesh:  # (1)
-            self.mesh.update_default_vertex_attributes({'cut': 0})
+            self.mesh.update_default_vertex_attributes({"cut": 0})
             mesh_splitter = rs.MeshSplitter(self.mesh, self.target_LOW, self.target_HIGH, self.DATA_PATH)
             mesh_splitter.run()
 
             self.mesh = mesh_splitter.mesh
-            logger.info('Completed Region splitting')
+            logger.info("Completed Region splitting")
             logger.info(f"Region split cut indices: {mesh_splitter.cut_indices}")
             # save results to json
             output_path = Path(self.OUTPUT_PATH)
-            self.mesh.to_obj(str(output_path / 'mesh_with_cuts.obj'))
-            self.mesh.to_json(str(output_path / 'mesh_with_cuts.json'))
+            self.mesh.to_obj(str(output_path / "mesh_with_cuts.obj"))
+            self.mesh.to_json(str(output_path / "mesh_with_cuts.json"))
             logger.info(f"Saving to Obj and Json: {output_path / 'mesh_with_cuts.json'}")
 
         if separate_neighborhoods:  # (2)
             logger.info("--- Separating mesh disconnected components")
-            self.mesh = Mesh.from_json(str(Path(self.OUTPUT_PATH) / 'mesh_with_cuts.json'))
+            self.mesh = Mesh.from_json(str(Path(self.OUTPUT_PATH) / "mesh_with_cuts.json"))
             region_split_cut_indices = get_existing_cut_indices(self.mesh)
 
             # save results to json
-            utils.save_to_json(get_vertices_that_belong_to_cuts(self.mesh, region_split_cut_indices),
-                               self.OUTPUT_PATH, "vertices_on_cuts.json")
+            utils.save_to_json(
+                get_vertices_that_belong_to_cuts(self.mesh, region_split_cut_indices),
+                self.OUTPUT_PATH,
+                "vertices_on_cuts.json",
+            )
 
-            self.split_meshes = rs.separate_disconnected_components(self.mesh, attr='cut',
-                                                                    values=region_split_cut_indices,
-                                                                    OUTPUT_PATH=self.OUTPUT_PATH)
-            logger.info(f'Created {len(self.split_meshes)} split meshes.')
+            self.split_meshes = rs.separate_disconnected_components(
+                self.mesh, attr="cut", values=region_split_cut_indices, OUTPUT_PATH=self.OUTPUT_PATH
+            )
+            logger.info(f"Created {len(self.split_meshes)} split meshes.")
 
         if topological_sorting:  # (3)
             logger.info("--- Topological sort of meshes directed graph to determine print order")
             graph = topo_sort.MeshDirectedGraph(self.split_meshes, self.DATA_PATH)
             all_orders = graph.get_all_topological_orders()
             selected_order = all_orders[0]
-            logger.info(f'selected_order: {selected_order}')  # TODO: improve the way an order is selected
+            logger.info(f"selected_order: {selected_order}")  # TODO: improve the way an order is selected
             self.cleanup_mesh_attributes_based_on_selected_order(selected_order, graph)
 
             # reorder split_meshes based on selected order
@@ -216,9 +226,9 @@ class InterpolationSlicingPreprocessor:
             logger.info("--- Saving resulting split meshes")
             output_path = Path(self.OUTPUT_PATH)
             for i, m in enumerate(self.split_meshes):
-                m.to_obj(str(output_path / f'split_mesh_{i}.obj'))
-                m.to_json(str(output_path / f'split_mesh_{i}.json'))
-            logger.info(f'Saving to Obj and Json: {output_path / "split_mesh_%.obj"}')
+                m.to_obj(str(output_path / f"split_mesh_{i}.obj"))
+                m.to_json(str(output_path / f"split_mesh_{i}.json"))
+            logger.info(f"Saving to Obj and Json: {output_path / 'split_mesh_%.obj'}")
             logger.info(f"Saved {len(self.split_meshes)} split_meshes")
 
     def cleanup_mesh_attributes_based_on_selected_order(
@@ -241,18 +251,20 @@ class InterpolationSlicingPreprocessor:
             for child_node in graph.adj_list[index]:
                 child_mesh = self.split_meshes[child_node]
                 edge = graph.G.edges[index, child_node]
-                common_cuts = edge['cut']
+                common_cuts = edge["cut"]
                 for cut_id in common_cuts:
-                    replace_mesh_vertex_attribute(mesh, 'cut', cut_id, 'boundary', 2)
-                    replace_mesh_vertex_attribute(child_mesh, 'cut', cut_id, 'boundary', 1)
+                    replace_mesh_vertex_attribute(mesh, "cut", cut_id, "boundary", 2)
+                    replace_mesh_vertex_attribute(child_mesh, "cut", cut_id, "boundary", 1)
 
             # save results to json
-            pts_boundary_LOW = utils.get_mesh_vertex_coords_with_attribute(mesh, 'boundary', 1)
-            pts_boundary_HIGH = utils.get_mesh_vertex_coords_with_attribute(mesh, 'boundary', 2)
-            utils.save_to_json(utils.point_list_to_dict(pts_boundary_LOW), self.OUTPUT_PATH,
-                               f'pts_boundary_LOW_{index}.json')
-            utils.save_to_json(utils.point_list_to_dict(pts_boundary_HIGH), self.OUTPUT_PATH,
-                               f'pts_boundary_HIGH_{index}.json')
+            pts_boundary_LOW = utils.get_mesh_vertex_coords_with_attribute(mesh, "boundary", 1)
+            pts_boundary_HIGH = utils.get_mesh_vertex_coords_with_attribute(mesh, "boundary", 2)
+            utils.save_to_json(
+                utils.point_list_to_dict(pts_boundary_LOW), self.OUTPUT_PATH, f"pts_boundary_LOW_{index}.json"
+            )
+            utils.save_to_json(
+                utils.point_list_to_dict(pts_boundary_HIGH), self.OUTPUT_PATH, f"pts_boundary_HIGH_{index}.json"
+            )
 
 
 if __name__ == "__main__":

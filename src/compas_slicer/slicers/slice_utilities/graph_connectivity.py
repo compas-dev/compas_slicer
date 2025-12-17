@@ -8,9 +8,7 @@ if TYPE_CHECKING:
     from compas.datastructures import Mesh
     from compas.geometry import Point
 
-__all__ = ['create_graph_from_mesh_edges',
-           'sort_graph_connected_components',
-           'create_graph_from_mesh_vkeys']
+__all__ = ["create_graph_from_mesh_edges", "sort_graph_connected_components", "create_graph_from_mesh_vkeys"]
 
 
 def create_graph_from_mesh_edges(
@@ -43,7 +41,7 @@ def create_graph_from_mesh_edges(
         G.add_node(i, mesh_edge=edge)  # node, attribute
 
     for node_index, data in G.nodes(data=True):
-        mesh_edge = data['mesh_edge']
+        mesh_edge = data["mesh_edge"]
 
         # find current neighboring edges that are also intersected
         current_edge_connections = []
@@ -51,14 +49,14 @@ def create_graph_from_mesh_edges(
             if f is not None:
                 face_edges = mesh.face_halfedges(f)
                 for e in face_edges:
-                    if (e != mesh_edge and tuple(reversed(e)) != mesh_edge) \
-                            and (e in intersection_data or tuple(reversed(e)) in intersection_data):
+                    if (e != mesh_edge and tuple(reversed(e)) != mesh_edge) and (
+                        e in intersection_data or tuple(reversed(e)) in intersection_data
+                    ):
                         current_edge_connections.append(e)
 
         for e in current_edge_connections:
             # find other_node_index
-            other_node_index = edge_to_index[e] if e in edge_to_index \
-                else edge_to_index[tuple(reversed(e))]
+            other_node_index = edge_to_index[e] if e in edge_to_index else edge_to_index[tuple(reversed(e))]
             # add edges to the graph (only if the edge doesn't exist already)
             if not G.has_edge(node_index, other_node_index) and not G.has_edge(other_node_index, node_index):
                 G.add_edge(node_index, other_node_index)
@@ -116,7 +114,6 @@ def sort_graph_connected_components(G: nx.Graph) -> dict[int, list[int]]:
     current_index = 0
 
     for _j, cp in enumerate(nx.connected_components(G)):
-
         if len(cp) > 1:  # we need at least 2 elements to have an edge
             sorted_node_indices = []
 
@@ -140,7 +137,7 @@ def sort_graph_connected_components(G: nx.Graph) -> dict[int, list[int]]:
                     sorted_node_indices.append(node_index_2)
 
             if len(sorted_node_indices) != len(cp):
-                raise RuntimeError(f'Node sorting error: {len(sorted_node_indices)} sorted != {len(cp)} in component')
+                raise RuntimeError(f"Node sorting error: {len(sorted_node_indices)} sorted != {len(cp)} in component")
 
             sorted_indices_dict[current_index] = sorted_node_indices
             current_index += 1

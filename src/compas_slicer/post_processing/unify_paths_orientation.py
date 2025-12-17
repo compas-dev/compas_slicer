@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
 
-__all__ = ['unify_paths_orientation']
+__all__ = ["unify_paths_orientation"]
 
 
 def unify_paths_orientation(slicer: BaseSlicer) -> None:
@@ -26,7 +26,7 @@ def unify_paths_orientation(slicer: BaseSlicer) -> None:
         for j, path in enumerate(layer.paths):
             reference_points = None  # find reference points for each path, if possible
             if j > 0:
-                reference_points = layer.paths[j-1].points
+                reference_points = layer.paths[j - 1].points
             elif i > 0 and j == 0:
                 reference_points = slicer.layers[i - 1].paths[0].points
 
@@ -34,9 +34,7 @@ def unify_paths_orientation(slicer: BaseSlicer) -> None:
                 path.points = match_paths_orientations(path.points, reference_points, path.is_closed)
 
 
-def match_paths_orientations(
-    pts: list[Point], reference_points: list[Point], is_closed: bool
-) -> list[Point]:
+def match_paths_orientations(pts: list[Point], reference_points: list[Point], is_closed: bool) -> list[Point]:
     """Check if new curve has same direction as prev curve, otherwise reverse.
 
     Parameters

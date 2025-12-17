@@ -32,12 +32,11 @@ dependencies = [
     "compas>=2.15",
     "compas_cgal>=0.9",
     "loguru>=0.7",
-    "networkx>=3.6",
+    "networkx>=3.2",
     "numpy>=2.0",
     "progressbar2>=4.5",
-    "pyclipper>=1.4",
-    "rdp>=0.8",
-    "scipy>=1.16",
+    "pyclipper>=1.3",
+    "scipy>=1.10",
     "tomli>=2.0; python_version < '3.11'",
 ]
 

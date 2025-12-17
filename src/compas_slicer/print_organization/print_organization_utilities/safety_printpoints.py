@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from compas_slicer.print_organization import BasePrintOrganizer
 
 
-__all__ = ['add_safety_printpoints']
+__all__ = ["add_safety_printpoints"]
 
 
 def add_safety_printpoints(print_organizer: BasePrintOrganizer, z_hop: float = 10.0) -> None:
@@ -28,7 +28,7 @@ def add_safety_printpoints(print_organizer: BasePrintOrganizer, z_hop: float = 1
         Vertical distance (in millimeters) of the safety point above the PrintPoint.
     """
     if not check_assigned_extruder_toggle(print_organizer):
-        raise ValueError('You need to set the extruder toggles first, before you can create safety points')
+        raise ValueError("You need to set the extruder toggles first, before you can create safety points")
     logger.info(f"Generating safety print points with height {z_hop} mm")
 
     from compas_slicer.geometry import PrintPointsCollection
@@ -47,7 +47,6 @@ def add_safety_printpoints(print_organizer: BasePrintOrganizer, z_hop: float = 1
 
                 # add safety printpoints if there is an interruption
                 if printpoint.extruder_toggle is False:
-
                     # safety ppt after current printpoint
                     new_path.printpoints.append(create_safety_printpoint(printpoint, z_hop, False))
 
