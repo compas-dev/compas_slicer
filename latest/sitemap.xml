@@ -2,110 +2,110 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://compas.dev/compas_slicer/latest/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/citing/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/contributing/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/installation/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/quickstart/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/api/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/api/geometry/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/api/post_processing/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/api/pre_processing/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/api/print_organization/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/api/slicers/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/api/utilities/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/concepts/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/concepts/architecture/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/concepts/print-organization/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/concepts/slicing-algorithms/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/examples/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/examples/01_planar_slicing/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/examples/02_curved_slicing/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/examples/03_vertical_sorting/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/examples/04_gcode/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/examples/05_scalar_field/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/examples/06_attributes/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/examples/07_medial_axis/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/tutorials/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/tutorials/grasshopper/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
     <url>
          <loc>https://compas.dev/compas_slicer/latest/tutorials/introduction/</loc>
-         <lastmod>2025-12-12</lastmod>
+         <lastmod>2025-12-17</lastmod>
     </url>
 </urlset>
