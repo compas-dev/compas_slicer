@@ -18,7 +18,7 @@ from compas_slicer.print_organization import (
 from compas_slicer.slicers import InterpolationSlicer
 from compas_slicer.visualization import should_visualize, visualize_slicer
 
-DATA_PATH = Path(__file__).parent / 'data_Y_shape'
+DATA_PATH = Path(__file__).parent / "data_Y_shape"
 OUTPUT_PATH = utils.get_output_directory(DATA_PATH)
 
 
@@ -26,11 +26,11 @@ def main(visualize: bool = False):
     start_time = time.time()
 
     # Load initial_mesh
-    mesh = Mesh.from_obj(DATA_PATH / 'mesh.obj')
+    mesh = Mesh.from_obj(DATA_PATH / "mesh.obj")
 
     # Load targets (boundaries)
-    low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
-    high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
+    low_boundary_vs = utils.load_from_json(DATA_PATH, "boundaryLOW.json")
+    high_boundary_vs = utils.load_from_json(DATA_PATH, "boundaryHIGH.json")
     create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)
 
     avg_layer_height = 2.0
@@ -39,10 +39,13 @@ def main(visualize: bool = False):
 
     preprocessor = InterpolationSlicingPreprocessor(mesh, config, DATA_PATH)
     preprocessor.create_compound_targets()
-    g_eval = preprocessor.create_gradient_evaluation(norm_filename='gradient_norm.json', g_filename='gradient.json',
-                                                     target_1=preprocessor.target_LOW,
-                                                     target_2=preprocessor.target_HIGH)
-    preprocessor.find_critical_points(g_eval, output_filenames=['minima.json', 'maxima.json', 'saddles.json'])
+    g_eval = preprocessor.create_gradient_evaluation(
+        norm_filename="gradient_norm.json",
+        g_filename="gradient.json",
+        target_1=preprocessor.target_LOW,
+        target_2=preprocessor.target_HIGH,
+    )
+    preprocessor.find_critical_points(g_eval, output_filenames=["minima.json", "maxima.json", "saddles.json"])
 
     # Slicing
     slicer = InterpolationSlicer(mesh, preprocessor, config)
@@ -51,7 +54,7 @@ def main(visualize: bool = False):
     simplify_paths_rdp(slicer, threshold=0.25)
     seams_smooth(slicer, smooth_distance=3)
     slicer.printout_info()
-    utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer.json')
+    utils.save_to_json(slicer.to_data(), OUTPUT_PATH, "curved_slicer.json")
 
     # Print organizer
     print_organizer = InterpolationPrintOrganizer(slicer, config, DATA_PATH)
@@ -60,21 +63,25 @@ def main(visualize: bool = False):
     smooth_printpoints_up_vectors(print_organizer, strength=0.5, iterations=10)
     smooth_printpoints_layer_heights(print_organizer, strength=0.5, iterations=5)
 
-    set_linear_velocity_by_range(print_organizer, param_func=lambda ppt: ppt.layer_height,
-                                 parameter_range=[avg_layer_height*0.5, avg_layer_height*2.0],
-                                 velocity_range=[150, 70], bound_remapping=False)
+    set_linear_velocity_by_range(
+        print_organizer,
+        param_func=lambda ppt: ppt.layer_height,
+        parameter_range=[avg_layer_height * 0.5, avg_layer_height * 2.0],
+        velocity_range=[150, 70],
+        bound_remapping=False,
+    )
     set_extruder_toggle(print_organizer, slicer)
     add_safety_printpoints(print_organizer, z_hop=10.0)
 
     # Save printpoints dictionary to json file
     printpoints_data = print_organizer.output_printpoints_dict()
-    utils.save_to_json(printpoints_data, OUTPUT_PATH, 'out_printpoints.json')
+    utils.save_to_json(printpoints_data, OUTPUT_PATH, "out_printpoints.json")
 
     end_time = time.time()
     print("Total elapsed time", round(end_time - start_time, 2), "seconds")
 
     if visualize:
-        visualize_slicer(slicer, mesh)
+        visualize_slicer(slicer, mesh, mesh_colorfield="scalar_field")
 
 
 if __name__ == "__main__":
