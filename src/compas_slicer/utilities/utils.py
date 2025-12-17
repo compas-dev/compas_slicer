@@ -29,36 +29,38 @@ if TYPE_CHECKING:
     from compas_slicer.geometry import PrintPoint, PrintPointsCollection
 
 
-__all__ = ['remap',
-           'remap_unbound',
-           'get_output_directory',
-           'save_to_json',
-           'load_from_json',
-           'is_jsonable',
-           'get_jsonable_attributes',
-           'save_to_text_file',
-           'flattened_list_of_dictionary',
-           'interrupt',
-           'point_list_to_dict',
-           'point_list_from_dict',
-           'get_closest_mesh_vkey_to_pt',
-           'get_mesh_cotmatrix',
-           'get_mesh_cotans',
-           'get_mesh_massmatrix',
-           'get_mesh_cotmatrix_igl',
-           'get_mesh_cotans_igl',
-           'get_closest_pt_index',
-           'get_closest_pt',
-           'pull_pts_to_mesh_faces',
-           'get_mesh_vertex_coords_with_attribute',
-           'get_dict_key_from_value',
-           'find_next_printpoint',
-           'find_previous_printpoint',
-           'smooth_vectors',
-           'get_normal_of_path_on_xy_plane',
-           'get_all_files_with_name',
-           'get_closest_mesh_normal_to_pt',
-           'check_package_is_installed']
+__all__ = [
+    "remap",
+    "remap_unbound",
+    "get_output_directory",
+    "save_to_json",
+    "load_from_json",
+    "is_jsonable",
+    "get_jsonable_attributes",
+    "save_to_text_file",
+    "flattened_list_of_dictionary",
+    "interrupt",
+    "point_list_to_dict",
+    "point_list_from_dict",
+    "get_closest_mesh_vkey_to_pt",
+    "get_mesh_cotmatrix",
+    "get_mesh_cotans",
+    "get_mesh_massmatrix",
+    "get_mesh_cotmatrix_igl",
+    "get_mesh_cotans_igl",
+    "get_closest_pt_index",
+    "get_closest_pt",
+    "pull_pts_to_mesh_faces",
+    "get_mesh_vertex_coords_with_attribute",
+    "get_dict_key_from_value",
+    "find_next_printpoint",
+    "find_previous_printpoint",
+    "smooth_vectors",
+    "get_normal_of_path_on_xy_plane",
+    "get_all_files_with_name",
+    "get_closest_mesh_normal_to_pt",
+    "check_package_is_installed",
+]
 
 
 def remap(input_val: float, in_from: float, in_to: float, out_from: float, out_to: float) -> float:
@@ -95,7 +97,7 @@ def get_output_directory(path: str | Path) -> Path:
         The path to the 'output' directory.
 
     """
-    output_dir = Path(path) / 'output'
+    output_dir = Path(path) / "output"
     output_dir.mkdir(exist_ok=True)
     return output_dir
 
@@ -196,9 +198,8 @@ def smooth_vectors(vectors: list[Vector], strength: float, iterations: int) -> l
 #######################################
 #  json
 
-def save_to_json(
-    data: dict[str, Any] | dict[int, Any] | list[Any], filepath: str | Path, name: str
-) -> None:
+
+def save_to_json(data: dict[str, Any] | dict[int, Any] | list[Any], filepath: str | Path, name: str) -> None:
     """Save data to JSON file.
 
     Parameters
@@ -258,12 +259,13 @@ def get_jsonable_attributes(attributes_dict: dict[str, Any]) -> dict[str, Any]:
             if isinstance(attr, np.ndarray):
                 jsonable_attr[attr_key] = list(attr)
             else:
-                jsonable_attr[attr_key] = 'non serializable attribute'
+                jsonable_attr[attr_key] = "non serializable attribute"
     return jsonable_attr
 
 
 #######################################
 #  text file
+
 
 def save_to_text_file(data: str, filepath: str | Path, name: str) -> None:
     """Save text to file.
@@ -285,6 +287,7 @@ def save_to_text_file(data: str, filepath: str | Path, name: str) -> None:
 
 #######################################
 #  mesh utils
+
 
 def check_triangular_mesh(mesh: Mesh) -> None:
     """Check if mesh is triangular, raise TypeError if not.
@@ -322,7 +325,7 @@ def get_closest_mesh_vkey_to_pt(mesh: Mesh, pt: Point) -> int:
         Closest vertex key.
 
     """
-    vertex_tupples = [(v_key, Point(data['x'], data['y'], data['z'])) for v_key, data in mesh.vertices(data=True)]
+    vertex_tupples = [(v_key, Point(data["x"], data["y"], data["z"])) for v_key, data in mesh.vertices(data=True)]
     vertex_tupples = sorted(vertex_tupples, key=lambda v_tupple: distance_point_point_sqrd(pt, v_tupple[1]))
     closest_vkey: int = vertex_tupples[0][0]
     return closest_vkey
@@ -428,6 +431,7 @@ def get_normal_of_path_on_xy_plane(k: int, point: Point, path: SlicerPath, mesh:
 #######################################
 # mesh matrix utils (NumPy implementations)
 
+
 def get_mesh_cotmatrix(mesh: Mesh, fix_boundaries: bool = True) -> csr_matrix:
     """Get the cotangent Laplacian matrix of the mesh.
 
@@ -494,7 +498,7 @@ def get_mesh_cotmatrix(mesh: Mesh, fix_boundaries: bool = True) -> csr_matrix:
         # Zero out rows for boundary vertices
         boundary_mask = np.zeros(n_vertices, dtype=bool)
         for i, (_vkey, vdata) in enumerate(mesh.vertices(data=True)):
-            if vdata.get('boundary', 0) > 0:
+            if vdata.get("boundary", 0) > 0:
                 boundary_mask[i] = True
 
         if np.any(boundary_mask):
@@ -590,6 +594,7 @@ get_mesh_cotans_igl = get_mesh_cotans
 #######################################
 #  dict utils
 
+
 def point_list_to_dict(pts_list: list[Point | Vector]) -> dict[int, list[float]]:
     """Convert list of points/vectors to dict for JSON.
 
@@ -671,9 +676,7 @@ def get_dict_key_from_value(dictionary: dict[Any, Any], val: Any) -> Any | None:
     return None
 
 
-def find_next_printpoint(
-    printpoints: PrintPointsCollection, i: int, j: int, k: int
-) -> PrintPoint | None:
+def find_next_printpoint(printpoints: PrintPointsCollection, i: int, j: int, k: int) -> PrintPoint | None:
     """
     Returns the next printpoint from the current printpoint if it exists, otherwise returns None.
 
@@ -706,9 +709,7 @@ def find_next_printpoint(
     return next_ppt
 
 
-def find_previous_printpoint(
-    printpoints: PrintPointsCollection, i: int, j: int, k: int
-) -> PrintPoint | None:
+def find_previous_printpoint(printpoints: PrintPointsCollection, i: int, j: int, k: int) -> PrintPoint | None:
     """
     Returns the previous printpoint from the current printpoint if it exists, otherwise returns None.
 
@@ -744,22 +745,22 @@ def find_previous_printpoint(
 #######################################
 #  control flow
 
+
 def interrupt() -> None:
     """
     Interrupts the flow of the code while it is running.
     It asks for the user to press a enter to continue or abort.
     """
     value = input("Press enter to continue, Press 1 to abort ")
-    if isinstance(value, str) and value == '1':
+    if isinstance(value, str) and value == "1":
         raise ValueError("Aborted")
 
 
 #######################################
 #  load all files with name
 
-def get_all_files_with_name(
-    startswith: str, endswith: str, DATA_PATH: str | Path
-) -> list[str]:
+
+def get_all_files_with_name(startswith: str, endswith: str, DATA_PATH: str | Path) -> list[str]:
     """
     Finds all the filenames in the DATA_PATH that start and end with the provided strings
 
@@ -774,9 +775,8 @@ def get_all_files_with_name(
     list[str]
         All the filenames
     """
-    files = [f.name for f in Path(DATA_PATH).iterdir()
-             if f.name.startswith(startswith) and f.name.endswith(endswith)]
-    logger.info(f'Reloading: {files}')
+    files = [f.name for f in Path(DATA_PATH).iterdir() if f.name.startswith(startswith) and f.name.endswith(endswith)]
+    logger.info(f"Reloading: {files}")
     return files
 
 
@@ -785,11 +785,12 @@ def get_all_files_with_name(
 
 
 def check_package_is_installed(package_name: str) -> None:
-    """ Throws an error if igl python bindings are not installed in the current environment. """
-    packages = TerminalCommand('conda list').get_split_output_strings()
+    """Throws an error if igl python bindings are not installed in the current environment."""
+    packages = TerminalCommand("conda list").get_split_output_strings()
     if package_name not in packages:
-        raise PluginNotInstalledError(" ATTENTION! Package : " + package_name +
-                                      " is missing! Please follow installation guide to install it.")
+        raise PluginNotInstalledError(
+            " ATTENTION! Package : " + package_name + " is missing! Please follow installation guide to install it."
+        )
 
 
 if __name__ == "__main__":

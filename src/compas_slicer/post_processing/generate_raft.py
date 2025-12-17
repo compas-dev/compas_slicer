@@ -6,15 +6,12 @@ from loguru import logger
 import compas_slicer
 from compas_slicer.geometry import Layer, Path
 
-__all__ = ['generate_raft']
+__all__ = ["generate_raft"]
 
 
-def generate_raft(slicer,
-                  raft_offset=10,
-                  distance_between_paths=10,
-                  direction="xy_diagonal",
-                  raft_layers=1,
-                  raft_layer_height=None):
+def generate_raft(
+    slicer, raft_offset=10, distance_between_paths=10, direction="xy_diagonal", raft_layers=1, raft_layer_height=None
+):
     """Creates a raft.
 
     Parameters
@@ -76,7 +73,7 @@ def generate_raft(slicer,
 
     # create starting line for diagonal direction
     if direction == "xy_diagonal":
-        c = math.sqrt(2*(distance_between_paths**2))
+        c = math.sqrt(2 * (distance_between_paths**2))
 
         pt1 = Point(raft_start_pt[0] + c, raft_start_pt[1], raft_start_pt[2])
         pt2 = Point(pt1[0] - y_range, pt1[1] + y_range, pt1[2])
@@ -86,10 +83,9 @@ def generate_raft(slicer,
     for i, layer in enumerate(slicer.layers):
         for j, path in enumerate(layer.paths):
             for k, pt in enumerate(path.points):
-                slicer.layers[i].paths[j].points[k] = Point(pt[0], pt[1], pt[2] + (raft_layers)*raft_layer_height)
+                slicer.layers[i].paths[j].points[k] = Point(pt[0], pt[1], pt[2] + (raft_layers) * raft_layer_height)
 
     for i in range(raft_layers):
-
         iter = 0
         raft_points = []
 
@@ -99,8 +95,16 @@ def generate_raft(slicer,
             # VERTICAL RAFT
             # ===============
             if direction == "y_axis":
-                raft_pt1 = Point(raft_start_pt[0] + iter*distance_between_paths, raft_start_pt[1], raft_start_pt[2] + i*raft_layer_height)
-                raft_pt2 = Point(raft_start_pt[0] + iter*distance_between_paths, raft_start_pt[1] + y_range, raft_start_pt[2] + i*raft_layer_height)
+                raft_pt1 = Point(
+                    raft_start_pt[0] + iter * distance_between_paths,
+                    raft_start_pt[1],
+                    raft_start_pt[2] + i * raft_layer_height,
+                )
+                raft_pt2 = Point(
+                    raft_start_pt[0] + iter * distance_between_paths,
+                    raft_start_pt[1] + y_range,
+                    raft_start_pt[2] + i * raft_layer_height,
+                )
 
                 if raft_pt2[0] > bb_max_x_right or raft_pt1[0] > bb_max_x_right:
                     break
@@ -109,8 +113,16 @@ def generate_raft(slicer,
             # HORIZONTAL RAFT
             # ===============
             elif direction == "x_axis":
-                raft_pt1 = Point(raft_start_pt[0], raft_start_pt[1] + iter*distance_between_paths, raft_start_pt[2] + i*raft_layer_height)
-                raft_pt2 = Point(raft_start_pt[0] + x_range, raft_start_pt[1] + iter*distance_between_paths, raft_start_pt[2] + i*raft_layer_height)
+                raft_pt1 = Point(
+                    raft_start_pt[0],
+                    raft_start_pt[1] + iter * distance_between_paths,
+                    raft_start_pt[2] + i * raft_layer_height,
+                )
+                raft_pt2 = Point(
+                    raft_start_pt[0] + x_range,
+                    raft_start_pt[1] + iter * distance_between_paths,
+                    raft_start_pt[2] + i * raft_layer_height,
+                )
 
                 if raft_pt2[1] > bb_max_y_top or raft_pt1[1] > bb_max_y_top:
                     break
@@ -120,21 +132,21 @@ def generate_raft(slicer,
             # ===============
             elif direction == "xy_diagonal":
                 # create offset of the initial diagonal line
-                offset_l = offset_line(line, iter*distance_between_paths, Vector(0, 0, -1))
+                offset_l = offset_line(line, iter * distance_between_paths, Vector(0, 0, -1))
 
                 # get intersections for the initial diagonal line with the left and bottom of the bb
                 int_left = intersection_line_line(offset_l, [bb_xy_offset[0], bb_xy_offset[3]])
                 int_bottom = intersection_line_line(offset_l, [bb_xy_offset[0], bb_xy_offset[1]])
 
                 # get the points at the intersections
-                raft_pt1 = Point(int_left[0][0], int_left[0][1], int_left[0][2] + i*raft_layer_height)
-                raft_pt2 = Point(int_bottom[0][0], int_bottom[0][1], int_bottom[0][2] + i*raft_layer_height)
+                raft_pt1 = Point(int_left[0][0], int_left[0][1], int_left[0][2] + i * raft_layer_height)
+                raft_pt2 = Point(int_bottom[0][0], int_bottom[0][1], int_bottom[0][2] + i * raft_layer_height)
 
                 # if the intersection goes beyond the height of the left side of the bounding box:
                 if int_left[0][1] > bb_max_y_top:
                     # create intersection with the top side
                     int_top = intersection_line_line(offset_l, [bb_xy_offset[3], bb_xy_offset[2]])
-                    raft_pt1 = Point(int_top[0][0], int_top[0][1], int_top[0][2] + i*raft_layer_height)
+                    raft_pt1 = Point(int_top[0][0], int_top[0][1], int_top[0][2] + i * raft_layer_height)
 
                     # if intersection goes beyond the length of the top side, break
                     if raft_pt1[0] > bb_max_x_right:
@@ -144,7 +156,7 @@ def generate_raft(slicer,
                 if int_bottom[0][0] > bb_max_x_right:
                     # create intersection with the right side
                     int_right = intersection_line_line(offset_l, [bb_xy_offset[1], bb_xy_offset[2]])
-                    raft_pt2 = Point(int_right[0][0], int_right[0][1], int_right[0][2] + i*raft_layer_height)
+                    raft_pt2 = Point(int_right[0][0], int_right[0][1], int_right[0][2] + i * raft_layer_height)
 
                     # if intersection goes beyond the height of the right side, break
                     if raft_pt2[1] > bb_xy_offset[2][1]:

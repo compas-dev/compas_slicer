@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
 
-__all__ = ['seams_smooth']
+__all__ = ["seams_smooth"]
 
 
 def seams_smooth(slicer: BaseSlicer, smooth_distance: float) -> None:
@@ -34,7 +34,7 @@ def seams_smooth(slicer: BaseSlicer, smooth_distance: float) -> None:
                 if path.is_closed:  # only for closed paths
                     pt0 = path.points[0]
                     # only points in the first half of a path should be evaluated
-                    half_of_path = path.points[:int(len(path.points)/2)]
+                    half_of_path = path.points[: int(len(path.points) / 2)]
                     for point in half_of_path:
                         if distance_point_point(pt0, point) < smooth_distance:
                             # remove points if within smooth_distance

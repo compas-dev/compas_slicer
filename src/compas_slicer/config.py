@@ -25,7 +25,6 @@ __all__ = [
     "GcodeConfig",
     "PrintConfig",
     "OutputConfig",
-    "GeodesicsMethod",
     "UnionMethod",
     "load_defaults",
 ]
@@ -48,15 +47,6 @@ def load_defaults() -> dict[str, Any]:
 
 
 _DEFAULTS = load_defaults()
-
-
-class GeodesicsMethod(str, Enum):
-    """Method for computing geodesic distances."""
-
-    EXACT_IGL = "exact_igl"
-    HEAT_IGL = "heat_igl"
-    HEAT_CGAL = "heat_cgal"
-    HEAT = "heat"
 
 
 class UnionMethod(str, Enum):
@@ -162,10 +152,6 @@ class InterpolationConfig(Data):
         Maximum layer height.
     vertical_layers_max_centroid_dist : float
         Maximum distance for grouping paths into vertical layers.
-    target_low_geodesics_method : GeodesicsMethod
-        Method for computing geodesics to low boundary.
-    target_high_geodesics_method : GeodesicsMethod
-        Method for computing geodesics to high boundary.
     target_high_union_method : UnionMethod
         Method for combining high target boundaries.
     target_high_union_params : list[float]
@@ -181,12 +167,6 @@ class InterpolationConfig(Data):
     vertical_layers_max_centroid_dist: float = field(
         default_factory=lambda: _interpolation_defaults().get("vertical_layers_max_centroid_dist", 25.0)
     )
-    target_low_geodesics_method: GeodesicsMethod = field(
-        default_factory=lambda: GeodesicsMethod(_interpolation_defaults().get("target_low_geodesics_method", "heat_igl"))
-    )
-    target_high_geodesics_method: GeodesicsMethod = field(
-        default_factory=lambda: GeodesicsMethod(_interpolation_defaults().get("target_high_geodesics_method", "heat_igl"))
-    )
     target_high_union_method: UnionMethod = field(
         default_factory=lambda: UnionMethod(_interpolation_defaults().get("target_high_union_method", "min"))
     )
@@ -199,11 +179,6 @@ class InterpolationConfig(Data):
 
     def __post_init__(self) -> None:
         super().__init__()
-        # Convert string enums if needed
-        if isinstance(self.target_low_geodesics_method, str):
-            self.target_low_geodesics_method = GeodesicsMethod(self.target_low_geodesics_method)
-        if isinstance(self.target_high_geodesics_method, str):
-            self.target_high_geodesics_method = GeodesicsMethod(self.target_high_geodesics_method)
         if isinstance(self.target_high_union_method, str):
             self.target_high_union_method = UnionMethod(self.target_high_union_method)
 
@@ -214,8 +189,6 @@ class InterpolationConfig(Data):
             "min_layer_height": self.min_layer_height,
             "max_layer_height": self.max_layer_height,
             "vertical_layers_max_centroid_dist": self.vertical_layers_max_centroid_dist,
-            "target_low_geodesics_method": self.target_low_geodesics_method.value,
-            "target_high_geodesics_method": self.target_high_geodesics_method.value,
             "target_high_union_method": self.target_high_union_method.value,
             "target_high_union_params": self.target_high_union_params,
             "uneven_upper_targets_offset": self.uneven_upper_targets_offset,
@@ -230,12 +203,6 @@ class InterpolationConfig(Data):
             max_layer_height=data.get("max_layer_height", d.get("max_layer_height", 10.0)),
             vertical_layers_max_centroid_dist=data.get(
                 "vertical_layers_max_centroid_dist", d.get("vertical_layers_max_centroid_dist", 25.0)
-            ),
-            target_low_geodesics_method=data.get(
-                "target_low_geodesics_method", d.get("target_low_geodesics_method", "heat_igl")
-            ),
-            target_high_geodesics_method=data.get(
-                "target_high_geodesics_method", d.get("target_high_geodesics_method", "heat_igl")
             ),
             target_high_union_method=data.get("target_high_union_method", d.get("target_high_union_method", "min")),
             target_high_union_params=data.get("target_high_union_params", d.get("target_high_union_params", [])),

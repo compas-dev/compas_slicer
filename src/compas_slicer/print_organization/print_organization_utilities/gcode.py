@@ -163,9 +163,7 @@ def _write_purge_line(gb: GcodeBuilder, config: GcodeConfig) -> None:
     gb.cmd(f"G1 X{PURGE_START_X} Y{PURGE_START_Y}", "move to purge start")
 
     # Calculate extrusion for purge lines
-    e_purge = _calc_extrusion(
-        PURGE_LENGTH, PURGE_HEIGHT, config.layer_width, config.filament_diameter
-    )
+    e_purge = _calc_extrusion(PURGE_LENGTH, PURGE_HEIGHT, config.layer_width, config.filament_diameter)
 
     # First purge line
     gb.cmd(f"G1 Y{PURGE_START_Y + PURGE_LENGTH} E{e_purge:.3f}", "purge line 1")
@@ -182,9 +180,7 @@ def _write_purge_line(gb: GcodeBuilder, config: GcodeConfig) -> None:
     gb.blank()
 
 
-def _write_toolpath(
-    gb: GcodeBuilder, print_organizer: BasePrintOrganizer, config: GcodeConfig
-) -> float:
+def _write_toolpath(gb: GcodeBuilder, print_organizer: BasePrintOrganizer, config: GcodeConfig) -> float:
     """Write the main toolpath G-code.
 
     Returns the final Z height for use in footer.
@@ -294,9 +290,7 @@ def _write_footer(gb: GcodeBuilder, config: GcodeConfig, final_z: float) -> None
 # =============================================================================
 
 
-def create_gcode_text(
-    print_organizer: BasePrintOrganizer, config: GcodeConfig | None = None
-) -> str:
+def create_gcode_text(print_organizer: BasePrintOrganizer, config: GcodeConfig | None = None) -> str:
     """Create G-code text from organized print points.
 
     Parameters

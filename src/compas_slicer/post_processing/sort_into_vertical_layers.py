@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
 
-__all__ = ['sort_into_vertical_layers']
+__all__ = ["sort_into_vertical_layers"]
 
 
 def sort_into_vertical_layers(

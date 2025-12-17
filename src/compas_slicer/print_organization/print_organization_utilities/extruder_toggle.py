@@ -11,9 +11,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
 
-__all__ = ['set_extruder_toggle',
-           'override_extruder_toggle',
-           'check_assigned_extruder_toggle']
+__all__ = ["set_extruder_toggle", "override_extruder_toggle", "check_assigned_extruder_toggle"]
 
 
 def set_extruder_toggle(print_organizer: BasePrintOrganizer, slicer: BaseSlicer) -> None:
@@ -52,7 +50,7 @@ def set_extruder_toggle(print_organizer: BasePrintOrganizer, slicer: BaseSlicer)
                 interrupt_path = True
                 # the last path of a vertical layer should be interrupted
 
-            if i < len(slicer.layers)-1 and not slicer.layers[i+1].paths[0].is_closed:
+            if i < len(slicer.layers) - 1 and not slicer.layers[i + 1].paths[0].is_closed:
                 interrupt_path = True
 
             # --- create extruder toggles
@@ -62,7 +60,6 @@ def set_extruder_toggle(print_organizer: BasePrintOrganizer, slicer: BaseSlicer)
                 logger.exception(f"no path found for layer {i}")
             else:
                 for k, printpoint in enumerate(path_printpoints):
-
                     if interrupt_path:
                         if k == len(path_printpoints) - 1:
                             printpoint.extruder_toggle = False
@@ -95,7 +92,7 @@ def override_extruder_toggle(print_organizer: BasePrintOrganizer, override_value
 
 
 def check_assigned_extruder_toggle(print_organizer: BasePrintOrganizer) -> bool:
-    """ Checks that all the printpoints have an assigned extruder toggle. """
+    """Checks that all the printpoints have an assigned extruder toggle."""
     all_toggles_assigned = True
     for printpoint in print_organizer.printpoints_iterator():
         if printpoint.extruder_toggle is None:

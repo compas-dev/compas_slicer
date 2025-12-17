@@ -14,6 +14,7 @@ _USE_CGAL = False
 try:
     from compas_cgal.straight_skeleton_2 import offset_polygon as _cgal_offset
     from compas_cgal.straight_skeleton_2 import offset_polygon_with_holes as _cgal_offset_with_holes
+
     _USE_CGAL = True
 except ImportError:
     _cgal_offset = None
@@ -23,7 +24,7 @@ if TYPE_CHECKING:
     from compas_slicer.slicers import BaseSlicer
 
 
-__all__ = ['generate_brim', 'offset_polygon', 'offset_polygon_with_holes']
+__all__ = ["generate_brim", "offset_polygon", "offset_polygon_with_holes"]
 
 
 def _offset_polygon_cgal(points: list[Point], offset: float, z: float) -> list[Point]:
@@ -83,16 +84,12 @@ def _offset_polygon_pyclipper(points: list[Point], offset: float, z: float) -> l
     import pyclipper
     from pyclipper import scale_from_clipper, scale_to_clipper
 
-    SCALING_FACTOR = 2 ** 32
+    SCALING_FACTOR = 2**32
 
     xy_coords = [[p[0], p[1]] for p in points]
 
     pco = pyclipper.PyclipperOffset()
-    pco.AddPath(
-        scale_to_clipper(xy_coords, SCALING_FACTOR),
-        pyclipper.JT_MITER,
-        pyclipper.ET_CLOSEDPOLYGON
-    )
+    pco.AddPath(scale_to_clipper(xy_coords, SCALING_FACTOR), pyclipper.JT_MITER, pyclipper.ET_CLOSEDPOLYGON)
 
     result = scale_from_clipper(pco.Execute(offset * SCALING_FACTOR), SCALING_FACTOR)
 
@@ -132,10 +129,7 @@ def offset_polygon(points: list[Point], offset: float, z: float) -> list[Point]:
 
 
 def offset_polygon_with_holes(
-    outer: list[Point],
-    holes: list[list[Point]],
-    offset: float,
-    z: float
+    outer: list[Point], holes: list[list[Point]], offset: float, z: float
 ) -> list[tuple[list[Point], list[list[Point]]]]:
     """Offset a polygon with holes using CGAL straight skeleton.
 
@@ -224,7 +218,7 @@ def generate_brim(slicer: BaseSlicer, layer_width: float, number_of_brim_offsets
         has_vertical_layers = False
 
     if len(paths_to_offset) == 0:
-        raise ValueError('Brim generator did not find any path on the base. Please check the paths of your slicer.')
+        raise ValueError("Brim generator did not find any path on the base. Please check the paths of your slicer.")
 
     # (2) --- create new empty brim_layer
     brim_layer = Layer(paths=[])

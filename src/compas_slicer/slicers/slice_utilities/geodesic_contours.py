@@ -10,31 +10,37 @@ from compas_slicer.geometry import Path, VerticalLayersManager
 if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
-__all__ = ["ScalarFieldContours"]
+
+__all__ = ["GeodesicContours"]
 
 
-class ScalarFieldContours:
-    """Finds iso-contours of vertex scalar field using CGAL backend.
-
-    Extracts zero-level isolines from the 'scalar_field' vertex attribute.
+class GeodesicContours:
+    """Extract geodesic isolines using compas_cgal.
 
     Parameters
     ----------
     mesh : Mesh
-        Triangular mesh with 'scalar_field' vertex attribute.
+        Triangular mesh.
+    sources : list[int]
+        Source vertex indices.
+    isovalues : list[float]
+        Isovalue thresholds for isoline extraction.
 
     """
 
-    def __init__(self, mesh: Mesh) -> None:
+    def __init__(self, mesh: Mesh, sources: list[int], isovalues: list[float]) -> None:
         self.mesh = mesh
+        self.sources = sources
+        self.isovalues = isovalues
         self.polylines: list[Polyline] = []
         self._closed_flags: list[bool] = []
 
     def compute(self) -> None:
-        """Extract zero-level isolines from scalar field."""
-        from compas_cgal.isolines import isolines
+        """Compute geodesic isolines from sources at specified isovalues."""
+        from compas_cgal.geodesics import geodesic_isolines
 
-        results = isolines(self.mesh, "scalar_field", isovalues=[0.0])
+        V, F = self.mesh.to_vertices_and_faces()
+        results = geodesic_isolines((V, F), self.sources, self.isovalues)
 
         for pts in results:
             points = [Point(*p) for p in pts.tolist()]
@@ -43,7 +49,7 @@ class ScalarFieldContours:
             self._closed_flags.append(is_closed)
 
     def add_to_vertical_layers_manager(self, manager: VerticalLayersManager) -> None:
-        """Add isolines to a VerticalLayersManager.
+        """Add computed isolines to a VerticalLayersManager.
 
         Parameters
         ----------
@@ -55,8 +61,3 @@ class ScalarFieldContours:
             if len(polyline.points) > 3:
                 path = Path(polyline.points, is_closed=is_closed)
                 manager.add(path)
-
-    @property
-    def is_valid(self) -> bool:
-        """Check if any valid paths were found."""
-        return any(len(pl.points) > 3 for pl in self.polylines)

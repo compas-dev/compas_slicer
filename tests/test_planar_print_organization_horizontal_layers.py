@@ -12,12 +12,12 @@ from compas_slicer.print_organization import add_safety_printpoints
 from compas_slicer.print_organization.print_organization_utilities.extruder_toggle import check_assigned_extruder_toggle
 from compas.datastructures import Mesh
 
-DATA_PATH = Path(__file__).parent / 'tests_data'
-stl_to_test = ['distorted_v_closed_low_res.obj']
+DATA_PATH = Path(__file__).parent / "tests_data"
+stl_to_test = ["distorted_v_closed_low_res.obj"]
 
 
 def create_setup(filename):
-    """ Setting up the stage for testing. """
+    """Setting up the stage for testing."""
     compas_mesh = Mesh.from_obj(DATA_PATH / filename)
     slicer = PlanarSlicer(compas_mesh, layer_height=20)
     slicer.slice_model()
@@ -30,25 +30,27 @@ def create_setup(filename):
 
 
 def test_planar_set_extruder_toggle_for_horizontal_layers():
-    """ Tests set_extruder_toggle on planar slicer. """
+    """Tests set_extruder_toggle on planar slicer."""
 
     for filename in stl_to_test:
         slicer, print_organizer = create_setup(filename)
         pp_dict = print_organizer.printpoints_dict
 
         set_extruder_toggle(print_organizer, slicer)
-        assert check_assigned_extruder_toggle(print_organizer), \
-            "Not all extruder toggles have been assigned after using 'set_extruder_toggle()'. \nFilename : " + \
-            str(filename)
+        assert check_assigned_extruder_toggle(print_organizer), (
+            "Not all extruder toggles have been assigned after using 'set_extruder_toggle()'. \nFilename : "
+            + str(filename)
+        )
 
         for i, layer in enumerate(slicer.layers):
-            layer_key = 'layer_%d' % i
-            assert not isinstance(layer, compas_slicer.geometry.VerticalLayer), \
+            layer_key = "layer_%d" % i
+            assert not isinstance(layer, compas_slicer.geometry.VerticalLayer), (
                 "You are testing vertical layers on a test for planar layers. \nFilename : " + str(filename)
+            )
 
             # --------------- check each individual path
             for j, path in enumerate(layer.paths):
-                path_key = 'path_%d' % j
+                path_key = "path_%d" % j
 
                 # (1) --- Find how many trues and falses exist in the path
                 path_extruder_toggles = [pp.extruder_toggle for pp in pp_dict[layer_key][path_key]]
@@ -77,28 +79,50 @@ def test_planar_set_extruder_toggle_for_horizontal_layers():
 
                 # (3) Check if path has the correct number of interruptions that you decided on step (2)
                 if path_should_be_interrupted_at_end:
-                    assert path_Falses == 1, \
-                        "On an path that should be interrupted there should be 1 extruder_toggle = " \
-                        "False, instead you have %d Falses.\n  The error came up on layer %d out of " \
-                        "total %d layers, \n path %d out of total %d paths, \n with %d printpoints. " \
-                        "" % (path_Falses, i, len(slicer.layers) - 1, j, len(slicer.layers[i].paths) - 1,
-                              len(path_extruder_toggles)) + "\nFilename: " + str(filename)
-                    assert path_extruder_toggles[-1] is False, \
-                        "Last printpoint of open path does not have extruder_toggle = False. \n The error is on layer " \
-                        "%d out of total %d layers, \n path %d of total %d paths,\n with %d printpoints. " \
-                        % (i, len(slicer.layers) - 1, j, len(slicer.layers[i].paths) - 1,
-                           len(path_extruder_toggles)) + "\nFilename: " + str(filename)
+                    assert path_Falses == 1, (
+                        "On an path that should be interrupted there should be 1 extruder_toggle = "
+                        "False, instead you have %d Falses.\n  The error came up on layer %d out of "
+                        "total %d layers, \n path %d out of total %d paths, \n with %d printpoints. "
+                        ""
+                        % (
+                            path_Falses,
+                            i,
+                            len(slicer.layers) - 1,
+                            j,
+                            len(slicer.layers[i].paths) - 1,
+                            len(path_extruder_toggles),
+                        )
+                        + "\nFilename: "
+                        + str(filename)
+                    )
+                    assert path_extruder_toggles[-1] is False, (
+                        "Last printpoint of open path does not have extruder_toggle = False. \n The error is on layer "
+                        "%d out of total %d layers, \n path %d of total %d paths,\n with %d printpoints. "
+                        % (i, len(slicer.layers) - 1, j, len(slicer.layers[i].paths) - 1, len(path_extruder_toggles))
+                        + "\nFilename: "
+                        + str(filename)
+                    )
                 else:
-                    assert path_Falses == 0, \
-                        "On an path that should NOT be interrupted there should be 0 extruder_toggle " \
-                        "= False, instead you have %d Falses.\n  The error came up on layer %d out " \
-                        "of total %d layers, \n path %d out of total %d paths, \n with %d " \
-                        "printpoints. " % (path_Falses, i, len(slicer.layers) - 1, j, len(slicer.layers[i].paths) - 1,
-                                           len(path_extruder_toggles)) + "\nFilename: " + str(filename)
+                    assert path_Falses == 0, (
+                        "On an path that should NOT be interrupted there should be 0 extruder_toggle "
+                        "= False, instead you have %d Falses.\n  The error came up on layer %d out "
+                        "of total %d layers, \n path %d out of total %d paths, \n with %d "
+                        "printpoints. "
+                        % (
+                            path_Falses,
+                            i,
+                            len(slicer.layers) - 1,
+                            j,
+                            len(slicer.layers[i].paths) - 1,
+                            len(path_extruder_toggles),
+                        )
+                        + "\nFilename: "
+                        + str(filename)
+                    )
 
 
 def test_planar_add_safety_printpoints_for_horizontal_layers():
-    """ Tests add_safety_printpoints on planar slicer. """
+    """Tests add_safety_printpoints on planar slicer."""
 
     for filename in stl_to_test:
         slicer, print_organizer = create_setup(filename)
@@ -122,20 +146,21 @@ def test_planar_add_safety_printpoints_for_horizontal_layers():
         # (3) find resulting number of ppts
         resulting_ppts_number = print_organizer.number_of_printpoints
 
-        assert initial_ppts_number + 2 * total_interruptions == resulting_ppts_number, \
+        assert initial_ppts_number + 2 * total_interruptions == resulting_ppts_number, (
             "Wrong number of safety points added on file : " + str(filename)
+        )
 
 
 def test_planar_set_linear_velocity_constant_for_horizontal_layers():
-    """ Tests set_linear_velocity on planar slicer, with constant value. """
+    """Tests set_linear_velocity on planar slicer, with constant value."""
     pass
 
 
 def test_planar_set_blend_radius_for_horizontal_layers():
-    """ Tests set_blend_radius on planar slicer. """
+    """Tests set_blend_radius on planar slicer."""
     pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_planar_set_extruder_toggle_for_horizontal_layers()
     test_planar_add_safety_printpoints_for_horizontal_layers()

@@ -1,11 +1,12 @@
 import time
 from pathlib import Path
 
+import numpy as np
 from compas.datastructures import Mesh
 
 import compas_slicer.utilities as utils
 from compas_slicer.config import InterpolationConfig
-from compas_slicer.post_processing import seams_smooth, simplify_paths_rdp
+from compas_slicer.post_processing import seams_smooth
 from compas_slicer.pre_processing import InterpolationSlicingPreprocessor, create_mesh_boundary_attributes
 from compas_slicer.print_organization import (
     InterpolationPrintOrganizer,
@@ -28,9 +29,12 @@ def main(visualize: bool = False):
     # Load initial_mesh
     mesh = Mesh.from_obj(DATA_PATH / 'mesh.obj')
 
-    # Load targets (boundaries)
-    low_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryLOW.json')
-    high_boundary_vs = utils.load_from_json(DATA_PATH, 'boundaryHIGH.json')
+    # Identify boundaries from mesh topology
+    boundaries = [list(loop) for loop in mesh.vertices_on_boundaries()]
+    avg_zs = [np.mean([mesh.vertex_coordinates(v)[2] for v in loop]) for loop in boundaries]
+    low_idx = int(np.argmin(avg_zs))
+    low_boundary_vs = boundaries.pop(low_idx)
+    high_boundary_vs = [v for loop in boundaries for v in loop]  # flatten remaining
     create_mesh_boundary_attributes(mesh, low_boundary_vs, high_boundary_vs)
 
     avg_layer_height = 2.0
@@ -48,7 +52,6 @@ def main(visualize: bool = False):
     slicer = InterpolationSlicer(mesh, preprocessor, config)
     slicer.slice_model()
 
-    simplify_paths_rdp(slicer, threshold=0.25)
     seams_smooth(slicer, smooth_distance=3)
     slicer.printout_info()
     utils.save_to_json(slicer.to_data(), OUTPUT_PATH, 'curved_slicer.json')

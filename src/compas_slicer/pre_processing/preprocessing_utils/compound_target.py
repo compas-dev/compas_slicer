@@ -11,15 +11,9 @@ from loguru import logger
 from numpy.typing import NDArray
 
 import compas_slicer.utilities as utils
-from compas_slicer.pre_processing.preprocessing_utils.geodesics import (
-    get_cgal_HEAT_geodesic_distances,
-    get_custom_HEAT_geodesic_distances,
-    get_igl_EXACT_geodesic_distances,
-    get_igl_HEAT_geodesic_distances,
-)
+from compas_slicer.pre_processing.preprocessing_utils.geodesics import get_heat_geodesic_distances
 
-GeodesicsMethod = Literal['exact_igl', 'heat_igl', 'heat_cgal', 'heat']
-UnionMethod = Literal['min', 'smooth', 'chamfer', 'stairs']
+UnionMethod = Literal["min", "smooth", "chamfer", "stairs"]
 
 
 def _create_graph_from_mesh_vkeys(mesh: Mesh, v_keys: list[int]) -> nx.Graph:
@@ -33,10 +27,8 @@ def _create_graph_from_mesh_vkeys(mesh: Mesh, v_keys: list[int]) -> nx.Graph:
                 G.add_edge(v, other_v)
     return G
 
-__all__ = ['CompoundTarget',
-           'blend_union_list',
-           'stairs_union_list',
-           'chamfer_union_list']
+
+__all__ = ["CompoundTarget", "blend_union_list", "stairs_union_list", "chamfer_union_list"]
 
 
 class CompoundTarget:
@@ -57,11 +49,6 @@ class CompoundTarget:
     DATA_PATH: str
     has_blend_union: bool
     blend_radius : float
-    geodesics_method: str
-        'heat_cgal'  CGAL heat geodesic distances (recommended)
-        'heat'       custom heat geodesic distances
-    anisotropic_scaling: bool
-        This is not yet implemented
     """
 
     def __init__(
@@ -70,16 +57,13 @@ class CompoundTarget:
         v_attr: str,
         value: int,
         DATA_PATH: str,
-        union_method: UnionMethod = 'min',
+        union_method: UnionMethod = "min",
         union_params: list[Any] | None = None,
-        geodesics_method: GeodesicsMethod = 'heat_cgal',
-        anisotropic_scaling: bool = False,
     ) -> None:
-
         if union_params is None:
             union_params = []
-        logger.info(f'Creating target with attribute : {v_attr}={value}')
-        logger.info(f'union_method: {union_method}, union_params: {union_params}')
+        logger.info(f"Creating target with attribute : {v_attr}={value}")
+        logger.info(f"union_method: {union_method}, union_params: {union_params}")
         self.mesh = mesh
         self.v_attr = v_attr
         self.value = value
@@ -88,9 +72,6 @@ class CompoundTarget:
 
         self.union_method = union_method
         self.union_params = union_params
-
-        self.geodesics_method = geodesics_method
-        self.anisotropic_scaling = anisotropic_scaling  # Anisotropic scaling not yet implemented
 
         self.offset = 0
         self.VN = len(list(self.mesh.vertices()))
@@ -120,12 +101,12 @@ class CompoundTarget:
         Each target can have an arbitrary number of neighborhoods/clusters.
         Fills in the attributes: self.all_target_vkeys, self.clustered_vkeys, self.number_of_boundaries
         """
-        self.all_target_vkeys = [vkey for vkey, data in self.mesh.vertices(data=True) if
-                                 data[self.v_attr] == self.value]
+        self.all_target_vkeys = [
+            vkey for vkey, data in self.mesh.vertices(data=True) if data[self.v_attr] == self.value
+        ]
         if len(self.all_target_vkeys) == 0:
             raise ValueError(
-                f"No vertices in mesh with attribute '{self.v_attr}'={self.value}. "
-                "Check your target creation."
+                f"No vertices in mesh with attribute '{self.v_attr}'={self.value}. Check your target creation."
             )
         G = _create_graph_from_mesh_vkeys(self.mesh, self.all_target_vkeys)
         if len(list(G.nodes())) != len(self.all_target_vkeys):
@@ -145,20 +126,7 @@ class CompoundTarget:
         Computes the geodesic distances from each of the target's neighborhoods  to all the mesh vertices.
         Fills in the distances attributes.
         """
-        if self.geodesics_method == 'exact_igl':
-            distances_lists = [get_igl_EXACT_geodesic_distances(self.mesh, vstarts) for vstarts in
-                               self.clustered_vkeys]
-        elif self.geodesics_method == 'heat_igl':
-            distances_lists = [get_igl_HEAT_geodesic_distances(self.mesh, vstarts) for vstarts in
-                               self.clustered_vkeys]
-        elif self.geodesics_method == 'heat_cgal':
-            distances_lists = [get_cgal_HEAT_geodesic_distances(self.mesh, vstarts) for vstarts in
-                               self.clustered_vkeys]
-        elif self.geodesics_method == 'heat':
-            distances_lists = [get_custom_HEAT_geodesic_distances(self.mesh, vstarts, str(self.OUTPUT_PATH)) for vstarts in
-                               self.clustered_vkeys]
-        else:
-            raise ValueError('Unknown geodesics method : ' + self.geodesics_method)
+        distances_lists = [get_heat_geodesic_distances(self.mesh, vstarts) for vstarts in self.clustered_vkeys]
 
         distances_lists = [list(dl) for dl in distances_lists]  # number_of_boundaries x #V
         self.update_distances_lists(distances_lists)
@@ -178,7 +146,7 @@ class CompoundTarget:
     #  --- Uneven weights
     @property
     def has_uneven_weights(self) -> bool:
-        """ Returns True if the target has uneven_weights calculated, False otherwise. """
+        """Returns True if the target has uneven_weights calculated, False otherwise."""
         return len(self.weight_max_per_cluster) > 0
 
     def compute_uneven_boundaries_weight_max(self, other_target: CompoundTarget) -> None:
@@ -194,13 +162,13 @@ class CompoundTarget:
                     ds_avg_HIGH[i] = d + self.offset
 
             self.weight_max_per_cluster = [d / max_param for d in ds_avg_HIGH]
-            logger.info(f'weight_max_per_cluster: {self.weight_max_per_cluster}')
+            logger.info(f"weight_max_per_cluster: {self.weight_max_per_cluster}")
         else:
             logger.info("Did not compute_norm_of_gradient uneven boundaries, target consists of single component")
 
     #  --- Relation to other target
     def get_boundaries_rel_dist_from_other_target(
-        self, other_target: CompoundTarget, avg_type: Literal['mean', 'median'] = 'median'
+        self, other_target: CompoundTarget, avg_type: Literal["mean", "median"] = "median"
     ) -> list[float]:
         """
         Returns a list, one relative distance value per connected boundary neighborhood.
@@ -209,7 +177,7 @@ class CompoundTarget:
         distances = []
         for vi_starts in self.clustered_vkeys:
             ds = [other_target.get_distance(vi) for vi in vi_starts]
-            if avg_type == 'mean':
+            if avg_type == "mean":
                 distances.append(statistics.mean(ds))
             else:  # 'median'
                 distances.append(statistics.median(ds))
@@ -228,11 +196,11 @@ class CompoundTarget:
     #  --- get all distances
 
     def get_all_clusters_distances_dict(self) -> dict[int, list[float]]:
-        """ Returns dict. keys: index of connected target neighborhood, value: list, distances (one per vertex). """
+        """Returns dict. keys: index of connected target neighborhood, value: list, distances (one per vertex)."""
         return {i: self._distances_lists[i] for i in range(self.number_of_boundaries)}
 
     def get_max_dist(self) -> float | None:
-        """ Returns the maximum distance that the target has on a mesh vertex. """
+        """Returns the maximum distance that the target has on a mesh vertex."""
         return self._max_dist
 
     #############################
@@ -240,23 +208,23 @@ class CompoundTarget:
 
     def get_all_distances(self) -> np.ndarray:
         """Return distances for all vertices as 1D array, applying union method."""
-        if self.union_method == 'min':
+        if self.union_method == "min":
             return np.min(self._np_distances_lists_flipped, axis=1)
-        elif self.union_method == 'smooth':
-            return np.array([
-                blend_union_list(row.tolist(), self.union_params[0])
-                for row in self._np_distances_lists_flipped
-            ])
-        elif self.union_method == 'chamfer':
-            return np.array([
-                chamfer_union_list(row.tolist(), self.union_params[0])
-                for row in self._np_distances_lists_flipped
-            ])
-        elif self.union_method == 'stairs':
-            return np.array([
-                stairs_union_list(row.tolist(), self.union_params[0], self.union_params[1])
-                for row in self._np_distances_lists_flipped
-            ])
+        elif self.union_method == "smooth":
+            return np.array(
+                [blend_union_list(row.tolist(), self.union_params[0]) for row in self._np_distances_lists_flipped]
+            )
+        elif self.union_method == "chamfer":
+            return np.array(
+                [chamfer_union_list(row.tolist(), self.union_params[0]) for row in self._np_distances_lists_flipped]
+            )
+        elif self.union_method == "stairs":
+            return np.array(
+                [
+                    stairs_union_list(row.tolist(), self.union_params[0], self.union_params[1])
+                    for row in self._np_distances_lists_flipped
+                ]
+            )
         else:
             raise ValueError(f"Unknown union method: {self.union_method}")
 
@@ -268,24 +236,25 @@ class CompoundTarget:
     #  --- per vkey distances
 
     def get_all_distances_for_vkey(self, i: int) -> list[float]:
-        """ Returns distances from each cluster separately for vertex i. Smooth union doesn't play here any role. """
+        """Returns distances from each cluster separately for vertex i. Smooth union doesn't play here any role."""
         return [self._distances_lists[list_index][i] for list_index in range(self.number_of_boundaries)]
 
     def get_distance(self, i: int) -> float:
-        """ Return get_distance for vertex with vkey i. """
-        if self.union_method == 'min':
+        """Return get_distance for vertex with vkey i."""
+        if self.union_method == "min":
             # --- simple union
             return float(np.min(self._np_distances_lists_flipped[i]))
-        elif self.union_method == 'smooth':
+        elif self.union_method == "smooth":
             # --- blend (smooth) union
             return blend_union_list(values=self._np_distances_lists_flipped[i], r=self.union_params[0])
-        elif self.union_method == 'chamfer':
+        elif self.union_method == "chamfer":
             # --- blend (smooth) union
             return chamfer_union_list(values=self._np_distances_lists_flipped[i], r=self.union_params[0])
-        elif self.union_method == 'stairs':
+        elif self.union_method == "stairs":
             # --- stairs union
-            return stairs_union_list(values=self._np_distances_lists_flipped[i], r=self.union_params[0],
-                                     n=self.union_params[1])
+            return stairs_union_list(
+                values=self._np_distances_lists_flipped[i], r=self.union_params[0], n=self.union_params[1]
+            )
         else:
             raise ValueError("Unknown Union method : ", self.union_method)
 
@@ -293,11 +262,11 @@ class CompoundTarget:
     #  --- scalar field smoothing
 
     def laplacian_smoothing(self, iterations: int, strength: float) -> None:
-        """ Smooth the distances on the mesh, using iterative laplacian smoothing. """
+        """Smooth the distances on the mesh, using iterative laplacian smoothing."""
         L = utils.get_mesh_cotmatrix_igl(self.mesh, fix_boundaries=True)
         new_distances_lists = []
 
-        logger.info('Laplacian smoothing of all distances')
+        logger.info("Laplacian smoothing of all distances")
         for _i, a in enumerate(self._distances_lists):
             a = np.array(a)  # a: numpy array containing the attribute to be smoothed
             for _ in range(iterations):  # iterative smoothing
@@ -321,7 +290,7 @@ class CompoundTarget:
 
     #  ------ assign new Mesh
     def assign_new_mesh(self, mesh: Mesh) -> None:
-        """ When the base mesh changes, a new mesh needs to be assigned. """
+        """When the base mesh changes, a new mesh needs to be assigned."""
         mesh.to_json(self.OUTPUT_PATH + "/temp.obj")
         mesh = Mesh.from_json(self.OUTPUT_PATH + "/temp.obj")
         self.mesh = mesh
@@ -331,8 +300,9 @@ class CompoundTarget:
 ####################
 #  unions on lists
 
+
 def blend_union_list(values: NDArray[np.floating] | list[float], r: float) -> float:
-    """ Returns a smooth union of all the elements in the list, with blend radius blend_radius. """
+    """Returns a smooth union of all the elements in the list, with blend radius blend_radius."""
     d_result: float = 9999999.0  # very big number
     for d in values:
         d_result = blend_union(d_result, float(d), r)
@@ -340,7 +310,7 @@ def blend_union_list(values: NDArray[np.floating] | list[float], r: float) -> fl
 
 
 def stairs_union_list(values: NDArray[np.floating] | list[float], r: float, n: int) -> float:
-    """ Returns a stairs union of all the elements in the list, with blend radius r and number of peaks n-1."""
+    """Returns a stairs union of all the elements in the list, with blend radius r and number of peaks n-1."""
     d_result: float = 9999999.0  # very big number
     for _i, d in enumerate(values):
         d_result = stairs_union(d_result, float(d), r, n)
@@ -357,19 +327,20 @@ def chamfer_union_list(values: NDArray[np.floating] | list[float], r: float) -> 
 ####################
 #  unions on pairs
 
+
 def blend_union(da: float, db: float, r: float) -> float:
-    """ Returns a smooth union of the two elements da, db with blend radius blend_radius. """
+    """Returns a smooth union of the two elements da, db with blend radius blend_radius."""
     e = max(r - abs(da - db), 0)
     return min(da, db) - e * e * 0.25 / r
 
 
 def chamfer_union(a: float, b: float, r: float) -> float:
-    """ Returns a chamfer union of the two elements da, db with radius r. """
+    """Returns a chamfer union of the two elements da, db with radius r."""
     return min(min(a, b), (a - r + b) * math.sqrt(0.5))
 
 
 def stairs_union(a: float, b: float, r: float, n: int) -> float:
-    """ Returns a stairs union of the two elements da, db with radius r. """
+    """Returns a stairs union of the two elements da, db with radius r."""
     s = r / n
     u = b - r
     return min(min(a, b), 0.5 * (u + a + abs((u - a + s) % (2 * s) - s)))

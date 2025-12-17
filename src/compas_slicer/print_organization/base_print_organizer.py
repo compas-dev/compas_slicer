@@ -128,9 +128,7 @@ class BasePrintOrganizer:
         """Number of paths within a layer."""
         return len(self.printpoints[layer_index])
 
-    def remove_duplicate_points_in_path(
-        self, layer_idx: int, path_idx: int, tolerance: float = 0.0001
-    ) -> None:
+    def remove_duplicate_points_in_path(self, layer_idx: int, path_idx: int, tolerance: float = 0.0001) -> None:
         """Remove subsequent points within a threshold distance.
 
         Parameters
@@ -161,9 +159,7 @@ class BasePrintOrganizer:
             for ppt in duplicate_ppts:
                 path.printpoints.remove(ppt)
 
-    def get_printpoint_neighboring_items(
-        self, layer_idx: int, path_idx: int, i: int
-    ) -> list[PrintPoint | None]:
+    def get_printpoint_neighboring_items(self, layer_idx: int, path_idx: int, i: int) -> list[PrintPoint | None]:
         """Get neighboring printpoints.
 
         Parameters
@@ -188,10 +184,7 @@ class BasePrintOrganizer:
 
     def printout_info(self) -> None:
         """Print information about the PrintOrganizer."""
-        ppts_attributes = {
-            key: str(type(val))
-            for key, val in self.printpoints[0][0][0].attributes.items()
-        }
+        ppts_attributes = {key: str(type(val)) for key, val in self.printpoints[0][0][0].attributes.items()}
 
         logger.info("---- PrintOrganizer Info ----")
         logger.info(f"Number of layers: {self.number_of_layers}")

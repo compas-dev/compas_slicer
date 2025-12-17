@@ -213,9 +213,7 @@ class TestBenchmarkGradients:
         V, F, _, face_normals, face_areas = mesh_to_arrays(medium_mesh)
         scalar_field = V[:, 2].copy()
 
-        result = benchmark(
-            face_gradient_from_scalar_field, V, F, scalar_field, face_normals, face_areas
-        )
+        result = benchmark(face_gradient_from_scalar_field, V, F, scalar_field, face_normals, face_areas)
 
         assert result.shape == (len(F), 3)
 
@@ -278,7 +276,7 @@ class TestPerformanceRegression:
             batch_closest_points(query, target)
         elapsed = (time.perf_counter() - start) / 10
 
-        assert elapsed < 0.05, f"batch_closest_points too slow: {elapsed*1000:.1f}ms"
+        assert elapsed < 0.05, f"batch_closest_points too slow: {elapsed * 1000:.1f}ms"
 
     def test_vertex_gradient_should_be_fast(self, medium_mesh):
         """Vertex gradient on 2k face mesh should complete in < 20ms."""
@@ -292,4 +290,4 @@ class TestPerformanceRegression:
             vertex_gradient_from_face_gradient(V, F, face_gradient, face_areas)
         elapsed = (time.perf_counter() - start) / 10
 
-        assert elapsed < 0.02, f"vertex_gradient too slow: {elapsed*1000:.1f}ms"
+        assert elapsed < 0.02, f"vertex_gradient too slow: {elapsed * 1000:.1f}ms"

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from compas.datastructures import Mesh
 
 
-__all__ = ['UVSlicer']
+__all__ = ["UVSlicer"]
 
 
 class UVSlicer(BaseSlicer):
@@ -45,7 +45,7 @@ class UVSlicer(BaseSlicer):
         no_of_isocurves: int,
         config: InterpolationConfig | None = None,
     ) -> None:
-        logger.info('UVSlicer')
+        logger.info("UVSlicer")
         BaseSlicer.__init__(self, mesh)
 
         self.vkey_to_uv = vkey_to_uv
@@ -57,13 +57,13 @@ class UVSlicer(BaseSlicer):
         u_arr = np.array(u) * float(no_of_isocurves + 1)
         vkey_to_i = self.mesh.key_index()
 
-        mesh.update_default_vertex_attributes({'uv': 0})
+        mesh.update_default_vertex_attributes({"uv": 0})
         for vkey in mesh.vertices():
-            mesh.vertex_attribute(vkey, 'uv', (u_arr[vkey_to_i[vkey]], v[vkey_to_i[vkey]]))
+            mesh.vertex_attribute(vkey, "uv", (u_arr[vkey_to_i[vkey]], v[vkey_to_i[vkey]]))
 
     def generate_paths(self) -> None:
         """Generate isocontours."""
-        paths_type = 'flat'  # 'spiral' # 'zigzag'
+        paths_type = "flat"  # 'spiral' # 'zigzag'
         v_left, v_right = 0.0, 1.0 - 1e-5
 
         max_dist = self.config.vertical_layers_max_centroid_dist
@@ -75,7 +75,7 @@ class UVSlicer(BaseSlicer):
                 u_val = float(i)
                 if i == 0:
                     u_val += 0.05  # contours are a bit tricky in the edges
-                if paths_type == 'spiral':
+                if paths_type == "spiral":
                     u1, u2 = u_val, u_val + 1.0
                 else:  # 'flat'
                     u1 = u2 = u_val

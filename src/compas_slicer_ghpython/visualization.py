@@ -11,8 +11,9 @@ from compas_ghpython.utilities import list_to_ghtree
 #######################################
 # --- Slicer
 
+
 def load_slicer(path, folder_name, json_name):
-    """ Loads slicer data. """
+    """Loads slicer data."""
     data = load_json_file(path, folder_name, json_name)
 
     mesh = None
@@ -21,9 +22,8 @@ def load_slicer(path, folder_name, json_name):
     all_points = []
 
     if data:
-
-        if 'mesh' in data:
-            compas_mesh = Mesh.__from_data__(data['mesh'])
+        if "mesh" in data:
+            compas_mesh = Mesh.__from_data__(data["mesh"])
             artist = MeshArtist(compas_mesh)
             artist.show_mesh = True
             artist.show_vertices = False
@@ -31,25 +31,25 @@ def load_slicer(path, folder_name, json_name):
             artist.show_faces = False
             mesh = artist.draw()
         else:
-            print('No mesh has been saved in the json file.')
+            print("No mesh has been saved in the json file.")
 
-        if 'layers' in data:
-            layers_data = data['layers']
+        if "layers" in data:
+            layers_data = data["layers"]
 
             for i in range(len(layers_data)):
                 paths_nested_list.append([])  # save each layer on a different list
                 layer_data = layers_data[str(i)]
-                paths_data = layer_data['paths']
+                paths_data = layer_data["paths"]
 
                 for j in range(len(paths_data)):
                     path_data = paths_data[str(j)]
                     pts = []
 
-                    are_closed.append(path_data['is_closed'])
+                    are_closed.append(path_data["is_closed"])
 
-                    if len(path_data['points']) > 2:  # ignore smaller curves that throw errors
-                        for k in range(len(path_data['points'])):
-                            pt = path_data['points'][str(k)]
+                    if len(path_data["points"]) > 2:  # ignore smaller curves that throw errors
+                        for k in range(len(path_data["points"])):
+                            pt = path_data["points"][str(k)]
                             pt = rs.AddPoint(pt[0], pt[1], pt[2])  # re-create points
                             pts.append(pt)
                         all_points.extend(pts)
@@ -57,15 +57,16 @@ def load_slicer(path, folder_name, json_name):
                         paths_nested_list[-1].append(path)
 
         else:
-            print('No layers have been saved in the json file. Is this the correct json?')
+            print("No layers have been saved in the json file. Is this the correct json?")
 
-    print(f'The slicer contains {len(paths_nested_list)} layers. ')
+    print(f"The slicer contains {len(paths_nested_list)} layers. ")
     paths_nested_list = list_to_ghtree(paths_nested_list)
     return mesh, paths_nested_list, are_closed, all_points
 
 
 #######################################
 # --- Printpoints
+
 
 class PrintPointGH:
     def __init__(self, pt):
@@ -92,20 +93,31 @@ class LayerGH:
         self.paths = []
 
 
-def load_nested_printpoints(path, folder_name, json_name, load_frames, load_layer_heights, load_up_vectors,
-                            load_normals, load_closest_support_pt, load_velocities, load_wait_times,
-                            load_blend_radiuses, load_extruder_toggles):
-    """ Loads a dict of compas_slicer printpoints. """
+def load_nested_printpoints(
+    path,
+    folder_name,
+    json_name,
+    load_frames,
+    load_layer_heights,
+    load_up_vectors,
+    load_normals,
+    load_closest_support_pt,
+    load_velocities,
+    load_wait_times,
+    load_blend_radiuses,
+    load_extruder_toggles,
+):
+    """Loads a dict of compas_slicer printpoints."""
 
     data = load_json_file(path, folder_name, json_name)
     layers = []
 
     if data:
         for i in range(len(data)):
-            layer_key = 'layer_' + str(i)
+            layer_key = "layer_" + str(i)
             layer = LayerGH()
             for j in range(len(data[layer_key])):
-                path_key = 'path_' + str(j)
+                path_key = "path_" + str(j)
                 path = PathGH()
                 for k in range(len(data[layer_key][path_key])):
                     ppt_data = data[layer_key][path_key][str(k)]
@@ -120,10 +132,14 @@ def load_nested_printpoints(path, folder_name, json_name, load_frames, load_laye
                         ppt.layer_height = ppt_data["layer_height"]
 
                     if load_up_vectors:
-                        ppt.up_vector = rg.Vector3d(ppt_data["up_vector"][0], ppt_data["up_vector"][1], ppt_data["up_vector"][2])
+                        ppt.up_vector = rg.Vector3d(
+                            ppt_data["up_vector"][0], ppt_data["up_vector"][1], ppt_data["up_vector"][2]
+                        )
 
                     if load_normals:
-                        ppt.mesh_normal = rg.Vector3d(ppt_data["mesh_normal"][0], ppt_data["mesh_normal"][1], ppt_data["mesh_normal"][2])
+                        ppt.mesh_normal = rg.Vector3d(
+                            ppt_data["mesh_normal"][0], ppt_data["mesh_normal"][1], ppt_data["mesh_normal"][2]
+                        )
 
                     if load_closest_support_pt:
                         cp = ppt_data["closest_support_pt"]
@@ -148,7 +164,7 @@ def load_nested_printpoints(path, folder_name, json_name, load_frames, load_laye
 
 
 def load_printpoints(path, folder_name, json_name):
-    """ Loads a dict of compas_slicer printpoints. """
+    """Loads a dict of compas_slicer printpoints."""
     data = load_json_file(path, folder_name, json_name)
 
     # geometry data
@@ -201,18 +217,28 @@ def load_printpoints(path, folder_name, json_name):
             blend_radiuses.append(data_point["blend_radius"])
             extruder_toggles.append(data_point["extruder_toggle"])
 
-    return points, frames, layer_heights, up_vectors, mesh_normals, closest_support, velocities, wait_times, \
-        blend_radiuses, extruder_toggles
+    return (
+        points,
+        frames,
+        layer_heights,
+        up_vectors,
+        mesh_normals,
+        closest_support,
+        velocities,
+        wait_times,
+        blend_radiuses,
+        extruder_toggles,
+    )
 
 
 #######################################
 # --- Lightweight path visualization
 
+
 def lightweight_path_visualization(points, extruder_toggles, diameter, pipe_resolution):
-    """ Visualize print paths with simple lines or pipes. """
+    """Visualize print paths with simple lines or pipes."""
     #  check input
-    assert len(points) == len(extruder_toggles), \
-        'Wrong length of input lists'
+    assert len(points) == len(extruder_toggles), "Wrong length of input lists"
 
     print_path_pipes = []
     travel_path_lines = []
@@ -232,19 +258,21 @@ def lightweight_path_visualization(points, extruder_toggles, diameter, pipe_reso
 #######################################
 # --- Render path visualization
 
-def render_path_visualization(points, mesh_normals, layer_heights, up_vectors, extruder_toggles, cross_section,
-                              planar_printing):
-    """ Visualize print paths with simple loft surfaces. """
+
+def render_path_visualization(
+    points, mesh_normals, layer_heights, up_vectors, extruder_toggles, cross_section, planar_printing
+):
+    """Visualize print paths with simple loft surfaces."""
 
     # check input
-    assert len(points) == len(mesh_normals) == len(layer_heights) == len(up_vectors) == len(extruder_toggles), \
-        'Wrong length of input lists'
+    assert len(points) == len(mesh_normals) == len(layer_heights) == len(up_vectors) == len(extruder_toggles), (
+        "Wrong length of input lists"
+    )
 
     loft_surfaces = []
     travel_path_lines = []
 
     if points[0] and mesh_normals[0] and layer_heights[0] and up_vectors[0]:  # check if any of the values are None
-
         if planar_printing:  # then make sure that all normals lie on the xy plane
             for n in mesh_normals:
                 n[2] = 0
@@ -278,7 +306,7 @@ def render_path_visualization(points, mesh_normals, layer_heights, up_vectors, e
                 travel_path_lines.append(line)  # add to travel path list
 
     else:
-        print('At least one of the inputs that you have provided are invalid. ')
+        print("At least one of the inputs that you have provided are invalid. ")
 
     return loft_surfaces, travel_path_lines
 
@@ -286,19 +314,20 @@ def render_path_visualization(points, mesh_normals, layer_heights, up_vectors, e
 #######################################
 # --- Tool visualization
 
+
 def tool_visualization(origin_coords, mesh, planes, i):
-    """ Visualize example tool motion. """
+    """Visualize example tool motion."""
 
     if len(planes) == 0:
-        print('Please provide valid planes')
+        print("Please provide valid planes")
         return None, None
     if not planes[0]:
-        print('Please provide valid planes')
+        print("Please provide valid planes")
         return None, None
 
     i = min(i, len(planes) - 1)  # make sure i doesn't go beyond available number of planes
     passed_path = None
-    assert planes[0], 'The planes you have provided are invalid.'
+    assert planes[0], "The planes you have provided are invalid."
 
     origin = [float(origin_coords[0]), float(origin_coords[1]), float(origin_coords[2])]
     o = rg.Point3d(origin[0], origin[1], origin[2])
@@ -312,7 +341,7 @@ def tool_visualization(origin_coords, mesh, planes, i):
     T = rg.Transform.PlaneToPlane(ee_frame, target_frame)
     mesh = rs.TransformObject(rs.CopyObject(mesh), T)
 
-    passed_path = rs.AddPolyline([plane.Origin for plane in planes[:i + 1]])
+    passed_path = rs.AddPolyline([plane.Origin for plane in planes[: i + 1]])
 
     return mesh, passed_path
 
@@ -320,9 +349,10 @@ def tool_visualization(origin_coords, mesh, planes, i):
 #######################################
 # --- Create_targets (Curved slicing)
 
+
 def load_multiple_meshes(starts_with, ends_with, path, folder_name):
-    """ Load all the meshes that have the specified name, and print them in different colors. """
-    output_dir = Path(path) / folder_name / 'output'
+    """Load all the meshes that have the specified name, and print them in different colors."""
+    output_dir = Path(path) / folder_name / "output"
     filenames = get_files_with_name(starts_with, ends_with, str(output_dir))
     meshes = [Mesh.from_obj(str(output_dir / filename)) for filename in filenames]
 
@@ -343,6 +373,7 @@ def load_multiple_meshes(starts_with, ends_with, path, folder_name):
 #######################################
 # --- Load json points
 
+
 def load_json_points(path, folder_name, json_name):
     """
     Loads a json file that stores a dictionary of N points in the format:
@@ -360,6 +391,7 @@ def load_json_points(path, folder_name, json_name):
 
 #######################################
 # --- Load json vectors
+
 
 def load_json_vectors(path, folder_name, json_name):
     """
@@ -379,6 +411,7 @@ def load_json_vectors(path, folder_name, json_name):
 
 #######################################
 # --- Load json polylines
+
 
 def load_json_polylines(path, folder_name, json_name):
     """
@@ -407,6 +440,7 @@ def load_json_polylines(path, folder_name, json_name):
 #######################################
 # --- Load json BaseBoundaries
 
+
 def load_base_boundaries(path, folder_name, json_name):
     """
     Loads a json file that stores a dictionary of BaseBoundary classes in the format:
@@ -419,8 +453,8 @@ def load_base_boundaries(path, folder_name, json_name):
         number_of_boundaries = len(data)
 
         for i in range(len(data)):
-            p = data[str(i)]['points']
-            v = data[str(i)]['up_vectors']
+            p = data[str(i)]["points"]
+            v = data[str(i)]["up_vectors"]
 
             points.extend([rg.Point3d(p[key][0], p[key][1], p[key][2]) for key in p])
             vectors.extend([rg.Vector3d(v[key][0], v[key][1], v[key][2]) for key in v])
@@ -431,13 +465,14 @@ def load_base_boundaries(path, folder_name, json_name):
 #######################################
 # --- Load json BaseBoundaries
 
+
 def distance_fields_interpolation(path, folder_name, json_name1, json_name2, weight):
-    """ Simple interpolation of the distance fields that are stored in the two json files. """
+    """Simple interpolation of the distance fields that are stored in the two json files."""
     distances_LOW = load_json_file(path, folder_name, json_name1)
     distances_HIGH = load_json_file(path, folder_name, json_name2)
 
     if distances_LOW and distances_HIGH:
-        assert (len(distances_LOW) == len(distances_HIGH)), 'Wrong number of distances provided. '
+        assert len(distances_LOW) == len(distances_HIGH), "Wrong number of distances provided. "
         return [d2 * weight - d1 * (1 - weight) for d1, d2 in zip(distances_LOW, distances_HIGH)]
 
 
@@ -445,16 +480,17 @@ def distance_fields_interpolation(path, folder_name, json_name1, json_name2, wei
 # --- utilities
 ##############################################
 
+
 def missing_input():
-    """ Deals with cases where the user has not defined all the necessary inputs. """
-    print('Please provide all the inputs')
+    """Deals with cases where the user has not defined all the necessary inputs."""
+    print("Please provide all the inputs")
 
 
 def load_json_file(path, folder_name, json_name, in_output_folder=True):
-    """ Loads data from json. """
+    """Loads data from json."""
     base = Path(path) / folder_name
     if in_output_folder:
-        filename = base / 'output' / json_name
+        filename = base / "output" / json_name
     else:
         filename = base / json_name
     data = None
@@ -469,36 +505,35 @@ def load_json_file(path, folder_name, json_name, in_output_folder=True):
 
 
 def save_json_file(data, path, folder_name, json_name):
-    """ Saves data to json. """
+    """Saves data to json."""
     filename = Path(path) / folder_name / json_name
     filename.write_text(json.dumps(data, indent=3, sort_keys=True))
     print(f"Saved to Json: '{filename}'")
 
 
 def get_closest_point_index(pt, pts):
-    """ Closest point index of the pts from pt. """
+    """Closest point index of the pts from pt."""
     distances = [rs.Distance(p, pt) for p in pts]
     min_index = distances.index(min(distances))
     return min_index
 
 
 def distance_of_pt_from_crv(pt, crv):
-    """ Smallest distance from point to curve. """
+    """Smallest distance from point to curve."""
     param = rs.CurveClosestPoint(crv, pt)
     cp = rs.EvaluateCurve(crv, param)
     return rs.Distance(pt, cp)
 
 
 def get_files_with_name(startswith, endswith, DATA_PATH):
-    """ Find all files with the specified start and end in the data path. """
-    files = [f.name for f in Path(DATA_PATH).iterdir()
-             if f.name.startswith(startswith) and f.name.endswith(endswith)]
-    print(f'Found {len(files)} files with the given criteria : {files}')
+    """Find all files with the specified start and end in the data path."""
+    files = [f.name for f in Path(DATA_PATH).iterdir() if f.name.startswith(startswith) and f.name.endswith(endswith)]
+    print(f"Found {len(files)} files with the given criteria : {files}")
     return files
 
 
 def get_color(i, total):
-    """ Returns a color per index interpolating the colorspace of 5 colors that are hardcoded (c1 .. c5). """
+    """Returns a color per index interpolating the colorspace of 5 colors that are hardcoded (c1 .. c5)."""
     i, total = float(i), float(total)
 
     c1 = rg.Vector3d(234, 38, 0.0)  # 0.00
@@ -526,7 +561,7 @@ def get_color(i, total):
 
 
 def remap_unbound(input_val, in_from, in_to, out_from, out_to):
-    """ Remap numbers without clamping values. """
+    """Remap numbers without clamping values."""
     out_range = out_to - out_from
     in_range = in_to - in_from
     in_val = input_val - in_from
@@ -536,7 +571,7 @@ def remap_unbound(input_val, in_from, in_to, out_from, out_to):
 
 
 def blend_union_list(values, r):
-    """ Returns a blend union of the elements of the list, with blend radius r. """
+    """Returns a blend union of the elements of the list, with blend radius r."""
     d_result = 9999999  # very big number
     for d in values:
         d_result = blend_union(d_result, d, r)
@@ -544,7 +579,7 @@ def blend_union_list(values, r):
 
 
 def blend_union(da, db, r):
-    """ Blend union of the distances da, db with blend radius r. """
+    """Blend union of the distances da, db with blend radius r."""
     e = max(r - abs(da - db), 0)
     return min(da, db) - e * e * 0.25 / r
 
