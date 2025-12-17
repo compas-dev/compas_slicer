@@ -7,6 +7,20 @@
 
 Python slicing package for FDM 3D Printing based on the [COMPAS](https://block.arch.ethz.ch/brg/tools/compas-computational-framework-for-collaboration-and-research-in-architecture-structures-and-digital-fabrication) framework.
 
+## What's New in 0.7.0
+
+Major refactor with ~10x performance improvement:
+
+* **CGAL backend** - pure python replaced with `compas_cgal`, `igl` dependency removed
+* **Modern docs** - migrated to `mkdocs` with full API reference
+* **COMPAS 2.x** - full compatibility with new serialization API
+* **Visualization** - examples now use `compas_viewer`
+* **Vectorized ops** - hot loops rewritten with `numpy` (see `_numpy_ops.py`)
+* **Type hints** - throughout codebase
+* **Medial axis infill** - via CGAL straight skeleton
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
+
 ## Getting started
 
 You can find tutorials and documentation of the project in the [compas_slicer page](https://compas.dev/compas_slicer/latest/)
@@ -25,8 +39,9 @@ For troubleshooting, see here: [troubleshooting](https://compas.dev/compas_slice
 
 ## Authors
 
-* Ioanna Mitropoulou <<mitropoulou@arch.ethz.ch>> [@ioannaMitropoulou](https://github.com/ioannaMitropoulou)
-* Joris Burger <<burger@arch.ethz.ch>> [@joburger](https://github.com/joburger)
-* Andrei Jipa <<jipa@arch.ethz.ch>> [@stratocaster](https://github.com/stratocaster)
+* Ioanna Mitropoulou [@ioannaMitropoulou](https://github.com/ioannaMitropoulou)
+* Joris Burger [@joburger](https://github.com/joburger)
+* Andrei Jipa [@stratocaster](https://github.com/stratocaster)
+* Jelle Feringa [@jf---](https://github.com/jf---)
 
 
