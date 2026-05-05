@@ -52,8 +52,7 @@ def visualize_slicer(
         Vertex attribute name to use for mesh coloring.
 
     """
-    from compas.colors import Color
-    from compas.colors import ColorMap
+    from compas.colors import Color, ColorMap
     from compas.geometry import Polyline
     from compas_viewer import Viewer
 
